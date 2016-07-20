@@ -1,0 +1,33 @@
+
+Create iPython Notebooks to use ase tutorials for documenting things.
+This is very handy...
+
+Stolen from: 
+http://sphinx-ipynb.readthedocs.io/en/latest/howto.html
+https://github.com/dfm/george/tree/1.0-dev
+
+The idea is to automatically invoke `ipython nbconvert` to convert the .ipynb to .rst.
+Therefore changes to the Makefile have to be made.
+
+NOTE: The ipynb need at least one markdown field with a #Title!
+
+Folder structure:
+Notebook: ./_static/notebooks/test.ipynb
+template: ./tutorial/tutorial_rst.tpl
+target directory of the .rst file: ./tutorial/
+
+Changes to Makefile
+# define targets
+TUTORIALS = tutorials/plotting.rst tutorials/mask_numpy.rst tutorials/mask_xarray.rst
+
+# recipie to create targets
+tutorials/%.rst: _static/notebooks/%.ipynb
+        cd tutorials;ipython nbconvert --template tutorial_rst --to rst ../$<
+
+# add `${TUTORIALS}` to the documentation you want to create.
+
+# probably readthedocs executes `dirhtml`
+dirhtml: ${TUTORIALS}
+        $(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
+        @echo
+        @echo "Build finished. The HTML pages are in $(BUILDDIR)/dirhtml."
