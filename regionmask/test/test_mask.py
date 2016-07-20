@@ -3,7 +3,6 @@ import numpy as np
 from regionmask import _Regions_cls, _Region_cls
 from regionmask import create_mask_contains
 
-
 from shapely.geometry import Polygon, MultiPolygon
 from pytest import raises
 
@@ -85,4 +84,41 @@ def test__mask_obj():
     result = r1.mask(obj, lon_name='longitude', lat_name='latitude', 
                      xarray=False)
     
+    assert np.allclose(result, expected, equal_nan=True)
+
+
+
+
+
+def test_mask_wrap():
+
+    # create a test case where the outlines and the lon coordinates 
+    # are different
+    
+    # outline 0..359.9
+    outl1 = ((359, 0), (359, 1), (0, 1.), (0, 0))
+    outl2 = ((359, 1), (359, 2), (0, 2.), (0, 1))
+    outlines = [outl1, outl2]
+
+    r = _Regions_cls(name, numbers, names, abbrevs, outlines) 
+
+    # lon -180..179.9
+    lon = [-1.5, -0.5]
+    lat = [0.5, 1.5]
+
+    result = r.mask(lon, lat, xarray=False)
+    assert np.all(np.isnan(result))
+
+    # this is the wron wrapping
+    result = r.mask(lon, lat, xarray=False, wrap_lon=180)
+    assert np.all(np.isnan(result))
+
+    expected = expected_mask()
+
+    # determine the wrap automatically
+    result = r.mask(lon, lat, xarray=False, wrap_lon=True)
+    assert np.allclose(result, expected, equal_nan=True)
+
+    # determine the wrap by hand
+    result = r.mask(lon, lat, xarray=False, wrap_lon=360)
     assert np.allclose(result, expected, equal_nan=True)

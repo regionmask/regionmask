@@ -11,8 +11,60 @@ except ImportError:
     has_xarray = False
 
 
+def _wrapAngle360(lon):
+    """wrap angle to [0, 360[."""
+    lon = np.array(lon)
+    return np.mod(lon, 360)
+
+# -----------------------------------------------------------------------------
+
+def _wrapAngle180(lon):
+    """wrap angle to [-180,180[."""
+    lon = np.array(lon)
+    sel = (lon < -180) | (180 <= lon);
+    lon[sel] = _wrapAngle360(lon[sel] + 180) - 180;
+    return lon
+
+
+def _wrapAngle(lon, wrap_lon=True):
+    """wrap the angle to the other base
+
+        If lon is from -180 to 180 wraps them to 0..360
+        If lon is from 0 to 360 wraps them to -180..180
+    """
+
+    if np.isscalar(lon):
+        lon = [lon]
+
+    lon = np.array(lon)
+    new_lon = lon
+
+
+    if wrap_lon is True:
+        if lon.min() < 0  and lon.max() > 180:
+            msg = ('lon has both data that is larger than 180 and '
+                   'smaller than 0. Cannot infer the transformation.')
+            raise RuntimeError(msg)
+
+
+    wl = int(wrap_lon)
+
+    if wl == 180 or (lon.max() > 180 and not wl == 360):
+        new_lon = _wrapAngle180(lon.copy())
+    
+    if wl == 360 or (lon.min() < 0 and not wl == 180):
+        new_lon = _wrapAngle360(lon.copy())
+
+    # check if they are still unique
+    if new_lon.shape != np.unique(new_lon).shape:
+        msg = 'There are equal longitude coordinates (when wrapped)!'
+        raise IndexError(msg)
+
+    return new_lon
+
+
 def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
-          xarray=None):
+          xarray=None, wrap_lon=False):
     """
     create a grid as mask of a set of regions for given lat/ lon grid
 
@@ -35,6 +87,13 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
         If True returns an xarray DataArray, if False returns a numpy
         ndarray. If None, checks if xarray can be imported and if yes
         returns a xarray DataArray else a numpy ndarray. Default: None.
+    wrap_lon : bool | 180 | 360, optional
+        If the regions and the provided longitude do not have the same 
+        base (i.e. one is -180..180 and the other 0..360) one of them 
+        must be wrapped around. This can be done with wrap_lon. If 
+        wrap_lon is False, nothing is done. If wrap_lon is True, 
+        longitude data is wrapped to 360 if its minimum is smaller 
+        than 0 and wrapped to 180 if its maximum is larger than
 
     Returns
     -------
@@ -56,10 +115,17 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
 
     # extract lon/ lat via __getitem__
     if lat is None:
-        lon = np.array(lon_or_obj[lon_name])
-        lat = np.array(lon_or_obj[lat_name])
+        lon = lon_or_obj[lon_name]
+        lat = lon_or_obj[lat_name]
     else:
         lon = lon_or_obj
+
+    lon = np.array(lon)
+    lat = np.array(lat)
+
+    if wrap_lon:
+        lon_old = lon.copy()
+        lon = _wrapAngle(lon, wrap_lon)
 
     # https://gist.github.com/shoyer/0eb96fa8ab683ef078eb
     method='contains'
@@ -71,10 +137,18 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
 
     mask = func(lon, lat, data, numbers=self.numbers)
 
+    if np.all(np.isnan(mask)):
+        msg = "All elements of mask are NaN. Try to set 'wrap_lon=True'."
+        print(msg)
+
     if xarray is None:
         xarray = has_xarray
 
-    if xarray :
+    if xarray:
+        # wrap the angle back
+        if wrap_lon:
+            lon = lon_old
+
         mask = _create_xarray(mask, lat, lon, lat_name, lon_name)
 
     return mask
