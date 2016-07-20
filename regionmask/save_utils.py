@@ -2,6 +2,14 @@ import numpy as np
 
 import hashlib
 
+
+    # save : bool, optional
+    #     If True saves the mask to a netCDF file for faster performance.
+    #     Default: True.
+    # folder : string, optional
+    #     Folder to store the masks. Default: '~/.regionmasks/'.
+
+
 # , save=True, folder='~/.region_masks/'
 
 # if save:

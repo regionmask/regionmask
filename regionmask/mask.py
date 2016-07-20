@@ -51,11 +51,7 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
 
     # method : string, optional
     #     Method to use in for the masking. Default: 'contains'.
-    # save : bool, optional
-    #     If True saves the mask to a netCDF file for faster performance.
-    #     Default: True.
-    # folder : string, optional
-    #     Folder to store the masks. Default: '~/.region_masks/'.
+
 
 
     # extract lon/ lat via __getitem__
