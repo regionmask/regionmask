@@ -1,8 +1,6 @@
 import numpy as np
 
-# from region_mask import _Regions_cls, _Region_cls
-
-from region_mask import _griddes, _dcoord
+from regionmask import _griddes, _dcoord
 
 
 from pytest import raises

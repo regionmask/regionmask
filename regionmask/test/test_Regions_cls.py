@@ -1,6 +1,6 @@
 import numpy as np
 
-from region_mask import _Regions_cls, _Region_cls
+from regionmask import _Regions_cls, _Region_cls
 
 from shapely.geometry import Polygon, MultiPolygon
 
