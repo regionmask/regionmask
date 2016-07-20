@@ -1,11 +1,11 @@
-# region_mask
+# regionmask
 
 plotting and creation of masks of spatial regions
 
 ### install
 
 ```bash
-pip install git+https://github.com/mathause/region_mask
+pip install git+https://github.com/mathause/regionmask
 ```
 
 ### Examples
