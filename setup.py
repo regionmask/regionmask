@@ -2,11 +2,14 @@
 
 from setuptools import setup
 
-version = '0.9.0'
+# get version
+with open("regionmask/version.py") as f:
+    __version__ = f.read().strip()
+
 
 setup(
     name='regionmask',
-    version=version,
+    version=__version__,
     description='plotting and creation of masks for spatial regions',
     author='mathause',
     author_email='mathause@ethz.com',
