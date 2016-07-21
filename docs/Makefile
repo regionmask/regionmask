@@ -6,6 +6,7 @@ default: dirhtml
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
+SPHINXAUTOBUILD = sphinx-autobuild
 PAPER         =
 BUILDDIR      = _build
 
@@ -21,7 +22,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
-TUTORIALS = tutorials/plotting.rst tutorials/mask_numpy.rst tutorials/mask_xarray.rst
+TUTORIALS = tutorials/plotting.rst tutorials/mask_numpy.rst tutorials/mask_xarray.rst tutorials/create_own_regions.rst
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext
 
@@ -54,10 +55,15 @@ help:
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
+
+
 clean:
+	rm -rf tutorials/*/*.png
+	rm -rf tutorials/*.rst
+	rm -rf generated/*
 	rm -rf $(BUILDDIR)/*
 
-html:
+html: 	${TUTORIALS}
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

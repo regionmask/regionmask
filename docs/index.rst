@@ -3,18 +3,32 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to regionmask's documentation!
-======================================
+regionmask
+==========
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Predefined Regions
 
+   predefined
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorials
+   
    tutorials/plotting
    tutorials/mask_numpy
    tutorials/mask_xarray
+   tutorials/create_own_regions
    
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference
+
+   api
 
 
 Indices and tables

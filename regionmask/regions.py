@@ -106,6 +106,24 @@ class Regions_cls(object):
         self.source = source
 
     def __getitem__(self, key):
+        """
+        subset of Regions or Region
+
+        Parameters
+        ----------
+        key : (list of) int or string
+            Key can be a mixed (list of) number, abbrev or name of the 
+            defined regions. If a list is given returns a subset of all 
+            regions, if a single element is given returns this region.
+
+        Returns
+        -------
+        selection : Regions_cls or Region_cls
+             If a list is given returns a subset of all 
+            regions, if a single element is given returns this region.
+
+        """
+        
         key = self.map_keys(key)
         if isinstance(key, int):
             return self.regions[key]
@@ -120,7 +138,20 @@ class Regions_cls(object):
         """
         map from names and abbrevs of the regions to numbers
 
+        Parameters
+        ----------
+        key : (list of) string
+            key can be a single or a list of abbreviation/ name of 
+            existing regions.
+
+        Returns
+        -------
+        mapped_key : int or list of int
+
+        Raises a KeyError if the key does not exist.
+
         """
+
         # a single key
         if isinstance(key, (int, six.string_types)):
             key = self.region_ids[key]
@@ -151,6 +182,8 @@ class Regions_cls(object):
 
     @property
     def region_ids(self):
+        """dict mapping all names and abbrevs to the region number"""
+
         # collect data
         abbrevs = self.abbrevs
         names = self.names
@@ -162,30 +195,39 @@ class Regions_cls(object):
     
     @property
     def abbrevs(self):
+        """list of abbreviations"""
         return self.combiner('abbrev')
 
     @property
     def names(self):
+        """list of long names"""
         return self.combiner('name')
 
     @property
     def numbers(self):
+        """list of the numbers of the regions"""
         return self.combiner('number')
     
     @property
     def coords(self):
+        """list of coordinates of the region vertices as numpy array"""
         return self.combiner('coords')
 
     @property
     def polygons(self):
+        """list of shapely Polygon/ MultiPolygon of the regions"""
         return self.combiner('polygon')
 
     @property
     def centroids(self):
+        """list of the center of mass of the regions"""
         return self.combiner('centroid')
 
     @property
     def _is_polygon(self):
+        """is there at least one region that was a Polygon/ MultiPolygon
+
+        ."""
         return np.any(np.array(self.combiner('_is_polygon')))
 
 

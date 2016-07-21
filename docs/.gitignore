@@ -2,3 +2,4 @@ _build
 !*.png
 tutorials/*
 !tutorials/tutorial_rst.tpl
+generated/
