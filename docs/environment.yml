@@ -1,4 +1,4 @@
-name: xarray
+name: regionmask
 channels:
   - scitools
 dependencies:
