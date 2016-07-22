@@ -4,5 +4,5 @@ dependencies:
   - numpy=1.10
   - numpydoc=0.5
   - ipython=4.0.1
-  - shapely=1.2.18
-  - cartopy=0.13.0'
+  - shapely=1.2.18 
+  - -c scitools cartopy=0.13.0'
