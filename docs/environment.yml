@@ -1,8 +1,10 @@
 name: xarray
+channels:
+  - scitools
 dependencies:
   - python=2.7
   - numpy=1.10
   - numpydoc=0.5
   - ipython=4.0.1
   - shapely=1.2.18 
-  - -c scitools cartopy=0.13.0'
+  - cartopy=0.13.0
