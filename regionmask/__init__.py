@@ -7,8 +7,10 @@
 # import pkg_resources  # part of setuptools
 # __version__ = pkg_resources.require("regionmask")[0].version
 
-with open("version.py") as f:
-    __version__ = f.read().strip()
+#with open("version.py") as f:
+#    __version__ = f.read().strip()
+
+__version__ = '0.9.0'
 
 # import defined regions
 from .defined_regions.srex import srex
