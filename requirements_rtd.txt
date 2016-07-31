@@ -1,4 +1,0 @@
-numpy
-matplotlib
-six
-xarray

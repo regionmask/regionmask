@@ -5,6 +5,6 @@ dependencies:
   - python=2.7
   - numpydoc=0.5
   - ipython=4.0.1
-  - cartopy=0.13.0
+  - cartopy
   - pip:
     - git+https://github.com/mathause/regionmask 
