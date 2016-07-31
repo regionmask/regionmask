@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # get version
 with open("regionmask/version.py") as f:
@@ -13,7 +13,7 @@ setup(
     description='plotting and creation of masks for spatial regions',
     author='mathause',
     author_email='mathause@ethz.com',
-    packages=['regionmask'],
+    packages=find_packages(),
     url='https://github.com/mathause/regionmask',
     install_requires=open('requirements.txt').read().split(),
     long_description='See https://github.com/mathause/regionmask'
