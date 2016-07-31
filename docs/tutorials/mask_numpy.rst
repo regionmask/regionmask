@@ -109,12 +109,24 @@ Plot the selected data
     # fine tune the extent
     ax.set_extent([-15, 45, 40, 65], crs=ccrs.PlateCarree())
 
+
+
+.. image:: mask_numpy_files/mask_numpy_13_0.png
+
+
 Finally we can obtain the region mean:
 
 .. code:: python
 
     print('Global mean:   ', np.mean(data))
     print('Central Europe:', np.mean(data_ceu))
+
+
+.. parsed-literal::
+
+    Global mean:    0.00508462928478
+    Central Europe: 0.033885820489
+
 
 Create a mask with a different lon/ lat grid
 --------------------------------------------
@@ -147,5 +159,10 @@ Use a 5° x 5° grid:
     ax.coastlines()
     
     plt.colorbar(h, orientation='horizontal', pad=0.04);
+
+
+
+.. image:: mask_numpy_files/mask_numpy_19_0.png
+
 
 Now the grid cells are much larger.
