@@ -1,0 +1,7 @@
+name: test_env
+dependencies:
+  - pytest
+  - numpy==1.11.1
+  - shapely==1.2.18
+  - cartopy
+
