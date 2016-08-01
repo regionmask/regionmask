@@ -54,9 +54,17 @@ def test_coords():
     assert np.allclose(r2.coords, [out1, out2])
 
 def test_polygon():
-    assert r1.polygons == [poly1, poly2]
-    assert r2.polygons == [poly1, poly2]
+    assert isinstance(r1.polygons, list)
+    assert isinstance(r2.polygons, list)
 
+    assert len(r1.polygons) == 2
+    assert len(r2.polygons) == 2
+
+    assert r1.polygons[0].equals(poly1)
+    assert r1.polygons[1].equals(poly2)
+
+    assert r2.polygons[0].equals(poly1)
+    assert r2.polygons[1].equals(poly2)
 
 def test_centroid():
     assert np.allclose(r1.centroids, [[0.5, 0.5], [0.5, 1.5]])

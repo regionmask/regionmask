@@ -17,7 +17,7 @@ def test_attributes():
     assert np.allclose(r.coords, outl)
     assert isinstance(r.coords, np.ndarray)
     
-    assert r.polygon == Polygon(outl)
+    assert r.polygon.equals(Polygon(outl))
     assert isinstance(r.polygon, Polygon)
 
     assert np.allclose(r.centroid, (0.5, 0.5))
