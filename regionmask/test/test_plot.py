@@ -1,8 +1,11 @@
 import numpy as np
+
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 
 from regionmask import _Regions_cls, _Region_cls, _subsample
-
 
 from shapely.geometry import Polygon, MultiPolygon
 
