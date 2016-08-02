@@ -23,7 +23,7 @@ install:
     - python setup.py install
   
     - conda install pytest
-  
+    - conda install xarray
 
 script:
     - python -m pytest .
