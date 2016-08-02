@@ -2,6 +2,8 @@
 
 plotting and creation of masks of spatial regions
 
+![build](https://travis-ci.org/mathause/regionmask.svg?branch=master "buld")
+
 ## Installation
 
 ```bash
