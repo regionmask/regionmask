@@ -16,6 +16,13 @@ before_install:
     - conda config --set always_yes yes --set changeps1 no --set show_channel_urls true
     - conda update -q conda
     - conda info -a
+    
+    # https://docs.travis-ci.com/user/gui-and-headless-browsers/
+    # http://stackoverflow.com/questions/21321292/using-matplotlib-when-display-is-undefined
+    - "export DISPLAY=:99.0"
+    - "sh -e /etc/init.d/xvfb start"
+    - sleep 3 # give xvfb some time to start
+    
   
 install:
     - conda env create --file docs/environment.yml
