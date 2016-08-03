@@ -1,3 +1,14 @@
+.. image:: docs/_static/notebooks/logo.png
+   :width: 30 px
+   :align: center
+
+|
+
+************************************
+create masks of geographical regions
+************************************
+
+
 regionmask
 ==========
 
