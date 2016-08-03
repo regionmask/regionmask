@@ -15,21 +15,18 @@ create masks of geographical regions
 
 regionmask is a Python module that:
 
-- contains :doc:`predefined geographical regions</predefined>`:
-
-  - from `Natural Earth <http://www.naturalearthdata.com/>`_ (countries)
-  - the Giorgi regions [#]_
-  - the SREX regions [#]_
-
+- contains a number of :doc:`defined geographical regions</predefined>` (
+  `Natural Earth <http://www.naturalearthdata.com/>`_ (countries),
+  the Giorgi regions [#]_ and
+  the SREX regions [#]_)
 - can plot figures of these regions (:doc:`tutorial</tutorials/plotting>`) with 
   `matplotlib <http://matplotlib.org/>`_ and 
   `cartopy <http://scitools.org.uk/cartopy/>`_
-
-- can be used to create masks of geographical regions for arbitrary longitude
+- can be used to create masks of the regions for arbitrary longitude
   and latitude grids with
   `numpy <http://www.numpy.org/>`_ (:doc:`tutorial</tutorials/mask_numpy>`)
   and
-  `xarray <http://xarray.pydata.org/>`__ object (:doc:`tutorial</tutorials/mask_xarray>`)
+  `xarray <http://xarray.pydata.org/>`__ (:doc:`tutorial</tutorials/mask_xarray>`)
 - arbitrary regions can be defined easily (:doc:`tutorial<tutorials/create_own_regions>`)
 
 Usage

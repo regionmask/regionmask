@@ -1,6 +1,6 @@
-##################
-Predefined Regions
-##################
+###############
+Defined Regions
+###############
 
 Some regions are already available in ```regionmask```. At the moment that are the:
 
