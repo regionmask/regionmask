@@ -25,15 +25,12 @@ regionmask is a Python module that:
   `matplotlib <http://matplotlib.org/>`_ and 
   `cartopy <http://scitools.org.uk/cartopy/>`_
 
-- can be used to create masks of geographical regions for arbitrary longitude and latitude grids
-
-  - passing ``longitude`` and ``latitude``, an array is returned that can
-    be used to select gridded data
-  - the input (longitude/ latitude grid) and output (mask) can either be a `numpy <http://www.numpy.org/>`_ array (:doc:`tutorial</tutorials/mask_numpy>`) or a `xarray <http://xarray.pydata.org/>`__ object (:doc:`tutorial</tutorials/mask_xarray>`)
-
+- can be used to create masks of geographical regions for arbitrary longitude
+  and latitude grids with
+  `numpy <http://www.numpy.org/>`_ (:doc:`tutorial</tutorials/mask_numpy>`)
+  and
+  `xarray <http://xarray.pydata.org/>`__ object (:doc:`tutorial</tutorials/mask_xarray>`)
 - arbitrary regions can be defined easily (:doc:`tutorial<tutorials/create_own_regions>`)
-
-
 
 Usage
 =====
