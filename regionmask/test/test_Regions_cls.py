@@ -32,6 +32,9 @@ r2 = _Regions_cls(name, numbers, names, abbrevs, poly)
 
 # =============================================================================
 
+def test_len():
+    assert len(r1) == 2
+
 def test_name():
     assert r1.name == name
 

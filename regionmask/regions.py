@@ -134,6 +134,9 @@ class Regions_cls(object):
             new_self.regions = regions
             return new_self
 
+    def __len__(self):
+        return len(self.numbers)
+
     def map_keys(self, key):
         """
         map from names and abbrevs of the regions to numbers
