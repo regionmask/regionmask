@@ -1,5 +1,6 @@
 numpy
 matplotlib
 shapely
-cartopy
 six
+cartopy
+geopandas
