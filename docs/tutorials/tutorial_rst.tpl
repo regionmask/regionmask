@@ -17,7 +17,7 @@
 
 {% block input %}
 {%- if cell.source.strip() and not cell.source.startswith("%") -%}
-.. code:: python
+.. code:: ipython
 
 {{ cell.source | indent}}
 {% endif -%}

@@ -15,10 +15,12 @@ create masks of geographical regions
 
 regionmask is a Python module that:
 
-- contains a number of :doc:`defined geographical regions</predefined>` (
-  `Natural Earth <http://www.naturalearthdata.com/>`_ (countries),
-  the Giorgi regions [#]_ and
-  the SREX regions [#]_)
+- contains a number of defined regions, including:
+  :doc:`countries</defined_countries>` (from
+  `Natural Earth <http://www.naturalearthdata.com/>`_),
+  and regions used in the
+  :doc:`scientific literature</defined_scientific>` 
+  (the Giorgi regions [#]_ and   the SREX regions [#]_).
 - can plot figures of these regions (:doc:`tutorial</tutorials/plotting>`) with 
   `matplotlib <http://matplotlib.org/>`_ and 
   `cartopy <http://scitools.org.uk/cartopy/>`_
@@ -44,9 +46,10 @@ Contents
 
 .. toctree::
    :maxdepth: 2
-   :caption: Predefined Regions
+   :caption: Defined Regions
 
-   predefined
+   defined_countries
+   defined_scientific
 
 
 .. toctree::
