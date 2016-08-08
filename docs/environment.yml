@@ -1,10 +1,13 @@
 name: regionmask
 channels:
   - scitools
+  - conda-forge
 dependencies:
   - python=2.7
   - numpydoc=0.5
   - ipython=4.0.1
   - cartopy
+  - geopandas
+  - xarray
   - pip:
     - git+https://github.com/mathause/regionmask 
