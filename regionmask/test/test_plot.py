@@ -5,7 +5,7 @@ matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 
-from regionmask import _Regions_cls, _Region_cls, _subsample
+from regionmask import Regions_cls, Region_cls, _subsample
 
 from shapely.geometry import Polygon, MultiPolygon
 
@@ -24,7 +24,7 @@ outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
 outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
 outlines = [outl1, outl2]
 
-r1 = _Regions_cls(name, numbers, names, abbrevs, outlines)
+r1 = Regions_cls(name, numbers, names, abbrevs, outlines)
 
 numbers = [1, 2]
 names = {1:'Unit Square1', 2: 'Unit Square2'}
@@ -33,7 +33,7 @@ poly1 = Polygon(outl1)
 poly2 = Polygon(outl2)
 poly = {1: poly1, 2: poly2}
 
-r2 = _Regions_cls(name, numbers, names, abbrevs, poly)    
+r2 = Regions_cls(name, numbers, names, abbrevs, poly)    
 
 # =============================================================================
 

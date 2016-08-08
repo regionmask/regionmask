@@ -1,6 +1,6 @@
 import numpy as np
 
-from regionmask import _Region_cls
+from regionmask import Region_cls
 
 from shapely.geometry import Polygon, MultiPolygon
 
@@ -8,7 +8,7 @@ from shapely.geometry import Polygon, MultiPolygon
 def test_attributes():
 
     outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
-    r = _Region_cls(1, 'Unit Square', 'USq', outl)  
+    r = Region_cls(1, 'Unit Square', 'USq', outl)  
 
     assert r.number == 1
     assert r.name == 'Unit Square'
@@ -29,7 +29,7 @@ def test_polygon_input():
     
     outl_poly = Polygon(outl)
 
-    r = _Region_cls(1, 'Unit Square', 'USq', outl_poly)
+    r = Region_cls(1, 'Unit Square', 'USq', outl_poly)
 
     assert np.allclose(r.coords, outl)
     assert r.polygon == outl_poly
@@ -44,7 +44,7 @@ def test_polygon_input():
     
     outl_poly = MultiPolygon([Polygon(outl1), Polygon(outl2)])
 
-    r = _Region_cls(1, 'Unit Square', 'USq', outl_poly)
+    r = Region_cls(1, 'Unit Square', 'USq', outl_poly)
 
     assert np.allclose(r.coords, outl, equal_nan=True)
     assert r.polygon == outl_poly
@@ -56,17 +56,17 @@ def test_centroid():
     outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
 
     # normal
-    r = _Region_cls(1, 'Unit Square', 'USq', outl)  
+    r = Region_cls(1, 'Unit Square', 'USq', outl)  
     assert np.allclose(r.centroid, (0.5, 0.5))
 
     # user defined centroid
     c = (1, 1)
-    r = _Region_cls(1, 'Unit Square', 'USq', outl, centroid=c)  
+    r = Region_cls(1, 'Unit Square', 'USq', outl, centroid=c)  
     assert np.allclose(r.centroid, c)
 
     # superfluous point -> center should still be at (0.5, 0.5)
     outl = ((0, 0), (0, 0.5), (0, 1), (1, 1.), (1, 0))
-    r = _Region_cls(1, 'Unit Square', 'USq', outl)  
+    r = Region_cls(1, 'Unit Square', 'USq', outl)  
     assert np.allclose(r.centroid, (0.5, 0.5))
 
 

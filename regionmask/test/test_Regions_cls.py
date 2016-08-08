@@ -1,6 +1,6 @@
 import numpy as np
 
-from regionmask import _Regions_cls, _Region_cls
+from regionmask import Regions_cls, Region_cls
 
 from shapely.geometry import Polygon, MultiPolygon
 
@@ -19,7 +19,7 @@ outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
 outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
 outlines = [outl1, outl2]
 
-r1 = _Regions_cls(name, numbers, names, abbrevs, outlines)
+r1 = Regions_cls(name, numbers, names, abbrevs, outlines)
 
 numbers = [1, 2]
 names = {1:'Unit Square1', 2: 'Unit Square2'}
@@ -28,7 +28,7 @@ poly1 = Polygon(outl1)
 poly2 = Polygon(outl2)
 poly = {1: poly1, 2: poly2}
 
-r2 = _Regions_cls(name, numbers, names, abbrevs, poly)    
+r2 = Regions_cls(name, numbers, names, abbrevs, poly)    
 
 # =============================================================================
 
@@ -105,17 +105,17 @@ def test_map_keys_unique():
 def test_subset_to_Region():
 
     s1 = r1[0]
-    assert isinstance(s1, _Region_cls)
+    assert isinstance(s1, Region_cls)
     assert s1.number == 0
     assert s1.abbrev == 'uSq1'
 
     s1 = r1['uSq1']
-    assert isinstance(s1, _Region_cls)
+    assert isinstance(s1, Region_cls)
     assert s1.number == 0
     assert s1.abbrev == 'uSq1'
 
     s1 = r1['Unit Square1']
-    assert isinstance(s1, _Region_cls)
+    assert isinstance(s1, Region_cls)
     assert s1.number == 0
     assert s1.abbrev == 'uSq1'
 
@@ -123,6 +123,6 @@ def test_subset_to_Region():
 def test_subset_to_Regions():
 
     s1 = r1[[0]]
-    assert isinstance(s1, _Regions_cls)
+    assert isinstance(s1, Regions_cls)
     assert s1.numbers == [0]
     assert s1.abbrevs == ['uSq1']
