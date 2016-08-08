@@ -13,6 +13,13 @@
 from .version import version
 __version__ = version
 
+# try to load matplotlib and set backend to Agg on rtd
+import os
+on_rtd = os.environ.get("READTHEDOCS", None) == "True"
+if on_rtd:
+    import matplotlib
+    matplotlib.use('Agg')
+
 from .core.regions import Regions_cls, Region_cls
 
 from . import defined_regions
