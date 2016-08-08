@@ -106,7 +106,7 @@ name = {
 
 # =============================================================================
 
-from ..regions import Regions_cls
+from ..core.regions import Regions_cls
 
 numbers = range(1, 27)
 source = ('Seneviratne et al., 2012 '

@@ -81,7 +81,7 @@ name[21] = "North Asia"
 # =============================================================================
 
 
-from ..regions import Regions_cls
+from ..core.regions import Regions_cls
 
 numbers = range(1, 22)
 
