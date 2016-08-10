@@ -13,6 +13,10 @@ For plotting on geographical maps:
 - `matplotlib <http://matplotlib.org/>`__
 - `cartopy <http://scitools.org.uk/cartopy/>`__
 
+To open Natural Earth datasets (shapefiles):
+
+- `geopandas <http://geopandas.org/>`__
+
 Optional dependencies
 ---------------------
 
