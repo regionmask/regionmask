@@ -14,3 +14,5 @@ plotting and creation of masks of spatial regions
 Documentation
 -------------
 See the `documentation <http://regionmask.readthedocs.io/>`_  (on readthedocs).
+
+version : 0.1.0
