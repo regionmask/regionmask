@@ -10,4 +10,4 @@ dependencies:
   - geopandas
   - xarray
   - pip:
-    - git+https://github.com/mathause/regionmask 
+    - regionmask 
