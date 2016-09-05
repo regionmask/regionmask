@@ -295,9 +295,10 @@ notebooks = ('_static/notebooks/plotting',
              '_static/notebooks/mask_xarray',
              '_static/notebooks/create_own_regions')
 
+# '--template _static/notebooks/tutorial_rst '
+
 for nb in notebooks:
   call(('ipython nbconvert '
-        '--template _static/notebooks/tutorial_rst '
         '--to rst '
         '--execute ' + 
         nb), shell=True)
