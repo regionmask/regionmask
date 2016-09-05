@@ -3,9 +3,11 @@
 What's New
 ==========
 
-v0.2.0 (unreleased)
--------------------
+v0.2.0 (5 September 2016)
+-------------------------
+
 - Add name for xarray mask (:issue:`3`). By `Mathias Hauser <https://github.com/mathause>`_.
+- overhaul of the documentation
 - move rtd / matplotlib handling to background
 
 v0.1.0 (15 August 2016)
