@@ -71,6 +71,10 @@ def test__mask_xarray():
     assert np.allclose(result.lat, lat)
     assert np.allclose(result.lon, lon)
 
+def test__mask_xarray_name():
+    msk = r1.mask(lon, lat, xarray=True)
+
+    assert msk.name == 'region'
 
 def test__mask_obj():
 

@@ -161,7 +161,7 @@ def _create_xarray(mask, lat, lon, lat_name, lon_name):
     # create the xarray output
     coords = {lat_name : lat, lon_name : lon}
     mask = xr.DataArray(mask, coords=coords,
-                             dims=(lat_name, lon_name))
+                        dims=(lat_name, lon_name), name='region')
 
     return mask
 
