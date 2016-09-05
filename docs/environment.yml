@@ -9,5 +9,6 @@ dependencies:
   - cartopy
   - geopandas
   - xarray
+  - nbconvert
   - pip:
     - regionmask 
