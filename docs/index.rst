@@ -61,7 +61,8 @@ Contents
    tutorials/mask_numpy
    tutorials/mask_xarray
    tutorials/create_own_regions
-   
+   _static/notebooks/create_own_regions
+
 .. toctree::
    :maxdepth: 2
    :caption: API Reference
