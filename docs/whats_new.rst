@@ -1,4 +1,4 @@
-.. currentmodule:: xarray
+.. currentmodule:: regionmask
 
 What's New
 ==========
