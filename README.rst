@@ -1,4 +1,4 @@
-.. image:: logo/logo.png
+.. image:: docs/logo/logo.png
    :width: 30 px
    :align: center
 
