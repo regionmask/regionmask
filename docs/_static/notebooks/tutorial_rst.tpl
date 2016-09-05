@@ -17,10 +17,10 @@
 
 {% block input %}
 {%- if cell.source.strip() and not cell.source.startswith("%") -%}
-.. code:: ipython
+.. code:: python
 
 {{ cell.source | indent}}
-{% endif -%}
+{%- endif -%}
 {% endblock input %}
 
 {% block error %}

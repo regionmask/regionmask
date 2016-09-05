@@ -300,6 +300,7 @@ notebooks = ('_static/notebooks/plotting',
 for nb in notebooks:
   call(('ipython nbconvert '
         '--to rst '
+        '--template _static/notebooks/tutorial_rst '
         '--execute ' + 
         nb), shell=True)
   
