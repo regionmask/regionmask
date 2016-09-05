@@ -26,9 +26,8 @@ TUTORIALS = tutorials/plotting.rst tutorials/mask_numpy.rst tutorials/mask_xarra
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext
 
-
-tutorials/%.rst: _static/notebooks/%.ipynb
-	cd tutorials;ipython nbconvert --template tutorial_rst --to rst ../$<
+# tutorials/%.rst: _static/notebooks/%.ipynb
+#	cd tutorials;ipython nbconvert --template tutorial_rst --to rst ../$<
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -63,12 +62,12 @@ clean:
 	rm -rf generated/*
 	rm -rf $(BUILDDIR)/*
 
-html: 	${TUTORIALS}
+html: 	# ${TUTORIALS}
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-dirhtml: ${TUTORIALS}
+dirhtml: 
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/dirhtml."

@@ -1,7 +1,6 @@
 _build
 *.png
-!_static/notebooks/logo.png
-#tutorials/*
-tutorials/tutorial_rst.tpl
+!logo/logo.png
 generated/
+_static/notebooks/*.rst
 

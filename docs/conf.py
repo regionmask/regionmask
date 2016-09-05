@@ -21,9 +21,6 @@ import os
 
 import regionmask
 
-import matplotlib
-matplotlib.use('Agg')
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -287,13 +284,21 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 
+# disable warnings
+import warnings
+warnings.filterwarnings("ignore")
 
 from subprocess import call
 
-call('ipython nbconvert --to rst --execute _static/notebooks/create_own_regions.ipynb', shell=True)
+notebooks = ('_static/notebooks/plotting',
+             '_static/notebooks/mask_numpy',
+             '_static/notebooks/mask_xarray',
+             '_static/notebooks/create_own_regions')
 
-
-
-
-
-
+for nb in notebooks:
+  call(('ipython nbconvert '
+        '--template _static/notebooks/tutorial_rst '
+        '--to rst '
+        '--execute ' + 
+        nb), shell=True)
+  

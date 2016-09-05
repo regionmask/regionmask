@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: _static/notebooks/logo.png
+.. image:: logo/logo.png
    :width: 500 px
    :align: center
 
@@ -21,15 +21,15 @@ regionmask is a Python module that:
   and regions used in the
   :doc:`scientific literature</defined_scientific>` 
   (the Giorgi regions [#]_ and   the SREX regions [#]_).
-- can plot figures of these regions (:doc:`tutorial</tutorials/plotting>`) with 
+- can plot figures of these regions (:doc:`tutorial</_static/notebooks/plotting>`) with 
   `matplotlib <http://matplotlib.org/>`_ and 
   `cartopy <http://scitools.org.uk/cartopy/>`_
 - can be used to create masks of the regions for arbitrary longitude
   and latitude grids with
-  `numpy <http://www.numpy.org/>`_ (:doc:`tutorial</tutorials/mask_numpy>`)
+  `numpy <http://www.numpy.org/>`_ (:doc:`tutorial</_static/notebooks/mask_numpy>`)
   and
-  `xarray <http://xarray.pydata.org/>`__ (:doc:`tutorial</tutorials/mask_xarray>`)
-- arbitrary regions can be defined easily (:doc:`tutorial<tutorials/create_own_regions>`)
+  `xarray <http://xarray.pydata.org/>`__ (:doc:`tutorial</_static/notebooks/mask_xarray>`)
+- arbitrary regions can be defined easily (:doc:`tutorial<_static/notebooks/create_own_regions>`)
 
 Usage
 =====
@@ -57,10 +57,9 @@ Contents
    :maxdepth: 2
    :caption: Tutorials
    
-   tutorials/plotting
-   tutorials/mask_numpy
-   tutorials/mask_xarray
-   tutorials/create_own_regions
+   _static/notebooks/plotting
+   _static/notebooks/mask_numpy
+   _static/notebooks/mask_xarray
    _static/notebooks/create_own_regions
 
 .. toctree::
