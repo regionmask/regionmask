@@ -1,4 +1,4 @@
-.. image:: docs/_static/notebooks/logo.png
+.. image:: logo/logo.png
    :width: 30 px
    :align: center
 
