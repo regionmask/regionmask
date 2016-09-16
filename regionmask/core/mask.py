@@ -56,9 +56,10 @@ def _wrapAngle(lon, wrap_lon=True):
         new_lon = _wrapAngle360(lon.copy())
 
     # check if they are still unique
-    if new_lon.shape != np.unique(new_lon).shape:
-        msg = 'There are equal longitude coordinates (when wrapped)!'
-        raise IndexError(msg)
+    if new_lon.ndim == 1:
+        if new_lon.shape != np.unique(new_lon).shape:
+            msg = 'There are equal longitude coordinates (when wrapped)!'
+            raise IndexError(msg)
 
     return new_lon
 
@@ -111,14 +112,9 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
     # method : string, optional
     #     Method to use in for the masking. Default: 'contains'.
 
+    lat_orig = lat
 
-
-    # extract lon/ lat via __getitem__
-    if lat is None:
-        lon = lon_or_obj[lon_name]
-        lat = lon_or_obj[lat_name]
-    else:
-        lon = lon_or_obj
+    lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
 
     lon = np.array(lon)
     lat = np.array(lat)
@@ -149,13 +145,27 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
         if wrap_lon:
             lon = lon_old
 
-        mask = _create_xarray(mask, lat, lon, lat_name, lon_name)
+        if lon.ndim == 1:
+            mask = _create_xarray(mask, lon, lat, lon_name, lat_name)
+        else:
+            mask = _create_xarray_2D(mask, lon_or_obj, lat_orig,
+                                      lon_name, lat_name)
 
     return mask
 
 
+def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
+    # extract lon/ lat via __getitem__
+    if lat is None:
+        lon = lon_or_obj[lon_name]
+        lat = lon_or_obj[lat_name]
+    else:
+        lon = lon_or_obj
 
-def _create_xarray(mask, lat, lon, lat_name, lon_name):
+    return lon, lat
+
+
+def _create_xarray(mask, lon, lat, lon_name, lat_name):
     """create an xarray DataArray"""
     
     # create the xarray output
@@ -166,6 +176,29 @@ def _create_xarray(mask, lat, lon, lat_name, lon_name):
     return mask
 
 
+def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
+    """create an xarray DataArray for 2D fields"""
+
+    lon2D, lat2D = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
+
+    if isinstance(lon2D, xr.DataArray):
+        dim1D_names = lon2D.dims
+        dim1D_1 = lon2D[dim1D_names[0]]
+        dim1D_2 = lon2D[dim1D_names[1]]
+    else:
+        dim1D_names = (lon_name + '_idx', lat_name + '_idx')
+        dim1D_1 = np.arange(len(lat2D))
+        dim1D_2 = np.arange(len(lon2D))
+
+    # dict with the coordinates
+    coords = {dim1D_names[0]: dim1D_1,
+              dim1D_names[1]: dim1D_2,
+              lat_name: (dim1D_names, lat2D),
+              lon_name: (dim1D_names, lon2D)}
+    
+    mask = xr.DataArray(mask, coords = coords, dims=dim1D_names)
+
+    return mask
 
 def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
     """
@@ -184,7 +217,10 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
     numbers : list of int, optional
         If not given 0:n_coords - 1 is used.
 
-    """    
+    """
+
+    lon = np.array(lon)
+    lat = np.array(lat)
     
     n_coords = len(coords)
 
@@ -196,8 +232,12 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
     # the fill value should not be one of the numbers
     assert not fill in numbers
 
+    if lon.ndim == 2:
+        LON, LAT = lon, lat
+    else:
+        LON, LAT = np.meshgrid(lon, lat)
+    
     # get all combinations if lat lon points
-    LON, LAT = np.meshgrid(lon, lat)
     lonlat = zip(LON.ravel(), LAT.ravel())
 
     shape = LON.shape

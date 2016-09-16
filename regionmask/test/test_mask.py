@@ -127,6 +127,63 @@ def test_mask_wrap():
     result = r.mask(lon, lat, xarray=False, wrap_lon=360)
     assert np.allclose(result, expected, equal_nan=True)
 
+# ======================================================================
+
+# test 2D array
+lon_2D = [[0.5, 1.5], [0.5, 1.5]]
+lat_2D = [[0.5, 0.5], [1.5, 1.5]]
+
+
+def test_create_mask_contains_2D():
+    result = create_mask_contains(lon_2D, lat_2D, outlines)
+    expected = expected_mask()
+    assert np.allclose(result, expected, equal_nan=True)
+
+def test__mask_2D():
+
+    expected = expected_mask()
+    result = r1.mask(lon_2D, lat_2D, xarray=False)
+    assert np.allclose(result, expected, equal_nan=True)
+
+def test__mask_xarray_out_2D():
+
+    expected = expected_mask()
+    result = r1.mask(lon_2D, lat_2D, xarray=True)
+
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+
+    assert np.allclose(result.lat.values, lat_2D)
+    assert np.allclose(result.lon.values, lon_2D)
+
+    assert np.allclose(result.lat_idx, [0, 1])
+    assert np.allclose(result.lon_idx, [0, 1])
+
+
+def test__mask_xarray_in_out_2D():
+    # create xarray DataArray with 2D dims
+    
+    coords = {'lat_1D': [1, 2],
+              'lon_1D': [1, 2],
+              'lat_2D': (('lat_1D', 'lon_1D'), lat_2D),
+              'lon_2D': (('lat_1D', 'lon_1D'), lon_2D)}
+    
+    d = np.random.rand(2, 2)
+
+    data = xr.DataArray(d, coords = coords, dims=('lat_1D', 'lon_1D'))
+
+
+    expected = expected_mask()
+    result = r1.mask(data, lon_name='lon_2D', lat_name='lat_2D')
+
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+    assert np.allclose(result.lat_2D, lat_2D)
+    assert np.allclose(result.lon_2D, lon_2D)
+
+    assert np.allclose(result.lat_1D, [1, 2])
+    assert np.allclose(result.lon_1D, [1, 2])
+
 
 
 
