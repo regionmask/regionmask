@@ -38,21 +38,21 @@ def expected_mask(a=0, b=1, fill=np.NaN):
 def test_create_mask_contains():
 
     # standard
-    result = create_mask_contains(lat, lon, outlines)
+    result = create_mask_contains(lon, lat, outlines)
     expected = expected_mask()
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = create_mask_contains(lat, lon, outlines, fill=5)
+    result = create_mask_contains(lon, lat, outlines, fill=5)
     expected = expected_mask(fill=5)
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = create_mask_contains(lat, lon, outlines, numbers=[5, 6])
+    result = create_mask_contains(lon, lat, outlines, numbers=[5, 6])
     expected = expected_mask(a=5, b=6)
     assert np.allclose(result, expected, equal_nan=True)
 
-    raises(AssertionError, create_mask_contains, lat, lon, outlines, fill=0)
+    raises(AssertionError, create_mask_contains, lon, lat, outlines, fill=0)
 
-    raises(AssertionError, create_mask_contains, lat, lon, outlines,
+    raises(AssertionError, create_mask_contains, lon, lat, outlines,
            numbers=[5])
 
 def test__mask():
@@ -126,3 +126,11 @@ def test_mask_wrap():
     # determine the wrap by hand
     result = r.mask(lon, lat, xarray=False, wrap_lon=360)
     assert np.allclose(result, expected, equal_nan=True)
+
+
+
+
+
+
+
+
