@@ -183,16 +183,16 @@ def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
 
     if isinstance(lon2D, xr.DataArray):
         dim1D_names = lon2D.dims
-        dim1D_1 = lon2D[dim1D_names[0]]
-        dim1D_2 = lon2D[dim1D_names[1]]
+        dim1D_0 = lon2D[dim1D_names[0]]
+        dim1D_1 = lon2D[dim1D_names[1]]
     else:
         dim1D_names = (lon_name + '_idx', lat_name + '_idx')
-        dim1D_1 = np.arange(len(lat2D))
-        dim1D_2 = np.arange(len(lon2D))
+        dim1D_0 = np.arange(np.array(lon2D).shape[0])
+        dim1D_1 = np.arange(np.array(lon2D).shape[1])
 
     # dict with the coordinates
-    coords = {dim1D_names[0]: dim1D_1,
-              dim1D_names[1]: dim1D_2,
+    coords = {dim1D_names[0]: dim1D_0,
+              dim1D_names[1]: dim1D_1,
               lat_name: (dim1D_names, lat2D),
               lon_name: (dim1D_names, lon2D)}
     
