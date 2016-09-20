@@ -60,6 +60,7 @@ Contents
    _static/notebooks/plotting
    _static/notebooks/mask_numpy
    _static/notebooks/mask_xarray
+   _static/notebooks/mask_multidim
    _static/notebooks/create_own_regions
 
 .. toctree::
