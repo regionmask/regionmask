@@ -3,8 +3,8 @@
 What's New
 ==========
 
-v0.3.0 (unreleased)
--------------------
+v0.3.0 (20 September 2016)
+--------------------------
 
 - Allow passing 2 dimensional latitude and longitude grids (:issue:`8`).
 
