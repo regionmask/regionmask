@@ -30,7 +30,9 @@ Instructions
 regionmask itself is a pure Python package, but its dependencies are not. The
 easiest way to get them installed is to use conda_. 
 
-    $ conda install numpy cartopy xarray
+.. code-block:: bash
+
+    conda install numpy cartopy xarray
 
 If you don't use conda, be sure you have the required dependencies. You can
 then install regionmask via pip (it is not (yet) available on conda):
