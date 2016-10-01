@@ -33,15 +33,21 @@ easiest way to get them installed is to use conda_.
     $ conda install numpy cartopy xarray
 
 If you don't use conda, be sure you have the required dependencies. You can
-then install regionmask via pip (it is not (yet) available on PyPi and on
-conda):
+then install regionmask via pip (it is not (yet) available on conda):
+
+.. code-block:: bash
+
+   pip install regionmask
+
+To run the test suite after installing xarray, install
+`py.test <https://pytest.org>`__ and run ``py.test regionmask``.
+
+To install the development version (master), do:
 
 .. code-block:: bash
 
    pip install git+https://github.com/mathause/regionmask
 
-To run the test suite after installing xarray, install
-`py.test <https://pytest.org>`__ and run ``py.test regionmask``.
 
 
 .. _conda: http://conda.io/
