@@ -3,6 +3,16 @@
 What's New
 ==========
 
+v0.3.1 (unreleased)
+--------------------------
+
+Bug Fixes
+~~~~~~~~~
+
+- natural_earth was not properly imported (:issue:`10`).
+- A numpy scalar of dtype integer is not `int` (i.e. isinstance(np.int32, int)
+  is False). (:issue:`11`)
+
 v0.3.0 (20 September 2016)
 --------------------------
 
