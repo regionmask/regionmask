@@ -125,7 +125,7 @@ class Regions_cls(object):
         """
         
         key = self.map_keys(key)
-        if isinstance(key, int):
+        if isinstance(key, (int, np.integer)):
             return self.regions[key]
         else:
             # subsample the regions
@@ -156,7 +156,7 @@ class Regions_cls(object):
         """
 
         # a single key
-        if isinstance(key, (int, six.string_types)):
+        if isinstance(key, (int, np.integer, six.string_types)):
             key = self.region_ids[key]
         # a list of keys
         else:
