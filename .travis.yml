@@ -25,7 +25,7 @@ before_install:
     
   
 install:
-    - conda env create --file docs/environment.yml
+    - conda env create python=$TRAVIS_PYTHON_VERSION --file docs/environment.yml
     - source activate regionmask
     - python setup.py install
   
