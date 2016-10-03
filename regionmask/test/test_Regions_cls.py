@@ -30,6 +30,9 @@ poly = {1: poly1, 2: poly2}
 
 r2 = Regions_cls(name, numbers, names, abbrevs, poly)    
 
+# numbers as array
+r3 = Regions_cls(name, np.array(numbers), names, abbrevs, poly)  
+
 # =============================================================================
 
 def test_len():
@@ -82,6 +85,9 @@ def test_map_keys_one():
     assert r2.map_keys('uSq1') == 1
     assert r2.map_keys('Unit Square1') == 1
 
+def test_map_keys_np_integer():
+    key = np.array([1, 1])[0]
+    assert r3.map_keys(key) == 1
 
 def test_map_keys_several():
 
@@ -103,7 +109,6 @@ def test_map_keys_unique():
 
 
 def test_subset_to_Region():
-
     s1 = r1[0]
     assert isinstance(s1, Region_cls)
     assert s1.number == 0
@@ -119,9 +124,13 @@ def test_subset_to_Region():
     assert s1.number == 0
     assert s1.abbrev == 'uSq1'
 
+def test_subset_to_Region_np_integer():
+    s1 = r3[1]
+    assert isinstance(s1, Region_cls)
+    assert s1.number == 1
+    assert s1.abbrev == 'uSq1'
 
 def test_subset_to_Regions():
-
     s1 = r1[[0]]
     assert isinstance(s1, Regions_cls)
     assert s1.numbers == [0]
