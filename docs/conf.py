@@ -43,6 +43,7 @@ extensions = [
     'IPython.sphinxext.ipython_console_highlighting',
 ]
 
+extlinks = {'issue': ('https://github.com/mathause/regionmask/issues/%s', 'GH')}
 
 autosummary_generate = True
 
