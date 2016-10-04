@@ -238,7 +238,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
         LON, LAT = np.meshgrid(lon, lat)
     
     # get all combinations if lat lon points
-    lonlat = zip(LON.ravel(), LAT.ravel())
+    lonlat = list(zip(LON.ravel(), LAT.ravel()))
 
     shape = LON.shape
 
