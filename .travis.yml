@@ -31,7 +31,6 @@ install:
     - conda env create python=$TRAVIS_PYTHON_VERSION --file travis/environment.yml
     - source activate regionmask
     - python setup.py install
-  
     - conda install pytest
 
 script:
