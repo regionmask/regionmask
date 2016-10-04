@@ -1,17 +1,13 @@
 
-
 # F. Giorgi R. Francisco
-
-import numpy as np
+# Uncertainties in regional climate change prediction: a regional analysis
+# of ensemble simulations with the HADCM2 coupled AOGCM
 
 outline = dict()
-
-
-
 outline[1] =  (( 110, -45), ( 155, -45), ( 155, -11), ( 110, -11))
 outline[2] =  (( -82, -20), ( -34, -20), ( -34,  12), ( -82,  12))
 outline[3] =  (( -76, -56), ( -40, -56), ( -40, -20), ( -76, -20))
-outline[4] =  ((-116,  10), ( -83,  10), ( -83,  30), (-116,  30))
+outline[4] =  ((-116,  10), ( -83,  10), ( -83,  25), ( -85,  25), ( -85,  30), (-116,  30))
 outline[5] =  ((-130,  30), (-103,  30), (-103,  60), (-130,  60))
 outline[6] =  ((-103,  30), ( -85,  30), ( -85,  50), (-103,  50))
 outline[7] =  (( -85,  25), ( -60,  25), ( -60,  50), ( -85,  50))
@@ -23,13 +19,12 @@ outline[12] = (( -20, -12), (  22, -12), (  22,  18), ( -20,  18))
 outline[13] = ((  22, -12), (  52, -12), (  52,  18), (  22,  18))
 outline[14] = (( -10, -35), (  52, -35), (  52, -12), ( -10, -12))
 outline[15] = (( -20,  18), (  65,  18), (  65,  30), ( -20,  30))
-outline[16] = ((  95, -11), ( 155, -11), ( 155,  20), (  95,  20))
+outline[16] = ((  95, -11), ( 155, -11), ( 155,  20), ( 100,  20), ( 100,   5), (  95,   5))
 outline[17] = (( 100,  20), ( 145,  20), ( 145,  50), ( 100,  50))
 outline[18] = ((  65,   5), ( 100,   5), ( 100,  30), (  65,  30))
 outline[19] = ((  40,  30), (  75,  30), (  75,  50), (  40,  50))
 outline[20] = ((  75,  30), ( 100,  30), ( 100,  50), (  75,  50))
 outline[21] = ((  40,  50), ( 180,  50), ( 180,  70), (  40,  70))
-
 
 abbrevs = dict()
 abbrevs[1] = "AUS"
@@ -55,7 +50,6 @@ abbrevs[20] = "TIB"
 abbrevs[21] = "NAS"
 
 name = dict()
-
 name[1] = "Australia"
 name[2] = "Amazon Basin"
 name[3] = "Southern South America"
@@ -80,13 +74,12 @@ name[21] = "North Asia"
 
 # =============================================================================
 
-
 from ..core.regions import Regions_cls
 
 numbers = range(1, 22)
 
 source = ('Giorgi and Franciso, 2000 '
-	      '(http://onlinelibrary.wiley.com/doi/10.1029/1999GL011016)')
+	      '(http://link.springer.com/article/10.1007/PL00013733)')
 
 giorgi = Regions_cls('Giorgi', numbers, name, abbrevs, outline, 
 	                 source=source)
