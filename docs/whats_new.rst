@@ -10,8 +10,10 @@ What's New
 
 .. _whats-new.0.3.1:
 
-v0.3.1 (unreleased)
+v0.3.1 (4 October 2016)
 --------------------------
+
+This is a bugfix/ cleanup release.
 
 Bug Fixes
 ~~~~~~~~~
