@@ -28,10 +28,11 @@ before_install:
     - conda info -a
 
 install:
-    - conda env create python=$TRAVIS_PYTHON_VERSION --file travis/environment.yml
+    - conda env create python=$TRAVIS_PYTHON_VERSION
     - source activate regionmask
+    - conda install --file travis/environment.yml
     - python setup.py install
     - conda install pytest
 
 script:
-    - python -m pytest .
+    - py.test .
