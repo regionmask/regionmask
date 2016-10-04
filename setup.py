@@ -18,7 +18,9 @@ setup(
     packages=find_packages(),
     url='https://github.com/mathause/regionmask',
     install_requires=open('requirements.txt').read().split(),
-    long_description='See https://github.com/mathause/regionmask'
-)
+    long_description='See https://github.com/mathause/regionmask',
+    entry_points={'console_scripts': 
+                  ['regionmask = regionmask.__main__:main'] },
+    )
 
 
