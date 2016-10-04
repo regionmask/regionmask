@@ -1,8 +1,0 @@
-name: regionmask
-channels:
-  - scitools
-  - conda-forge
-dependencies:
-  - cartopy
-  - geopandas
-  - xarray

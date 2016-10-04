@@ -28,8 +28,9 @@ before_install:
     - conda info -a
 
 install:
-    - conda env create --name regionmask python=$TRAVIS_PYTHON_VERSION --file travis/environment.yml
+    - conda create --name regionmask python=$TRAVIS_PYTHON_VERSION
     - source activate regionmask
+    - conda install -c scitools -c conda-forge cartopy geopandas xarray
     - python setup.py install
     - conda install pytest
 
