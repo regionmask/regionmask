@@ -24,6 +24,8 @@ Bug Fixes
 - In python 3 zip is an iterator (and not a list), thus it failed on
   `mask` (:issue:`15`).
 - Removed unnecessary files (ne_downloader.py and naturalearth.py).
+- Resolved conflicting region outlines in the Giorgi regions (:issue:`17`).
+
 
 v0.3.0 (20 September 2016)
 --------------------------
