@@ -3,15 +3,27 @@
 What's New
 ==========
 
+.. ipython:: python
+   :suppress:
+
+    import regionmask
+
+.. _whats-new.0.3.1:
+
 v0.3.1 (unreleased)
 --------------------------
 
 Bug Fixes
 ~~~~~~~~~
 
+- travis was configured wrong - it always tested on python 2.7, thus some
+  python3 issues went unnoticed (:issue:`14`).
 - natural_earth was not properly imported (:issue:`10`).
-- A numpy scalar of dtype integer is not `int` (i.e. isinstance(np.int32, int)
-  is False). (:issue:`11`)
+- A numpy scalar of dtype integer is not `int` - i.e. `isinstance(np.int32, int)`
+  is False (:issue:`11`).
+- In python 3 zip is an iterator (and not a list), thus it failed on
+  `mask` (:issue:`15`).
+- Removed unnecessary files (ne_downloader.py and naturalearth.py).
 
 v0.3.0 (20 September 2016)
 --------------------------
@@ -28,4 +40,5 @@ v0.2.0 (5 September 2016)
 
 v0.1.0 (15 August 2016)
 -----------------------
-first release on pypi
+
+- first release on pypi
