@@ -4,7 +4,7 @@ Installation
 Required dependencies
 ---------------------
 
-- Python 2.6, 2.7, 3.3, 3.4 or 3.5.
+- Python 2.6, 2.7, 3.4 or 3.5.
 - `numpy <http://www.numpy.org/>`__
 - `shapely <http://toblerity.org/shapely/>`__
 
