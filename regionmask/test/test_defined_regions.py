@@ -34,7 +34,9 @@ def test_us_states_10():
     regions = defined_regions.natural_earth.us_states_10
     _defined_region(regions, 51)
 
-
+def test_land_110():
+    regions = defined_regions.natural_earth.land_110
+    _defined_region(regions, 1)
 
 
 
