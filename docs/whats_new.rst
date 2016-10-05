@@ -8,10 +8,19 @@ What's New
 
     import regionmask
 
-.. _whats-new.0.3.1:
+.. _whats-new.0.4.0:
+
+v0.4.0 (unreleased)
+-------------------
+
+Enhancements
+~~~~~~~~~~~~
+
+- Add landmask/ land 110m from `Natural Earth <http://www.naturalearthdata.com/downloads/110m-physical-vectors/>`_ (:issue:`21`).
+
 
 v0.3.1 (4 October 2016)
---------------------------
+-----------------------
 
 This is a bugfix/ cleanup release.
 

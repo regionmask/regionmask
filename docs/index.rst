@@ -17,8 +17,8 @@ regionmask is a Python module that:
 
 - contains a number of defined regions, including:
   :doc:`countries</defined_countries>` (from
-  `Natural Earth <http://www.naturalearthdata.com/>`_),
-  and regions used in the
+  `Natural Earth <http://www.naturalearthdata.com/>`_), a 
+  :doc:`landmask</defined_landmask>` and regions used in the
   :doc:`scientific literature</defined_scientific>` 
   (the Giorgi regions [#]_ and   the SREX regions [#]_).
 - can plot figures of these regions (:doc:`tutorial</_static/notebooks/plotting>`) with 
@@ -50,6 +50,7 @@ Contents
    :caption: Defined Regions
 
    defined_countries
+   defined_landmask
    defined_scientific
 
 
