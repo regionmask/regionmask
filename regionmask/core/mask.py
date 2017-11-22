@@ -94,7 +94,7 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
         must be wrapped around. This can be done with wrap_lon. If 
         wrap_lon is False, nothing is done. If wrap_lon is True, 
         longitude data is wrapped to 360 if its minimum is smaller 
-        than 0 and wrapped to 180 if its maximum is larger than
+        than 0 and wrapped to 180 if its maximum is larger than 180.
 
     Returns
     -------
