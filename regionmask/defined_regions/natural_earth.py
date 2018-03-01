@@ -13,7 +13,17 @@ def _maybe_get_column(df, colname):
 
     if isinstance(colname, six.string_types):
         # getattr also works for index (df['index'] does not)
-        return getattr(df, colname)
+        # try lower and upper, github #25
+        if hasattr(df, colname):
+            return getattr(df, colname)
+        elif hasattr(df, colname.upper()): 
+            return getattr(df, colname.upper())
+        else:
+            msg = ("'{}' (and '{}') not on the geopandas dataframe.\n"
+                   "The naming convention of NaturalEarthData may have "
+                   "changed.\nPlease raise an issue.")
+            raise KeyError(msg.format(colname, colname.upper()))
+
     else:
         return colname
 
@@ -37,8 +47,8 @@ def _obtain_ne(resolution, category, name, title, names='name',
     title : string
         Displayed text in Regions_cls.
     names : string or list
-        Names of the single regions (Region_cls). If string obtains them
-        from the geopandas DataFrame, else uses the provided list.
+        Names of the single regions (Region_cls). If string, obtains
+        them from the geopandas DataFrame, else uses the provided list.
     abbrevs : string or list
         Abbreviations of the single regions (Region_cls). If string 
         obtains them from the geopandas DataFrame, else uses the 
@@ -84,6 +94,9 @@ def _obtain_ne(resolution, category, name, title, names='name',
     numbers = np.array(numbers)
 
     return Regions_cls(title, numbers, names, abbrevs, coords)
+
+# =============================================================================
+# =============================================================================
 
 
 class natural_earth_cls(object):
