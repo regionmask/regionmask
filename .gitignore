@@ -3,6 +3,8 @@ __pycache__
 
 .cache/
 
+.pytest_cache/
+
 # C extensions
 *.so
 
