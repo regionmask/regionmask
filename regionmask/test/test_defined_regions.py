@@ -1,5 +1,7 @@
 from regionmask import defined_regions, Regions_cls
+from regionmask.defined_regions import _maybe_get_column
 
+from pytest import raises
 
 def _defined_region(regions, n_regions):
 
@@ -38,9 +40,19 @@ def test_land_110():
     regions = defined_regions.natural_earth.land_110
     _defined_region(regions, 1)
 
+def test_maybe_get_column():
+    
+    class lowercase(object):
+        def name():
+            return 1
 
+    class uppercase(object):
+        def NAME():
+            return 2
 
+    assert _maybe_get_column(lowercase, 'name')() == 1
+    assert _maybe_get_column(uppercase, 'name')() == 2
+    assert _maybe_get_column(uppercase, 'NAME')() == 2
 
-
-
-
+    with raises(KeyError) as e_info:
+        _maybe_get_column(lowercase, 'nam')

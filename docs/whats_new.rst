@@ -18,6 +18,12 @@ Enhancements
 
 - Add landmask/ land 110m from `Natural Earth <http://www.naturalearthdata.com/downloads/110m-physical-vectors/>`_ (:issue:`21`).
 
+Bug Fixes
+~~~~~~~~~
+
+- Columns of geodataframes can be in lower ('name') or upper case ('NAME') (:issue:`25`).
+
+
 
 v0.3.1 (4 October 2016)
 -----------------------

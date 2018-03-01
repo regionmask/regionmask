@@ -19,9 +19,9 @@ def _maybe_get_column(df, colname):
         elif hasattr(df, colname.upper()): 
             return getattr(df, colname.upper())
         else:
-            msg = ("'{}' (and '{}') not on the geopandas dataframe.\n"
+            msg = ("'{}' (and '{}') not on the geopandas dataframe. "
                    "The naming convention of NaturalEarthData may have "
-                   "changed.\nPlease raise an issue.")
+                   "changed. Please raise an issue.")
             raise KeyError(msg.format(colname, colname.upper()))
 
     else:
