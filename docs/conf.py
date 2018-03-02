@@ -37,13 +37,15 @@ import regionmask
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    'sphinx.ext.extlinks',
     'sphinx.ext.mathjax',
     'numpydoc',
     'IPython.sphinxext.ipython_directive',
     'IPython.sphinxext.ipython_console_highlighting',
 ]
 
-extlinks = {'issue': ('https://github.com/mathause/regionmask/issues/%s', 'GH')}
+extlinks = {'issue': ('https://github.com/mathause/regionmask/issues/%s', 'GH'),
+            'pull': ('https://github.com/mathause/regionmask/pull/%s', 'PR'),}
 
 autosummary_generate = True
 
@@ -298,7 +300,7 @@ notebooks = ('_static/notebooks/plotting',
              '_static/notebooks/create_own_regions')
 
 for nb in notebooks:
-  call(('ipython nbconvert '
+  call(('jupyter nbconvert '
         '--to rst '
         '--template _static/notebooks/tutorial_rst '
         '--execute ' + 
