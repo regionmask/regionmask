@@ -3,9 +3,9 @@ channels:
   - scitools
   - conda-forge
 dependencies:
-  - python=2.7
-  - numpydoc=0.5
-  - ipython=4.0.1
+  - python=3.6
+  - numpydoc
+  - ipython
   - cartopy
   - geopandas
   - xarray

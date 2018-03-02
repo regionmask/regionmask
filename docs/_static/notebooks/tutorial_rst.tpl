@@ -20,7 +20,9 @@
 .. code:: python
 
 {{ cell.source | indent}}
+
 {%- endif -%}
+{%- print('\n') -%}
 {% endblock input %}
 
 {% block error %}
