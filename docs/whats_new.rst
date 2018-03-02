@@ -13,6 +13,10 @@ What's New
 v0.5.0 (unreleased)
 -------------------
 
+Bug Fixes
+~~~~~~~~~
+
+ - Conda channel mixing breaks travis tests. Only use conda-forge (:issue:`27`).
 
 v0.4.0 (02.03.2018)
 -------------------
