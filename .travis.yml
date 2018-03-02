@@ -27,11 +27,10 @@ before_install:
     - conda info -a
 
 install:
-    - conda create --name regionmask python=$TRAVIS_PYTHON_VERSION
+    - conda create --name regionmask -c conda-forge python=$TRAVIS_PYTHON_VERSION
     - source activate regionmask
-    - conda install -c scitools -c conda-forge cartopy geopandas xarray
+    - conda install -c conda-forge cartopy geopandas xarray pytest
     - python setup.py install
-    - conda install pytest
 
 script:
     - py.test .
