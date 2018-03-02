@@ -10,20 +10,22 @@ What's New
 
 .. _whats-new.0.4.0:
 
-v0.4.0 (unreleased)
+v0.4.0 (02.03.2018)
 -------------------
 
 Enhancements
 ~~~~~~~~~~~~
 
 - Add landmask/ land 110m from `Natural Earth <http://www.naturalearthdata.com/downloads/110m-physical-vectors/>`_ (:issue:`21`).
+- Moved some imports to functions, so `import regionmask` is faster. 
+- Adapted docs for python 3.6.
 
 Bug Fixes
 ~~~~~~~~~
 
 - Columns of geodataframes can be in lower ('name') or upper case ('NAME') (:issue:`25`).
-
-
+- Links to github issues not working, due to missing sphinx.ext.extlinks (:issue:`26`).
+- Docs: mask_xarray.ipynb: mask no longer needs a name (as of :pull:`5`).
 
 v0.3.1 (4 October 2016)
 -----------------------
