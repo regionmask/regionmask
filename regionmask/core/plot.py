@@ -1,28 +1,8 @@
-
-
-
-from shapely.geometry import Polygon, MultiPolygon
-
-
-import cartopy
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
-
-import matplotlib.pyplot as plt
 import numpy as np
-
-
-
-# from regions import outline, midpoint, short_name, number, name
-
-
 
 # =============================================================================
 
-
-
-def _draw_poly(ax, outl, subsample=False, **kwargs):
+def _draw_poly(ax, outl, trans, subsample=False, **kwargs):
     """
     draw the outline of the regions
 
@@ -32,8 +12,6 @@ def _draw_poly(ax, outl, subsample=False, **kwargs):
     else:
         lons, lats = outl[:, 0], outl[:, 1]
      
-    trans = ccrs.PlateCarree()
-
     color = kwargs.pop('color', '0.05')
 
     ax.plot(lons, lats, color=color, transform=trans, **kwargs)
@@ -50,9 +28,7 @@ def _subsample(outl):
     return lons, lats
 
 
-
-
-def _plot(self, ax=None, proj=ccrs.PlateCarree(), regions='all',
+def _plot(self, ax=None, proj=None, regions='all',
               add_label=True, label='number', coastlines=True,
               add_ocean=True, line_kws=dict(), text_kws=dict(),
               resolution='110m', subsample=None):
@@ -64,8 +40,9 @@ def _plot(self, ax=None, proj=ccrs.PlateCarree(), regions='all',
     ax : axis handle, optinal
         Uses existing axis: needs to be a cartopy axis. If not 
         given, creates a new axis with the specified projection.
-    proj : cartopy projection, optional
-        Defines the projection of the map. See cartopy home page.
+    proj : cartopy projection or None, optional
+        Defines the projection of the map. If None uses 'PlateCarree'.
+        See cartopy home page. Default None.
     regions : list | 'all', optinal
         List the regions (as number, abbrev or name, can be mixed)
         that should be outlined.
@@ -91,6 +68,13 @@ def _plot(self, ax=None, proj=ccrs.PlateCarree(), regions='all',
         array subsamples if it is given as (Multi)Polygons does not
         subsample.
     """
+    import matplotlib.pyplot as plt
+    import cartopy.crs as ccrs
+    import cartopy.feature as cfeature
+    from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
+    
+    if proj is None:
+        proj = ccrs.PlateCarree()
 
     if ax is None:
         ax = plt.axes(projection=proj)
@@ -126,7 +110,8 @@ def _plot(self, ax=None, proj=ccrs.PlateCarree(), regions='all',
 
     for i in regions:
         coords = self[i].coords
-        _draw_poly(ax, coords, subsample, **line_kws)
+        trans = ccrs.PlateCarree()
+        _draw_poly(ax, coords, trans, subsample, **line_kws)
 
     if add_label:
         
@@ -143,11 +128,3 @@ def _plot(self, ax=None, proj=ccrs.PlateCarree(), regions='all',
                     ha=ha, backgroundcolor=col, **text_kws)
 
     return ax
-
-
-
-
-
-
-
-

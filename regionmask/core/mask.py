@@ -1,14 +1,20 @@
 import numpy as np
-import matplotlib.path as mplPath
-
 
 from shapely.geometry import Polygon, MultiPolygon
 
-try:
-    import xarray as xr 
-    has_xarray = True
-except ImportError:
-    has_xarray = False
+
+def _maybe_import_xarray():
+    """Import pyplot as register appropriate converters."""
+    try:
+        import xarray as xr 
+        has_xarray = True
+    except ImportError:
+        has_xarray = False
+        xr = None
+
+    return xr, has_xarray
+
+# -----------------------------------------------------------------------------
 
 
 def _wrapAngle360(lon):
@@ -17,6 +23,7 @@ def _wrapAngle360(lon):
     return np.mod(lon, 360)
 
 # -----------------------------------------------------------------------------
+
 
 def _wrapAngle180(lon):
     """wrap angle to [-180,180[."""
@@ -112,6 +119,8 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
     # method : string, optional
     #     Method to use in for the masking. Default: 'contains'.
 
+    __, has_xarray = _maybe_import_xarray()
+
     lat_orig = lat
 
     lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
@@ -167,7 +176,8 @@ def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
 
 def _create_xarray(mask, lon, lat, lon_name, lat_name):
     """create an xarray DataArray"""
-    
+    xr, __ = _maybe_import_xarray()
+
     # create the xarray output
     coords = {lat_name : lat, lon_name : lon}
     mask = xr.DataArray(mask, coords=coords,
@@ -178,6 +188,7 @@ def _create_xarray(mask, lon, lat, lon_name, lat_name):
 
 def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
     """create an xarray DataArray for 2D fields"""
+    xr, __ = _maybe_import_xarray()
 
     lon2D, lat2D = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
 
@@ -218,6 +229,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
         If not given 0:n_coords - 1 is used.
 
     """
+    import matplotlib.path as mplPath
 
     lon = np.array(lon)
     lat = np.array(lat)
@@ -263,4 +275,3 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
             out[sel] = numbers[i]
 
     return out.reshape(shape)
-

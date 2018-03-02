@@ -1,9 +1,6 @@
-
-from cartopy.io import shapereader
-import numpy as np
-import geopandas
-
 import six
+
+import numpy as np
 
 from ..core.regions import Regions_cls
 
@@ -68,6 +65,8 @@ def _obtain_ne(resolution, category, name, title, names='name',
         shapely MultiPolygon (used to combine all land Polygons).
         Optional, default False.
     """
+    from cartopy.io import shapereader
+    import geopandas
 
     # maybe download natural_earth feature and return filename
     shpfilename = shapereader.natural_earth(resolution, category, name)
