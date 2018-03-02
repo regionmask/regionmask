@@ -8,17 +8,13 @@ def _defined_region(regions, n_regions):
     assert isinstance(regions, Regions_cls)
     assert len(regions) == n_regions
 
-
 def test_giorgi():
     regions = defined_regions.giorgi
     _defined_region(regions, 21)
     
-
-
 def test_srex():
     regions = defined_regions.srex
     _defined_region(regions, 26)
-
 
 def test_countries_110():
     regions = defined_regions.natural_earth.countries_110
@@ -43,16 +39,18 @@ def test_land_110():
 def test_maybe_get_column():
     
     class lowercase(object):
-        def name():
+        @property
+        def name(self):
             return 1
 
     class uppercase(object):
-        def NAME():
+        @property
+        def NAME(self):
             return 2
 
-    assert _maybe_get_column(lowercase, 'name')() == 1
-    assert _maybe_get_column(uppercase, 'name')() == 2
-    assert _maybe_get_column(uppercase, 'NAME')() == 2
+    assert _maybe_get_column(lowercase(), 'name') == 1
+    assert _maybe_get_column(uppercase(), 'name') == 2
+    assert _maybe_get_column(uppercase(), 'NAME') == 2
 
     with raises(KeyError) as e_info:
         _maybe_get_column(lowercase, 'nam')
