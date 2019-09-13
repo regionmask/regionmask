@@ -6,13 +6,15 @@ from shapely.geometry import Polygon, MultiPolygon
 def _maybe_import_xarray():
     """Import pyplot as register appropriate converters."""
     try:
-        import xarray as xr 
+        import xarray as xr
+
         has_xarray = True
     except ImportError:
         has_xarray = False
         xr = None
 
     return xr, has_xarray
+
 
 # -----------------------------------------------------------------------------
 
@@ -22,14 +24,15 @@ def _wrapAngle360(lon):
     lon = np.array(lon)
     return np.mod(lon, 360)
 
+
 # -----------------------------------------------------------------------------
 
 
 def _wrapAngle180(lon):
     """wrap angle to [-180,180[."""
     lon = np.array(lon)
-    sel = (lon < -180) | (180 <= lon);
-    lon[sel] = _wrapAngle360(lon[sel] + 180) - 180;
+    sel = (lon < -180) | (180 <= lon)
+    lon[sel] = _wrapAngle360(lon[sel] + 180) - 180
     return lon
 
 
@@ -46,33 +49,40 @@ def _wrapAngle(lon, wrap_lon=True):
     lon = np.array(lon)
     new_lon = lon
 
-
     if wrap_lon is True:
-        if lon.min() < 0  and lon.max() > 180:
-            msg = ('lon has both data that is larger than 180 and '
-                   'smaller than 0. Cannot infer the transformation.')
+        if lon.min() < 0 and lon.max() > 180:
+            msg = (
+                "lon has both data that is larger than 180 and "
+                "smaller than 0. Cannot infer the transformation."
+            )
             raise RuntimeError(msg)
-
 
     wl = int(wrap_lon)
 
     if wl == 180 or (lon.max() > 180 and not wl == 360):
         new_lon = _wrapAngle180(lon.copy())
-    
+
     if wl == 360 or (lon.min() < 0 and not wl == 180):
         new_lon = _wrapAngle360(lon.copy())
 
     # check if they are still unique
     if new_lon.ndim == 1:
         if new_lon.shape != np.unique(new_lon).shape:
-            msg = 'There are equal longitude coordinates (when wrapped)!'
+            msg = "There are equal longitude coordinates (when wrapped)!"
             raise IndexError(msg)
 
     return new_lon
 
 
-def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
-          xarray=None, wrap_lon=False):
+def _mask(
+    self,
+    lon_or_obj,
+    lat=None,
+    lon_name="lon",
+    lat_name="lat",
+    xarray=None,
+    wrap_lon=False,
+):
     """
     create a grid as mask of a set of regions for given lat/ lon grid
 
@@ -114,7 +124,7 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
     >>> bbPath = Path(((0, 0), (0, 1), (1, 1.), (1, 0)))
     >>> bbPath.contains_point((0.5, 0.5))
     
-    """    
+    """
 
     # method : string, optional
     #     Method to use in for the masking. Default: 'contains'.
@@ -133,8 +143,8 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
         lon = _wrapAngle(lon, wrap_lon)
 
     # https://gist.github.com/shoyer/0eb96fa8ab683ef078eb
-    method='contains'
-    if method == 'contains':
+    method = "contains"
+    if method == "contains":
         func = create_mask_contains
         data = self.coords
     else:
@@ -157,8 +167,7 @@ def _mask(self, lon_or_obj, lat=None, lon_name='lon', lat_name='lat',
         if lon.ndim == 1:
             mask = _create_xarray(mask, lon, lat, lon_name, lat_name)
         else:
-            mask = _create_xarray_2D(mask, lon_or_obj, lat_orig,
-                                      lon_name, lat_name)
+            mask = _create_xarray_2D(mask, lon_or_obj, lat_orig, lon_name, lat_name)
 
     return mask
 
@@ -179,9 +188,8 @@ def _create_xarray(mask, lon, lat, lon_name, lat_name):
     xr, __ = _maybe_import_xarray()
 
     # create the xarray output
-    coords = {lat_name : lat, lon_name : lon}
-    mask = xr.DataArray(mask, coords=coords,
-                        dims=(lat_name, lon_name), name='region')
+    coords = {lat_name: lat, lon_name: lon}
+    mask = xr.DataArray(mask, coords=coords, dims=(lat_name, lon_name), name="region")
 
     return mask
 
@@ -197,19 +205,22 @@ def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
         dim1D_0 = lon2D[dim1D_names[0]]
         dim1D_1 = lon2D[dim1D_names[1]]
     else:
-        dim1D_names = (lon_name + '_idx', lat_name + '_idx')
+        dim1D_names = (lon_name + "_idx", lat_name + "_idx")
         dim1D_0 = np.arange(np.array(lon2D).shape[0])
         dim1D_1 = np.arange(np.array(lon2D).shape[1])
 
     # dict with the coordinates
-    coords = {dim1D_names[0]: dim1D_0,
-              dim1D_names[1]: dim1D_1,
-              lat_name: (dim1D_names, lat2D),
-              lon_name: (dim1D_names, lon2D)}
-    
-    mask = xr.DataArray(mask, coords = coords, dims=dim1D_names)
+    coords = {
+        dim1D_names[0]: dim1D_0,
+        dim1D_names[1]: dim1D_1,
+        lat_name: (dim1D_names, lat2D),
+        lon_name: (dim1D_names, lon2D),
+    }
+
+    mask = xr.DataArray(mask, coords=coords, dims=dim1D_names)
 
     return mask
+
 
 def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
     """
@@ -233,7 +244,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
 
     lon = np.array(lon)
     lat = np.array(lat)
-    
+
     n_coords = len(coords)
 
     if numbers is None:
@@ -248,7 +259,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
         LON, LAT = lon, lat
     else:
         LON, LAT = np.meshgrid(lon, lat)
-    
+
     # get all combinations if lat lon points
     lonlat = list(zip(LON.ravel(), LAT.ravel()))
 
@@ -261,7 +272,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
     # loop through all polygons
     for i in range(n_coords):
         cs = np.array(coords[i])
-        
+
         isnan = np.isnan(cs[:, 0])
 
         if np.any(isnan):

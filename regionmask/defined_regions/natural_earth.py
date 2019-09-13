@@ -13,21 +13,32 @@ def _maybe_get_column(df, colname):
         # try lower and upper, github #25
         if hasattr(df, colname):
             return getattr(df, colname)
-        elif hasattr(df, colname.upper()): 
+        elif hasattr(df, colname.upper()):
             return getattr(df, colname.upper())
         else:
-            msg = ("'{}' (and '{}') not on the geopandas dataframe. "
-                   "The naming convention of NaturalEarthData may have "
-                   "changed. Please raise an issue.")
+            msg = (
+                "'{}' (and '{}') not on the geopandas dataframe. "
+                "The naming convention of NaturalEarthData may have "
+                "changed. Please raise an issue."
+            )
             raise KeyError(msg.format(colname, colname.upper()))
 
     else:
         return colname
 
 
-def _obtain_ne(resolution, category, name, title, names='name',
-               abbrevs='postal' , numbers='index', coords='geometry',
-               query=None, combine_coords=False):
+def _obtain_ne(
+    resolution,
+    category,
+    name,
+    title,
+    names="name",
+    abbrevs="postal",
+    numbers="index",
+    coords="geometry",
+    query=None,
+    combine_coords=False,
+):
     """
     create Regions_cls from natural_earth data
 
@@ -87,12 +98,14 @@ def _obtain_ne(resolution, category, name, title, names='name',
     # create one MultiPolygon of all Polygons (used for land)
     if combine_coords:
         from shapely import geometry
+
         coords = [geometry.MultiPolygon([p for p in coords])]
 
     # make sure numbers is a list
     numbers = np.array(numbers)
 
     return Regions_cls(title, numbers, names, abbrevs, coords)
+
 
 # =============================================================================
 # =============================================================================
@@ -106,14 +119,15 @@ class natural_earth_cls(object):
     we only download it on demand.
 
     """
+
     def __init__(self):
         super(natural_earth_cls, self).__init__()
 
-        self._countries_110 = None      
+        self._countries_110 = None
         self._countries_50 = None
 
-        self._us_states_50 = None    
-        self._us_states_10 = None    
+        self._us_states_50 = None
+        self._us_states_10 = None
 
         self._land_110 = None
 
@@ -123,23 +137,27 @@ class natural_earth_cls(object):
     @property
     def countries_110(self):
         if self._countries_110 is None:
-            
-            opt = dict(resolution='110m',
-                       category='cultural',
-                       name='admin_0_countries',
-                       title='Natural Earth Countries: 110m')
+
+            opt = dict(
+                resolution="110m",
+                category="cultural",
+                name="admin_0_countries",
+                title="Natural Earth Countries: 110m",
+            )
 
             self._countries_110 = _obtain_ne(**opt)
         return self._countries_110
-    
+
     @property
     def countries_50(self):
         if self._countries_50 is None:
-            
-            opt = dict(resolution='50m',
-                       category='cultural',
-                       name='admin_0_countries',
-                       title='Natural Earth Countries: 50m')
+
+            opt = dict(
+                resolution="50m",
+                category="cultural",
+                name="admin_0_countries",
+                title="Natural Earth Countries: 50m",
+            )
 
             self._countries_50 = _obtain_ne(**opt)
         return self._countries_50
@@ -147,26 +165,29 @@ class natural_earth_cls(object):
     @property
     def us_states_50(self):
         if self._us_states_50 is None:
-            
-            opt = dict(resolution='50m',
-                       category='cultural',
-                       name='admin_1_states_provinces_lakes',
-                       title='Natural Earth: US States 50m',
-                       query="admin == 'United States of America'")
+
+            opt = dict(
+                resolution="50m",
+                category="cultural",
+                name="admin_1_states_provinces_lakes",
+                title="Natural Earth: US States 50m",
+                query="admin == 'United States of America'",
+            )
 
             self._us_states_50 = _obtain_ne(**opt)
         return self._us_states_50
 
-
     @property
     def us_states_10(self):
         if self._us_states_10 is None:
-            
-            opt = dict(resolution='10m',
-                       category='cultural',
-                       name='admin_1_states_provinces_lakes',
-                       title='Natural Earth: US States 10m',
-                       query="admin == 'United States of America'")
+
+            opt = dict(
+                resolution="10m",
+                category="cultural",
+                name="admin_1_states_provinces_lakes",
+                title="Natural Earth: US States 10m",
+                query="admin == 'United States of America'",
+            )
 
             self._us_states_10 = _obtain_ne(**opt)
         return self._us_states_10
@@ -174,17 +195,20 @@ class natural_earth_cls(object):
     @property
     def land_110(self):
         if self._land_110 is None:
-            
-            opt = dict(resolution='110m',
-                       category='physical',
-                       name='land',
-                       title='Natural Earth: landmask 110m',
-                       names=['land'],
-                       abbrevs=['lnd'],
-                       numbers=[0],
-                       combine_coords=True)
+
+            opt = dict(
+                resolution="110m",
+                category="physical",
+                name="land",
+                title="Natural Earth: landmask 110m",
+                names=["land"],
+                abbrevs=["lnd"],
+                numbers=[0],
+                combine_coords=True,
+            )
 
             self._land_110 = _obtain_ne(**opt)
         return self._land_110
+
 
 natural_earth = natural_earth_cls()

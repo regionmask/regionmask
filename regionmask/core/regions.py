@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#Author: Mathias Hauser
-#Date: 
+# Author: Mathias Hauser
+# Date:
 # ds = xray.Dataset(coords={'longitude': np.arange(-125, -65, 0.5),
 #                           'latitude': np.arange(50, 25, -0.5)})
 
@@ -40,8 +40,9 @@ class Regions_cls(object):
         Center of mass of this region.
     """
 
-    def __init__(self, name, numbers, names, abbrevs, outlines, centroids=None, 
-                 source=''):
+    def __init__(
+        self, name, numbers, names, abbrevs, outlines, centroids=None, source=""
+    ):
 
         """
         Parameters
@@ -89,19 +90,19 @@ class Regions_cls(object):
         """
 
         super(Regions_cls, self).__init__()
-        
+
         regions = dict()
-        region_ids = dict()       
+        region_ids = dict()
 
         if centroids is None:
-            centroids = {i : None for i in numbers}
+            centroids = {i: None for i in numbers}
 
         for n in numbers:
             r = Region_cls(n, names[n], abbrevs[n], outlines[n], centroids[n])
-            
+
             regions[n] = r
 
-        self.regions = regions        
+        self.regions = regions
         self.name = name
         self.source = source
 
@@ -123,14 +124,14 @@ class Regions_cls(object):
             regions, if a single element is given returns this region.
 
         """
-        
+
         key = self.map_keys(key)
         if isinstance(key, (int, np.integer)):
             return self.regions[key]
         else:
             # subsample the regions
-            regions = {k : self.regions[k] for k in key}
-            new_self = copy.copy(self) # shallow copy
+            regions = {k: self.regions[k] for k in key}
+            new_self = copy.copy(self)  # shallow copy
             new_self.regions = regions
             return new_self
 
@@ -169,10 +170,8 @@ class Regions_cls(object):
     def __repr__(self):
         abbrevs = " ".join(self.abbrevs)
         msg = "{} '{}' Regions ({})\n{}"
-        msg = msg.format(len(self.numbers), self.name, self.source, 
-                         abbrevs)
+        msg = msg.format(len(self.numbers), self.name, self.source, abbrevs)
         return msg
-
 
         self.name
 
@@ -193,45 +192,45 @@ class Regions_cls(object):
         numbers = self.numbers
         # combine data and make a mapping
         all_comb = zip(numbers + abbrevs + names, (numbers * 3))
-        region_ids = {key : value for key, value in all_comb}
+        region_ids = {key: value for key, value in all_comb}
         return region_ids
-    
+
     @property
     def abbrevs(self):
         """list of abbreviations"""
-        return self.combiner('abbrev')
+        return self.combiner("abbrev")
 
     @property
     def names(self):
         """list of long names"""
-        return self.combiner('name')
+        return self.combiner("name")
 
     @property
     def numbers(self):
         """list of the numbers of the regions"""
-        return self.combiner('number')
-    
+        return self.combiner("number")
+
     @property
     def coords(self):
         """list of coordinates of the region vertices as numpy array"""
-        return self.combiner('coords')
+        return self.combiner("coords")
 
     @property
     def polygons(self):
         """list of shapely Polygon/ MultiPolygon of the regions"""
-        return self.combiner('polygon')
+        return self.combiner("polygon")
 
     @property
     def centroids(self):
         """list of the center of mass of the regions"""
-        return self.combiner('centroid')
+        return self.combiner("centroid")
 
     @property
     def _is_polygon(self):
         """is there at least one region that was a Polygon/ MultiPolygon
 
         ."""
-        return np.any(np.array(self.combiner('_is_polygon')))
+        return np.any(np.array(self.combiner("_is_polygon")))
 
 
 # add the plotting method
@@ -240,6 +239,7 @@ Regions_cls.plot = _plot
 Regions_cls.mask = _mask
 
 # =============================================================================
+
 
 class Region_cls(object):
     """a single Region, used as member of 'Regions_cls'
@@ -262,6 +262,7 @@ class Region_cls(object):
         Center of mass of this region.
 
     """
+
     def __init__(self, number, name, abbrev, outline, centroid=None):
         """
 
@@ -291,9 +292,8 @@ class Region_cls(object):
         r = Region_cls(1, 'Unit Square', 'USq', outl, [0.5, 0.75])
         """
 
-
         super(Region_cls, self).__init__()
-        
+
         self.number = number
         self.name = name
         self.abbrev = abbrev
@@ -309,18 +309,17 @@ class Region_cls(object):
 
             assert self.coords.ndim == 2
             assert self.coords.shape[1] == 2
-            
+
         # the Polygon Centroid is much stabler
         if centroid is None:
             centroid = np.array(self.polygon.centroid.coords)[0]
-        
-        self.centroid = centroid
 
+        self.centroid = centroid
 
     def __repr__(self):
         msg = "Region: {} ({} / {})\ncenter: {}"
-        return msg.format(self.name, self.abbrev, self. number, self.centroid)
-    
+        return msg.format(self.name, self.abbrev, self.number, self.centroid)
+
     @property
     def polygon(self):
         """shapely Polygon or MultiPolygon of the region"""
@@ -340,7 +339,7 @@ class Region_cls(object):
                 polys = [self._polygon]
             else:
                 polys = list(self._polygon)
-            
+
             # separate the single polygons with NaNs
             nan = np.ones(shape=(1, 2)) * np.nan
             l = list()
@@ -349,5 +348,5 @@ class Region_cls(object):
 
             # remove the very last NaN
             self._coords = np.vstack(l)[:-1, :]
-        
+
         return self._coords

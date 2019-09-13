@@ -2,6 +2,7 @@ import numpy as np
 
 # =============================================================================
 
+
 def _draw_poly(ax, outl, trans, subsample=False, **kwargs):
     """
     draw the outline of the regions
@@ -11,8 +12,8 @@ def _draw_poly(ax, outl, trans, subsample=False, **kwargs):
         lons, lats = _subsample(outl)
     else:
         lons, lats = outl[:, 0], outl[:, 1]
-     
-    color = kwargs.pop('color', '0.05')
+
+    color = kwargs.pop("color", "0.05")
 
     ax.plot(lons, lats, color=color, transform=trans, **kwargs)
 
@@ -21,17 +22,27 @@ def _subsample(outl):
     lons = np.array([])
     lats = np.array([])
     for i in range(len(outl)):
-        # make sure we get a nice plot for projections with "bent" lines 
+        # make sure we get a nice plot for projections with "bent" lines
         lons = np.hstack((lons, np.linspace(outl[i - 1][0], outl[i][0])))
         lats = np.hstack((lats, np.linspace(outl[i - 1][1], outl[i][1])))
 
     return lons, lats
 
 
-def _plot(self, ax=None, proj=None, regions='all',
-              add_label=True, label='number', coastlines=True,
-              add_ocean=True, line_kws=dict(), text_kws=dict(),
-              resolution='110m', subsample=None):
+def _plot(
+    self,
+    ax=None,
+    proj=None,
+    regions="all",
+    add_label=True,
+    label="number",
+    coastlines=True,
+    add_ocean=True,
+    line_kws=dict(),
+    text_kws=dict(),
+    resolution="110m",
+    subsample=None,
+):
     """
     plot map with with srex regions
 
@@ -72,14 +83,14 @@ def _plot(self, ax=None, proj=None, regions='all',
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
     from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
-    
+
     if proj is None:
         proj = ccrs.PlateCarree()
 
     if ax is None:
         ax = plt.axes(projection=proj)
 
-    if regions == 'all':
+    if regions == "all":
         regions = self.numbers
     else:
         regions = self.map_keys(regions)
@@ -92,21 +103,26 @@ def _plot(self, ax=None, proj=None, regions='all',
 
     if add_ocean:
         NEF = cfeature.NaturalEarthFeature
-        OCEAN = NEF('physical', 'ocean', resolution, edgecolor='face',
-                    facecolor=cfeature.COLORS['water'])
+        OCEAN = NEF(
+            "physical",
+            "ocean",
+            resolution,
+            edgecolor="face",
+            facecolor=cfeature.COLORS["water"],
+        )
 
         ax.add_feature(OCEAN)
-    
+
     if coastlines:
         ax.coastlines(resolution=resolution)
-    
+
     lon_formatter = LongitudeFormatter(zero_direction_label=True)
     lat_formatter = LatitudeFormatter()
     ax.xaxis.set_major_formatter(lon_formatter)
     ax.yaxis.set_major_formatter(lat_formatter)
 
-    ax.tick_params(which='major', axis='y', pad=3)
-    ax.tick_params(which='major', labelsize=8)    
+    ax.tick_params(which="major", axis="y", pad=3)
+    ax.tick_params(which="major", labelsize=8)
 
     for i in regions:
         coords = self[i].coords
@@ -114,17 +130,24 @@ def _plot(self, ax=None, proj=None, regions='all',
         _draw_poly(ax, coords, trans, subsample, **line_kws)
 
     if add_label:
-        
+
         trans = ccrs.PlateCarree()
-        va = text_kws.pop('va', 'center')
-        ha = text_kws.pop('ha', 'center')
-        col = text_kws.pop('backgroundcolor', '0.85')
+        va = text_kws.pop("va", "center")
+        ha = text_kws.pop("ha", "center")
+        col = text_kws.pop("backgroundcolor", "0.85")
 
         for i in regions:
             r = self[i]
             txt = str(getattr(r, label))
-            ax.text(r.centroid[0], r.centroid[1],
-                    txt, transform=trans, va=va,
-                    ha=ha, backgroundcolor=col, **text_kws)
+            ax.text(
+                r.centroid[0],
+                r.centroid[1],
+                txt,
+                transform=trans,
+                va=va,
+                ha=ha,
+                backgroundcolor=col,
+                **text_kws
+            )
 
     return ax
