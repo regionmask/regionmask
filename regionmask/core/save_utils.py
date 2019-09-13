@@ -111,7 +111,7 @@ def _griddes(lon, lat, precision=6):
 
     string = lat_str + '\n' + lon_str
 
-    print string
+    print(string)
 
     coord_hash = hashlib.md5(string.encode()).hexdigest()
 
