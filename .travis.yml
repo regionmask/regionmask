@@ -10,9 +10,9 @@ python:
 before_install:
     # https://docs.travis-ci.com/user/gui-and-headless-browsers/
     # http://stackoverflow.com/questions/21321292/using-matplotlib-when-display-is-undefined
-    - "export DISPLAY=:99.0"
-    - "sh -e /etc/init.d/xvfb start"
-    - sleep 3 # give xvfb some time to start
+    # - "export DISPLAY=:99.0"
+    # - "sh -e /etc/init.d/xvfb start"
+    # - sleep 3 # give xvfb some time to start
 
     # setup miniconda
     - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
@@ -32,6 +32,8 @@ install:
     - source activate regionmask
     - conda install -c conda-forge cartopy geopandas xarray pytest
     - python setup.py install
+    #- https://stackoverflow.com/a/48728877/3010700
+    - "export MPLBACKEND=Agg"
 
 script:
     - py.test .
