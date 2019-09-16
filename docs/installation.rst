@@ -4,7 +4,7 @@ Installation
 Required dependencies
 ---------------------
 
-- Python 2.7, 3.5, 3,6, or 3.7.
+- Python 2.7, 3,6, or 3.7.
 - `numpy <http://www.numpy.org/>`__
 - `shapely <http://toblerity.org/shapely/>`__
 - `matplotlib <http://matplotlib.org/>`__
