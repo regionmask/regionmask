@@ -8,12 +8,6 @@ python:
     - "3.7"
 
 before_install:
-    # https://docs.travis-ci.com/user/gui-and-headless-browsers/
-    # http://stackoverflow.com/questions/21321292/using-matplotlib-when-display-is-undefined
-    # - "export DISPLAY=:99.0"
-    # - "sh -e /etc/init.d/xvfb start"
-    # - sleep 3 # give xvfb some time to start
-
     # setup miniconda
     - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
         wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
