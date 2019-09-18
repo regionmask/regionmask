@@ -18,6 +18,10 @@ setup(
     packages=find_packages(),
     url='https://github.com/mathause/regionmask',
     install_requires=open('requirements.txt').read().split(),
+    extras_require={
+        'docs': ['numpydoc',
+                 'jupyter',
+                 'nbconvert']}
     long_description='See https://github.com/mathause/regionmask'
 )
 
