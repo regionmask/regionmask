@@ -21,7 +21,7 @@ setup(
     extras_require={
         'docs': ['numpydoc',
                  'jupyter',
-                 'nbconvert']}
+                 'nbconvert']},
     long_description='See https://github.com/mathause/regionmask'
 )
 
