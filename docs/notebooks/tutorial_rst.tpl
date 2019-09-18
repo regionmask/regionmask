@@ -3,7 +3,7 @@
 {% block header %}
 
 .. note:: This tutorial was generated from an IPython notebook that can be
-          downloaded `here <../../_static/notebooks/{{ resources.metadata.name }}.ipynb>`_.
+          downloaded `here <../../notebooks/{{ resources.metadata.name }}.ipynb>`_.
 
 .. _{{resources.metadata.name}}:
 {% endblock %}
