@@ -1,5 +1,5 @@
 #!/bin/bash
 
-jupyter nbconvert ./_static/notebooks/*.ipynb --to notebook --inplace --ClearOutputPreprocessor.enabled=True
+jupyter nbconvert ./notebooks/*.ipynb --to notebook --inplace --ClearOutputPreprocessor.enabled=True
 
 
