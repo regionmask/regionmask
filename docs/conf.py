@@ -308,4 +308,4 @@ for nb in notebooks:
         '--execute ' + 
         nb), shell=True)
   
-call("conda list")
+call("conda list", shell=True)
