@@ -21,15 +21,15 @@ regionmask is a Python module that:
   :doc:`landmask</defined_landmask>` and regions used in the
   :doc:`scientific literature</defined_scientific>` 
   (the Giorgi regions [#]_ and   the SREX regions [#]_).
-- can plot figures of these regions (:doc:`tutorial</_static/notebooks/plotting>`) with 
+- can plot figures of these regions (:doc:`tutorial<notebooks/plotting>`) with 
   `matplotlib <http://matplotlib.org/>`_ and 
   `cartopy <http://scitools.org.uk/cartopy/>`_
 - can be used to create masks of the regions for arbitrary longitude
   and latitude grids with
-  `numpy <http://www.numpy.org/>`_ (:doc:`tutorial</_static/notebooks/mask_numpy>`)
+  `numpy <http://www.numpy.org/>`_ (:doc:`tutorial<notebooks/mask_numpy>`)
   and
-  `xarray <http://xarray.pydata.org/>`__ (:doc:`tutorial</_static/notebooks/mask_xarray>`)
-- arbitrary regions can be defined easily (:doc:`tutorial<_static/notebooks/create_own_regions>`)
+  `xarray <http://xarray.pydata.org/>`__ (:doc:`tutorial<notebooks/mask_xarray>`)
+- arbitrary regions can be defined easily (:doc:`tutorial<notebooks/create_own_regions>`)
 
 Usage
 =====
@@ -58,11 +58,11 @@ Contents
    :maxdepth: 2
    :caption: Tutorials
    
-   _static/notebooks/plotting
-   _static/notebooks/mask_numpy
-   _static/notebooks/mask_xarray
-   _static/notebooks/mask_multidim
-   _static/notebooks/create_own_regions
+   notebooks/plotting
+   notebooks/mask_numpy
+   notebooks/mask_xarray
+   notebooks/mask_multidim
+   notebooks/create_own_regions
 
 .. toctree::
    :maxdepth: 2

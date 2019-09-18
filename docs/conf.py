@@ -294,17 +294,17 @@ warnings.filterwarnings("ignore")
 from subprocess import call
 
 notebooks = (
-             '_static/notebooks/plotting',
-             '_static/notebooks/mask_numpy',
-             '_static/notebooks/mask_xarray',
-             '_static/notebooks/mask_multidim',
-             '_static/notebooks/create_own_regions',
+             'notebooks/plotting',
+             'notebooks/mask_numpy',
+             'notebooks/mask_xarray',
+             'notebooks/mask_multidim',
+             'notebooks/create_own_regions',
              )
 
 for nb in notebooks:
   call(('jupyter nbconvert '
         '--to rst '
-        '--template _static/notebooks/tutorial_rst '
+        '--template notebooks/tutorial_rst '
         '--execute ' + 
         nb), shell=True)
   
