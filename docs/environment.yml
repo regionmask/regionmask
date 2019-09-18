@@ -1,15 +1,13 @@
-name: regionmask
+name: regionmask-docs
 channels:
-  - scitools
   - conda-forge
 dependencies:
-  - python=3.6
+  - python=3.7
   - numpydoc
   - ipython
-  - cartopy
-  - geopandas
-  - xarray
+  - cartopy=0.17.0
+  - geopandas=0.5.1
+  - xarray=0.13
   - jupyter
   - nbconvert
-  - pip:
-    - regionmask 
+  - pip
