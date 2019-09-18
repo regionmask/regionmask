@@ -120,7 +120,7 @@ class Regions_cls(object):
         Returns
         -------
         selection : Regions_cls or Region_cls
-             If a list is given returns a subset of all 
+            If a list is given returns a subset of all 
             regions, if a single element is given returns this region.
 
         """
