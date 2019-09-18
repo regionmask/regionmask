@@ -13,6 +13,7 @@ dependencies:
   - pip=19.2
   - netcdf4=1.5
   - cftime=1.0.3.4
+  - nc-time-axis
   # - pip:
   #   - netcdf4
   #   - geopandas
