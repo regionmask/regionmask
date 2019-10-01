@@ -57,8 +57,8 @@ help:
 
 
 clean:
-	rm -rf tutorials/*/*.png
-	rm -rf tutorials/*.rst
+	rm -rf notebooks/*/*.png
+	rm -rf notebooks/*.rst
 	rm -rf generated/*
 	rm -rf $(BUILDDIR)/*
 

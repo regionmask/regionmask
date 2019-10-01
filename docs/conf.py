@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.extlinks',
     'sphinx.ext.mathjax',
+    'nbsphinx',
     'numpydoc',
     'IPython.sphinxext.ipython_directive',
     'IPython.sphinxext.ipython_console_highlighting',
@@ -90,7 +91,7 @@ release = regionmask.__version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', '**.ipynb_checkpoints', 'logo']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -294,11 +295,11 @@ warnings.filterwarnings("ignore")
 from subprocess import call
 
 notebooks = (
-             'notebooks/plotting',
-             'notebooks/mask_numpy',
-             'notebooks/mask_xarray',
-             'notebooks/mask_multidim',
-             'notebooks/create_own_regions',
+             # 'notebooks/plotting',
+             # 'notebooks/mask_numpy',
+             # 'notebooks/mask_xarray',
+             # 'notebooks/mask_multidim',
+             # 'notebooks/create_own_regions',
              )
 
 for nb in notebooks:
