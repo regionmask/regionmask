@@ -38,7 +38,7 @@ Countries
 
     regionmask.defined_regions.natural_earth.countries_110.plot(add_label=False);
 
-    @savefig plotting_countries.png width=6in height=3in
+    @savefig plotting_countries.png width=6in
     plt.tight_layout()
 
 US States
@@ -74,4 +74,5 @@ Also create a mask for a 1° grid over the US:
     plt.pcolormesh(LON_EDGE, LAT_EDGE, mask_ma, cmap='viridis');
 
     @savefig plotting_states_mask.png width=6in
-    plt.tight_layout()    
+    plt.tight_layout()
+    

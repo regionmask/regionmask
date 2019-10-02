@@ -38,5 +38,5 @@ Landmask
     land = regionmask.defined_regions.natural_earth.land_110
     land.plot(add_label=False, add_ocean=False, coastlines=False);
 
-    @savefig plotting_countries.png width=6in height=3in
+    @savefig plotting_countries.png width=6in
     plt.tight_layout()
