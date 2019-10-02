@@ -39,7 +39,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.extlinks',
     'sphinx.ext.mathjax',
-    'nbsphinx',
+    # 'nbsphinx',
     'numpydoc',
     'IPython.sphinxext.ipython_directive',
     'IPython.sphinxext.ipython_console_highlighting',
@@ -295,11 +295,11 @@ warnings.filterwarnings("ignore")
 from subprocess import call
 
 notebooks = (
-             # 'notebooks/plotting',
-             # 'notebooks/mask_numpy',
-             # 'notebooks/mask_xarray',
-             # 'notebooks/mask_multidim',
-             # 'notebooks/create_own_regions',
+             'notebooks/plotting',
+             'notebooks/mask_numpy',
+             'notebooks/mask_xarray',
+             'notebooks/mask_multidim',
+             'notebooks/create_own_regions',
              )
 
 for nb in notebooks:
