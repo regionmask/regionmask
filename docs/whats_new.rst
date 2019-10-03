@@ -18,6 +18,9 @@ Bug Fixes
 
  - Conda channel mixing breaks travis tests. Only use conda-forge, add strict
    channel priority (:issue:`27`).
+ - Fix documentation compilation on readthedocs (aborted, did not display
+   figures.
+ - Fix wrong figure in docs: countries showed landmask (:issue:`39`).
 
 v0.4.0 (02.03.2018)
 -------------------
