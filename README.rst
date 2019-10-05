@@ -10,6 +10,8 @@ plotting and creation of masks of spatial regions
 
 .. image:: https://travis-ci.org/mathause/regionmask.svg?style=flat
         :target: https://travis-ci.org/mathause/regionmask
+.. image:: https://codecov.io/gh/mathause/regionmask/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/mathause/regionmask
 
 Documentation
 -------------

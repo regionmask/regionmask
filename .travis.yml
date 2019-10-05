@@ -24,10 +24,15 @@ before_install:
 install:
     - conda create --name regionmask -c conda-forge python=$TRAVIS_PYTHON_VERSION
     - source activate regionmask
-    - conda install -c conda-forge cartopy geopandas xarray pytest
+    - conda install -c conda-forge cartopy geopandas xarray pytest pytest-cov codecov
     - python setup.py install
     #- https://stackoverflow.com/a/48728877/3010700
     - "export MPLBACKEND=Agg"
 
 script:
-    - py.test .
+    - py.test --cov=regionmask .
+
+after_success:
+    - if [[ "$TRAVIS_PYTHON_VERSION" == "3.7" ]]; then
+        codecov -t 32cfbc8b-8d1a-4540-8bc3-f6a1a695c554
+      fi 
