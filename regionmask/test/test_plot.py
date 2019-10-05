@@ -146,6 +146,7 @@ def test_plot_lines_selection(plotfunc):
 
 
 # -----------------------------------------------------------------------------
+
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_lines_subsample(plotfunc):
 
@@ -168,7 +169,7 @@ def test_plot_lines_from_poly(plotfunc):
 
     func = getattr(r2, plotfunc)
 
-    # subsample is False if
+    # subsample is False if polygon is given
     ax = func()
     lines = ax.lines
 
@@ -197,19 +198,15 @@ def test_plot_line_prop(plotfunc):
 
 # -----------------------------------------------------------------------------
 
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_label_defaults(plotfunc):
 
-def test_plot_label_defaults():
+    func = getattr(r1, plotfunc)
 
-    # plot shows the labels
-    ax = r1.plot(subsample=False)
+    ax = func(subsample=False)
     texts = ax.texts
     assert len(texts) == 2
     plt.close("all")
-
-    # plot_regions does not show the labels
-    ax = r1.plot_regions(subsample=False)
-    texts = ax.texts
-    assert len(texts) == 0
 
 
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])

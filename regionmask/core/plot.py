@@ -126,7 +126,7 @@ def _plot_regions(
     self,
     ax=None,
     regions="all",
-    add_label=False,
+    add_label=True,
     label="number",
     line_kws=dict(),
     text_kws=dict(),
