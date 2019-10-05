@@ -116,14 +116,6 @@ def _plot(
     if coastlines:
         ax.coastlines(resolution=resolution)
 
-    lon_formatter = LongitudeFormatter(zero_direction_label=True)
-    lat_formatter = LatitudeFormatter()
-    ax.xaxis.set_major_formatter(lon_formatter)
-    ax.yaxis.set_major_formatter(lat_formatter)
-
-    ax.tick_params(which="major", axis="y", pad=3)
-    ax.tick_params(which="major", labelsize=8)
-
     for i in regions:
         coords = self[i].coords
         trans = ccrs.PlateCarree()
