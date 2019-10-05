@@ -36,7 +36,7 @@ def test_polygon_input():
     assert r.polygon == outl_poly
 
 
-def test_polygon_input():
+def test_multi_polygon_input():
 
     # polygon closes open paths
     outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0), (0, 0))
