@@ -44,17 +44,17 @@ def _plot(
     subsample=None,
 ):
     """
-    plot map with with srex regions
+    plot map with with region outlines
 
     Parameters
     ----------
-    ax : axis handle, optinal
-        Uses existing axis: needs to be a cartopy axis. If not 
-        given, creates a new axis with the specified projection.
+    ax : axes handle, optional
+        If given uses existing axes (needs to be a cartopy axes). If not 
+        given, creates a new axes with the specified projection.
     proj : cartopy projection or None, optional
         Defines the projection of the map. If None uses 'PlateCarree'.
         See cartopy home page. Default None.
-    regions : list | 'all', optinal
+    regions : list | 'all', optional
         List the regions (as number, abbrev or name, can be mixed)
         that should be outlined.
     add_label : bool
@@ -68,7 +68,7 @@ def _plot(
     line_kws : dict
         Arguments passed to plot.
     text_kws : dict
-        Arguments passed to text.
+        Arguments passed to the labels (ax.text).
     resolution : '110m' | '50m' | '10m'
         Specify the resolution of the coastline and the ocean dataset.
         See cartopy for details.
@@ -78,28 +78,21 @@ def _plot(
         If None, infers the subsampling -> if the input is given as 
         array subsamples if it is given as (Multi)Polygons does not
         subsample.
+
+    Note
+    ----
+    plot internally calls plot_regions.
+
     """
     import matplotlib.pyplot as plt
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
-    from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
     if proj is None:
         proj = ccrs.PlateCarree()
 
     if ax is None:
         ax = plt.axes(projection=proj)
-
-    if regions == "all":
-        regions = self.numbers
-    else:
-        regions = self.map_keys(regions)
-
-    if np.isscalar(regions):
-        regions = [regions]
-
-    if subsample is None:
-        subsample = not self._is_polygon
 
     if add_ocean:
         NEF = cfeature.NaturalEarthFeature
@@ -116,14 +109,93 @@ def _plot(
     if coastlines:
         ax.coastlines(resolution=resolution)
 
+    self.plot_regions(
+        ax=ax,
+        regions=regions,
+        add_label=add_label,
+        label=label,
+        line_kws=line_kws,
+        text_kws=text_kws,
+        subsample=subsample,
+    )
+
+    return ax
+
+
+def _plot_regions(
+    self,
+    ax=None,
+    regions="all",
+    add_label=False,
+    label="number",
+    line_kws=dict(),
+    text_kws=dict(),
+    subsample=None,
+):
+    """
+    plot map with with srex regions
+
+    Parameters
+    ----------
+    ax : axes handle, optional
+        If given, uses existing axes. If not given, creates a new axes.
+        Note: in contrast to plot this does not create a cartopy axes.
+    regions : list | 'all', optional
+        List the regions (as number, abbrev or name, can be mixed)
+        that should be outlined.
+    add_label : bool
+        If true labels the regions. Optional, default True.
+    label : 'number' | 'name' | 'abbrev', optional
+        If 'number' labels the regions with numbers, if 'name' uses 
+        the long name of the regions, if 'short_name' uses 
+        abbreviations of the regions. Default 'number'.
+    add_ocean : bool, optional
+        If true colors the ocean blue. Default: True.
+    line_kws : dict
+        Arguments passed to plot.
+    text_kws : dict
+        Arguments passed to the labels (ax.text).
+    resolution : '110m' | '50m' | '10m'
+        Specify the resolution of the coastline and the ocean dataset.
+        See cartopy for details.
+    subsample : None or bool, optional
+        If True subsamples the outline of the coords to make better 
+        looking plots on certain maps. If False does not subsample.
+        If None, infers the subsampling -> if the input is given as 
+        array subsamples if it is given as (Multi)Polygons does not
+        subsample.
+    """
+
+    import matplotlib.pyplot as plt
+    import cartopy.crs as ccrs
+    from cartopy.mpl import geoaxes
+
+    if ax is None:
+        ax = plt.gca()
+
+    if isinstance(ax, geoaxes.GeoAxes):
+        trans = ccrs.PlateCarree()
+    else:
+        trans = ax.transData
+
+    if regions == "all":
+        regions = self.numbers
+    else:
+        regions = self.map_keys(regions)
+
+    if np.isscalar(regions):
+        regions = [regions]
+
+    if subsample is None:
+        subsample = not self._is_polygon
+
+    # draw the outlines
     for i in regions:
         coords = self[i].coords
-        trans = ccrs.PlateCarree()
         _draw_poly(ax, coords, trans, subsample, **line_kws)
 
     if add_label:
 
-        trans = ccrs.PlateCarree()
         va = text_kws.pop("va", "center")
         ha = text_kws.pop("ha", "center")
         col = text_kws.pop("backgroundcolor", "0.85")
@@ -131,6 +203,7 @@ def _plot(
         for i in regions:
             r = self[i]
             txt = str(getattr(r, label))
+
             ax.text(
                 r.centroid[0],
                 r.centroid[1],

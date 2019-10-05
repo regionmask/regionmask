@@ -15,7 +15,7 @@ from shapely.geometry import Polygon, MultiPolygon
 
 
 from .mask import _mask
-from .plot import _plot
+from .plot import _plot, _plot_regions
 
 
 class Regions_cls(object):
@@ -233,8 +233,9 @@ class Regions_cls(object):
         return np.any(np.array(self.combiner("_is_polygon")))
 
 
-# add the plotting method
+# add the plotting methods
 Regions_cls.plot = _plot
+Regions_cls.plot_regions = _plot_regions
 # add the mask method
 Regions_cls.mask = _mask
 
