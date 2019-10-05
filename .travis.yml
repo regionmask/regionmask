@@ -34,5 +34,5 @@ script:
 
 after_success:
     - if [[ "$TRAVIS_PYTHON_VERSION" == "3.7" ]]; then
-        codecov -t 32cfbc8b-8d1a-4540-8bc3-f6a1a695c554
+        codecov -t 32cfbc8b-8d1a-4540-8bc3-f6a1a695c554;
       fi 
