@@ -15,6 +15,8 @@ v0.5.0 (unreleased)
 
 Enhancements
 ~~~~~~~~~~~~
+ - Added a `plot_regions` method that only plots the region borders and not a map,
+   as `plot` (:issue:`31`).
  - Added code coverage with pytest-cov and codecov.
 
 Bug Fixes
