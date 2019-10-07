@@ -12,6 +12,8 @@ plotting and creation of masks of spatial regions
         :target: https://travis-ci.org/mathause/regionmask
 .. image:: https://codecov.io/gh/mathause/regionmask/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/mathause/regionmask
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/ambv/black
 
 Documentation
 -------------
