@@ -15,6 +15,9 @@ v0.5.0 (unreleased)
 
 Enhancements
 ~~~~~~~~~~~~
+ - Added a :code:`plot_regions` method that only plots the region borders and not a map,
+   as :code:`plot`. The :code:`plot_region` function can be used to plots the regions on a
+   existing cartopy map or a regular axes (closes :issue:`31`).
  - Added code coverage with pytest-cov and codecov.
 
 Bug Fixes
@@ -33,7 +36,7 @@ Enhancements
 ~~~~~~~~~~~~
 
 - Add landmask/ land 110m from `Natural Earth <http://www.naturalearthdata.com/downloads/110m-physical-vectors/>`_ (:issue:`21`).
-- Moved some imports to functions, so `import regionmask` is faster. 
+- Moved some imports to functions, so :code:`import regionmask` is faster. 
 - Adapted docs for python 3.6.
 
 Bug Fixes
@@ -54,10 +57,10 @@ Bug Fixes
 - travis was configured wrong - it always tested on python 2.7, thus some
   python3 issues went unnoticed (:issue:`14`).
 - natural_earth was not properly imported (:issue:`10`).
-- A numpy scalar of dtype integer is not `int` - i.e. `isinstance(np.int32, int)`
+- A numpy scalar of dtype integer is not :code:`int` - i.e. :code:`isinstance(np.int32, int)`
   is False (:issue:`11`).
 - In python 3 zip is an iterator (and not a list), thus it failed on
-  `mask` (:issue:`15`).
+  :code:`mask` (:issue:`15`).
 - Removed unnecessary files (ne_downloader.py and naturalearth.py).
 - Resolved conflicting region outlines in the Giorgi regions (:issue:`17`).
 
