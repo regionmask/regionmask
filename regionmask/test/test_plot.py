@@ -118,7 +118,7 @@ def test_plot_lines_selection(plotfunc):
     assert np.allclose(ax.lines[0].get_xydata(), outl1)
     assert np.allclose(ax.lines[1].get_xydata(), outl2)
     plt.close("all")
-    
+
     # select a single number
     ax = func(subsample=False, regions=0)
     lines = ax.lines
@@ -149,6 +149,7 @@ def test_plot_lines_selection(plotfunc):
 
 
 # -----------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_lines_subsample(plotfunc):
@@ -200,6 +201,7 @@ def test_plot_line_prop(plotfunc):
 
 
 # -----------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_label_defaults(plotfunc):
