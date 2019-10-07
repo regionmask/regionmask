@@ -54,8 +54,8 @@ def _plot(
     proj : cartopy projection or None, optional
         Defines the projection of the map. If None uses 'PlateCarree'.
         See cartopy home page. Default None.
-    regions : list | 'all', optional
-        List the regions (as number, abbrev or name, can be mixed)
+    regions : list of int or str | 'all', optional
+        Select the regions (by number, abbrev or name, can be mixed)
         that should be outlined.
     add_label : bool
         If true labels the regions. Optional, default True.
@@ -140,8 +140,8 @@ def _plot_regions(
     ax : axes handle, optional
         If given, uses existing axes. If not given, creates a new axes.
         Note: in contrast to plot this does not create a cartopy axes.
-    regions : list | 'all', optional
-        List the regions (as number, abbrev or name, can be mixed)
+    regions : list of int or str | 'all', optional
+        Select the regions (by number, abbrev or name, can be mixed)
         that should be outlined.
     add_label : bool
         If true labels the regions. Optional, default True.
