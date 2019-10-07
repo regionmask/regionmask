@@ -277,21 +277,3 @@ def test_plot_text_prop(plotfunc):
     assert bbox.get_edgecolor() == (0.85, 0.85, 0.85, 1.0)
 
     plt.close("all")
-
-# =============================================================================
-
-def test_basemap_no_label():
-# only tests that we can do a basemap plot without error
-
-    #
-    m = Basemap(projection='ortho', lat_0=0, lon_0=0)
-    
-    r1.plot_regions(ax=m.ax, add_label=True);
-
-
-
-
-def test_basemap_label()
-# only tests that we can do a basemap plot without error
-
-    pass
