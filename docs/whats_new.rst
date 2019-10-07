@@ -13,6 +13,10 @@ What's New
 v0.5.0 (unreleased)
 -------------------
 
+Enhancements
+~~~~~~~~~~~~
+ - Added code coverage with pytest-cov and codecov.
+
 Bug Fixes
 ~~~~~~~~~
 
