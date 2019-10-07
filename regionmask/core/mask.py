@@ -1,7 +1,5 @@
 import numpy as np
 
-from shapely.geometry import Polygon, MultiPolygon
-
 
 def _maybe_import_xarray():
     """Import pyplot as register appropriate converters."""
@@ -89,7 +87,7 @@ def _mask(
     Parameters
     ----------
     lon_or_obj : array_like or object
-        Can either be (1) a longitude array and then lat needs to be 
+        Can either be (1) a longitude array and then lat needs to be
         given. Or an object where the longitude and latitude can be
         retrived as:
         lon = lon_or_obj[lon_name]
@@ -106,11 +104,11 @@ def _mask(
         ndarray. If None, checks if xarray can be imported and if yes
         returns a xarray DataArray else a numpy ndarray. Default: None.
     wrap_lon : bool | 180 | 360, optional
-        If the regions and the provided longitude do not have the same 
-        base (i.e. one is -180..180 and the other 0..360) one of them 
-        must be wrapped around. This can be done with wrap_lon. If 
-        wrap_lon is False, nothing is done. If wrap_lon is True, 
-        longitude data is wrapped to 360 if its minimum is smaller 
+        If the regions and the provided longitude do not have the same
+        base (i.e. one is -180..180 and the other 0..360) one of them
+        must be wrapped around. This can be done with wrap_lon. If
+        wrap_lon is False, nothing is done. If wrap_lon is True,
+        longitude data is wrapped to 360 if its minimum is smaller
         than 0 and wrapped to 180 if its maximum is larger than 180.
 
     Returns
@@ -123,7 +121,7 @@ def _mask(
     >>> from matplotlib.path import Path
     >>> bbPath = Path(((0, 0), (0, 1), (1, 1.), (1, 0)))
     >>> bbPath.contains_point((0.5, 0.5))
-    
+
     """
 
     # method : string, optional
@@ -252,8 +250,8 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
     else:
         assert len(numbers) == n_coords
 
-    # the fill value should not be one of the numbers
-    assert not fill in numbers
+    msg = "The fill value should not be one of the region numbers."
+    assert fill not in numbers, msg
 
     if lon.ndim == 2:
         LON, LAT = lon, lat

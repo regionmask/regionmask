@@ -33,8 +33,8 @@ class Regions_cls(object):
     abbrevs : list of string
         List of abbreviations of each region.
     outlines : List of Nx2 float array of vertices, Polygon, MultiPolygon
-        List of coordinates/ outline of the region as shapely 
-        Polygon/ MultiPolygon or list. Must be accessible as 
+        List of coordinates/ outline of the region as shapely
+        Polygon/ MultiPolygon or list. Must be accessible as
         outlines[number].
     centroids : list of 1x2 array.
         Center of mass of this region.
@@ -54,11 +54,11 @@ class Regions_cls(object):
         names : dict of string
             Long name of each region. Must be accessible as names[number].
         abbrevs : dict of string
-            List of abbreviations of each region. Must be accessible as 
+            List of abbreviations of each region. Must be accessible as
             abbrevs[number].
         outlines : List of Nx2 float array of vertices, Polygon, MultiPolygon
-            List of coordinates/ outline of the region as shapely 
-            Polygon/ MultiPolygon or list. Must be accessible as 
+            List of coordinates/ outline of the region as shapely
+            Polygon/ MultiPolygon or list. Must be accessible as
             outlines[number].
         centroids : list of 1x2 iterable, optional.
             Center of mass of this region. If not provided is calculated
@@ -76,23 +76,22 @@ class Regions_cls(object):
         outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
         outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
         outlines = [outl1, outl2]
-        
+
         r = Regions_cls(name, numbers, names, abbrevs, outlines)
-        
+
         from shapely.geometry import Polygon
-        
+
         numbers = [1, 2]
         names = {1:'Unit Square1', 2: 'Unit Square2'}
         abbrevs = {1:'uSq1', 2:'uSq2'}
         poly = {1: Polygon(outl1), 2: Polygon(outl2)}
 
-        r = Regions_cls(name, numbers, names, abbrevs, poly)        
+        r = Regions_cls(name, numbers, names, abbrevs, poly)
         """
 
         super(Regions_cls, self).__init__()
 
         regions = dict()
-        region_ids = dict()
 
         if centroids is None:
             centroids = {i: None for i in numbers}
@@ -113,14 +112,14 @@ class Regions_cls(object):
         Parameters
         ----------
         key : (list of) int or string
-            Key can be a mixed (list of) number, abbrev or name of the 
-            defined regions. If a list is given returns a subset of all 
+            Key can be a mixed (list of) number, abbrev or name of the
+            defined regions. If a list is given returns a subset of all
             regions, if a single element is given returns this region.
 
         Returns
         -------
         selection : Regions_cls or Region_cls
-            If a list is given returns a subset of all 
+            If a list is given returns a subset of all
             regions, if a single element is given returns this region.
 
         """
@@ -145,7 +144,7 @@ class Regions_cls(object):
         Parameters
         ----------
         key : (list of) string
-            key can be a single or a list of abbreviation/ name of 
+            key can be a single or a list of abbreviation/ name of
             existing regions.
 
         Returns
@@ -173,13 +172,13 @@ class Regions_cls(object):
         msg = msg.format(len(self.numbers), self.name, self.source, abbrevs)
         return msg
 
-        self.name
-
     def __iter__(self):
         for i in self.numbers:
             yield self[i]
 
     def combiner(self, prop):
+        """combines attributes from single regions"""
+
         return [getattr(r, prop) for r in self.regions.values()]
 
     @property
@@ -286,9 +285,9 @@ class Region_cls(object):
         -------
         outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
         r = Region_cls(1, 'Unit Square', 'USq', outl)
-        
+
         from shapely.geometry import Polygon
-        
+
         poly = Polygon(outl)
         r = Region_cls(1, 'Unit Square', 'USq', outl, [0.5, 0.75])
         """
@@ -343,11 +342,11 @@ class Region_cls(object):
 
             # separate the single polygons with NaNs
             nan = np.ones(shape=(1, 2)) * np.nan
-            l = list()
+            lst = list()
             for poly in polys:
-                l.append(np.vstack((np.array(poly.exterior.coords), nan)))
+                lst.append(np.vstack((np.array(poly.exterior.coords), nan)))
 
             # remove the very last NaN
-            self._coords = np.vstack(l)[:-1, :]
+            self._coords = np.vstack(lst)[:-1, :]
 
         return self._coords

@@ -1,5 +1,7 @@
 # __init__.py file
 
+# flake8: noqa
+
 # get version
 from .version import version
 

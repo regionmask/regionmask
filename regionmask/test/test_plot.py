@@ -8,12 +8,11 @@ import matplotlib.pyplot as plt
 
 import cartopy.crs as ccrs
 
-from regionmask import Regions_cls, Region_cls, _subsample
+from regionmask import Regions_cls, _subsample
 
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon
 
 import pytest
-from pytest import raises
 
 # =============================================================================
 

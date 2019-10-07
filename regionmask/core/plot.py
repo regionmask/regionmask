@@ -49,7 +49,7 @@ def _plot(
     Parameters
     ----------
     ax : axes handle, optional
-        If given uses existing axes (needs to be a cartopy axes). If not 
+        If given uses existing axes (needs to be a cartopy axes). If not
         given, creates a new axes with the specified projection.
     proj : cartopy projection or None, optional
         Defines the projection of the map. If None uses 'PlateCarree'.
@@ -60,8 +60,8 @@ def _plot(
     add_label : bool
         If true labels the regions. Optional, default True.
     label : 'number' | 'name' | 'abbrev', optional
-        If 'number' labels the regions with numbers, if 'name' uses 
-        the long name of the regions, if 'short_name' uses 
+        If 'number' labels the regions with numbers, if 'name' uses
+        the long name of the regions, if 'short_name' uses
         abbreviations of the regions. Default 'number'.
     add_ocean : bool, optional
         If true colors the ocean blue. Default: True.
@@ -73,9 +73,9 @@ def _plot(
         Specify the resolution of the coastline and the ocean dataset.
         See cartopy for details.
     subsample : None or bool, optional
-        If True subsamples the outline of the coords to make better 
+        If True subsamples the outline of the coords to make better
         looking plots on certain maps. If False does not subsample.
-        If None, infers the subsampling -> if the input is given as 
+        If None, infers the subsampling -> if the input is given as
         array subsamples if it is given as (Multi)Polygons does not
         subsample.
 
@@ -146,8 +146,8 @@ def _plot_regions(
     add_label : bool
         If true labels the regions. Optional, default True.
     label : 'number' | 'name' | 'abbrev', optional
-        If 'number' labels the regions with numbers, if 'name' uses 
-        the long name of the regions, if 'short_name' uses 
+        If 'number' labels the regions with numbers, if 'name' uses
+        the long name of the regions, if 'short_name' uses
         abbreviations of the regions. Default 'number'.
     add_ocean : bool, optional
         If true colors the ocean blue. Default: True.
@@ -159,9 +159,9 @@ def _plot_regions(
         Specify the resolution of the coastline and the ocean dataset.
         See cartopy for details.
     subsample : None or bool, optional
-        If True subsamples the outline of the coords to make better 
+        If True subsamples the outline of the coords to make better
         looking plots on certain maps. If False does not subsample.
-        If None, infers the subsampling -> if the input is given as 
+        If None, infers the subsampling -> if the input is given as
         array subsamples if it is given as (Multi)Polygons does not
         subsample.
     """

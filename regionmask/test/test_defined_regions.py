@@ -60,5 +60,5 @@ def test_maybe_get_column():
     assert _maybe_get_column(uppercase(), "name") == 2
     assert _maybe_get_column(uppercase(), "NAME") == 2
 
-    with raises(KeyError) as e_info:
+    with raises(KeyError):
         _maybe_get_column(lowercase, "nam")
