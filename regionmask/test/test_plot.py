@@ -113,14 +113,17 @@ def test_plot_lines_selection(plotfunc):
     func = getattr(r1, plotfunc)
 
     ax = func(subsample=False, regions=[0, 1])
-
     lines = ax.lines
-
     assert len(lines) == 2
-
     assert np.allclose(ax.lines[0].get_xydata(), outl1)
     assert np.allclose(ax.lines[1].get_xydata(), outl2)
-
+    plt.close("all")
+    
+    # select a single number
+    ax = func(subsample=False, regions=0)
+    lines = ax.lines
+    assert len(lines) == 1
+    assert np.allclose(ax.lines[0].get_xydata(), outl1)
     plt.close("all")
 
     # select by number
@@ -274,3 +277,21 @@ def test_plot_text_prop(plotfunc):
     assert bbox.get_edgecolor() == (0.85, 0.85, 0.85, 1.0)
 
     plt.close("all")
+
+# =============================================================================
+
+def test_basemap_no_label():
+# only tests that we can do a basemap plot without error
+
+    #
+    m = Basemap(projection='ortho', lat_0=0, lon_0=0)
+    
+    r1.plot_regions(ax=m.ax, add_label=True);
+
+
+
+
+def test_basemap_label()
+# only tests that we can do a basemap plot without error
+
+    pass
