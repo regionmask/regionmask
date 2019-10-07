@@ -19,7 +19,6 @@ dependencies:
   - sphinx=2.1.2
   - sphinx_rtd_theme=0.4.3
   - pillow=6.1.0
-  - basemap=1.2.1
     # - pip:
   #   - netcdf4
   #   - geopandas
