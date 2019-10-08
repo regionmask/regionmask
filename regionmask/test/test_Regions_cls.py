@@ -2,7 +2,7 @@ import numpy as np
 
 from regionmask import Regions_cls, Region_cls
 
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon
 
 from pytest import raises
 

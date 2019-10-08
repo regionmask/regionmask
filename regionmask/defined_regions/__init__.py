@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from .giorgi import giorgi
 from .srex import srex
 

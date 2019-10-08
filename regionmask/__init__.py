@@ -1,12 +1,11 @@
 # __init__.py file
 
+# flake8: noqa
+
 # get version
 from .version import version
 
 __version__ = version
-
-# try to load matplotlib and set backend to Agg on rtd
-import os as _os
 
 # import
 from .core.regions import Regions_cls, Region_cls

@@ -58,18 +58,18 @@ def _obtain_ne(
         Names of the single regions (Region_cls). If string, obtains
         them from the geopandas DataFrame, else uses the provided list.
     abbrevs : string or list
-        Abbreviations of the single regions (Region_cls). If string 
-        obtains them from the geopandas DataFrame, else uses the 
+        Abbreviations of the single regions (Region_cls). If string
+        obtains them from the geopandas DataFrame, else uses the
         provided list.
     numbers : string or list
         Numbers of the single regions (Region_cls). If string obtains
         them from the geopandas DataFrame, else uses the provided list.
     coords : string or list
         Coordinates of the single regions (Region_cls). If string
-        obtains them from the geopandas DataFrame, else uses the 
+        obtains them from the geopandas DataFrame, else uses the
         provided list.
     query : None or string
-        If given, the geopandas DataFrame is subset with 
+        If given, the geopandas DataFrame is subset with
         df.query(query). Optional, default None.
     combine_coords : bool
         If False, uses the coords as is, else combines them all to a
@@ -114,7 +114,7 @@ def _obtain_ne(
 class natural_earth_cls(object):
     """
     class combining all natural_earth features/ geometries
-    
+
     Because data must be downloaded, we organise it as a class so that
     we only download it on demand.
 

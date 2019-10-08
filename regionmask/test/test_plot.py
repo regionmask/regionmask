@@ -6,11 +6,13 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 
-from regionmask import Regions_cls, Region_cls, _subsample
+import cartopy.crs as ccrs
 
-from shapely.geometry import Polygon, MultiPolygon
+from regionmask import Regions_cls, _subsample
 
-from pytest import raises
+from shapely.geometry import Polygon
+
+import pytest
 
 # =============================================================================
 
@@ -48,8 +50,48 @@ def test__subsample():
 # =============================================================================
 
 
-def test_plot_lines():
+def test_plot_projection():
+
+    # default is PlateCarree
     ax = r1.plot(subsample=False)
+    assert isinstance(ax.projection, ccrs.PlateCarree)
+    plt.close("all")
+
+    # make sure the proj keword is respected
+    ax = r1.plot(subsample=False, proj=ccrs.Miller())
+    assert isinstance(ax.projection, ccrs.Miller)
+    plt.close("all")
+
+    # projection given with axes is respected
+    f, ax = plt.subplots(subplot_kw=dict(projection=ccrs.Mollweide()))
+    ax = r1.plot(subsample=False, ax=ax)
+    assert isinstance(ax.projection, ccrs.Mollweide)
+    plt.close("all")
+
+
+def test_plot_regions_projection():
+
+    # if none is given -> no projection
+    ax = r1.plot_regions(subsample=False)
+    assert not hasattr(ax, "projection")
+    plt.close("all")
+
+    # projection given with axes is respected
+    f, ax = plt.subplots(subplot_kw=dict(projection=ccrs.Mollweide()))
+    ax = r1.plot_regions(subsample=False, ax=ax)
+    assert isinstance(ax.projection, ccrs.Mollweide)
+    plt.close("all")
+
+
+# -----------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_lines(plotfunc):
+
+    func = getattr(r1, plotfunc)
+
+    ax = func(subsample=False)
 
     lines = ax.lines
 
@@ -61,9 +103,59 @@ def test_plot_lines():
     plt.close("all")
 
 
-def test_plot_lines_subsample():
+# -----------------------------------------------------------------------------
 
-    ax = r1.plot(subsample=True)
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_lines_selection(plotfunc):
+
+    func = getattr(r1, plotfunc)
+
+    ax = func(subsample=False, regions=[0, 1])
+    lines = ax.lines
+    assert len(lines) == 2
+    assert np.allclose(ax.lines[0].get_xydata(), outl1)
+    assert np.allclose(ax.lines[1].get_xydata(), outl2)
+    plt.close("all")
+
+    # select a single number
+    ax = func(subsample=False, regions=0)
+    lines = ax.lines
+    assert len(lines) == 1
+    assert np.allclose(ax.lines[0].get_xydata(), outl1)
+    plt.close("all")
+
+    # select by number
+    ax = func(subsample=False, regions=[0])
+    lines = ax.lines
+    assert len(lines) == 1
+    assert np.allclose(ax.lines[0].get_xydata(), outl1)
+    plt.close("all")
+
+    # select by long_name
+    ax = func(subsample=False, regions=["Unit Square1"])
+    lines = ax.lines
+    assert len(lines) == 1
+    assert np.allclose(ax.lines[0].get_xydata(), outl1)
+    plt.close("all")
+
+    # select by abbreviation
+    ax = func(subsample=False, regions=["uSq1"])
+    lines = ax.lines
+    assert len(lines) == 1
+    assert np.allclose(ax.lines[0].get_xydata(), outl1)
+    plt.close("all")
+
+
+# -----------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_lines_subsample(plotfunc):
+
+    func = getattr(r1, plotfunc)
+
+    ax = func(subsample=True)
     lines = ax.lines
 
     assert len(lines) == 2
@@ -72,9 +164,16 @@ def test_plot_lines_subsample():
     plt.close("all")
 
 
-def test_plot_lines_from_poly():
-    # subsample is False if
-    ax = r2.plot()
+# -----------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_lines_from_poly(plotfunc):
+
+    func = getattr(r2, plotfunc)
+
+    # subsample is False if polygon is given
+    ax = func()
     lines = ax.lines
 
     assert len(lines) == 2
@@ -83,8 +182,14 @@ def test_plot_lines_from_poly():
     plt.close("all")
 
 
-def test_plot_line_prop():
-    ax = r1.plot(subsample=False, line_kws=dict(lw=2, color="g"))
+# -----------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_line_prop(plotfunc):
+
+    func = getattr(r1, plotfunc)
+    ax = func(subsample=False, line_kws=dict(lw=2, color="g"))
 
     lines = ax.lines
 
@@ -94,8 +199,26 @@ def test_plot_line_prop():
     plt.close("all")
 
 
-def test_plot_label():
-    ax = r1.plot(subsample=False)
+# -----------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_label_defaults(plotfunc):
+
+    func = getattr(r1, plotfunc)
+
+    ax = func(subsample=False)
+    texts = ax.texts
+    assert len(texts) == 2
+    plt.close("all")
+
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_label(plotfunc):
+
+    func = getattr(r1, plotfunc)
+
+    ax = func(subsample=False, add_label=True)
     texts = ax.texts
 
     # default text is the number
@@ -110,14 +233,14 @@ def test_plot_label():
     plt.close("all")
 
     # no label
-    ax = r1.plot(subsample=False, add_label=False)
+    ax = func(subsample=False, add_label=False)
     texts = ax.texts
     assert len(texts) == 0
 
     plt.close("all")
 
     # label: abbrev
-    ax = r1.plot(subsample=False, label="abbrev")
+    ax = func(subsample=False, add_label=True, label="abbrev")
     texts = ax.texts
 
     assert len(texts) == 2
@@ -127,7 +250,7 @@ def test_plot_label():
     plt.close("all")
 
     # label: name
-    ax = r1.plot(subsample=False, label="name")
+    ax = func(subsample=False, add_label=True, label="name")
     texts = ax.texts
 
     assert len(texts) == 2
@@ -137,9 +260,13 @@ def test_plot_label():
     plt.close("all")
 
 
-def test_plot_text_prop():
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_text_prop(plotfunc):
 
-    ax = r1.plot(subsample=False, text_kws=dict(fontsize=15))
+    func = getattr(r1, plotfunc)
+
+    ax = func(subsample=False, add_label=True, text_kws=dict(fontsize=15))
+
     texts = ax.texts
 
     assert texts[0].get_fontsize() == 15

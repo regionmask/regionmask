@@ -1,9 +1,8 @@
 import numpy as np
 
-from regionmask import Regions_cls, Region_cls
+from regionmask import Regions_cls
 from regionmask import create_mask_contains
 
-from shapely.geometry import Polygon, MultiPolygon
 from pytest import raises
 
 import xarray as xr
