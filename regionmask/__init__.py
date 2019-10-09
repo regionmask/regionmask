@@ -8,7 +8,7 @@ from .version import version
 __version__ = version
 
 # import
-from .core.regions import Regions_cls, Region_cls
+from .core.regions import Regions_cls, Region_cls, Regions
 
 from . import defined_regions
 

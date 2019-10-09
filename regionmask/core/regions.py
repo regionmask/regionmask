@@ -18,7 +18,7 @@ from .mask import _mask
 from .plot import _plot, _plot_regions
 
 
-class Regions_cls(object):
+class Regions(object):
     """
     class for plotting regions and creating region masks
 
@@ -37,32 +37,39 @@ class Regions_cls(object):
         Polygon/ MultiPolygon or list. Must be accessible as
         outlines[number].
     centroids : list of 1x2 array.
-        Center of mass of this region.
+        Center of mass of this region. Position of the label on map plots.
     """
 
     def __init__(
-        self, name, numbers, names, abbrevs, outlines, centroids=None, source=""
+        self,
+        outlines,
+        numbers=None,
+        names=None,
+        abbrevs=None,
+        centroids=None,
+        name=None,
+        source=None,
     ):
 
         """
         Parameters
         ----------
-        name : string
-            Name of the collection of regions.
-        numbers : list of int
-            List of numerical indces for every region.
-        names : dict of string
-            Long name of each region. Must be accessible as names[number].
-        abbrevs : dict of string
-            List of abbreviations of each region. Must be accessible as
-            abbrevs[number].
-        outlines : List of Nx2 float array of vertices, Polygon, MultiPolygon
+        outlines : List of: Nx2 array of vertices, Polygon or MultiPolygon
             List of coordinates/ outline of the region as shapely
             Polygon/ MultiPolygon or list. Must be accessible as
             outlines[number].
+        numbers : list of int, optional
+            List of numerical indices for every region.
+        names : dict of string, optional
+            Long name of each region. Must be accessible as names[number].
+        abbrevs : dict of string, optional
+            List of abbreviations of each region. Must be accessible as
+            abbrevs[number].
         centroids : list of 1x2 iterable, optional.
             Center of mass of this region. If not provided is calculated
-            as (Multi)Polygon.centroid
+            as (Multi)Polygon.centroid. Position of the label on map plots.
+        name : string, optional
+            Name of the collection of regions.
         source : string, optional
             Source of the region definitions. Default: ''.
 
@@ -77,7 +84,7 @@ class Regions_cls(object):
         outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
         outlines = [outl1, outl2]
 
-        r = Regions_cls(name, numbers, names, abbrevs, outlines)
+        r = Regions(outlines, numbers, names, abbrevs, name)
 
         from shapely.geometry import Polygon
 
@@ -86,10 +93,13 @@ class Regions_cls(object):
         abbrevs = {1:'uSq1', 2:'uSq2'}
         poly = {1: Polygon(outl1), 2: Polygon(outl2)}
 
-        r = Regions_cls(name, numbers, names, abbrevs, poly)
+        r = Regions(outlines, numbers, names, abbrevs, name)
         """
 
-        super(Regions_cls, self).__init__()
+        super().__init__()
+
+        if numbers is None:
+            numbers = range(len(outlines))
 
         regions = dict()
 
@@ -97,7 +107,7 @@ class Regions_cls(object):
             centroids = {i: None for i in numbers}
 
         for n in numbers:
-            r = Region_cls(n, names[n], abbrevs[n], outlines[n], centroids[n])
+            r = _OneRegion(n, names[n], abbrevs[n], outlines[n], centroids[n])
 
             regions[n] = r
 
@@ -118,7 +128,7 @@ class Regions_cls(object):
 
         Returns
         -------
-        selection : Regions_cls or Region_cls
+        selection : Regions or _OneRegion
             If a list is given returns a subset of all
             regions, if a single element is given returns this region.
 
@@ -143,7 +153,7 @@ class Regions_cls(object):
 
         Parameters
         ----------
-        key : (list of) string
+        key : str | list of str
             key can be a single or a list of abbreviation/ name of
             existing regions.
 
@@ -168,8 +178,12 @@ class Regions_cls(object):
 
     def __repr__(self):
         abbrevs = " ".join(self.abbrevs)
-        msg = "{} '{}' Regions ({})\n{}"
-        msg = msg.format(len(self.numbers), self.name, self.source, abbrevs)
+        if self.source:
+            msg = "{} '{}' Regions ({})\n{}"
+            msg = msg.format(len(self.numbers), self.name, self.source, abbrevs)
+        else:
+            msg = "{} '{}' Regions\n{}"
+            msg = msg.format(len(self.numbers), self.name, abbrevs)
         return msg
 
     def __iter__(self):
@@ -226,23 +240,88 @@ class Regions_cls(object):
 
     @property
     def _is_polygon(self):
-        """is there at least one region that was a Polygon/ MultiPolygon
-
-        ."""
+        """is there at least one region that was a Polygon/ MultiPolygon"""
         return np.any(np.array(self.combiner("_is_polygon")))
 
 
 # add the plotting methods
-Regions_cls.plot = _plot
-Regions_cls.plot_regions = _plot_regions
+Regions.plot = _plot
+Regions.plot_regions = _plot_regions
 # add the mask method
-Regions_cls.mask = _mask
+Regions.mask = _mask
+
+
+class Regions_cls(Regions):
+
+    def __init__(
+        self, name, numbers, names, abbrevs, outlines, centroids=None, source=""
+    ):
+        """
+        Parameters
+        ----------
+        name : string
+            Name of the collection of regions.
+        numbers : list of int
+            List of numerical indices for every region.
+        names : dict of string
+            Long name of each region. Must be accessible as names[number].
+        abbrevs : dict of string
+            List of abbreviations of each region. Must be accessible as
+            abbrevs[number].
+        outlines : List of Nx2 float array of vertices, Polygon, MultiPolygon
+            List of coordinates/ outline of the region as shapely
+            Polygon/ MultiPolygon or list. Must be accessible as
+            outlines[number].
+        centroids : list of 1x2 iterable, optional.
+            Center of mass of the regions. If not provided is calculated
+            as (Multi)Polygon.centroid. Position of the label on map plots.
+        source : string, optional
+            Source of the region definitions. Default: ''.
+
+        Example
+        -------
+        name = 'Example'
+        numbers = [0, 1]
+        names = ['Unit Square1', 'Unit Square2']
+        abbrevs = ['uSq1', 'uSq2']
+
+        outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
+        outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
+        outlines = [outl1, outl2]
+
+        r = Regions_cls(name, numbers, names, abbrevs, outlines)
+
+        from shapely.geometry import Polygon
+
+        numbers = [1, 2]
+        names = {1:'Unit Square1', 2: 'Unit Square2'}
+        abbrevs = {1:'uSq1', 2:'uSq2'}
+        poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+
+        r = Regions_cls(name, numbers, names, abbrevs, poly)
+        """
+
+        print(
+            "Using 'Regions_cls' is deprecated, please use 'Regions' instead."
+            " Please note that the call signature is different."
+        )
+
+        super(Regions_cls, self).__init__(
+            outlines=outlines,
+            numbers=numbers,
+            names=names,
+            abbrevs=abbrevs,
+            centroids=centroids,
+            name=name,
+            source=source,
+        )
+
 
 # =============================================================================
 
 
-class Region_cls(object):
-    """a single Region, used as member of 'Regions_cls'
+class _OneRegion(object):
+    """a single Region, used as member of 'Regions'
 
 
     Attributes
@@ -254,13 +333,11 @@ class Region_cls(object):
     abbrev : string
         Abbreviation of this region.
     polygon : Polygon or MultiPolygon
-        Coordinates/ outline of the region as shapely Polygon/
-        MultiPolygon.
+        Coordinates/ outline of the region as shapely Polygon/ MultiPolygon.
     coords : numpy array
         Coordinates/ outline of the region as 2D numpy array.
     centroid : 1x2 ndarray
-        Center of mass of this region.
-
+        Center of mass of this region. Position of the label on map plots.
     """
 
     def __init__(self, number, name, abbrev, outline, centroid=None):
@@ -274,25 +351,25 @@ class Region_cls(object):
             Long name of this region.
         abbrev : string
             Abbreviation of this region.
-        outline : Nx2 float array of vertices, Polygon or MultiPolygon
+        outline : Nx2 array of vertices, Polygon or MultiPolygon
             Coordinates/ outline of the region as shapely Polygon/
             MultiPolygon or list.
         centroid : 1x2 iterable, optional.
             Center of mass of this region. If not provided is calculated
-            by as (Multi)Polygon.centroid
+            as (Multi)Polygon.centroid. Position of the label on map plots.
 
         Example
         -------
         outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
-        r = Region_cls(1, 'Unit Square', 'USq', outl)
+        r = _OneRegion(1, 'Unit Square', 'USq', outl)
 
         from shapely.geometry import Polygon
 
         poly = Polygon(outl)
-        r = Region_cls(1, 'Unit Square', 'USq', outl, [0.5, 0.75])
+        r = _OneRegion(1, 'Unit Square', 'USq', outl, centroid=[0.5, 0.75])
         """
 
-        super(Region_cls, self).__init__()
+        super(_OneRegion, self).__init__()
 
         self.number = number
         self.name = name
@@ -350,3 +427,16 @@ class Region_cls(object):
             self._coords = np.vstack(lst)[:-1, :]
 
         return self._coords
+
+
+class Region_cls(_OneRegion):
+
+
+    def __init__(self, number, name, abbrev, outline, centroid=None):
+
+        print(
+            "Using 'Region_cls' is deprecated, please use '_OneRegion' instead."
+            " Please note that the call signature is different."
+        )
+
+        super(Region_cls, self).__init__(number, name, abbrev, outline, centroid)
