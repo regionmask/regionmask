@@ -1,6 +1,6 @@
 import numpy as np
 
-from regionmask import Regions_cls, Region_cls
+from regionmask import Regions_cls, Region_cls, _OneRegion
 
 from shapely.geometry import Polygon
 
@@ -122,24 +122,24 @@ def test_map_keys_unique():
 
 def test_subset_to_Region():
     s1 = r1[0]
-    assert isinstance(s1, Region_cls)
+    assert isinstance(s1, _OneRegion)
     assert s1.number == 0
     assert s1.abbrev == "uSq1"
 
     s1 = r1["uSq1"]
-    assert isinstance(s1, Region_cls)
+    assert isinstance(s1, _OneRegion)
     assert s1.number == 0
     assert s1.abbrev == "uSq1"
 
     s1 = r1["Unit Square1"]
-    assert isinstance(s1, Region_cls)
+    assert isinstance(s1, _OneRegion)
     assert s1.number == 0
     assert s1.abbrev == "uSq1"
 
 
 def test_subset_to_Region_np_integer():
     s1 = r3[1]
-    assert isinstance(s1, Region_cls)
+    assert isinstance(s1, _OneRegion)
     assert s1.number == 1
     assert s1.abbrev == "uSq1"
 
