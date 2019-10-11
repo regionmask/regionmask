@@ -102,15 +102,20 @@ class Regions(object):
         if numbers is None:
             numbers = range(len(outlines))
 
-        regions = dict()
+        outlines = _maybe_to_dict(numbers, outlines)
+
+        names = _sanitize_names_abbrevs(numbers, names, "Region")
+        abbrevs = _sanitize_names_abbrevs(numbers, abbrevs, "r")
 
         if centroids is None:
             centroids = {i: None for i in numbers}
+        else:
+            centroids = _maybe_to_dict(centroids)
+
+        regions = dict()
 
         for n in numbers:
-            r = _OneRegion(n, names[n], abbrevs[n], outlines[n], centroids[n])
-
-            regions[n] = r
+            regions[n] = _OneRegion(n, names[n], abbrevs[n], outlines[n], centroids[n])
 
         self.regions = regions
         self.name = name
