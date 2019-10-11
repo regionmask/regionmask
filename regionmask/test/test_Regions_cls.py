@@ -1,5 +1,6 @@
 # ignore deprection warning -> is tested at end of this file
-import warnings                                                                                                                                                                                                                                                                                                       
+import warnings
+
 warnings.filterwarnings(message="Using 'Regions_cls'", action="ignore")
 
 import numpy as np
@@ -156,7 +157,11 @@ def test_subset_to_Regions():
     assert s1.numbers == [0]
     assert s1.abbrevs == ["uSq1"]
 
+
 def test_Regions_cls_deprection_warning():
 
-    with pytest.warns(FutureWarning, match="Using 'Regions_cls' is deprecated, please use 'Regions' instead."):
+    with pytest.warns(
+        FutureWarning,
+        match="Using 'Regions_cls' is deprecated, please use 'Regions' instead.",
+    ):
         r1 = Regions_cls(name, numbers, names, abbrevs, outlines)
