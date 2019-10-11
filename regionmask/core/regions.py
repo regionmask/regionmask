@@ -10,13 +10,14 @@
 import copy
 import numpy as np
 import six
+import warnings
 
 from shapely.geometry import Polygon, MultiPolygon
 
 
 from .mask import _mask
 from .plot import _plot, _plot_regions
-
+from .utils import _sanitize_names_abbrevs, _maybe_to_dict
 
 class Regions(object):
     """
@@ -47,7 +48,7 @@ class Regions(object):
         names=None,
         abbrevs=None,
         centroids=None,
-        name=None,
+        name="unnamed",
         source=None,
     ):
 
@@ -301,11 +302,11 @@ class Regions_cls(Regions):
         r = Regions_cls(name, numbers, names, abbrevs, poly)
         """
 
-        print(
-            "Using 'Regions_cls' is deprecated, please use 'Regions' instead."
-            " Please note that the call signature is different."
-        )
-
+        
+        msg = ("Using 'Regions_cls' is deprecated, please use 'Regions' instead."
+              " Please note that the call signature is different.")
+        warnings.warn(msg, FutureWarning, stacklevel=10)
+        
         super(Regions_cls, self).__init__(
             outlines=outlines,
             numbers=numbers,
@@ -434,9 +435,9 @@ class Region_cls(_OneRegion):
 
     def __init__(self, number, name, abbrev, outline, centroid=None):
 
-        print(
+        msg = (
             "Using 'Region_cls' is deprecated, please use '_OneRegion' instead."
-            " Please note that the call signature is different."
         )
+        warnings.warn(msg, FutureWarning, stacklevel=2)
 
         super(Region_cls, self).__init__(number, name, abbrev, outline, centroid)

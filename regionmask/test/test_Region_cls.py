@@ -4,7 +4,9 @@ from regionmask import Region_cls
 
 from shapely.geometry import Polygon, MultiPolygon
 
+import pytest
 
+@pytest.mark.filterwarnings("ignore:Using 'Region_cls'")
 def test_attributes():
 
     outl = ((0, 0), (0, 1), (1, 1.0), (1, 0))
@@ -22,7 +24,7 @@ def test_attributes():
 
     assert np.allclose(r.centroid, (0.5, 0.5))
 
-
+@pytest.mark.filterwarnings("ignore:Using 'Region_cls'")
 def test_polygon_input():
 
     # polygon closes open paths
@@ -35,7 +37,7 @@ def test_polygon_input():
     assert np.allclose(r.coords, outl)
     assert r.polygon == outl_poly
 
-
+@pytest.mark.filterwarnings("ignore:Using 'Region_cls'")
 def test_multi_polygon_input():
 
     # polygon closes open paths
@@ -51,7 +53,7 @@ def test_multi_polygon_input():
     assert np.allclose(r.coords, outl, equal_nan=True)
     assert r.polygon == outl_poly
 
-
+@pytest.mark.filterwarnings("ignore:Using 'Region_cls'")
 def test_centroid():
 
     outl = ((0, 0), (0, 1), (1, 1.0), (1, 0))
@@ -69,3 +71,10 @@ def test_centroid():
     outl = ((0, 0), (0, 0.5), (0, 1), (1, 1.0), (1, 0))
     r = Region_cls(1, "Unit Square", "USq", outl)
     assert np.allclose(r.centroid, (0.5, 0.5))
+
+def test_Regions_cls_deprection_warning():
+
+    outl = ((0, 0), (0, 1), (1, 1.0), (1, 0))
+    
+    with pytest.warns(FutureWarning, match="Using 'Region_cls' is deprecated, please use '_OneRegion' instead."):
+        r = Region_cls(1, "Unit Square", "USq", outl)

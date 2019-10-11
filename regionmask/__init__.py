@@ -8,10 +8,12 @@ from .version import version
 __version__ = version
 
 # import
-from .core.regions import Regions_cls, Region_cls, Regions
+from .core.regions import Regions_cls, Region_cls, Regions, _OneRegion
 
 from . import defined_regions
 
 # for testing
+from . import core
+
 from .core.plot import _subsample
 from .core.mask import create_mask_contains, _wrapAngle360, _wrapAngle180, _wrapAngle
