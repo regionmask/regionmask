@@ -1,16 +1,10 @@
-# ignore deprection warning -> is tested at end of this file
-import warnings
-
-warnings.filterwarnings(message="Using 'Regions_cls'", action="ignore")
-
 import numpy as np
 
-from regionmask import Regions_cls, Region_cls, _OneRegion
+from regionmask import Regions, _OneRegion
 
 from shapely.geometry import Polygon
 
 import pytest
-
 
 # =============================================================================
 
@@ -26,7 +20,7 @@ outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
 outl2 = ((0, 1), (0, 2), (1, 2.0), (1, 1))
 outlines = [outl1, outl2]
 
-r1 = Regions_cls(name, numbers, names, abbrevs, outlines)
+r1 = Regions(outlines, numbers, names, abbrevs, name=name)
 
 numbers = [1, 2]
 names = {1: "Unit Square1", 2: "Unit Square2"}
@@ -35,10 +29,10 @@ poly1 = Polygon(outl1)
 poly2 = Polygon(outl2)
 poly = {1: poly1, 2: poly2}
 
-r2 = Regions_cls(name, numbers, names, abbrevs, poly)
+r2 = Regions(poly, numbers, names, abbrevs, name=name)
 
 # numbers as array
-r3 = Regions_cls(name, np.array(numbers), names, abbrevs, poly)
+r3 = Regions(poly, np.array(numbers), names, abbrevs, name=name)
 
 # =============================================================================
 
@@ -153,15 +147,6 @@ def test_subset_to_Region_np_integer():
 
 def test_subset_to_Regions():
     s1 = r1[[0]]
-    assert isinstance(s1, Regions_cls)
+    assert isinstance(s1, Regions)
     assert s1.numbers == [0]
     assert s1.abbrevs == ["uSq1"]
-
-
-def test_Regions_cls_deprection_warning():
-
-    with pytest.warns(
-        FutureWarning,
-        match="Using 'Regions_cls' is deprecated, please use 'Regions' instead.",
-    ):
-        r1 = Regions_cls(name, numbers, names, abbrevs, outlines)
