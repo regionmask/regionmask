@@ -111,7 +111,7 @@ class Regions(object):
         if centroids is None:
             centroids = {i: None for i in numbers}
         else:
-            centroids = _maybe_to_dict(centroids)
+            centroids = _maybe_to_dict(numbers, centroids)
 
         regions = dict()
 
