@@ -6,6 +6,8 @@ from shapely.geometry import Polygon
 
 import pytest
 
+import six
+
 # =============================================================================
 # set up the testing regions
 
@@ -167,3 +169,54 @@ def test_subset_to_Regions(test_regions, number):
     assert isinstance(s1, Regions)
     assert s1.numbers == [number]
     assert s1.abbrevs == ["uSq1"]
+
+
+@pytest.mark.parametrize("numbers", [None, [1, 2]])
+@pytest.mark.parametrize("names", [None, "names", names])
+@pytest.mark.parametrize("abbrevs", [None, "abbrevs", abbrevs])
+@pytest.mark.parametrize("centroids", [None, [[0, 0], [1, 1]]])
+@pytest.mark.parametrize("name", [None, "name"])
+def test_optional_arguments(numbers, names, abbrevs, centroids, name):
+
+    if name is None:
+        result = Regions(outlines, numbers, names, abbrevs, centroids)
+    else:
+        result = Regions(outlines, numbers, names, abbrevs, centroids, name)
+
+    if numbers is None:
+        numbers = [0, 1]
+
+    if names is None:
+        names = _create_expected_str_list(numbers, "Region")
+    elif isinstance(names, six.string_types):
+        names = _create_expected_str_list(numbers, names)
+
+    if abbrevs is None:
+        abbrevs = _create_expected_str_list(numbers, "r")
+    elif isinstance(abbrevs, six.string_types):
+        abbrevs = _create_expected_str_list(numbers, abbrevs)
+
+    if centroids is None:
+        centroids = [[0.5, 0.5], [0.5, 1.5]]
+
+    if name is None:
+        name = "unnamed"
+
+
+    assert result.numbers == numbers
+
+    assert result.names == names
+
+    assert result.abbrevs == abbrevs
+
+    assert np.allclose(result.centroids, centroids)
+
+    assert result.name == name
+
+def _create_expected_str_list(numbers, string):
+    
+    return [string + str(number) for number in numbers]
+
+
+
+
