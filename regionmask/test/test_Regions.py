@@ -96,7 +96,17 @@ def test_centroid(test_regions):
     assert np.allclose(test_regions.centroids, [[0.5, 0.5], [0.5, 1.5]])
 
 
-@pytest.mark.parametrize("test_regions, number", zip(all_test_regions, all_first_numbers))
+def test_user_defined_centroid():
+
+    centroids = [[0, 0], [1, 1]]
+    test_regions_centroids = Regions(outlines, centroids=centroids)
+
+    assert test_regions_centroids.centroids == centroids
+
+
+@pytest.mark.parametrize(
+    "test_regions, number", zip(all_test_regions, all_first_numbers)
+)
 def test_map_keys_one(test_regions, number):
     pytest.raises(KeyError, test_regions1.__getitem__, "")
 
