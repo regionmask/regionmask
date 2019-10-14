@@ -7,12 +7,11 @@ from shapely.geometry import Polygon
 import pytest
 
 # =============================================================================
-
-
 # set up the testing regions
 
 name = "Example"
-numbers = [0, 1]
+
+numbers1 = [0, 1]
 names = ["Unit Square1", "Unit Square2"]
 abbrevs = ["uSq1", "uSq2"]
 
@@ -20,96 +19,105 @@ outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
 outl2 = ((0, 1), (0, 2), (1, 2.0), (1, 1))
 outlines = [outl1, outl2]
 
-test_regions1 = Regions(outlines, numbers, names, abbrevs, name=name)
+test_regions1 = Regions(outlines, numbers1, names, abbrevs, name=name)
 
-numbers = [1, 2]
-names = {1: "Unit Square1", 2: "Unit Square2"}
-abbrevs = {1: "uSq1", 2: "uSq2"}
+numbers2 = [1, 2]
+names_dict = {1: "Unit Square1", 2: "Unit Square2"}
+abbrevs_dict = {1: "uSq1", 2: "uSq2"}
 poly1 = Polygon(outl1)
 poly2 = Polygon(outl2)
 poly = {1: poly1, 2: poly2}
 
-test_regions2 = Regions(poly, numbers, names, abbrevs, name=name)
+test_regions2 = Regions(poly, numbers2, names_dict, abbrevs_dict, name=name)
 
 # numbers as array
-test_regions3 = Regions(poly, np.array(numbers), names, abbrevs, name=name)
+numbers3 = [2, 3]
+test_regions3 = Regions(outlines, np.array(numbers3), names, abbrevs, name=name)
+
+# =============================================================================
+
+all_test_regions = (test_regions1, test_regions2, test_regions3)
+
+all_numbers = (numbers1, numbers2, numbers3)
+
+all_first_numbers = (0, 1, 2)
 
 # =============================================================================
 
 
-def test_len():
-    assert len(test_regions1) == 2
+@pytest.mark.parametrize("test_regions", all_test_regions)
+def test_len(test_regions):
+    assert len(test_regions) == 2
 
 
-def test_name():
-    assert test_regions1.name == name
+@pytest.mark.parametrize("test_regions", all_test_regions)
+def test_name(test_regions):
+    assert test_regions.name == name
 
 
-def test_numbers():
-    assert np.allclose(test_regions1.numbers, [0, 1])
-    assert np.allclose(test_regions2.numbers, [1, 2])
+@pytest.mark.parametrize("test_regions, numbers", zip(all_test_regions, all_numbers))
+def test_numbers(test_regions, numbers):
+    assert np.allclose(test_regions.numbers, numbers)
 
 
-def test_names():
-    assert test_regions1.names == ["Unit Square1", "Unit Square2"]
+@pytest.mark.parametrize("test_regions", all_test_regions)
+def test_names(test_regions):
+    assert test_regions.names == ["Unit Square1", "Unit Square2"]
 
 
-def test_abbrevs():
-    assert test_regions1.abbrevs == ["uSq1", "uSq2"]
+@pytest.mark.parametrize("test_regions", all_test_regions)
+def test_abbrevs(test_regions):
+    assert test_regions.abbrevs == ["uSq1", "uSq2"]
 
 
 def test_coords():
+    # passing numpy coords does not automatically close the coords
     assert np.allclose(test_regions1.coords, [outl1, outl2])
 
+    # the polygon automatically closes the outline
     out1 = np.vstack([outl1, outl1[0]])
     out2 = np.vstack([outl2, outl2[0]])
 
     assert np.allclose(test_regions2.coords, [out1, out2])
 
 
-def test_polygon():
-    assert isinstance(test_regions1.polygons, list)
-    assert isinstance(test_regions2.polygons, list)
+@pytest.mark.parametrize("test_regions", all_test_regions)
+def test_polygon(test_regions):
+    assert isinstance(test_regions.polygons, list)
 
-    assert len(test_regions1.polygons) == 2
-    assert len(test_regions2.polygons) == 2
+    assert len(test_regions.polygons) == 2
 
-    assert test_regions1.polygons[0].equals(poly1)
-    assert test_regions1.polygons[1].equals(poly2)
-
-    assert test_regions2.polygons[0].equals(poly1)
-    assert test_regions2.polygons[1].equals(poly2)
+    assert test_regions.polygons[0].equals(poly1)
+    assert test_regions.polygons[1].equals(poly2)
 
 
-def test_centroid():
-    assert np.allclose(test_regions1.centroids, [[0.5, 0.5], [0.5, 1.5]])
+@pytest.mark.parametrize("test_regions", all_test_regions)
+def test_centroid(test_regions):
+    assert np.allclose(test_regions.centroids, [[0.5, 0.5], [0.5, 1.5]])
 
 
-def test_map_keys_one():
+@pytest.mark.parametrize("test_regions, number", zip(all_test_regions, all_first_numbers))
+def test_map_keys_one(test_regions, number):
     pytest.raises(KeyError, test_regions1.__getitem__, "")
-    assert test_regions1.map_keys(0) == 0
-    assert test_regions1.map_keys("uSq1") == 0
-    assert test_regions1.map_keys("Unit Square1") == 0
 
-    assert test_regions2.map_keys(1) == 1
-    assert test_regions2.map_keys("uSq1") == 1
-    assert test_regions2.map_keys("Unit Square1") == 1
+    expected = number
+
+    assert test_regions.map_keys(number) == expected
+    assert test_regions.map_keys("uSq1") == expected
+    assert test_regions.map_keys("Unit Square1") == expected
 
 
 def test_map_keys_np_integer():
-    key = np.array([1, 1])[0]
-    assert test_regions3.map_keys(key) == 1
+    key = np.array([2, 2])[0]
+    assert test_regions3.map_keys(key) == 2
 
 
-def test_map_keys_several():
+@pytest.mark.parametrize("test_regions, numbers", zip(all_test_regions, all_numbers))
+def test_map_keys_several(test_regions, numbers):
 
-    assert test_regions1.map_keys([0, 1]) == [0, 1]
-    assert test_regions1.map_keys(("uSq1", "uSq2")) == [0, 1]
-    assert test_regions1.map_keys(("Unit Square1", "Unit Square2")) == [0, 1]
-
-    assert test_regions2.map_keys([1, 2]) == [1, 2]
-    assert test_regions2.map_keys(("uSq1", "uSq2")) == [1, 2]
-    assert test_regions2.map_keys(("Unit Square1", "Unit Square2")) == [1, 2]
+    assert test_regions.map_keys(numbers) == numbers
+    assert test_regions.map_keys(("uSq1", "uSq2")) == numbers
+    assert test_regions.map_keys(("Unit Square1", "Unit Square2")) == numbers
 
 
 def test_map_keys_mixed():
@@ -121,32 +129,31 @@ def test_map_keys_unique():
     assert test_regions1.map_keys([0, 0, 0, 1]) == [0, 1]
 
 
-def test_subset_to_Region():
-    s1 = test_regions1[0]
+@pytest.mark.parametrize(
+    "test_regions, number", zip(all_test_regions, all_first_numbers)
+)
+def test_subset_to_Region(test_regions, number):
+    s1 = test_regions[number]
     assert isinstance(s1, _OneRegion)
-    assert s1.number == 0
+    assert s1.number == number
     assert s1.abbrev == "uSq1"
 
-    s1 = test_regions1["uSq1"]
+    s1 = test_regions["uSq1"]
     assert isinstance(s1, _OneRegion)
-    assert s1.number == 0
+    assert s1.number == number
     assert s1.abbrev == "uSq1"
 
-    s1 = test_regions1["Unit Square1"]
+    s1 = test_regions["Unit Square1"]
     assert isinstance(s1, _OneRegion)
-    assert s1.number == 0
-    assert s1.abbrev == "uSq1"
-
-
-def test_subset_to_Region_np_integer():
-    s1 = test_regions3[1]
-    assert isinstance(s1, _OneRegion)
-    assert s1.number == 1
+    assert s1.number == number
     assert s1.abbrev == "uSq1"
 
 
-def test_subset_to_Regions():
-    s1 = test_regions1[[0]]
+@pytest.mark.parametrize(
+    "test_regions, number", zip(all_test_regions, all_first_numbers)
+)
+def test_subset_to_Regions(test_regions, number):
+    s1 = test_regions[[number]]
     assert isinstance(s1, Regions)
-    assert s1.numbers == [0]
+    assert s1.numbers == [number]
     assert s1.abbrevs == ["uSq1"]
