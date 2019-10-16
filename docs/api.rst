@@ -76,6 +76,8 @@ Attributes
    Regions.coords
    Regions.polygons
    Regions.centroids
+   Regions.bounds
+   Regions.bounds_global
    Regions._is_polygon
 
 
@@ -99,6 +101,8 @@ Attributes
 
    _OneRegion.coords
    _OneRegion.polygon
+   _OneRegion.bounds
+
 
 Private Functions
 =================
