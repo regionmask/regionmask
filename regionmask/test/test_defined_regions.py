@@ -1,4 +1,4 @@
-from regionmask import defined_regions, Regions_cls
+from regionmask import defined_regions, Regions
 from regionmask.defined_regions import _maybe_get_column
 
 from pytest import raises
@@ -6,7 +6,7 @@ from pytest import raises
 
 def _defined_region(regions, n_regions):
 
-    assert isinstance(regions, Regions_cls)
+    assert isinstance(regions, Regions)
     assert len(regions) == n_regions
 
 
