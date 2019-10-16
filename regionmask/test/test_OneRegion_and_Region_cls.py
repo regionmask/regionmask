@@ -80,6 +80,7 @@ def test_centroid(cls):
     r = cls(1, "Unit Square", "USq", outl)
     assert np.allclose(r.centroid, (0.5, 0.5))
 
+
 @pytest.mark.filterwarnings("ignore:Using 'Region_cls'")
 @pytest.mark.parametrize("cls", (Region_cls, _OneRegion))
 def test_bounds(cls):
@@ -96,6 +97,7 @@ def test_bounds(cls):
     # normal
     r = cls(1, "Unit Square", "USq", outl)
     assert np.allclose(r.bounds, (0, -1, 2, 1))
+
 
 def test_Regions_cls_deprection_warning():
 
