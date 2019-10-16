@@ -2,7 +2,7 @@ import six
 
 import numpy as np
 
-from ..core.regions import Regions_cls
+from ..core.regions import Regions
 
 
 def _maybe_get_column(df, colname):
@@ -104,7 +104,11 @@ def _obtain_ne(
     # make sure numbers is a list
     numbers = np.array(numbers)
 
-    return Regions_cls(title, numbers, names, abbrevs, coords)
+    source = "http://www.naturalearthdata.com"
+
+    return Regions(
+        coords, numbers=numbers, names=names, abbrevs=abbrevs, name=title, source=source
+    )
 
 
 # =============================================================================

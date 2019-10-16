@@ -1,12 +1,19 @@
+# ignore deprection warning -> is tested at end of this file
+import warnings
+
+warnings.filterwarnings(message="Using 'Regions_cls'", action="ignore")
+
 import numpy as np
 
-from regionmask import Regions_cls, Region_cls
+from regionmask import Regions_cls, _OneRegion
 
 from shapely.geometry import Polygon
 
-from pytest import raises
+import pytest
+
 
 # =============================================================================
+
 
 # set up the testing regions
 
@@ -85,7 +92,7 @@ def test_centroid():
 
 
 def test_map_keys_one():
-    raises(KeyError, r1.__getitem__, "")
+    pytest.raises(KeyError, r1.__getitem__, "")
     assert r1.map_keys(0) == 0
     assert r1.map_keys("uSq1") == 0
     assert r1.map_keys("Unit Square1") == 0
@@ -122,24 +129,24 @@ def test_map_keys_unique():
 
 def test_subset_to_Region():
     s1 = r1[0]
-    assert isinstance(s1, Region_cls)
+    assert isinstance(s1, _OneRegion)
     assert s1.number == 0
     assert s1.abbrev == "uSq1"
 
     s1 = r1["uSq1"]
-    assert isinstance(s1, Region_cls)
+    assert isinstance(s1, _OneRegion)
     assert s1.number == 0
     assert s1.abbrev == "uSq1"
 
     s1 = r1["Unit Square1"]
-    assert isinstance(s1, Region_cls)
+    assert isinstance(s1, _OneRegion)
     assert s1.number == 0
     assert s1.abbrev == "uSq1"
 
 
 def test_subset_to_Region_np_integer():
     s1 = r3[1]
-    assert isinstance(s1, Region_cls)
+    assert isinstance(s1, _OneRegion)
     assert s1.number == 1
     assert s1.abbrev == "uSq1"
 
@@ -149,3 +156,12 @@ def test_subset_to_Regions():
     assert isinstance(s1, Regions_cls)
     assert s1.numbers == [0]
     assert s1.abbrevs == ["uSq1"]
+
+
+def test_Regions_cls_deprection_warning():
+
+    with pytest.warns(
+        FutureWarning,
+        match="Using 'Regions_cls' is deprecated, please use 'Regions' instead.",
+    ):
+        Regions_cls(name, numbers, names, abbrevs, outlines)
