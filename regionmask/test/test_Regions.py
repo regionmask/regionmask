@@ -202,7 +202,6 @@ def test_optional_arguments(numbers, names, abbrevs, centroids, name):
     if name is None:
         name = "unnamed"
 
-
     assert result.numbers == numbers
 
     assert result.names == names
@@ -213,10 +212,7 @@ def test_optional_arguments(numbers, names, abbrevs, centroids, name):
 
     assert result.name == name
 
+
 def _create_expected_str_list(numbers, string):
-    
+
     return [string + str(number) for number in numbers]
-
-
-
-

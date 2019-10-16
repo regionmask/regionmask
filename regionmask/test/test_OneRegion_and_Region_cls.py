@@ -6,6 +6,7 @@ from shapely.geometry import Polygon, MultiPolygon
 
 import pytest
 
+
 @pytest.mark.filterwarnings("ignore:Using 'Region_cls'")
 @pytest.mark.parametrize("cls", (Region_cls, _OneRegion))
 def test_attributes(cls):
