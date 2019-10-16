@@ -1,6 +1,6 @@
 import numpy as np
 
-from regionmask import Regions_cls
+from regionmask import Regions
 from regionmask import create_mask_contains
 
 from pytest import raises
@@ -10,16 +10,11 @@ import xarray as xr
 # =============================================================================
 
 
-name = "Example"
-numbers = [0, 1]
-names = ["Unit Square1", "Unit Square2"]
-abbrevs = ["uSq1", "uSq2"]
-
 outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
 outl2 = ((0, 1), (0, 2), (1, 2.0), (1, 1))
 outlines = [outl1, outl2]
 
-r1 = Regions_cls(name, numbers, names, abbrevs, outlines)
+r1 = Regions(outlines)
 
 
 lon = [0.5, 1.5]
@@ -102,7 +97,7 @@ def test_mask_wrap():
     outl2 = ((359, 1), (359, 2), (0, 2.0), (0, 1))
     outlines = [outl1, outl2]
 
-    r = Regions_cls(name, numbers, names, abbrevs, outlines)
+    r = Regions(outlines)
 
     # lon -180..179.9
     lon = [-1.5, -0.5]
