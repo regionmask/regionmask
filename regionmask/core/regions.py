@@ -85,7 +85,7 @@ class Regions(object):
 
         """
 
-        super().__init__()
+        super(Regions, self).__init__()
 
         if numbers is None:
             numbers = range(len(outlines))
