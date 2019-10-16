@@ -89,4 +89,4 @@ def test_Regions_cls_deprection_warning():
         FutureWarning,
         match="Using 'Region_cls' is deprecated, please use '_OneRegion' instead.",
     ):
-        r = Region_cls(1, "Unit Square", "USq", outl)
+        Region_cls(1, "Unit Square", "USq", outl)

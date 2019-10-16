@@ -5,7 +5,7 @@ warnings.filterwarnings(message="Using 'Regions_cls'", action="ignore")
 
 import numpy as np
 
-from regionmask import Regions_cls, Region_cls, _OneRegion
+from regionmask import Regions_cls, _OneRegion
 
 from shapely.geometry import Polygon
 
@@ -164,4 +164,4 @@ def test_Regions_cls_deprection_warning():
         FutureWarning,
         match="Using 'Regions_cls' is deprecated, please use 'Regions' instead.",
     ):
-        r1 = Regions_cls(name, numbers, names, abbrevs, outlines)
+        Regions_cls(name, numbers, names, abbrevs, outlines)
