@@ -13,8 +13,19 @@ What's New
 v0.5.0 (unreleased)
 -------------------
 
+Breaking Changes
+~~~~~~~~~~~~~~~~
+ - Renamed :code:`Regions_cls` to :code:`Regions` and changed its call 
+   signature. This allows to make all arguments except :code:`outlines` optional.
+ - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity. 
+
+
 Enhancements
 ~~~~~~~~~~~~
+ - Make all arguments to :code:`Regions` optional (except :code:`outlines`)
+   this should make it easier to create your on region definitions (closes :issue:`37`).
+ - Allow to pass arbitrary iterables to :code:`Regions` - previously these had to be of
+   type :code:`dict` (closes :issue:`43`).
  - Added a :code:`plot_regions` method that only plots the region borders and not a map,
    as :code:`plot`. The :code:`plot_region` function can be used to plots the regions on a
    existing cartopy map or a regular axes (closes :issue:`31`).
