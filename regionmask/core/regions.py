@@ -23,23 +23,6 @@ from .utils import _sanitize_names_abbrevs, _maybe_to_dict
 class Regions(object):
     """
     class for plotting regions and creating region masks
-
-    Attributes
-    ----------
-    name : string
-        Name of the collection of regions.
-    numbers : list of int
-        List of numerical indces for every region.
-    names : list of string
-        Long name of each region.
-    abbrevs : list of string
-        List of abbreviations of each region.
-    outlines : List of Nx2 float array of vertices, Polygon, MultiPolygon
-        List of coordinates/ outline of the region as shapely
-        Polygon/ MultiPolygon or list. Must be accessible as
-        outlines[number].
-    centroids : list of 1x2 array.
-        Center of mass of this region. Position of the label on map plots.
     """
 
     def __init__(
@@ -56,27 +39,27 @@ class Regions(object):
         """
         Parameters
         ----------
-        outlines : List of: Nx2 array of vertices, Polygon or MultiPolygon
-            List of coordinates/ outline of the region as shapely
-            Polygon/ MultiPolygon or list. Must be accessible as
-            outlines[number].
-        numbers : list of int, optional
-            List of numerical indices for every region.
-        names : dict of string, optional
-            Long name of each region. Must be accessible as names[number].
-        abbrevs : dict of string, optional
-            List of abbreviations of each region. Must be accessible as
-            abbrevs[number].
+        outlines : iterable or dict of: Nx2 array of vertices, Polygon or MultiPolygon
+            List of the coordinates of the vertices (outline) of the region as
+            shapely Polygon/ MultiPolygon or list.
+        numbers : iterable of int, optional
+            List of numerical indices for every region. Default: range(0, len(outlines))
+        names : iterable or dict of string, optional
+            Long name of each region. Default: ["Region0", .., "RegionN"]
+        abbrevs : iterable or dict of string, optional
+            Abbreviations of each region. Default: ["r0", ..., "rN"]
         centroids : list of 1x2 iterable, optional.
-            Center of mass of this region. If not provided is calculated
-            as (Multi)Polygon.centroid. Position of the label on map plots.
+            Center of mass of this region.  Position of the label on map plots.
+            Default: (Multi)Polygon.centroid.
         name : string, optional
-            Name of the collection of regions.
+            Name of the collection of regions. Default: "unnamed"
         source : string, optional
-            Source of the region definitions. Default: ''.
+            Source of the region definitions. Default: "".
 
         Example
         -------
+        from regionmask import Regions
+
         name = 'Example'
         numbers = [0, 1]
         names = ['Unit Square1', 'Unit Square2']
@@ -96,6 +79,10 @@ class Regions(object):
         poly = {1: Polygon(outl1), 2: Polygon(outl2)}
 
         r = Regions(outlines, numbers, names, abbrevs, name)
+
+        # arguments are now optional
+        r = Regions(outlines)
+
         """
 
         super().__init__()
@@ -123,8 +110,7 @@ class Regions(object):
         self.source = source
 
     def __getitem__(self, key):
-        """
-        subset of Regions or Region
+        """subset of Regions or Region
 
         Parameters
         ----------
@@ -155,8 +141,7 @@ class Regions(object):
         return len(self.numbers)
 
     def map_keys(self, key):
-        """
-        map from names and abbrevs of the regions to numbers
+        """map from names and abbrevs of the regions to numbers
 
         Parameters
         ----------
@@ -204,7 +189,7 @@ class Regions(object):
 
     @property
     def region_ids(self):
-        """dict mapping all names and abbrevs to the region number"""
+        """dictionary that maps all names and abbrevs to the region number"""
 
         # collect data
         abbrevs = self.abbrevs
@@ -217,12 +202,12 @@ class Regions(object):
 
     @property
     def abbrevs(self):
-        """list of abbreviations"""
+        """list of abbreviations of the regions"""
         return self.combiner("abbrev")
 
     @property
     def names(self):
-        """list of long names"""
+        """list of names of the regions"""
         return self.combiner("name")
 
     @property
@@ -247,7 +232,7 @@ class Regions(object):
 
     @property
     def _is_polygon(self):
-        """is there at least one region that was a Polygon/ MultiPolygon"""
+        """is there at least one region was passed as (Multi)Polygon"""
         return np.any(np.array(self.combiner("_is_polygon")))
 
 
