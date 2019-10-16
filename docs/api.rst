@@ -16,8 +16,8 @@ Top-level functions
    create_mask_contains
 
 
-Regions_cls
-===========
+Regions
+=======
 
 
 Creating Regions
@@ -26,7 +26,7 @@ Creating Regions
 .. autosummary::
    :toctree: generated/
 
-   Regions_cls
+   Regions
 
 Mapping Number/ Abbreviation/ Name 
 ----------------------------------
@@ -34,7 +34,7 @@ Mapping Number/ Abbreviation/ Name
 .. autosummary::
    :toctree: generated/
 
-   Regions_cls.map_keys
+   Regions.map_keys
 
 Selecting 
 ---------
@@ -42,7 +42,7 @@ Selecting
 .. autosummary::
    :toctree: generated/
 
-   Regions_cls.__getitem__
+   Regions.__getitem__
 
 
 Plotting
@@ -51,7 +51,8 @@ Plotting
 .. autosummary::
    :toctree: generated/
 
-   Regions_cls.plot
+   Regions.plot
+   Regions.plot_regions
 
 Creating a Mask
 ---------------
@@ -59,7 +60,7 @@ Creating a Mask
 .. autosummary::
    :toctree: generated/
 
-   Regions_cls.mask
+   Regions.mask
 
 
 Attributes
@@ -68,18 +69,18 @@ Attributes
 .. autosummary::
    :toctree: generated/
 
-   Regions_cls.abbrevs
-   Regions_cls.names
-   Regions_cls.numbers
-   Regions_cls.region_ids
-   Regions_cls.coords
-   Regions_cls.polygons
-   Regions_cls.centroids
-   Regions_cls._is_polygon
+   Regions.abbrevs
+   Regions.names
+   Regions.numbers
+   Regions.region_ids
+   Regions.coords
+   Regions.polygons
+   Regions.centroids
+   Regions._is_polygon
 
 
-Region_cls
-===========
+_OneRegion
+==========
 
 
 Creating one Region
@@ -88,7 +89,7 @@ Creating one Region
 .. autosummary::
    :toctree: generated/
 
-   Region_cls
+   _OneRegion
 
 Attributes
 ----------
@@ -96,8 +97,8 @@ Attributes
 .. autosummary::
    :toctree: generated/
 
-   Region_cls.coords
-   Region_cls.polygon
+   _OneRegion.coords
+   _OneRegion.polygon
 
 Private Functions
 =================
