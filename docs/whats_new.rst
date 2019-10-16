@@ -29,6 +29,9 @@ Enhancements
  - Added a :code:`plot_regions` method that only plots the region borders and not a map,
    as :code:`plot`. The :code:`plot_region` function can be used to plots the regions on a
    existing cartopy map or a regular axes (closes :issue:`31`).
+ - Added :code:`bounds` and :code:`bounds_global` to :code:`Regions` indicating the
+   minimum bounding region of each and all regions, respectively. Added 
+   :code:`bounds` to :code:`_OneRegion` (closes :issue:`33`)
  - Added code coverage with pytest-cov and codecov.
 
 Bug Fixes

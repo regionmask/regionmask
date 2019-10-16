@@ -84,6 +84,22 @@ def test_coords():
 
 
 @pytest.mark.parametrize("test_regions", all_test_regions)
+def test_bounds(test_regions):
+
+    expected = [(0, 0, 1, 1), (0, 1, 1, 2)]
+
+    assert np.allclose(test_regions.bounds, expected)
+
+
+@pytest.mark.parametrize("test_regions", all_test_regions)
+def test_bounds_global(test_regions):
+
+    expected = [0, 0, 1, 2]
+
+    assert np.allclose(test_regions.bounds_global, expected)
+
+
+@pytest.mark.parametrize("test_regions", all_test_regions)
 def test_polygon(test_regions):
     assert isinstance(test_regions.polygons, list)
 

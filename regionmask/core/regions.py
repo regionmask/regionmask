@@ -235,6 +235,25 @@ class Regions(object):
         """is there at least one region was passed as (Multi)Polygon"""
         return np.any(np.array(self.combiner("_is_polygon")))
 
+    @property
+    def bounds(self):
+        """list of the bounds of the regions (min_lon, min_lat, max_lon, max_lat)"""
+        return self.combiner("bounds")
+
+    @property
+    def bounds_global(self):
+        """global bounds over all regions (min_lon, min_lat, max_lon, max_lat)
+        """
+
+        bounds = self.bounds
+
+        xmin = min([p[0] for p in bounds])
+        ymin = min([p[1] for p in bounds])
+        xmax = max([p[2] for p in bounds])
+        ymax = max([p[3] for p in bounds])
+
+        return [xmin, ymin, xmax, ymax]
+
 
 # add the plotting methods
 Regions.plot = _plot
@@ -385,6 +404,8 @@ class _OneRegion(object):
 
         self.centroid = centroid
 
+        self._bounds = None
+
     def __repr__(self):
         msg = "Region: {} ({} / {})\ncenter: {}"
         return msg.format(self.name, self.abbrev, self.number, self.centroid)
@@ -419,6 +440,13 @@ class _OneRegion(object):
             self._coords = np.vstack(lst)[:-1, :]
 
         return self._coords
+
+    @property
+    def bounds(self):
+        """bounds of the regions ((Multi)Polygon.bounds (min_lon, min_lat, max_lon, max_lat)"""
+        if self._bounds is None:
+            self._bounds = self.polygon.bounds
+        return self._bounds
 
 
 class Region_cls(_OneRegion):
