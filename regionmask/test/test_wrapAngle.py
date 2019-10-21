@@ -1,5 +1,5 @@
 import numpy as np
-from regionmask import _wrapAngle360, _wrapAngle180, _wrapAngle
+from regionmask.core.utils import _wrapAngle360, _wrapAngle180, _wrapAngle
 from pytest import raises
 
 
