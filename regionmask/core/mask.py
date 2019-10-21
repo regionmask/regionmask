@@ -1,6 +1,6 @@
 import numpy as np
 
-from .utils import _wrapAngle, _is180
+from .utils import _wrapAngle, _is_180
 
 
 def _maybe_import_xarray():
@@ -83,7 +83,7 @@ def _mask(
     # automatically detect whether wrapping is necessary
     if wrap_lon is None:
         regions_is_180 = self.lon_180
-        grid_is_180 = _is180(lon.min(), lon.max())
+        grid_is_180 = _is_180(lon.min(), lon.max())
 
         wrap_lon = not regions_is_180 == grid_is_180
 

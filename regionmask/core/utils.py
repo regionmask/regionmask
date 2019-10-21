@@ -92,7 +92,7 @@ def _wrapAngle(lon, wrap_lon=True):
 # -----------------------------------------------------------------------------
 
 
-def _is180(lon_min, lon_max):
+def _is_180(lon_min, lon_max):
 
     lon_min = np.round(lon_min, 6)
     lon_max = np.round(lon_max, 6)
