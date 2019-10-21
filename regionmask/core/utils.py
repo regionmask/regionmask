@@ -87,3 +87,18 @@ def _wrapAngle(lon, wrap_lon=True):
             raise IndexError(msg)
 
     return new_lon
+
+
+# -----------------------------------------------------------------------------
+
+
+def _is_180(lon_min, lon_max):
+
+    lon_min = np.round(lon_min, 6)
+    lon_max = np.round(lon_max, 6)
+
+    if (lon_min < 0) and (lon_max > 180):
+        msg = "lon has both data that is larger than 180 and smaller than 0."
+        raise ValueError(msg)
+
+    return lon_max <= 180

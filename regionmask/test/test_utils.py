@@ -4,6 +4,7 @@ from regionmask.core.utils import (
     _create_dict_of_numbered_string,
     _maybe_to_dict,
     _sanitize_names_abbrevs,
+    _is_180,
 )
 
 
@@ -58,3 +59,16 @@ def test_sanitize_names_abbrevs(numbers, values, default, expected):
     assert isinstance(result, dict)
 
     assert result == expected
+
+
+def test_is_180():
+
+    assert _is_180(-180, 180)
+    assert not _is_180(0, 180.1)
+    assert not _is_180(0, 180.01)
+
+    # allow for small rounding errors
+    assert _is_180(-180.0000002, 180.0000002)
+
+    with pytest.raises(ValueError, match="lon has both data that is larger than 180"):
+        _is_180(-1, 181)

@@ -78,6 +78,8 @@ Attributes
    Regions.centroids
    Regions.bounds
    Regions.bounds_global
+   Regions.lon_180
+   Regions.lon_360
    Regions._is_polygon
 
 
@@ -102,7 +104,7 @@ Attributes
    _OneRegion.coords
    _OneRegion.polygon
    _OneRegion.bounds
-   
+
 
 Private Functions
 =================
@@ -110,6 +112,7 @@ Private Functions
 .. autosummary::
    :toctree: generated/
 
-   _wrapAngle360
-   _wrapAngle180
-   _wrapAngle
+   core.utils._wrapAngle360
+   core.utils._wrapAngle180
+   core.utils._wrapAngle
+   core.utils._is_180

@@ -22,6 +22,8 @@ Breaking Changes
 
 Enhancements
 ~~~~~~~~~~~~
+ - Automatically detect whether the longitude of the grid needs to be wrapped,
+   depending on the extent of the grid and the regions (closes :issue:`34`).
  - Make all arguments to :code:`Regions` optional (except :code:`outlines`)
    this should make it easier to create your on region definitions (closes :issue:`37`).
  - Allow to pass arbitrary iterables to :code:`Regions` - previously these had to be of

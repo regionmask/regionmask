@@ -103,7 +103,7 @@ def test_mask_wrap():
     lon = [-1.5, -0.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, xarray=False)
+    result = r.mask(lon, lat, xarray=False, wrap_lon=False)
     assert np.all(np.isnan(result))
 
     # this is the wron wrapping
@@ -118,6 +118,60 @@ def test_mask_wrap():
 
     # determine the wrap by hand
     result = r.mask(lon, lat, xarray=False, wrap_lon=360)
+    assert np.allclose(result, expected, equal_nan=True)
+
+
+def test_mask_autowrap():
+
+    expected = expected_mask()
+
+    # create a test case where the outlines and the lon coordinates
+    # are different - or the same - should work either way
+
+    # 1. -180..180 regions and -180..180 lon
+    lon = [0.5, 1.5]
+    lat = [0.5, 1.5]
+    result = r1.mask(lon, lat, xarray=False)
+    assert np.allclose(result, expected, equal_nan=True)
+
+    # 2. -180..180 regions and 0..360 lon
+    # outline -180..180
+    outl1 = ((-180, 0), (-180, 1), (-1, 1.0), (-1, 0))
+    outl2 = ((-180, 1), (-180, 2), (-1, 2.0), (-1, 1))
+    outlines = [outl1, outl2]
+
+    r = Regions(outlines)
+
+    # lon -180..179.9
+    lon = [358.5, 359.5]
+    lat = [0.5, 1.5]
+
+    result = r.mask(lon, lat, xarray=False)
+    assert np.allclose(result, expected, equal_nan=True)
+
+    # 3. 0..360 regions and -180..180 lon
+
+    # outline 0..359.9
+    outl1 = ((359, 0), (359, 1), (0, 1.0), (0, 0))
+    outl2 = ((359, 1), (359, 2), (0, 2.0), (0, 1))
+    outlines = [outl1, outl2]
+
+    r = Regions(outlines)
+
+    # lon -180..179.9
+    lon = [-1.5, -0.5]
+    lat = [0.5, 1.5]
+
+    result = r.mask(lon, lat, xarray=False)
+    assert np.allclose(result, expected, equal_nan=True)
+
+    # 3. 0..360 regions and 0..360 lon
+
+    # lon 0..359.9
+    lon = [0.5, 359.5]
+    lat = [0.5, 1.5]
+
+    result = r.mask(lon, lat, xarray=False)
     assert np.allclose(result, expected, equal_nan=True)
 
 

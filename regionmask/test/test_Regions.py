@@ -232,3 +232,25 @@ def test_optional_arguments(numbers, names, abbrevs, centroids, name):
 def _create_expected_str_list(numbers, string):
 
     return [string + str(number) for number in numbers]
+
+
+def test_lon_extent():
+
+    assert test_regions1.lon_180
+    assert not test_regions1.lon_360
+
+    outl_ = ((0, 0), (0, 1), (360, 1.0), (360, 0))
+
+    test_regions_ = Regions([outl_])
+
+    assert not test_regions_.lon_180
+    assert test_regions_.lon_360
+
+    outl_ = ((-1, 0), (-1, 1), (360, 1.0), (360, 0))
+    test_regions_ = Regions([outl_])
+
+    with pytest.raises(ValueError, match="lon has both data that is larger than 180 "):
+        test_regions_.lon_180
+
+    with pytest.raises(ValueError, match="lon has both data that is larger than 180 "):
+        test_regions_.lon_360
