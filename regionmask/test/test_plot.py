@@ -27,6 +27,9 @@ outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
 outl2 = ((0, 1), (0, 2), (1, 2.0), (1, 1))
 outlines = [outl1, outl2]
 
+outl1_closed = outl1 + outl1[:1]
+outl2_closed = outl2 + outl2[:1]
+
 r1 = Regions_cls(name, numbers, names, abbrevs, outlines)
 
 numbers = [1, 2]
@@ -97,8 +100,8 @@ def test_plot_lines(plotfunc):
 
     assert len(lines) == 2
 
-    assert np.allclose(ax.lines[0].get_xydata(), outl1)
-    assert np.allclose(ax.lines[1].get_xydata(), outl2)
+    assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
+    assert np.allclose(ax.lines[1].get_xydata(), outl2_closed)
 
     plt.close("all")
 
@@ -114,36 +117,36 @@ def test_plot_lines_selection(plotfunc):
     ax = func(subsample=False, regions=[0, 1])
     lines = ax.lines
     assert len(lines) == 2
-    assert np.allclose(ax.lines[0].get_xydata(), outl1)
-    assert np.allclose(ax.lines[1].get_xydata(), outl2)
+    assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
+    assert np.allclose(ax.lines[1].get_xydata(), outl2_closed)
     plt.close("all")
 
     # select a single number
     ax = func(subsample=False, regions=0)
     lines = ax.lines
     assert len(lines) == 1
-    assert np.allclose(ax.lines[0].get_xydata(), outl1)
+    assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
     plt.close("all")
 
     # select by number
     ax = func(subsample=False, regions=[0])
     lines = ax.lines
     assert len(lines) == 1
-    assert np.allclose(ax.lines[0].get_xydata(), outl1)
+    assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
     plt.close("all")
 
     # select by long_name
     ax = func(subsample=False, regions=["Unit Square1"])
     lines = ax.lines
     assert len(lines) == 1
-    assert np.allclose(ax.lines[0].get_xydata(), outl1)
+    assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
     plt.close("all")
 
     # select by abbreviation
     ax = func(subsample=False, regions=["uSq1"])
     lines = ax.lines
     assert len(lines) == 1
-    assert np.allclose(ax.lines[0].get_xydata(), outl1)
+    assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
     plt.close("all")
 
 

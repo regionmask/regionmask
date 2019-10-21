@@ -37,6 +37,8 @@ Enhancements
 Bug Fixes
 ~~~~~~~~~
 
+ - Regions were missing a line when the coords was not closed and
+   ``subsample=False``  (:issue:`46`).
  - Conda channel mixing breaks travis tests. Only use conda-forge, add strict
    channel priority (:issue:`27`).
  - Fix documentation compilation on readthedocs (aborted, did not display

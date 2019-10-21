@@ -393,10 +393,12 @@ class _OneRegion(object):
             self._coords = None
         else:
             self._polygon = None
-            self._coords = np.array(outline)
+            outline = np.asarray(outline)
 
-            assert self.coords.ndim == 2
-            assert self.coords.shape[1] == 2
+            assert outline.ndim == 2, "Outline must be 2D"
+            assert outline.shape[1] == 2, "Outline must have Nx2 elements"
+
+            self._coords = np.array(outline)
 
         # the Polygon Centroid is much stabler
         if centroid is None:
