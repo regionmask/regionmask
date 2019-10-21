@@ -108,3 +108,18 @@ def test_Regions_cls_deprection_warning():
         match="Using 'Region_cls' is deprecated, please use '_OneRegion' instead.",
     ):
         Region_cls(1, "Unit Square", "USq", outl)
+
+
+@pytest.mark.filterwarnings("ignore:Using 'Region_cls'")
+@pytest.mark.parametrize("cls", (Region_cls, _OneRegion))
+def test_wrong_region_outlines(cls):
+
+    outl = (((0, 0), (0, 1)), ((1, 1.0), (1, 0)))
+
+    with pytest.raises(AssertionError, match="Outline must be 2D"):
+        cls(1, "Unit Square", "USq", outl)
+
+    outl = ((0, 0, 0), (0, 1, 1), (1, 1, 1), (1, 0, 0))
+
+    with pytest.raises(AssertionError, match="Outline must have Nx2 elements"):
+        cls(1, "Unit Square", "USq", outl)

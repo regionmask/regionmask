@@ -8,9 +8,14 @@ def _draw_poly(ax, outl, trans, subsample=False, **kwargs):
     draw the outline of the regions
 
     """
+
     if subsample:
         lons, lats = _subsample(outl)
     else:
+        # make sure the outline is closed
+        if not np.allclose(outl[0, :], outl[-1, :]):
+            outl = np.vstack([outl, outl[0, :]])
+
         lons, lats = outl[:, 0], outl[:, 1]
 
     color = kwargs.pop("color", "0.05")
