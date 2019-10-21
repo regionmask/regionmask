@@ -17,7 +17,7 @@ from shapely.geometry import Polygon, MultiPolygon
 
 from .mask import _mask
 from .plot import _plot, _plot_regions
-from .utils import _sanitize_names_abbrevs, _maybe_to_dict
+from .utils import _sanitize_names_abbrevs, _maybe_to_dict, _is180
 
 
 class Regions(object):
@@ -253,6 +253,21 @@ class Regions(object):
         ymax = max([p[3] for p in bounds])
 
         return [xmin, ymin, xmax, ymax]
+
+    @property
+    def lon_180(self):
+        """if the regions extend from -180 to 180
+        """
+        lon_min = self.bounds_global[0]
+        lon_max = self.bounds_global[2]
+
+        return _is180(lon_min, lon_max)
+
+    @property
+    def lon_360(self):
+        """if the regions extend from 0 to 360
+        """
+        return not self.lon_180
 
 
 # add the plotting methods

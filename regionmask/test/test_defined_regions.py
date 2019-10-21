@@ -9,6 +9,9 @@ def _defined_region(regions, n_regions):
     assert isinstance(regions, Regions)
     assert len(regions) == n_regions
 
+    # currently all regionas are -180..180
+    assert regions.lon_180
+
 
 def test_giorgi():
     regions = defined_regions.giorgi
