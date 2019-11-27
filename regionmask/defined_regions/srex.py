@@ -227,7 +227,7 @@ from ..core.regions import Regions
 numbers = range(1, 27)
 source = (
     "Seneviratne et al., 2012 "
-    "(https://www.ipcc.ch/pdf/special-reports/srex/SREX-Ch3-Supplement_FINAL.pdf)"
+    "(https://www.ipcc.ch/site/assets/uploads/2018/03/SREX-Ch3-Supplement_FINAL-1.pdf)"
 )
 
 srex = Regions(
