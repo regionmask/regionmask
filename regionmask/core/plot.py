@@ -3,7 +3,7 @@ import numpy as np
 # =============================================================================
 
 
-def _draw_poly(ax, outl, trans, subsample=False, **kwargs):
+def _draw_poly(ax, outl, trans, subsample=False, close=True, **kwargs):
     """
     draw the outline of the regions
 
@@ -13,7 +13,7 @@ def _draw_poly(ax, outl, trans, subsample=False, **kwargs):
         lons, lats = _subsample(outl)
     else:
         # make sure the outline is closed
-        if not np.allclose(outl[0, :], outl[-1, :]):
+        if close and not np.allclose(outl[0, :], outl[-1, :]):
             outl = np.vstack([outl, outl[0, :]])
 
         lons, lats = outl[:, 0], outl[:, 1]
@@ -194,10 +194,12 @@ def _plot_regions(
     if subsample is None:
         subsample = not self._is_polygon
 
+    close = not self._is_polygon
+
     # draw the outlines
     for i in regions:
         coords = self[i].coords
-        _draw_poly(ax, coords, trans, subsample, **line_kws)
+        _draw_poly(ax, coords, trans, subsample, close, **line_kws)
 
     if add_label:
 
