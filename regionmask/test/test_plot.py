@@ -10,7 +10,7 @@ import cartopy.crs as ccrs
 
 from regionmask import Regions, _subsample
 
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, MultiPolygon
 
 import pytest
 
@@ -40,6 +40,11 @@ poly2 = Polygon(outl2)
 poly = {1: poly1, 2: poly2}
 
 r2 = Regions(name=name, numbers=numbers, names=names, abbrevs=abbrevs, outlines=poly)
+
+multipoly = [MultiPolygon([poly1, poly2])]
+r3 = Regions(multipoly)
+# polygons are automatically closed
+outl_multipoly = np.concatenate((outl1_closed, [[np.nan, np.nan]], outl2_closed))
 
 # =============================================================================
 
@@ -103,6 +108,23 @@ def test_plot_lines(plotfunc):
 
     assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
     assert np.allclose(ax.lines[1].get_xydata(), outl2_closed)
+
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_lines_multipoly(plotfunc):
+    # regression of 47: because multipolygons were concatenated
+    # they did not look closed
+
+    func = getattr(r3, plotfunc)
+
+    plt.close("all")
+    ax = func(subsample=False)
+
+    lines = ax.lines
+
+    assert len(lines) == 1
+
+    assert np.allclose(ax.lines[0].get_xydata(), outl_multipoly, equal_nan=True)
 
 
 # -----------------------------------------------------------------------------
