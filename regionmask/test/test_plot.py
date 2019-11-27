@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 import cartopy.crs as ccrs
 
-from regionmask import Regions_cls, _subsample
+from regionmask import Regions, _subsample
 
 from shapely.geometry import Polygon
 
@@ -30,7 +30,7 @@ outlines = [outl1, outl2]
 outl1_closed = outl1 + outl1[:1]
 outl2_closed = outl2 + outl2[:1]
 
-r1 = Regions_cls(name, numbers, names, abbrevs, outlines)
+r1 = Regions(name=name, numbers=numbers, names=names, abbrevs=abbrevs, outlines=outlines)
 
 numbers = [1, 2]
 names = {1: "Unit Square1", 2: "Unit Square2"}
@@ -39,7 +39,7 @@ poly1 = Polygon(outl1)
 poly2 = Polygon(outl2)
 poly = {1: poly1, 2: poly2}
 
-r2 = Regions_cls(name, numbers, names, abbrevs, poly)
+r2 = Regions(name=name, numbers=numbers, names=names, abbrevs=abbrevs, outlines=poly)
 
 # =============================================================================
 
