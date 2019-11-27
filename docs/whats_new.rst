@@ -41,6 +41,9 @@ Bug Fixes
 
  - Regions were missing a line when the coords was not closed and
    ``subsample=False``  (:issue:`46`).
+ - Fix a regression introduced by :pull:`47`: when plotting regions containing
+   multipolygons ``_draw_poly`` closed the region again and introduced a spurious
+   line (closes :issue:`54`).
  - Conda channel mixing breaks travis tests. Only use conda-forge, add strict
    channel priority (:issue:`27`).
  - Fix documentation compilation on readthedocs (aborted, did not display
