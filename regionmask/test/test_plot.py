@@ -30,7 +30,9 @@ outlines = [outl1, outl2]
 outl1_closed = outl1 + outl1[:1]
 outl2_closed = outl2 + outl2[:1]
 
-r1 = Regions(name=name, numbers=numbers, names=names, abbrevs=abbrevs, outlines=outlines)
+r1 = Regions(
+    name=name, numbers=numbers, names=names, abbrevs=abbrevs, outlines=outlines
+)
 
 numbers = [1, 2]
 names = {1: "Unit Square1", 2: "Unit Square2"}
