@@ -1,18 +1,14 @@
 import numpy as np
-
 import matplotlib
+import pytest
 
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
-
 import cartopy.crs as ccrs
-
-from regionmask import Regions, _subsample
-
 from shapely.geometry import Polygon, MultiPolygon
 
-import pytest
+from regionmask import Regions, _subsample
 
 # =============================================================================
 
@@ -59,7 +55,8 @@ def test__subsample():
 
 # =============================================================================
 
-
+@pytest.mark.filterwarnings("ignore:numpy.dtype size changed")
+@pytest.mark.filterwarnings("ignore:numpy.ufunc size changed")
 def test_plot_projection():
 
     plt.close("all")
