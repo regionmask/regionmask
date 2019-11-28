@@ -114,14 +114,6 @@ def test_centroid(test_regions):
     assert np.allclose(test_regions.centroids, [[0.5, 0.5], [0.5, 1.5]])
 
 
-def test_user_defined_centroid():
-
-    centroids = [[0, 0], [1, 1]]
-    test_regions_centroids = Regions(outlines, centroids=centroids)
-
-    assert test_regions_centroids.centroids == centroids
-
-
 @pytest.mark.parametrize(
     "test_regions, number", zip(all_test_regions, all_first_numbers)
 )
@@ -190,14 +182,13 @@ def test_subset_to_Regions(test_regions, number):
 @pytest.mark.parametrize("numbers", [None, [1, 2]])
 @pytest.mark.parametrize("names", [None, "names", names])
 @pytest.mark.parametrize("abbrevs", [None, "abbrevs", abbrevs])
-@pytest.mark.parametrize("centroids", [None, [[0, 0], [1, 1]]])
 @pytest.mark.parametrize("name", [None, "name"])
-def test_optional_arguments(numbers, names, abbrevs, centroids, name):
+def test_optional_arguments(numbers, names, abbrevs, name):
 
     if name is None:
-        result = Regions(outlines, numbers, names, abbrevs, centroids)
+        result = Regions(outlines, numbers, names, abbrevs)
     else:
-        result = Regions(outlines, numbers, names, abbrevs, centroids, name)
+        result = Regions(outlines, numbers, names, abbrevs, name)
 
     if numbers is None:
         numbers = [0, 1]
@@ -212,8 +203,7 @@ def test_optional_arguments(numbers, names, abbrevs, centroids, name):
     elif isinstance(abbrevs, six.string_types):
         abbrevs = _create_expected_str_list(numbers, abbrevs)
 
-    if centroids is None:
-        centroids = [[0.5, 0.5], [0.5, 1.5]]
+    expected_centroids = [[0.5, 0.5], [0.5, 1.5]]
 
     if name is None:
         name = "unnamed"
@@ -224,7 +214,7 @@ def test_optional_arguments(numbers, names, abbrevs, centroids, name):
 
     assert result.abbrevs == abbrevs
 
-    assert np.allclose(result.centroids, centroids)
+    assert np.allclose(result.centroids, expected_centroids)
 
     assert result.name == name
 
