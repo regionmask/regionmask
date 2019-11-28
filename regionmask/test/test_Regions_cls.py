@@ -91,6 +91,19 @@ def test_centroid():
     assert np.allclose(r1.centroids, [[0.5, 0.5], [0.5, 1.5]])
 
 
+@pytest.mark.filterwarnings("ignore:Using 'Regions_cls'")
+@pytest.mark.filterwarnings("ignore:Specifying 'centroids'")
+def test_user_defined_centroid():
+
+    centroids = [[0, 0], [1, 1]]
+
+    test_regions_centroids = Regions_cls(
+        name, numbers, names, abbrevs, outlines, centroids=centroids
+    )
+
+    assert test_regions_centroids.centroids == centroids
+
+
 def test_map_keys_one():
     pytest.raises(KeyError, r1.__getitem__, "")
     assert r1.map_keys(0) == 0
@@ -165,3 +178,11 @@ def test_Regions_cls_deprection_warning():
         match="Using 'Regions_cls' is deprecated, please use 'Regions' instead.",
     ):
         Regions_cls(name, numbers, names, abbrevs, outlines)
+
+
+@pytest.mark.filterwarnings("ignore:Using 'Regions_cls'")
+def test_centroids_deprection_warning():
+
+    centroids = [[0, 0], [1, 1]]
+    with pytest.warns(FutureWarning, match="Specifying 'centroids' is deprecated"):
+        Regions_cls(name, numbers, names, abbrevs, outlines, centroids=centroids)

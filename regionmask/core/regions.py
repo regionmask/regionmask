@@ -31,7 +31,6 @@ class Regions(object):
         numbers=None,
         names=None,
         abbrevs=None,
-        centroids=None,
         name="unnamed",
         source=None,
     ):
@@ -48,9 +47,6 @@ class Regions(object):
             Long name of each region. Default: ["Region0", .., "RegionN"]
         abbrevs : iterable or dict of string, optional
             Abbreviations of each region. Default: ["r0", ..., "rN"]
-        centroids : list of 1x2 iterable, optional.
-            Center of mass of this region.  Position of the label on map plots.
-            Default: (Multi)Polygon.centroid.
         name : string, optional
             Name of the collection of regions. Default: "unnamed"
         source : string, optional
@@ -95,15 +91,10 @@ class Regions(object):
         names = _sanitize_names_abbrevs(numbers, names, "Region")
         abbrevs = _sanitize_names_abbrevs(numbers, abbrevs, "r")
 
-        if centroids is None:
-            centroids = {i: None for i in numbers}
-        else:
-            centroids = _maybe_to_dict(numbers, centroids)
-
         regions = dict()
 
         for n in numbers:
-            regions[n] = _OneRegion(n, names[n], abbrevs[n], outlines[n], centroids[n])
+            regions[n] = _OneRegion(n, names[n], abbrevs[n], outlines[n])
 
         self.regions = regions
         self.name = name
@@ -330,17 +321,30 @@ class Regions_cls(Regions):
             "Using 'Regions_cls' is deprecated, please use 'Regions' instead."
             " Please note that the call signature is different."
         )
-        warnings.warn(msg, FutureWarning, stacklevel=10)
+        warnings.warn(msg, FutureWarning, stacklevel=3)
 
         super(Regions_cls, self).__init__(
             outlines=outlines,
             numbers=numbers,
             names=names,
             abbrevs=abbrevs,
-            centroids=centroids,
             name=name,
             source=source,
         )
+
+        if centroids is not None:
+            msg = (
+                "Specifying 'centroids' is deprecated and the keyword will be "
+                "removed in the next version."
+            )
+            warnings.warn(msg, FutureWarning, stacklevel=3)
+
+            numbers = self.numbers
+
+            centroids = _maybe_to_dict(numbers, centroids)
+
+            for number in numbers:
+                self[number].centroid = centroids[number]
 
 
 # =============================================================================
@@ -470,6 +474,6 @@ class Region_cls(_OneRegion):
     def __init__(self, number, name, abbrev, outline, centroid=None):
 
         msg = "Using 'Region_cls' is deprecated, please use '_OneRegion' instead."
-        warnings.warn(msg, FutureWarning, stacklevel=2)
+        warnings.warn(msg, FutureWarning, stacklevel=3)
 
         super(Region_cls, self).__init__(number, name, abbrev, outline, centroid)
