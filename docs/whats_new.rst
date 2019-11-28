@@ -16,9 +16,9 @@ v0.5.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
  - Renamed :code:`Regions_cls` to :code:`Regions` and changed its call 
-   signature. This allows to make all arguments except :code:`outlines` optional.
+   signature. This allowed to make all arguments except :code:`outlines` optional.
+ - Deprecated the :code:`centroids` keyword for :code:`Regions` (:issue:`51`).
  - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity. 
-
 
 Enhancements
 ~~~~~~~~~~~~
