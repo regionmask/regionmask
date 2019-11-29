@@ -6,7 +6,8 @@ import geopandas as gp
 
 from ..core.regions import Regions
 
-DATA_PATH = pkg_resources.resource_filename('regionmask', 'defined_regions')
+DATA_PATH = pkg_resources.resource_filename("regionmask", "defined_regions")
+
 
 def _combine_to_multipolygon(df, *names):
 
@@ -24,20 +25,98 @@ def _combine_to_multipolygon(df, *names):
     return df
 
 
-filename = os.path.join(DATA_PATH, "data", "AR6_WGI_referenceRegions", "AR6_WGI_referenceRegions.shp")
+filename = os.path.join(
+    DATA_PATH, "data", "AR6_WGI_referenceRegions", "AR6_WGI_referenceRegions.shp"
+)
 
 df = gp.read_file(filename)
+
+
+ar6_separate_pacific = Regions(
+    df.geometry, names=df.V2, abbrevs=df.V3, name="IPCC AR6 WGI Reference Regions"
+)
+
 
 df = _combine_to_multipolygon(df, "SPO", "SPO*")
 df = _combine_to_multipolygon(df, "EPO", "EPO*")
 df = _combine_to_multipolygon(df, "NPO", "NPO*")
 
-r = Regions(df.geometry, names=df.V2, abbrevs=df.V3, name="IPCC AR6 WGI Reference Regions")
+
+ar6 = Regions(
+    df.geometry,
+    names=df.V2,
+    abbrevs=df.V3,
+    name="IPCC AR6 WGI Reference Regions (combined Pacific regions)",
+)
 
 
+land = [
+    "GIC",
+    "NEC",
+    "CNA",
+    "ENA",
+    "NWN",
+    "WNA",
+    "NCA",
+    "SCA",
+    "CAR",
+    "NWS",
+    "SAM",
+    "SSA",
+    "SWS",
+    "SES",
+    "NSA",
+    "NES",
+    "NEU",
+    "CEU",
+    "EEU",
+    "MED",
+    "WAF",
+    "SAH",
+    "NEAF",
+    "CEAF",
+    "SWAF",
+    "SEAF",
+    "CAF",
+    "RAR",
+    "RFE",
+    "ESB",
+    "WSB",
+    "WCA",
+    "TIB",
+    "EAS",
+    "ARP",
+    "SAS",
+    "SEA",
+    "NAU",
+    "CAU",
+    "SAU",
+    "NZ",
+    "EAN",
+]
 
 
+ar6_land = ar6[land]
+ar6_land.name = "IPCC AR6 WGI Reference Regions (combined Pacific regions, land only)"
 
+ocean = [
+    "WAN",
+    "ARO",
+    "SPO",
+    "EPO",
+    "NPO",
+    "SAO",
+    "EAO",
+    "NAO",
+    "EIO",
+    "SIO",
+    "ARS",
+    "BOB",
+    "SOO",
+]
+
+ar6_ocean = ar6[ocean]
+ar6_ocean.name = "IPCC AR6 WGI Reference Regions (combined Pacific regions, ocean only)"
 
 # df.drop(49)
 
