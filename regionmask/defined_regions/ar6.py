@@ -17,7 +17,7 @@ def _combine_to_multipolygon(df, *names):
 
     combined_poly = geometry.MultiPolygon(all_poly)
 
-    df.loc[df[column] == names[0], "geometry"] = [combined_poly]
+    df.loc[df[column] == names[0], "geometry"] = gp.GeoSeries(combined_poly).values
 
     for name in names[1:]:
         df = df.loc[df[column] != name]
