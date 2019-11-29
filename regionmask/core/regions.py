@@ -433,7 +433,7 @@ class _OneRegion(object):
                 # another possibility; errors on self-intersecting polygon
                 # centroid = np.array(poly.representative_point().coords).squeeze()
             else:
-                centroid = np.array(self.polygon.centroid.coords).squeeze()
+                centroid = np.array(poly.centroid.coords).squeeze()
 
         self.centroid = centroid
 
