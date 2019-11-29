@@ -44,6 +44,9 @@ Bug Fixes
  - Fix a regression introduced by :pull:`47`: when plotting regions containing
    multipolygons ``_draw_poly`` closed the region again and introduced a spurious
    line (closes :issue:`54`).
+ - For a region defined via MultiPolygon: use the centroid of the largest Polygon
+   to add the label on a map. Previously the label could be placed outside of the
+   region (closes :issue:`59`).
  - Conda channel mixing breaks travis tests. Only use conda-forge, add strict
    channel priority (:issue:`27`).
  - Fix documentation compilation on readthedocs (aborted, did not display
