@@ -9,7 +9,7 @@ def _defined_region(regions, n_regions):
     assert isinstance(regions, Regions)
     assert len(regions) == n_regions
 
-    # currently all regionas are -180..180
+    # currently all regions are -180..180
     assert regions.lon_180
 
 
@@ -46,6 +46,26 @@ def test_us_states_10():
 def test_land_110():
     regions = defined_regions.natural_earth.land_110
     _defined_region(regions, 1)
+
+
+def test_ar6():
+    regions = defined_regions.ar6
+    _defined_region(regions, 55)
+
+
+def test_ar6_land():
+    regions = defined_regions.ar6_land
+    _defined_region(regions, 42)
+
+
+def test_ar6_ocean():
+    regions = defined_regions.ar6_ocean
+    _defined_region(regions, 13)
+
+
+def test_ar6_separate_pacific():
+    regions = defined_regions.ar6_separate_pacific
+    _defined_region(regions, 58)
 
 
 def test_maybe_get_column():
