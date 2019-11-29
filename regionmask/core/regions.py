@@ -421,7 +421,19 @@ class _OneRegion(object):
 
         # the Polygon Centroid is much stabler
         if centroid is None:
-            centroid = np.array(self.polygon.centroid.coords)[0]
+            poly = self.polygon
+            if isinstance(poly, MultiPolygon):
+                # find the polygon with the largest area and assig as centroid
+                area = 0
+                for p in poly:
+                    if p.area > area:
+                        centroid = np.array(p.centroid.coords).squeeze()
+                        area = p.area
+
+                # another possibility; errors on self-intersecting polygon
+                # centroid = np.array(poly.representative_point().coords).squeeze()
+            else:
+                centroid = np.array(poly.centroid.coords).squeeze()
 
         self.centroid = centroid
 

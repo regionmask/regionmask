@@ -2,7 +2,7 @@ import numpy as np
 
 from regionmask import Regions, _OneRegion
 
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, MultiPolygon
 
 import pytest
 
@@ -17,8 +17,9 @@ numbers1 = [0, 1]
 names = ["Unit Square1", "Unit Square2"]
 abbrevs = ["uSq1", "uSq2"]
 
-outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
-outl2 = ((0, 1), (0, 2), (1, 2.0), (1, 1))
+outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
+outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
+
 outlines = [outl1, outl2]
 
 test_regions1 = Regions(outlines, numbers1, names, abbrevs, name=name)
@@ -35,6 +36,7 @@ test_regions2 = Regions(poly, numbers2, names_dict, abbrevs_dict, name=name)
 # numbers as array
 numbers3 = [2, 3]
 test_regions3 = Regions(outlines, np.array(numbers3), names, abbrevs, name=name)
+
 
 # =============================================================================
 
@@ -112,6 +114,22 @@ def test_polygon(test_regions):
 @pytest.mark.parametrize("test_regions", all_test_regions)
 def test_centroid(test_regions):
     assert np.allclose(test_regions.centroids, [[0.5, 0.5], [0.5, 1.5]])
+
+
+def test_centroid_multipolygon():
+    multipoly_equal = [MultiPolygon([poly1, poly2])]
+    test_regions_multipoly_equal = Regions(multipoly_equal)
+
+    # two equally sized polygons: uses the centroid of the first one
+    assert np.allclose(test_regions_multipoly_equal.centroids, [[0.5, 0.5]])
+
+    # two un-equally sized polygons: uses the centroid of the larger one
+    outl2_unequal = ((0, 1), (0, 2), (2, 2.), (2, 1))
+    poly2_unequal = Polygon(outl2_unequal)
+    multipoly_unequal = [MultiPolygon([poly1, poly2_unequal])]
+    test_regions_multipoly_unequal = Regions(multipoly_unequal)
+
+    assert np.allclose(test_regions_multipoly_unequal.centroids, [[1.0, 1.5]])
 
 
 @pytest.mark.parametrize(
