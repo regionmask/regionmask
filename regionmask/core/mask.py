@@ -47,11 +47,12 @@ def _mask(
         If True returns an xarray DataArray, if False returns a numpy
         ndarray. If None, checks if xarray can be imported and if yes
         returns a xarray DataArray else a numpy ndarray. Default: None.
-    wrap_lon : bool | 180 | 360, optional
+    wrap_lon : None | bool | 180 | 360, optional
         If the regions and the provided longitude do not have the same
         base (i.e. one is -180..180 and the other 0..360) one of them
-        must be wrapped around. This can be done with wrap_lon. If
-        wrap_lon is False, nothing is done. If wrap_lon is True,
+        must be wrapped. This can be done with wrap_lon. 
+        If wrap_lon is None autodetects whether the longitude needs to be
+        wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
         longitude data is wrapped to 360 if its minimum is smaller
         than 0 and wrapped to 180 if its maximum is larger than 180.
 
