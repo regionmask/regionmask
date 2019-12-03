@@ -6,3 +6,4 @@ cartopy
 geopandas
 rasterio
 affine
+xarray

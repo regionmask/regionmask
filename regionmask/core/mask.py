@@ -1,19 +1,8 @@
 import numpy as np
+import warnings
+import xarray as xr
 
 from .utils import _wrapAngle, _is_180
-
-
-def _maybe_import_xarray():
-    """Import pyplot as register appropriate converters."""
-    try:
-        import xarray as xr
-
-        has_xarray = True
-    except ImportError:
-        has_xarray = False
-        xr = None
-
-    return xr, has_xarray
 
 
 def _mask(
@@ -44,10 +33,9 @@ def _mask(
         Name of longitude in 'lon_or_obj'. Default: 'lon'.
     lat_name, optional
         Name of latgitude in 'lon_or_obj'. Default: 'lat'
-    xarray : bool or None, optional
-        If True returns an xarray DataArray, if False returns a numpy
-        ndarray. If None, checks if xarray can be imported and if yes
-        returns a xarray DataArray else a numpy ndarray. Default: None.
+    xarray : None | bool, optional
+        Deprecated. If None or True returns an xarray DataArray, if False returns a
+        numpy ndarray. Default: None.
     wrap_lon : None | bool | 180 | 360, optional
         If the regions and the provided longitude do not have the same
         base (i.e. one is -180..180 and the other 0..360) one of them
@@ -72,8 +60,6 @@ def _mask(
 
     # method : string, optional
     #     Method to use in for the masking. Default: 'contains'.
-
-    __, has_xarray = _maybe_import_xarray()
 
     lat_orig = lat
 
@@ -115,7 +101,13 @@ def _mask(
         print(msg)
 
     if xarray is None:
-        xarray = has_xarray
+        xarray = True
+    else:
+        msg = (
+            "Passing the `xarray` keyword is deprecated. Future versions of regionmask will"
+            " always return an xarray Dataset. Use `mask.values` to obtain a numpy grid."
+        )
+        warnings.warn(msg, FutureWarning, stacklevel=3)
 
     if xarray:
         # wrap the angle back
@@ -143,7 +135,6 @@ def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
 
 def _create_xarray(mask, lon, lat, lon_name, lat_name):
     """create an xarray DataArray"""
-    xr, __ = _maybe_import_xarray()
 
     # create the xarray output
     coords = {lat_name: lat, lon_name: lon}
@@ -154,7 +145,6 @@ def _create_xarray(mask, lon, lat, lon_name, lat_name):
 
 def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
     """create an xarray DataArray for 2D fields"""
-    xr, __ = _maybe_import_xarray()
 
     lon2D, lat2D = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
 
