@@ -24,6 +24,7 @@ def _mask(
     lat_name="lat",
     xarray=None,
     wrap_lon=None,
+    method=None,
 ):
     """
     create a grid as mask of a set of regions for given lat/ lon grid
@@ -92,13 +93,20 @@ def _mask(
         lon_old = lon.copy()
         lon = _wrapAngle(lon, wrap_lon)
 
-    # https://gist.github.com/shoyer/0eb96fa8ab683ef078eb
-    method = "contains"
+    if method is None:
+        if equal_spaced(lon, lat):
+            method = "rasterize"
+        else:
+            method = "contains"
+
     if method == "contains":
         func = create_mask_contains
         data = self.coords
+    elif method == "rasterize":
+        func = _create_mask_rasterize_fasttrack
+        data = self.polygons
     else:
-        raise NotImplementedError("Only method 'contains' is implemented")
+        raise NotImplementedError("Only methods 'contains' and 'rasterize' are implemented")
 
     mask = func(lon, lat, data, numbers=self.numbers)
 
@@ -192,18 +200,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
     """
     import matplotlib.path as mplPath
 
-    lon = np.array(lon)
-    lat = np.array(lat)
-
-    n_coords = len(coords)
-
-    if numbers is None:
-        numbers = range(n_coords)
-    else:
-        assert len(numbers) == n_coords
-
-    msg = "The fill value should not be one of the region numbers."
-    assert fill not in numbers, msg
+    lon, lat, numbers = _parse_input(lon, lat, coords, fill, numbers)
 
     if lon.ndim == 2:
         LON, LAT = lon, lat
@@ -220,7 +217,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
     out.fill(fill)
 
     # loop through all polygons
-    for i in range(n_coords):
+    for i in range(len(coords)):
         cs = np.array(coords[i])
 
         isnan = np.isnan(cs[:, 0])
@@ -236,3 +233,93 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
             out[sel] = numbers[i]
 
     return out.reshape(shape)
+
+
+
+def _parse_input(lon, lat, coords, fill, numbers):
+
+    lon = np.asarray(lon)
+    lat = np.asarray(lat)
+
+    n_coords = len(coords)
+
+    if numbers is None:
+        numbers = range(n_coords)
+    else:
+        assert len(numbers) == n_coords
+
+    msg = "The fill value should not be one of the region numbers."
+    assert fill not in numbers, msg
+
+    return lon, lat, numbers
+
+
+def create_mask_rasterize(lon, lat, coords, numbers, fill=np.NaN):
+    
+    if not equal_spaced(lon, lat):
+        msg = "'lat' and 'lon' must be equally spaced."
+        raise ValueError(msg)
+
+    __, __, numbers = _parse_input(lon, lat, coords, fill, numbers)
+    
+    _create_mask_rasterize_fasttrack(lon, lat, coords, numbers)
+
+
+def _create_mask_rasterize_fasttrack(lon, lat, coords, numbers, fill=np.NaN):
+    """ for internal use: does not check valitity of input
+    """
+
+    shapes = zip(coords, numbers)
+
+    return rasterize(shapes, lon, lat, fill=fill)
+
+def transform_from_latlon(lon, lat):
+    '''perform an affine tranformation to the latitude/longitude coordinates'''
+    
+    from affine import Affine
+    
+    lat = np.asarray(lat)
+    lon = np.asarray(lon)
+
+    d_lon = lon[1] - lon[0]
+    d_lat = lat[1] - lat[0]
+    
+    trans = Affine.translation(lon[0] - d_lon / 2, lat[0] - d_lat / 2)
+    scale = Affine.scale(d_lon, d_lat)
+    return trans * scale
+
+
+def rasterize(shapes, lon, lat, fill=np.nan, **kwargs):
+    """Rasterize a list of (geometry, fill_value) tuples onto the given
+    xarray coordinates. This only works for 1d latitude and longitude
+    arrays.
+    """
+    
+    from rasterio import features
+    
+    transform = transform_from_latlon(lon, lat)
+    out_shape = (len(lat), len(lon))
+    
+    raster = features.rasterize(shapes, out_shape=out_shape,
+                                fill=fill, transform=transform,
+                                dtype=np.float, **kwargs)
+    
+    return raster
+
+
+def equal_spaced(lon, lat):
+
+    lat = np.asarray(lat)
+    lon = np.asarray(lon)
+
+    if lat.ndim > 1 or lon.ndim > 1:
+        return False
+
+    d_lon = np.diff(lon)
+    d_lat = np.diff(lat)
+
+    return np.allclose(d_lat[0], d_lat) and np.allclose(d_lon[0], d_lon)
+
+
+    # xr.DataArray(raster, coords=(lat, lon), dims=('lat', 'lon'), name='region')
+
