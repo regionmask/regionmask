@@ -19,6 +19,7 @@ Breaking Changes
    signature. This allowed to make all arguments except :code:`outlines` optional.
  - Deprecated the :code:`centroids` keyword for :code:`Regions` (:issue:`51`).
  - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity. 
+ - `xarray <http://xarray.pydata.org>`_ is now a hard dependency.
 
 Enhancements
 ~~~~~~~~~~~~

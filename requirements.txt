@@ -4,3 +4,4 @@ shapely
 six
 cartopy
 geopandas
+xarray

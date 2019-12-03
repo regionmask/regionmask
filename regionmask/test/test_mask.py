@@ -1,9 +1,10 @@
 import numpy as np
+import warnings
 
 from regionmask import Regions
 from regionmask import create_mask_contains
 
-from pytest import raises
+import pytest
 
 import xarray as xr
 
@@ -44,11 +45,14 @@ def test_create_mask_contains():
     expected = expected_mask(a=5, b=6)
     assert np.allclose(result, expected, equal_nan=True)
 
-    raises(AssertionError, create_mask_contains, lon, lat, outlines, fill=0)
+    with pytest.raises(AssertionError):
+        create_mask_contains(lon, lat, outlines, fill=0)
 
-    raises(AssertionError, create_mask_contains, lon, lat, outlines, numbers=[5])
+    with pytest.raises(AssertionError):
+        create_mask_contains(lon, lat, outlines, numbers=[5])
 
 
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 def test__mask():
 
     expected = expected_mask()
@@ -56,6 +60,7 @@ def test__mask():
     assert np.allclose(result, expected, equal_nan=True)
 
 
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 def test__mask_xarray():
 
     expected = expected_mask()
@@ -67,12 +72,14 @@ def test__mask_xarray():
     assert np.allclose(result.lon, lon)
 
 
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 def test__mask_xarray_name():
     msk = r1.mask(lon, lat, xarray=True)
 
     assert msk.name == "region"
 
 
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 def test__mask_obj():
 
     expected = expected_mask()
@@ -87,6 +94,7 @@ def test__mask_obj():
     assert np.allclose(result, expected, equal_nan=True)
 
 
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 def test_mask_wrap():
 
     # create a test case where the outlines and the lon coordinates
@@ -121,6 +129,7 @@ def test_mask_wrap():
     assert np.allclose(result, expected, equal_nan=True)
 
 
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 def test_mask_autowrap():
 
     expected = expected_mask()
@@ -188,6 +197,7 @@ def test_create_mask_contains_2D():
     assert np.allclose(result, expected, equal_nan=True)
 
 
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 def test__mask_2D():
 
     expected = expected_mask()
@@ -195,6 +205,7 @@ def test__mask_2D():
     assert np.allclose(result, expected, equal_nan=True)
 
 
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 def test__mask_xarray_out_2D():
 
     expected = expected_mask()
@@ -234,3 +245,13 @@ def test__mask_xarray_in_out_2D():
 
     assert np.allclose(result.lat_1D, [1, 2])
     assert np.allclose(result.lon_1D, [1, 2])
+
+
+@pytest.mark.parametrize("xarray", [True, False])
+def test_xarray_keyword_deprection_warning(xarray):
+
+    with pytest.warns(
+        FutureWarning,
+        match="Passing the `xarray` keyword",
+    ):
+        r1.mask(lon, lat, xarray=xarray)
