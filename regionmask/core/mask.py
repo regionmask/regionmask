@@ -94,7 +94,7 @@ def _mask(
         lon = _wrapAngle(lon, wrap_lon)
 
     if method is None:
-        if equal_spaced(lon, lat):
+        if equally_spaced(lon, lat):
             method = "rasterize"
         else:
             method = "contains"
@@ -256,7 +256,7 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
 def create_mask_rasterize(lon, lat, coords, numbers, fill=np.NaN):
     
-    if not equal_spaced(lon, lat):
+    if not equally_spaced(lon, lat):
         msg = "'lat' and 'lon' must be equally spaced."
         raise ValueError(msg)
 
@@ -271,9 +271,9 @@ def _create_mask_rasterize_fasttrack(lon, lat, coords, numbers, fill=np.NaN):
 
     shapes = zip(coords, numbers)
 
-    return rasterize(shapes, lon, lat, fill=fill)
+    return _rasterize(shapes, lon, lat, fill=fill)
 
-def transform_from_latlon(lon, lat):
+def _transform_from_latlon(lon, lat):
     '''perform an affine tranformation to the latitude/longitude coordinates'''
     
     from affine import Affine
@@ -289,15 +289,15 @@ def transform_from_latlon(lon, lat):
     return trans * scale
 
 
-def rasterize(shapes, lon, lat, fill=np.nan, **kwargs):
-    """Rasterize a list of (geometry, fill_value) tuples onto the given
-    xarray coordinates. This only works for 1d latitude and longitude
-    arrays.
+def _rasterize(shapes, lon, lat, fill=np.nan, **kwargs):
+    """ Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
+
+        This only works for 1D lat and lon arrays.
     """
     
     from rasterio import features
     
-    transform = transform_from_latlon(lon, lat)
+    transform = _transform_from_latlon(lon, lat)
     out_shape = (len(lat), len(lon))
     
     raster = features.rasterize(shapes, out_shape=out_shape,
@@ -307,7 +307,7 @@ def rasterize(shapes, lon, lat, fill=np.nan, **kwargs):
     return raster
 
 
-def equal_spaced(lon, lat):
+def equally_spaced(lon, lat):
 
     lat = np.asarray(lat)
     lon = np.asarray(lon)
