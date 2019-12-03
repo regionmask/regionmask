@@ -19,7 +19,7 @@ Breaking Changes
    signature. This allowed to make all arguments except :code:`outlines` optional.
  - Deprecated the :code:`centroids` keyword for :code:`Regions` (:issue:`51`).
  - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity. 
- - `xarray <http://xarray.pydata.org>`_ is now a hard dependency.
+ - `xarray <http://xarray.pydata.org>`_ is now a hard dependency (:issue:`64`).
 
 Enhancements
 ~~~~~~~~~~~~
@@ -34,7 +34,9 @@ Enhancements
    existing cartopy map or a regular axes (closes :issue:`31`).
  - Added :code:`bounds` and :code:`bounds_global` to :code:`Regions` indicating the
    minimum bounding region of each and all regions, respectively. Added 
-   :code:`bounds` to :code:`_OneRegion` (closes :issue:`33`)
+   :code:`bounds` to :code:`_OneRegion` (closes :issue:`33`).
+ - Add possibility to create an example dataset containing lon, lat and their
+   bounds (closes :issue:`66`).
  - Added code coverage with pytest-cov and codecov.
 
 Bug Fixes
