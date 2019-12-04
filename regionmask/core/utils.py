@@ -1,5 +1,6 @@
 import six
 import numpy as np
+import xarray as xr
 
 
 def _maybe_to_dict(keys, values):
@@ -102,3 +103,50 @@ def _is_180(lon_min, lon_max):
         raise ValueError(msg)
 
     return lon_max <= 180
+
+
+def create_lon_lat_dataarray_from_bounds(lon_start,
+                                         lon_stop,
+                                         lon_step,
+                                         lat_start,
+                                         lat_stop,
+                                         lat_step,):
+    """ example xarray Dataset
+
+        Parameters
+        ==========
+        lon_start : number
+            Start of lon bounds. The bounds includes this value.
+        lon_stop : number
+            End of lon bounds. The bounds does not include this value.
+        lon_step : number
+            Spacing between values.
+        lat_start : number
+            Start of lat bounds. The bounds includes this value.
+        lat_stop : number
+            End of lat bounds. The bounds does not include this value.
+        lat_step : number
+            Spacing between values.
+
+        Returns
+        =======
+        ds : xarray Dataarray
+            Example dataset including, lon, lat, lon_bnds, lat_bnds.
+
+    """
+
+    lon_bnds = np.arange(lon_start, lon_stop, lon_step)
+    lon = (lon_bnds[:-1] + lon_bnds[1:]) / 2
+
+    lat_bnds = np.arange(lat_start, lat_stop, lat_step)
+    lat = (lat_bnds[:-1] + lat_bnds[1:]) / 2
+
+    ds = xr.Dataset(  
+               coords=dict(lon=lon,
+                           lat=lat,
+                           lon_bnds=lon_bnds,
+                           lat_bnds=lat_bnds,))
+
+
+
+    return ds
