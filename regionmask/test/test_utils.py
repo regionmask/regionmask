@@ -1,10 +1,12 @@
 import pytest
+import numpy as np
 
 from regionmask.core.utils import (
     _create_dict_of_numbered_string,
     _maybe_to_dict,
     _sanitize_names_abbrevs,
     _is_180,
+    create_lon_lat_dataarray_from_bounds,
 )
 
 
@@ -72,3 +74,26 @@ def test_is_180():
 
     with pytest.raises(ValueError, match="lon has both data that is larger than 180"):
         _is_180(-1, 181)
+
+
+
+@pytest.mark.parametrize("lon_vals", [(-161, -29, 2), (-180, 181, 2)])
+@pytest.mark.parametrize("lat_vals", [(75, 13, -2), (90, -91, -2)])
+def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
+
+    # use "+" because x(*a, *b) is not valid in python 2.7
+    result = create_lon_lat_dataarray_from_bounds(*lon_vals + lat_vals)
+
+    for coord in ["lon", "lat", "lon_bnds", "lat_bnds"]:
+        assert coord in result.coords
+
+    def _check_coords(vals, name):
+
+        bnds_expected = np.arange(*vals)
+        expected = (bnds_expected[:-1] + bnds_expected[1:]) / 2
+
+        assert np.allclose(result[name], expected)
+        assert np.allclose(result[name + "_bnds"], bnds_expected)
+
+    _check_coords(lon_vals, "lon")
+    _check_coords(lat_vals, "lat")
