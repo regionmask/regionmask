@@ -2,7 +2,7 @@ import numpy as np
 import warnings
 import xarray as xr
 
-from .utils import _wrapAngle, _is_180
+from .utils import _wrapAngle, _is_180, equally_spaced
 
 
 def _mask(
@@ -39,7 +39,7 @@ def _mask(
     wrap_lon : None | bool | 180 | 360, optional
         If the regions and the provided longitude do not have the same
         base (i.e. one is -180..180 and the other 0..360) one of them
-        must be wrapped. This can be done with wrap_lon. 
+        must be wrapped. This can be done with wrap_lon.
         If wrap_lon is None autodetects whether the longitude needs to be
         wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
         longitude data is wrapped to 360 if its minimum is smaller
@@ -92,7 +92,9 @@ def _mask(
         func = _create_mask_rasterize_fasttrack
         data = self.polygons
     else:
-        raise NotImplementedError("Only methods 'contains' and 'rasterize' are implemented")
+        raise NotImplementedError(
+            "Only methods 'contains' and 'rasterize' are implemented"
+        )
 
     mask = func(lon, lat, data, numbers=self.numbers)
 
@@ -225,7 +227,6 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
     return out.reshape(shape)
 
 
-
 def _parse_input(lon, lat, coords, fill, numbers):
 
     lon = np.asarray(lon)
@@ -245,13 +246,13 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
 
 def create_mask_rasterize(lon, lat, coords, numbers, fill=np.NaN):
-    
+
     if not equally_spaced(lon, lat):
         msg = "'lat' and 'lon' must be equally spaced."
         raise ValueError(msg)
 
     __, __, numbers = _parse_input(lon, lat, coords, fill, numbers)
-    
+
     _create_mask_rasterize_fasttrack(lon, lat, coords, numbers)
 
 
@@ -263,17 +264,18 @@ def _create_mask_rasterize_fasttrack(lon, lat, coords, numbers, fill=np.NaN):
 
     return _rasterize(shapes, lon, lat, fill=fill)
 
+
 def _transform_from_latlon(lon, lat):
-    '''perform an affine tranformation to the latitude/longitude coordinates'''
-    
+    """perform an affine tranformation to the latitude/longitude coordinates"""
+
     from affine import Affine
-    
+
     lat = np.asarray(lat)
     lon = np.asarray(lon)
 
     d_lon = lon[1] - lon[0]
     d_lat = lat[1] - lat[0]
-    
+
     trans = Affine.translation(lon[0] - d_lon / 2, lat[0] - d_lat / 2)
     scale = Affine.scale(d_lon, d_lat)
     return trans * scale
@@ -284,32 +286,21 @@ def _rasterize(shapes, lon, lat, fill=np.nan, **kwargs):
 
         This only works for 1D lat and lon arrays.
     """
-    
+
     from rasterio import features
-    
+
     transform = _transform_from_latlon(lon, lat)
     out_shape = (len(lat), len(lon))
-    
-    raster = features.rasterize(shapes, out_shape=out_shape,
-                                fill=fill, transform=transform,
-                                dtype=np.float, **kwargs)
-    
+
+    raster = features.rasterize(
+        shapes,
+        out_shape=out_shape,
+        fill=fill,
+        transform=transform,
+        dtype=np.float,
+        **kwargs
+    )
+
     return raster
 
-
-def equally_spaced(lon, lat):
-
-    lat = np.asarray(lat)
-    lon = np.asarray(lon)
-
-    if lat.ndim > 1 or lon.ndim > 1:
-        return False
-
-    d_lon = np.diff(lon)
-    d_lat = np.diff(lat)
-
-    return np.allclose(d_lat[0], d_lat) and np.allclose(d_lon[0], d_lon)
-
-
     # xr.DataArray(raster, coords=(lat, lon), dims=('lat', 'lon'), name='region')
-
