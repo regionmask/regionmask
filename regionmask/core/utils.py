@@ -151,6 +151,9 @@ def equally_spaced(lon, lat):
     if lat.ndim > 1 or lon.ndim > 1:
         return False
 
+    if lat.size < 2 or lon.size < 2:
+        return False
+
     d_lon = np.diff(lon)
     d_lat = np.diff(lat)
 
