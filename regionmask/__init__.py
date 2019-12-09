@@ -16,4 +16,4 @@ from . import defined_regions
 from . import core
 
 from .core.plot import _subsample
-from .core.mask import create_mask_contains
+from .core.mask import create_mask_contains, create_mask_rasterize
