@@ -1,12 +1,17 @@
 import numpy as np
 import warnings
 
+import regionmask
 from regionmask import Regions
-from regionmask import create_mask_contains
+from regionmask import create_mask_contains, create_mask_rasterize
 
 import pytest
 
 import xarray as xr
+from affine import Affine
+
+from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
+from regionmask.core.mask import _transform_from_latlon, _rasterize
 
 # =============================================================================
 
@@ -17,6 +22,7 @@ outlines = [outl1, outl2]
 
 r1 = Regions(outlines)
 
+outlines_poly = r1.polygons
 
 lon = [0.5, 1.5]
 lat = [0.5, 1.5]
@@ -29,42 +35,44 @@ lat = [0.5, 1.5]
 def expected_mask(a=0, b=1, fill=np.NaN):
     return np.array([[a, fill], [b, fill]])
 
-
-def test_create_mask_contains():
+@pytest.mark.parametrize("func, outlines", [(create_mask_contains, outlines), (create_mask_rasterize, outlines_poly)])
+def test_create_mask_function(func, outlines):
 
     # standard
-    result = create_mask_contains(lon, lat, outlines)
+    result = func(lon, lat, outlines)
     expected = expected_mask()
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = create_mask_contains(lon, lat, outlines, fill=5)
+    result = func(lon, lat, outlines, fill=5)
     expected = expected_mask(fill=5)
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = create_mask_contains(lon, lat, outlines, numbers=[5, 6])
+    result = func(lon, lat, outlines, numbers=[5, 6])
     expected = expected_mask(a=5, b=6)
     assert np.allclose(result, expected, equal_nan=True)
 
     with pytest.raises(AssertionError):
-        create_mask_contains(lon, lat, outlines, fill=0)
+        func(lon, lat, outlines, fill=0)
 
     with pytest.raises(AssertionError):
-        create_mask_contains(lon, lat, outlines, numbers=[5])
+        func(lon, lat, outlines, numbers=[5])
 
 
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
-def test__mask():
+@pytest.mark.parametrize("method", ["rasterize", "legacy"])
+def test__mask(method):
 
     expected = expected_mask()
-    result = r1.mask(lon, lat, xarray=False)
+    result = r1.mask(lon, lat, method=method, xarray=False)
     assert np.allclose(result, expected, equal_nan=True)
 
 
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
-def test__mask_xarray():
+@pytest.mark.parametrize("method", ["rasterize", "legacy"])
+def test__mask_xarray(method):
 
     expected = expected_mask()
-    result = r1.mask(lon, lat, xarray=True)
+    result = r1.mask(lon, lat, method=method, xarray=True)
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
@@ -73,19 +81,22 @@ def test__mask_xarray():
 
 
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
-def test__mask_xarray_name():
-    msk = r1.mask(lon, lat, xarray=True)
+@pytest.mark.parametrize("method", ["rasterize", "legacy"])
+def test__mask_xarray_name(method):
+
+    msk = r1.mask(lon, lat, method=method, xarray=True)
 
     assert msk.name == "region"
 
 
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
-def test__mask_obj():
+@pytest.mark.parametrize("method", ["rasterize", "legacy"])
+def test__mask_obj(method):
 
     expected = expected_mask()
 
     obj = dict(lon=lon, lat=lat)
-    result = r1.mask(obj, xarray=False)
+    result = r1.mask(obj, method=method, xarray=False)
     assert np.allclose(result, expected, equal_nan=True)
 
     obj = dict(longitude=lon, latitude=lat)
@@ -95,7 +106,8 @@ def test__mask_obj():
 
 
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
-def test_mask_wrap():
+@pytest.mark.parametrize("method", ["rasterize", "legacy"])
+def test_mask_wrap(method):
 
     # create a test case where the outlines and the lon coordinates
     # are different
@@ -111,26 +123,27 @@ def test_mask_wrap():
     lon = [-1.5, -0.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, xarray=False, wrap_lon=False)
+    result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=False)
     assert np.all(np.isnan(result))
 
     # this is the wron wrapping
-    result = r.mask(lon, lat, xarray=False, wrap_lon=180)
+    result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=180)
     assert np.all(np.isnan(result))
 
     expected = expected_mask()
 
     # determine the wrap automatically
-    result = r.mask(lon, lat, xarray=False, wrap_lon=True)
+    result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=True)
     assert np.allclose(result, expected, equal_nan=True)
 
     # determine the wrap by hand
-    result = r.mask(lon, lat, xarray=False, wrap_lon=360)
+    result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=360)
     assert np.allclose(result, expected, equal_nan=True)
 
 
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
-def test_mask_autowrap():
+@pytest.mark.parametrize("method", ["rasterize", "legacy"])
+def test_mask_autowrap(method):
 
     expected = expected_mask()
 
@@ -140,7 +153,7 @@ def test_mask_autowrap():
     # 1. -180..180 regions and -180..180 lon
     lon = [0.5, 1.5]
     lat = [0.5, 1.5]
-    result = r1.mask(lon, lat, xarray=False)
+    result = r1.mask(lon, lat, method=method, xarray=False)
     assert np.allclose(result, expected, equal_nan=True)
 
     # 2. -180..180 regions and 0..360 lon
@@ -155,7 +168,7 @@ def test_mask_autowrap():
     lon = [358.5, 359.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, xarray=False)
+    result = r.mask(lon, lat, method=method, xarray=False)
     assert np.allclose(result, expected, equal_nan=True)
 
     # 3. 0..360 regions and -180..180 lon
@@ -171,7 +184,7 @@ def test_mask_autowrap():
     lon = [-1.5, -0.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, xarray=False)
+    result = r.mask(lon, lat, method=method, xarray=False)
     assert np.allclose(result, expected, equal_nan=True)
 
     # 3. 0..360 regions and 0..360 lon
@@ -180,7 +193,7 @@ def test_mask_autowrap():
     lon = [0.5, 359.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, xarray=False)
+    result = r.mask(lon, lat, method=method, xarray=False)
     assert np.allclose(result, expected, equal_nan=True)
 
 
@@ -198,7 +211,7 @@ def test_create_mask_contains_2D():
 
 
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
-def test__mask_2D():
+def test_mask_2D():
 
     expected = expected_mask()
     result = r1.mask(lon_2D, lat_2D, xarray=False)
@@ -219,6 +232,16 @@ def test__mask_xarray_out_2D():
 
     assert np.allclose(result.lat_idx, [0, 1])
     assert np.allclose(result.lon_idx, [0, 1])
+
+
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
+@pytest.mark.parametrize("lon", [lon_2D, [0, 1, 3], 0])
+@pytest.mark.parametrize("lat", [lat_2D, [0, 1, 3], 0])
+@pytest.mark.parametrize("xarray", [None, True, False])
+def test_mask_rasterize_irrecular(lon, lat, xarray):
+
+    with pytest.raises(ValueError, match="`lat` and `lon` must be equally spaced"):
+        result = r1.mask(lon, lat, method="rasterize", xarray=xarray)
 
 
 def test__mask_xarray_in_out_2D():
@@ -255,3 +278,32 @@ def test_xarray_keyword_deprection_warning(xarray):
         match="Passing the `xarray` keyword",
     ):
         r1.mask(lon, lat, xarray=xarray)
+
+
+@pytest.mark.parametrize("lon_start", [0, 1, -5])
+@pytest.mark.parametrize("dlon", [1, 2])
+@pytest.mark.parametrize("lat_start", [0, 1, -5])
+@pytest.mark.parametrize("dlat", [1, 2])
+def test_transform_from_latlon(lon_start, dlon, lat_start, dlat):
+
+    lon = np.arange(lon_start, 20, dlon)
+    lat = np.arange(lat_start, 20, dlat)
+
+    r = _transform_from_latlon(lon, lat)
+
+    assert isinstance(r, Affine)
+
+    expected = np.array([dlon, 0, lon_start - dlon / 2, 0, dlat, lat_start - dlat / 2, 0, 0, 1])
+
+    assert np.allclose(np.array(r), expected)
+
+@pytest.mark.parametrize("a, b", [(0, 1), (4, 5)])
+@pytest.mark.parametrize("fill", [np.NaN, 3])
+def test_rasterize(a, b, fill):
+
+    expected = expected_mask(a=a, b=b, fill=fill)
+
+    shapes = zip(outlines_poly, [a, b])
+    result = _rasterize(shapes, lon, lat, fill=fill)
+
+    assert np.allclose(result, expected, equal_nan=True)
