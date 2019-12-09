@@ -44,7 +44,8 @@ def _mask(
         wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
         longitude data is wrapped to 360 if its minimum is smaller
         than 0 and wrapped to 180 if its maximum is larger than 180.
-
+    method : None | "rasterize" | "legacy"
+        Set method used to determine wether a gridpoint lies in a region.
     Returns
     -------
     mask : ndarray or xarray DataSet
@@ -80,12 +81,13 @@ def _mask(
         lon = _wrapAngle(lon, wrap_lon)
 
     if method is None:
-        if equally_spaced(lon, lat):
-            method = "rasterize"
-        else:
-            method = "contains"
+        method = "rasterize" if equally_spaced(lon, lat) else "legacy"
+    elif method == "rasterize":
+        if not equally_spaced(lon, lat):
+            raise ValueError("`lat` and `lon` must be equally spaced to use"
+            "`method='rasterize'`")
 
-    if method == "contains":
+    if method == "legacy":
         func = create_mask_contains
         data = self.coords
     elif method == "rasterize":
@@ -93,7 +95,7 @@ def _mask(
         data = self.polygons
     else:
         raise NotImplementedError(
-            "Only methods 'contains' and 'rasterize' are implemented"
+            "Only methods 'rasterize' and 'legacy' are implemented"
         )
 
     mask = func(lon, lat, data, numbers=self.numbers)
@@ -245,7 +247,7 @@ def _parse_input(lon, lat, coords, fill, numbers):
     return lon, lat, numbers
 
 
-def create_mask_rasterize(lon, lat, coords, numbers, fill=np.NaN):
+def create_mask_rasterize(lon, lat, coords, fill=np.NaN, numbers=None):
 
     if not equally_spaced(lon, lat):
         msg = "'lat' and 'lon' must be equally spaced."
@@ -253,7 +255,7 @@ def create_mask_rasterize(lon, lat, coords, numbers, fill=np.NaN):
 
     __, __, numbers = _parse_input(lon, lat, coords, fill, numbers)
 
-    _create_mask_rasterize_fasttrack(lon, lat, coords, numbers)
+    return _create_mask_rasterize_fasttrack(lon, lat, coords, numbers, fill)
 
 
 def _create_mask_rasterize_fasttrack(lon, lat, coords, numbers, fill=np.NaN):
