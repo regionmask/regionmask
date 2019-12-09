@@ -118,6 +118,10 @@ def test_equally_spaced():
     assert not equally_spaced(equal, un_equal)
     assert not equally_spaced(un_equal, un_equal)
 
+    assert not equally_spaced(1, equal)
+    assert not equally_spaced(equal, 1)
+    assert not equally_spaced(1, 1)
+
     close_to_equal = equal + np.random.randn(*equal.shape) * 10 ** -6
 
     assert equally_spaced(close_to_equal, close_to_equal)
