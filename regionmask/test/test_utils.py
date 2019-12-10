@@ -84,7 +84,7 @@ def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
     # use "+" because x(*a, *b) is not valid in python 2.7
     result = create_lon_lat_dataarray_from_bounds(*lon_vals + lat_vals)
 
-    for coord in ["lon", "lat", "lon_bnds", "lat_bnds"]:
+    for coord in ["lon", "lat", "lon_bnds", "lat_bnds", "LON", "LAT"]:
         assert coord in result.coords
 
     def _check_coords(vals, name):
@@ -95,8 +95,14 @@ def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
         assert np.allclose(result[name], expected)
         assert np.allclose(result[name + "_bnds"], bnds_expected)
 
-    _check_coords(lon_vals, "lon")
-    _check_coords(lat_vals, "lat")
+        return expected
+
+    lon = _check_coords(lon_vals, "lon")
+    lat = _check_coords(lat_vals, "lat")
+
+    LON_EXPECTED, LAT_EXPECTED = np.meshgrid(lon, lat)
+    np.allclose(result["LON"], LON_EXPECTED)
+    np.allclose(result["LAT"], LAT_EXPECTED)
 
 
 def test_equally_spaced():

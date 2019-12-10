@@ -138,7 +138,18 @@ def create_lon_lat_dataarray_from_bounds(
     lat_bnds = np.arange(lat_start, lat_stop, lat_step)
     lat = (lat_bnds[:-1] + lat_bnds[1:]) / 2
 
-    ds = xr.Dataset(coords=dict(lon=lon, lat=lat, lon_bnds=lon_bnds, lat_bnds=lat_bnds))
+    LON, LAT = np.meshgrid(lon, lat)
+
+    ds = xr.Dataset(
+        coords=dict(
+            lon=lon,
+            lat=lat,
+            lon_bnds=lon_bnds,
+            lat_bnds=lat_bnds,
+            LON=(("lat", "lon"), LON),
+            LAT=(("lat", "lon"), LAT),
+        )
+    )
 
     return ds
 
