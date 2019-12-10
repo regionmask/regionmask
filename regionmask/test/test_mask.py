@@ -28,8 +28,8 @@ lon = [0.5, 1.5]
 lat = [0.5, 1.5]
 
 # in this example the result looks:
-# a fill
-# b fill
+# | a fill |
+# | b fill |
 
 
 def expected_mask(a=0, b=1, fill=np.NaN):
@@ -242,7 +242,7 @@ def test__mask_xarray_out_2D():
 @pytest.mark.parametrize("lon", [lon_2D, [0, 1, 3], 0])
 @pytest.mark.parametrize("lat", [lat_2D, [0, 1, 3], 0])
 @pytest.mark.parametrize("xarray", [None, True, False])
-def test_mask_rasterize_irrecular(lon, lat, xarray):
+def test_mask_rasterize_irregular(lon, lat, xarray):
 
     with pytest.raises(ValueError, match="`lat` and `lon` must be equally spaced"):
         result = r1.mask(lon, lat, method="rasterize", xarray=xarray)
@@ -311,3 +311,82 @@ def test_rasterize(a, b, fill):
     result = _rasterize(shapes, lon, lat, fill=fill)
 
     assert np.allclose(result, expected, equal_nan=True)
+
+
+# =============================================================================
+# =============================================================================
+# =============================================================================
+
+# create a region such that the edge falls exactly on the lat/ lon coordinates
+
+outline = np.array([[-100.0, 50.0], [-100.0, 28.0], [-80.0, 28.0], [-80.0, 50.0]])
+
+r_US_180_ccw = Regions([outline])  # counter clockwise
+r_US_180_cw = Regions([outline[::-1]])  # clockwise
+
+r_US_360_ccw = Regions([[360, 0] + outline])  # counter clockwise
+r_US_360_cw = Regions([[360, 0] + outline[::-1]])  # clockwise
+
+# TODO: use func(*(-161, -29, 2),  *(75, 13, -2)) after dropping py27
+ds_US_180 = create_lon_lat_dataarray_from_bounds(*(-161, -29, 2) + (75, 13, -2))
+ds_US_360 = create_lon_lat_dataarray_from_bounds(
+    *(360 + -161, 360 + -29, 2) + (75, 13, -2)
+)
+
+
+def expected_mask_edge(ds, is_360, number=0, fill=np.NaN):
+
+    lon_min = -100
+    lon_max = -80
+    lat_min = 28
+    lat_max = 50
+
+    if is_360:
+        lon_min += 360
+        lon_max += 360
+
+    LON = ds.LON
+    LAT = ds.LAT
+
+    expected = (LAT > lat_min) & (LAT <= lat_max)
+    expected = expected & (LON > lon_min) & (LON <= lon_max)
+
+    # set number and fill value
+    expected = expected.where(expected, fill)
+    expected = expected.where(expected != 1, number)
+
+    return expected
+
+
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
+@pytest.mark.parametrize("method", ["rasterize"])
+@pytest.mark.parametrize(
+    "regions", [r_US_180_ccw, r_US_180_cw, r_US_360_ccw, r_US_360_cw]
+)
+@pytest.mark.parametrize("ds_US, is_360", [(ds_US_180, False), (ds_US_360, True)])
+def test_mask_edge(method, regions, ds_US, is_360):
+
+    expected = expected_mask_edge(ds_US, is_360)
+    result = regions.mask(ds_US, method=method, xarray=True)
+
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+    assert np.allclose(result.lat, ds_US.lat)
+    assert np.allclose(result.lon, ds_US.lon)
+
+
+@pytest.mark.xfail(
+    raises=AssertionError, reason="https://github.com/mapbox/rasterio/issues/1844"
+)
+def test_rasterize_edge():
+
+    lon = ds_US_180.lon
+    lat = ds_US_180.lat
+
+    expected = expected_mask_edge(ds_US_180, is_360=False)
+
+    shapes = zip(r_US_180_ccw.polygons, [0])
+    result = _rasterize(shapes, lon, lat)
+
+    assert np.allclose(result, expected, equal_nan=True)
+
