@@ -35,7 +35,11 @@ lat = [0.5, 1.5]
 def expected_mask(a=0, b=1, fill=np.NaN):
     return np.array([[a, fill], [b, fill]])
 
-@pytest.mark.parametrize("func, outlines", [(create_mask_contains, outlines), (create_mask_rasterize, outlines_poly)])
+
+@pytest.mark.parametrize(
+    "func, outlines",
+    [(create_mask_contains, outlines), (create_mask_rasterize, outlines_poly)],
+)
 def test_create_mask_function(func, outlines):
 
     # standard
@@ -273,10 +277,7 @@ def test__mask_xarray_in_out_2D():
 @pytest.mark.parametrize("xarray", [True, False])
 def test_xarray_keyword_deprection_warning(xarray):
 
-    with pytest.warns(
-        FutureWarning,
-        match="Passing the `xarray` keyword",
-    ):
+    with pytest.warns(FutureWarning, match="Passing the `xarray` keyword"):
         r1.mask(lon, lat, xarray=xarray)
 
 
@@ -293,9 +294,12 @@ def test_transform_from_latlon(lon_start, dlon, lat_start, dlat):
 
     assert isinstance(r, Affine)
 
-    expected = np.array([dlon, 0, lon_start - dlon / 2, 0, dlat, lat_start - dlat / 2, 0, 0, 1])
+    expected = np.array(
+        [dlon, 0, lon_start - dlon / 2, 0, dlat, lat_start - dlat / 2, 0, 0, 1]
+    )
 
     assert np.allclose(np.array(r), expected)
+
 
 @pytest.mark.parametrize("a, b", [(0, 1), (4, 5)])
 @pytest.mark.parametrize("fill", [np.NaN, 3])
