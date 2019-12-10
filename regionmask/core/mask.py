@@ -84,8 +84,9 @@ def _mask(
         method = "rasterize" if equally_spaced(lon, lat) else "legacy"
     elif method == "rasterize":
         if not equally_spaced(lon, lat):
-            raise ValueError("`lat` and `lon` must be equally spaced to use"
-            "`method='rasterize'`")
+            raise ValueError(
+                "`lat` and `lon` must be equally spaced to use" "`method='rasterize'`"
+            )
 
     if method == "legacy":
         func = create_mask_contains
@@ -93,6 +94,9 @@ def _mask(
     elif method == "rasterize":
         func = _create_mask_rasterize_fasttrack
         data = self.polygons
+        # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
+        lon -= 1*10 ** -9
+        lat -= 1*10 ** -9
     else:
         raise NotImplementedError(
             "Only methods 'rasterize' and 'legacy' are implemented"
@@ -248,12 +252,33 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
 
 def create_mask_rasterize(lon, lat, coords, fill=np.NaN, numbers=None):
+    """
+    create the mask of a list of regions, given the lat and lon coords
+
+    Parameters
+    ----------
+    lon : ndarray
+        Numpy array containing the midpoints of the longitude.
+    lat : ndarray
+        Numpy array containing the midpoints of the latitude.
+    coords : list shapely Polygon/ MultiPolygon
+        List of the coordinates outlining the regions
+    fill : float, optional
+        Fill value for  for Default: np.NaN.
+    numbers : list of int, optional
+        If not given 0:n_coords - 1 is used.
+
+    """
 
     if not equally_spaced(lon, lat):
         msg = "'lat' and 'lon' must be equally spaced."
         raise ValueError(msg)
 
-    __, __, numbers = _parse_input(lon, lat, coords, fill, numbers)
+    lon, lat, numbers = _parse_input(lon, lat, coords, fill, numbers)
+
+    # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
+    lon -= 1*10 ** -9
+    lat -= 1*10 ** -9
 
     return _create_mask_rasterize_fasttrack(lon, lat, coords, numbers, fill)
 
