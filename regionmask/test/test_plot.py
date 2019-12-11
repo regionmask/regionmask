@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 from shapely.geometry import Polygon, MultiPolygon
 
-from regionmask import Regions, _subsample
+from regionmask import Regions
+from regionmask.core.plot import _subsample
 
 # =============================================================================
 
