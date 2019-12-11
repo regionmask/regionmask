@@ -105,12 +105,9 @@ def _is_180(lon_min, lon_max):
     return lon_max <= 180
 
 
-def create_lon_lat_dataarray_from_bounds(lon_start,
-                                         lon_stop,
-                                         lon_step,
-                                         lat_start,
-                                         lat_stop,
-                                         lat_step,):
+def create_lon_lat_dataarray_from_bounds(
+    lon_start, lon_stop, lon_step, lat_start, lat_stop, lat_step
+):
     """ example xarray Dataset
 
         Parameters
@@ -141,12 +138,34 @@ def create_lon_lat_dataarray_from_bounds(lon_start,
     lat_bnds = np.arange(lat_start, lat_stop, lat_step)
     lat = (lat_bnds[:-1] + lat_bnds[1:]) / 2
 
-    ds = xr.Dataset(  
-               coords=dict(lon=lon,
-                           lat=lat,
-                           lon_bnds=lon_bnds,
-                           lat_bnds=lat_bnds,))
+    LON, LAT = np.meshgrid(lon, lat)
 
-
+    ds = xr.Dataset(
+        coords=dict(
+            lon=lon,
+            lat=lat,
+            lon_bnds=lon_bnds,
+            lat_bnds=lat_bnds,
+            LON=(("lat", "lon"), LON),
+            LAT=(("lat", "lon"), LAT),
+        )
+    )
 
     return ds
+
+
+def equally_spaced(lon, lat):
+
+    lat = np.asarray(lat)
+    lon = np.asarray(lon)
+
+    if lat.ndim > 1 or lon.ndim > 1:
+        return False
+
+    if lat.size < 2 or lon.size < 2:
+        return False
+
+    d_lon = np.diff(lon)
+    d_lat = np.diff(lat)
+
+    return np.allclose(d_lat[0], d_lat) and np.allclose(d_lon[0], d_lon)

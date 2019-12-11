@@ -4,4 +4,6 @@ shapely
 six
 cartopy
 geopandas
+rasterio
+affine
 xarray

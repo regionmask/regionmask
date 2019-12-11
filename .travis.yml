@@ -24,7 +24,7 @@ before_install:
 install:
     - conda create --name regionmask -c conda-forge python=$TRAVIS_PYTHON_VERSION
     - source activate regionmask
-    - conda install -c conda-forge cartopy geopandas xarray pytest pytest-cov codecov
+    - conda install -c conda-forge cartopy geopandas xarray pytest pytest-cov codecov rasterio
     - pip install -e .
     #- https://stackoverflow.com/a/48728877/3010700
     - "export MPLBACKEND=Agg"

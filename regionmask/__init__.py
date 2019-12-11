@@ -12,7 +12,7 @@ from .core.regions import Regions_cls, Region_cls, Regions, _OneRegion
 
 from . import defined_regions
 
-from .core.mask import create_mask_contains
+from .core.mask import create_mask_contains, create_mask_rasterize
 
 # for testing
 from . import core

@@ -4,7 +4,7 @@
 API reference
 #############
 
-This page provides an auto-generated summary of regionmask's API. 
+This page provides an auto-generated summary of regionmask's API.
 
 
 Top-level functions
@@ -13,6 +13,7 @@ Top-level functions
 .. autosummary::
    :toctree: generated/
 
+   create_mask_rasterize
    create_mask_contains
 
 
@@ -28,7 +29,7 @@ Creating Regions
 
    Regions
 
-Mapping Number/ Abbreviation/ Name 
+Mapping Number/ Abbreviation/ Name
 ----------------------------------
 
 .. autosummary::
@@ -36,7 +37,7 @@ Mapping Number/ Abbreviation/ Name
 
    Regions.map_keys
 
-Selecting 
+Selecting
 ---------
 
 .. autosummary::
