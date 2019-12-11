@@ -9,6 +9,7 @@ import pytest
 
 import xarray as xr
 from affine import Affine
+from shapely.geometry import Polygon
 
 from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
 from regionmask.core.mask import _transform_from_latlon, _rasterize
@@ -318,14 +319,7 @@ def test_rasterize(a, b, fill):
 # =============================================================================
 
 # create a region such that the edge falls exactly on the lat/ lon coordinates
-
-outline = np.array([[-100.0, 50.0], [-100.0, 28.0], [-80.0, 28.0], [-80.0, 50.0]])
-
-r_US_180_ccw = Regions([outline])  # counter clockwise
-r_US_180_cw = Regions([outline[::-1]])  # clockwise
-
-r_US_360_ccw = Regions([[360, 0] + outline])  # counter clockwise
-r_US_360_cw = Regions([[360, 0] + outline[::-1]])  # clockwise
+# ===
 
 # TODO: use func(*(-161, -29, 2),  *(75, 13, -2)) after dropping py27
 ds_US_180 = create_lon_lat_dataarray_from_bounds(*(-161, -29, 2) + (75, 13, -2))
@@ -333,13 +327,34 @@ ds_US_360 = create_lon_lat_dataarray_from_bounds(
     *(360 + -161, 360 + -29, 2) + (75, 13, -2)
 )
 
+outline_180 = np.array([[-100.0, 50.0], [-100.0, 28.0], [-80.0, 28.0], [-80.0, 50.0]])
+outline_360 = outline_180 + [360, 0]
 
-def expected_mask_edge(ds, is_360, number=0, fill=np.NaN):
+outline_hole_180 = np.array(
+    [[-86.0, 44.0], [-86.0, 34.0], [-94.0, 34.0], [-94.0, 44.0]]
+)
+outline_hole_360 = outline_hole_180 + [360, 0]
 
-    lon_min = -100
-    lon_max = -80
-    lat_min = 28
-    lat_max = 50
+
+r_US_180_ccw = Regions([outline_180])  # counter clockwise
+r_US_180_cw = Regions([outline_180[::-1]])  # clockwise
+
+r_US_360_ccw = Regions([outline_360])  # counter clockwise
+r_US_360_cw = Regions([outline_360[::-1]])  # clockwise
+
+# define poylgon with hole
+poly = Polygon(outline_180, [outline_hole_180])
+r_US_hole_180_cw = Regions([poly])  # clockwise
+poly = Polygon(outline_180, [outline_hole_180[::-1]])
+r_US_hole_180_ccw = Regions([poly])  # counter clockwise
+
+poly = Polygon(outline_360, [outline_hole_360])
+r_US_hole_360_cw = Regions([poly])  # clockwise
+poly = Polygon(outline_360, [outline_hole_360[::-1]])
+r_US_hole_360_ccw = Regions([poly])  # counter clockwise
+
+
+def _expected_rectangle(ds, lon_min, lon_max, lat_min, lat_max, is_360):
 
     if is_360:
         lon_min += 360
@@ -349,7 +364,26 @@ def expected_mask_edge(ds, is_360, number=0, fill=np.NaN):
     LAT = ds.LAT
 
     expected = (LAT > lat_min) & (LAT <= lat_max)
-    expected = expected & (LON > lon_min) & (LON <= lon_max)
+    return expected & (LON > lon_min) & (LON <= lon_max)
+
+
+def expected_mask_edge(ds, is_360, number=0, fill=np.NaN):
+
+    expected = _expected_rectangle(ds, -100, -80, 28, 50, is_360)
+
+    # set number and fill value
+    expected = expected.where(expected, fill)
+    expected = expected.where(expected != 1, number)
+
+    return expected
+
+
+def expected_mask_interior_and_edge(ds, is_360, number=0, fill=np.NaN):
+
+    expected_outerior = _expected_rectangle(ds, -100, -80, 28, 50, is_360)
+    expected_interior = _expected_rectangle(ds, -94, -86, 34, 44, is_360)
+
+    expected = expected_outerior & ~expected_interior
 
     # set number and fill value
     expected = expected.where(expected, fill)
@@ -375,6 +409,24 @@ def test_mask_edge(method, regions, ds_US, is_360):
     assert np.allclose(result.lon, ds_US.lon)
 
 
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
+@pytest.mark.parametrize("method", ["rasterize"])
+@pytest.mark.parametrize(
+    "regions",
+    [r_US_hole_180_cw, r_US_hole_180_ccw, r_US_hole_360_cw, r_US_hole_360_ccw],
+)
+@pytest.mark.parametrize("ds_US, is_360", [(ds_US_180, False), (ds_US_360, True)])
+def test_mask_interior_and_edge(method, regions, ds_US, is_360):
+
+    expected = expected_mask_interior_and_edge(ds_US, is_360)
+    result = regions.mask(ds_US, method=method, xarray=True)
+
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+    assert np.allclose(result.lat, ds_US.lat)
+    assert np.allclose(result.lon, ds_US.lon)
+
+
 @pytest.mark.xfail(
     raises=AssertionError, reason="https://github.com/mapbox/rasterio/issues/1844"
 )
@@ -389,4 +441,3 @@ def test_rasterize_edge():
     result = _rasterize(shapes, lon, lat)
 
     assert np.allclose(result, expected, equal_nan=True)
-
