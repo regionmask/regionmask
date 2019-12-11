@@ -100,8 +100,8 @@ def _mask(
         func = _create_mask_rasterize_fasttrack
         data = self.polygons
         # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
-        lon = lon - 1*10 ** -9
-        lat = lat - 1*10 ** -9
+        lon = lon - 1 * 10 ** -9
+        lat = lat - 1 * 10 ** -9
     else:
         msg = "Only methods 'rasterize' and 'legacy' are implemented"
         raise NotImplementedError(msg)
@@ -281,8 +281,8 @@ def create_mask_rasterize(lon, lat, coords, fill=np.NaN, numbers=None):
     lon, lat, numbers = _parse_input(lon, lat, coords, fill, numbers)
 
     # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
-    lon = lon - 1*10 ** -9
-    lat = lat - 1*10 ** -9
+    lon = lon - 1 * 10 ** -9
+    lat = lat - 1 * 10 ** -9
 
     return _create_mask_rasterize_fasttrack(lon, lat, coords, numbers, fill)
 
