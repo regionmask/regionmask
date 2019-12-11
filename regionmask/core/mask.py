@@ -11,9 +11,9 @@ def _mask(
     lat=None,
     lon_name="lon",
     lat_name="lat",
+    method=None,
     xarray=None,
     wrap_lon=None,
-    method=None,
 ):
     """
     create a grid as mask of a set of regions for given lat/ lon grid
@@ -33,6 +33,8 @@ def _mask(
         Name of longitude in 'lon_or_obj'. Default: 'lon'.
     lat_name, optional
         Name of latgitude in 'lon_or_obj'. Default: 'lat'
+    method : None | "rasterize" | "legacy"
+        Set method used to determine wether a gridpoint lies in a region.
     xarray : None | bool, optional
         Deprecated. If None or True returns an xarray DataArray, if False returns a
         numpy ndarray. Default: None.
@@ -44,23 +46,26 @@ def _mask(
         wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
         longitude data is wrapped to 360 if its minimum is smaller
         than 0 and wrapped to 180 if its maximum is larger than 180.
-    method : None | "rasterize" | "legacy"
-        Set method used to determine wether a gridpoint lies in a region.
     Returns
     -------
     mask : ndarray or xarray DataSet
 
-    Method
-    -------
+    Method - rasterize
+    ------------------
+    "rasterize" uses `rasterio.features.rasterize`. This method offers a 50 to 100
+    speedup compared to "legacy". It only works for equally spaced lon and lat grids.
+
+    Method - legacy
+    ---------------
     Uses the following:
     >>> from matplotlib.path import Path
     >>> bbPath = Path(((0, 0), (0, 1), (1, 1.), (1, 0)))
     >>> bbPath.contains_point((0.5, 0.5))
 
-    """
+    This method is slower than the others and its edge behaviour is inconsistent
+    (see https://github.com/matplotlib/matplotlib/issues/9704).
 
-    # method : string, optional
-    #     Method to use in for the masking. Default: 'contains'.
+    """
 
     lat_orig = lat
 
@@ -98,9 +103,8 @@ def _mask(
         lon -= 1*10 ** -9
         lat -= 1*10 ** -9
     else:
-        raise NotImplementedError(
-            "Only methods 'rasterize' and 'legacy' are implemented"
-        )
+        msg = "Only methods 'rasterize' and 'legacy' are implemented"
+        raise NotImplementedError(msg)
 
     mask = func(lon, lat, data, numbers=self.numbers)
 
