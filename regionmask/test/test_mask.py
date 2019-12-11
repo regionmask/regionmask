@@ -1,7 +1,5 @@
 import numpy as np
-import warnings
 
-import regionmask
 from regionmask import Regions
 from regionmask import create_mask_contains, create_mask_rasterize
 
@@ -202,6 +200,14 @@ def test_mask_autowrap(method):
     assert np.allclose(result, expected, equal_nan=True)
 
 
+def test_mask_wrong_method():
+
+    msg = "Only methods 'rasterize' and 'legacy' are implemented"
+    with pytest.raises(NotImplementedError, match=msg):
+
+        r1.mask(lon, lat, method="method")
+
+
 # ======================================================================
 
 # test 2D array
@@ -246,7 +252,16 @@ def test__mask_xarray_out_2D():
 def test_mask_rasterize_irregular(lon, lat, xarray):
 
     with pytest.raises(ValueError, match="`lat` and `lon` must be equally spaced"):
-        result = r1.mask(lon, lat, method="rasterize", xarray=xarray)
+        r1.mask(lon, lat, method="rasterize", xarray=xarray)
+
+
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
+@pytest.mark.parametrize("lon", [lon_2D, [0, 1, 3], 0])
+@pytest.mark.parametrize("lat", [lat_2D, [0, 1, 3], 0])
+def test_create_mask_rasterize_unequal_spacing(lon, lat):
+
+    with pytest.raises(ValueError, match="'lat' and 'lon' must be equally spaced."):
+        create_mask_rasterize(lon, lat, outlines_poly)
 
 
 def test__mask_xarray_in_out_2D():
