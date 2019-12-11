@@ -12,8 +12,7 @@ from .core.regions import Regions_cls, Region_cls, Regions, _OneRegion
 
 from . import defined_regions
 
+from .core.mask import create_mask_contains
+
 # for testing
 from . import core
-
-from .core.plot import _subsample
-from .core.mask import create_mask_contains
