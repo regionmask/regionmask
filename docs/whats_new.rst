@@ -20,10 +20,10 @@ Breaking Changes
    treated consistently, see TODO (:pull:`63`). Previously the edge behaviour was
    not well defined and depended on the orientation of the outline (clockwise
    vs. counter clockwise) (:issue:`69` and `matplotlib/matplotlib#9704 <https://github.com/matplotlib/matplotlib/issues/9704>`_).
- - Holes in regions are now excluded from the mask, previously they were included.
+ - Holes in regions are now excluded from the mask; previously they were included.
    For the :code:`defined_regions`, this is relevant for the Caspian Sea in the
    :code:`naturalearth.land110` region and also for some countries in
-   :code:`naturalearth.countries_50`, but with smaller holes (closes :issue:`22`).
+   :code:`naturalearth.countries_50` (closes :issue:`22`).
  - Renamed :code:`Regions_cls` to :code:`Regions` and changed its call
    signature. This allows to make all arguments except :code:`outlines` optional.
    - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity.
@@ -34,8 +34,13 @@ Enhancements
 ~~~~~~~~~~~~
 
  - New algorithm to rasterize regions for equally-spaced longitude/ latitude grids.
-   Uses ``rasterio.features.rasterize``; this offers a 50x to 100x speedup compared
-   to the old method (closes :issue:`34`).
+   Uses ``rasterio.features.rasterize``: this offers a 50x to 100x speedup compared
+   to the old method, and also has consistent edge behavior (closes :issue:`22` and
+   :issue:`24`).
+ - New algorithm to rasterize regions for grids that are not equally-spaced.
+   Uses ``shapely.vectorized.contains``: this offers a 2x to 50x speedup compared
+   to the old method. To achieve the same edge-behavior a tiny (10 ** -9) offset
+   is subtracted from lon and lat (closes :issue:`22` and :issue:`62`).
  - Automatically detect whether the longitude of the grid needs to be wrapped,
    depending on the extent of the grid and the regions (closes :issue:`34`).
  - Make all arguments to :code:`Regions` optional (except :code:`outlines`)
