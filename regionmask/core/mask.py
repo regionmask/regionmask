@@ -33,7 +33,7 @@ def _mask(
         Name of longitude in 'lon_or_obj'. Default: 'lon'.
     lat_name, optional
         Name of latgitude in 'lon_or_obj'. Default: 'lat'
-    method : None | "rasterize" | "legacy"
+    method : None | "rasterize" | "shapely" | "legacy"
         Set method used to determine wether a gridpoint lies in a region.
     xarray : None | bool, optional
         Deprecated. If None or True returns an xarray DataArray, if False returns a
@@ -86,12 +86,15 @@ def _mask(
         lon = _wrapAngle(lon, wrap_lon)
 
     if method is None:
-        method = "rasterize" if equally_spaced(lon, lat) else "legacy"
+        method = "rasterize" if equally_spaced(lon, lat) else "shapely"
     elif method == "rasterize":
         if not equally_spaced(lon, lat):
             raise ValueError(
                 "`lat` and `lon` must be equally spaced to use" "`method='rasterize'`"
             )
+    elif method == "legacy":
+        msg = "The method 'legacy' will be removed in a future version."
+        warnings.warn(msg, FutureWarning, stacklevel=3)
 
     if method == "legacy":
         func = create_mask_contains
@@ -102,8 +105,11 @@ def _mask(
         # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
         lon = lon - 1 * 10 ** -9
         lat = lat - 1 * 10 ** -9
+    elif method == "shapely":
+        func = _mask_shapely
+        data = self.polygons
     else:
-        msg = "Only methods 'rasterize' and 'legacy' are implemented"
+        msg = "Only methods 'rasterize', 'shapely', and 'legacy' are implemented"
         raise NotImplementedError(msg)
 
     mask = func(lon, lat, data, numbers=self.numbers)
@@ -204,19 +210,10 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
 
     lon, lat, numbers = _parse_input(lon, lat, coords, fill, numbers)
 
-    if lon.ndim == 2:
-        LON, LAT = lon, lat
-    else:
-        LON, LAT = np.meshgrid(lon, lat)
+    LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill)
 
     # get all combinations if lat lon points
-    lonlat = list(zip(LON.ravel(), LAT.ravel()))
-
-    shape = LON.shape
-
-    # create output variable
-    out = np.empty(shape=shape).ravel()
-    out.fill(fill)
+    lonlat = list(zip(LON, LAT))
 
     # loop through all polygons
     for i in range(len(coords)):
@@ -233,6 +230,28 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
             bbPath = mplPath.Path(c)
             sel = bbPath.contains_points(lonlat)
             out[sel] = numbers[i]
+
+    return out.reshape(shape)
+
+
+def _mask_shapely(lon, lat, polygons, fill=np.NaN, numbers=None):
+    """
+    create a mask using shapely.vectorized.contains
+    """
+
+    import shapely.vectorized as shp_vect
+
+    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
+
+    LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill)
+
+    # add a tiny offset to get a consistent edge behaviour
+    LON = LON - 1 * 10 ** -9
+    LAT = LAT - 1 * 10 ** -9
+
+    for i, polygon in enumerate(polygons):
+        sel = shp_vect.contains(polygon, LON, LAT)
+        out[sel] = numbers[i]
 
     return out.reshape(shape)
 
@@ -254,8 +273,25 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
     return lon, lat, numbers
 
+def _get_LON_LAT_out_shape(lon, lat, fill):
 
-def create_mask_rasterize(lon, lat, coords, fill=np.NaN, numbers=None):
+    if lon.ndim == 2:
+        LON, LAT = lon, lat
+    else:
+        LON, LAT = np.meshgrid(lon, lat)
+
+    shape = LON.shape
+
+    LON, LAT = LON.flatten(), LAT.flatten()
+
+    # create output variable
+    out = np.empty(shape=shape).flatten()
+    out.fill(fill)
+
+    return LON, LAT, out, shape
+
+
+def create_mask_rasterize(lon, lat, polygons, fill=np.NaN, numbers=None):
     """
     create the mask of a list of regions, given the lat and lon coords
 
@@ -265,33 +301,32 @@ def create_mask_rasterize(lon, lat, coords, fill=np.NaN, numbers=None):
         Numpy array containing the midpoints of the longitude.
     lat : ndarray
         Numpy array containing the midpoints of the latitude.
-    coords : list shapely Polygon/ MultiPolygon
+    polygons : list shapely Polygon/ MultiPolygon
         List of the coordinates outlining the regions
     fill : float, optional
         Fill value for  for Default: np.NaN.
     numbers : list of int, optional
         If not given 0:n_coords - 1 is used.
-
     """
 
     if not equally_spaced(lon, lat):
         msg = "'lat' and 'lon' must be equally spaced."
         raise ValueError(msg)
 
-    lon, lat, numbers = _parse_input(lon, lat, coords, fill, numbers)
+    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
 
     # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
     lon = lon - 1 * 10 ** -9
     lat = lat - 1 * 10 ** -9
 
-    return _create_mask_rasterize_fasttrack(lon, lat, coords, numbers, fill)
+    return _create_mask_rasterize_fasttrack(lon, lat, polygons, numbers, fill)
 
 
-def _create_mask_rasterize_fasttrack(lon, lat, coords, numbers, fill=np.NaN):
+def _create_mask_rasterize_fasttrack(lon, lat, polygons, numbers, fill=np.NaN):
     """ for internal use: does not check valitity of input
     """
 
-    shapes = zip(coords, numbers)
+    shapes = zip(polygons, numbers)
 
     return _rasterize(shapes, lon, lat, fill=fill)
 
