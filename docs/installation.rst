@@ -8,6 +8,7 @@ Required dependencies
 - `numpy <http://www.numpy.org/>`__
 - `shapely <http://toblerity.org/shapely/>`__
 - `matplotlib <http://matplotlib.org/>`__
+- `xarray <http://xarray.pydata.org/>`__
 
 For plotting on geographical maps:
 
@@ -16,13 +17,6 @@ For plotting on geographical maps:
 To open Natural Earth datasets (shapefiles):
 
 - `geopandas <http://geopandas.org/>`__
-
-Optional dependencies
----------------------
-
-To output `xarray` data sets:
-
-- `xarray <http://xarray.pydata.org/>`__
 
 Instructions
 ------------
@@ -33,7 +27,7 @@ avilable on the conda-forge channel.
 
 .. code-block:: bash
 
-    conda install -c conda-forge xarray regionmask
+    conda install -c conda-forge regionmask
 
 If you don't use conda, be sure you have the required dependencies. You can
 then install regionmask via pip:
@@ -42,7 +36,7 @@ then install regionmask via pip:
 
    pip install regionmask
 
-To run the test suite after installing xarray, install
+To run the test suite, install
 `py.test <https://pytest.org>`__ and run ``py.test regionmask``.
 
 To install the development version (master), do:

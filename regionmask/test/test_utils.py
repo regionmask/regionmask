@@ -1,10 +1,13 @@
 import pytest
+import numpy as np
 
 from regionmask.core.utils import (
     _create_dict_of_numbered_string,
     _maybe_to_dict,
     _sanitize_names_abbrevs,
     _is_180,
+    create_lon_lat_dataarray_from_bounds,
+    equally_spaced,
 )
 
 
@@ -72,3 +75,59 @@ def test_is_180():
 
     with pytest.raises(ValueError, match="lon has both data that is larger than 180"):
         _is_180(-1, 181)
+
+
+@pytest.mark.parametrize("lon_vals", [(-161, -29, 2), (-180, 181, 2)])
+@pytest.mark.parametrize("lat_vals", [(75, 13, -2), (90, -91, -2)])
+def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
+
+    # use "+" because x(*a, *b) is not valid in python 2.7
+    result = create_lon_lat_dataarray_from_bounds(*lon_vals + lat_vals)
+
+    for coord in ["lon", "lat", "lon_bnds", "lat_bnds", "LON", "LAT"]:
+        assert coord in result.coords
+
+    def _check_coords(vals, name):
+
+        bnds_expected = np.arange(*vals)
+        expected = (bnds_expected[:-1] + bnds_expected[1:]) / 2
+
+        assert np.allclose(result[name], expected)
+        assert np.allclose(result[name + "_bnds"], bnds_expected)
+
+        return expected
+
+    lon = _check_coords(lon_vals, "lon")
+    lat = _check_coords(lat_vals, "lat")
+
+    LON_EXPECTED, LAT_EXPECTED = np.meshgrid(lon, lat)
+    np.allclose(result["LON"], LON_EXPECTED)
+    np.allclose(result["LAT"], LAT_EXPECTED)
+
+
+def test_equally_spaced():
+
+    np.random.seed(0)
+
+    equal = np.arange(10)
+
+    grid_2D = np.arange(10).reshape(2, 5)
+
+    un_equal = [0, 1, 2, 4, 5, 6]
+
+    assert equally_spaced(equal, equal)
+    assert not equally_spaced(grid_2D, equal)
+    assert not equally_spaced(equal, grid_2D)
+    assert not equally_spaced(grid_2D, grid_2D)
+
+    assert not equally_spaced(un_equal, equal)
+    assert not equally_spaced(equal, un_equal)
+    assert not equally_spaced(un_equal, un_equal)
+
+    assert not equally_spaced(1, equal)
+    assert not equally_spaced(equal, 1)
+    assert not equally_spaced(1, 1)
+
+    close_to_equal = equal + np.random.randn(*equal.shape) * 10 ** -6
+
+    assert equally_spaced(close_to_equal, close_to_equal)
