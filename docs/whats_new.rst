@@ -56,6 +56,8 @@ Enhancements
  - Add possibility to create an example dataset containing lon, lat and their
    bounds (closes :issue:`66`).
  - Added code coverage with pytest-cov and codecov.
+ - Added a new page to the documentation, illustrating the algorithms, the edge
+   behavior and treatment of holes (closes :issue:`16`).
 
 Bug Fixes
 ~~~~~~~~~
