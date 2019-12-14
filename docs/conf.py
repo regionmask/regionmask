@@ -307,6 +307,7 @@ warnings.filterwarnings("ignore")
 from subprocess import call
 
 notebooks = (
+    "notebooks/new_behavior",
     "notebooks/plotting",
     "notebooks/mask_numpy",
     "notebooks/mask_xarray",

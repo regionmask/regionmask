@@ -17,12 +17,12 @@ regionmask is a Python module that:
 
 - contains a number of defined regions, including:
   :doc:`countries</defined_countries>` (from
-  `Natural Earth <http://www.naturalearthdata.com/>`_), a 
+  `Natural Earth <http://www.naturalearthdata.com/>`_), a
   :doc:`landmask</defined_landmask>` and regions used in the
-  :doc:`scientific literature</defined_scientific>` 
+  :doc:`scientific literature</defined_scientific>`
   (the Giorgi regions [#]_ and   the SREX regions [#]_).
-- can plot figures of these regions (:doc:`tutorial<notebooks/plotting>`) with 
-  `matplotlib <http://matplotlib.org/>`_ and 
+- can plot figures of these regions (:doc:`tutorial<notebooks/plotting>`) with
+  `matplotlib <http://matplotlib.org/>`_ and
   `cartopy <http://scitools.org.uk/cartopy/>`_
 - can be used to create masks of the regions for arbitrary longitude
   and latitude grids with
@@ -44,6 +44,7 @@ Contents
 
    whats_new
    installation
+   notebooks/new_behavior
 
 .. toctree::
    :maxdepth: 2
@@ -57,7 +58,7 @@ Contents
 .. toctree::
    :maxdepth: 2
    :caption: Tutorials
-   
+
    notebooks/plotting
    notebooks/mask_numpy
    notebooks/mask_xarray
