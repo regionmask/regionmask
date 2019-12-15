@@ -15,15 +15,18 @@ v0.5.0 (unreleased)
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
+ - :doc:`New behavior<notebooks/new_behavior>` for 'point-on-border' and region interiors:
 
- - New "edge behaviour": points that fall on the border of the region are now
-   treated consistently, see TODO (:pull:`63`). Previously the edge behaviour was
-   not well defined and depended on the orientation of the outline (clockwise
-   vs. counter clockwise) (:issue:`69` and `matplotlib/matplotlib#9704 <https://github.com/matplotlib/matplotlib/issues/9704>`_).
- - Holes in regions are now excluded from the mask; previously they were included.
-   For the :code:`defined_regions`, this is relevant for the Caspian Sea in the
-   :code:`naturalearth.land110` region and also for some countries in
-   :code:`naturalearth.countries_50` (closes :issue:`22`).
+   - New "edge behaviour": points that fall on the border of the region are now
+     treated consistently (:pull:`63`). Previously the edge behaviour was
+     not well defined and depended on the orientation of the outline (clockwise
+     vs. counter clockwise) (:issue:`69` and `matplotlib/matplotlib#9704 <https://github.com/matplotlib/matplotlib/issues/9704>`_).
+
+   - Holes in regions are now excluded from the mask; previously they were included.
+     For the :code:`defined_regions`, this is relevant for the Caspian Sea in the
+     :code:`naturalearth.land110` region and also for some countries in
+     :code:`naturalearth.countries_50` (closes :issue:`22`).
+
  - Renamed :code:`Regions_cls` to :code:`Regions` and changed its call
    signature. This allows to make all arguments except :code:`outlines` optional.
    - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity.
