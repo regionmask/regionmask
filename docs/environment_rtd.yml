@@ -8,18 +8,18 @@ dependencies:
   - cartopy=0.17.0
   - pip
   - pip:
-   - matplotlib
-   - mock
-   - sphinx=2.1.2
-   - sphinx_rtd_theme=0.4.3
-   - pillow
-   - rasterio
-   - numpy
-   - cftime
-   - netcdf4
-   - geopandas
-   - xarray
-   - numpydoc
-   - nbconvert
-   - jupyter
-   - ipython
+    - matplotlib
+    - mock
+    - sphinx==2.1.2
+    - sphinx_rtd_theme==0.4.3
+    - pillow
+    - rasterio
+    - numpy
+    - cftime
+    - netcdf4
+    - geopandas
+    - xarray
+    - numpydoc
+    - nbconvert
+    - jupyter
+    - ipython
