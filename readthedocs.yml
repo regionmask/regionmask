@@ -16,7 +16,7 @@ sphinx:
 #   system_packages: true
 
 conda:
-    file: docs/environment_export.yml
+    environment: docs/environment_export.yml
 python:
     version: 3.7
     setup_py_install: true
