@@ -1,5 +1,5 @@
 conda:
-    file: docs/environment_explicit.yml
+    file: docs/environment_export.yml
 python:
     version: 3.7
     setup_py_install: true
