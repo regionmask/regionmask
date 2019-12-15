@@ -16,7 +16,7 @@ sphinx:
 #   system_packages: true
 
 conda:
-    environment: docs/environment_export.yml
+    environment: docs/environment_rtd.yml
 python:
     version: 3.7
 
