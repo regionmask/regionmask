@@ -9,15 +9,15 @@ version: 2
 sphinx:
   configuration: docs/conf.py
 
-python:
-  version: 3.7
-  install:
-    - requirements: requirements.txt
-  system_packages: true
-
-# conda:
-#     file: docs/environment_export.yml
 # python:
-#     version: 3.7
-#     setup_py_install: true
-# formats: []
+#   version: 3.7
+#   install:
+#     - requirements: requirements.txt
+#   system_packages: true
+
+conda:
+    file: docs/environment_export.yml
+python:
+    version: 3.7
+    setup_py_install: true
+formats: []
