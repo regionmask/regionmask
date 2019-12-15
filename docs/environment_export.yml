@@ -155,8 +155,6 @@ dependencies:
  - pyparsing=2.4.5=py_0
  - pyproj=1.9.6=py37h516909a_1002
  - pyqt=5.12.3=py37hcca6a23_1
- - pyqt5-sip=4.19.18=pypi_0
- - pyqtwebengine=5.12.1=pypi_0
  - pyrsistent=0.15.6=py37h516909a_0
  - pyshp=2.1.0=py_0
  - pysocks=1.7.1=py37_0
@@ -169,7 +167,6 @@ dependencies:
  - qtconsole=4.6.0=py_0
  - rasterio=1.0.25=py37hdff7cfa_0
  - readline=8.0=hf8c457e_0
- - regionmask=0.4.0+dev=dev_0
  - requests=2.22.0=py37_1
  - rtree=0.9.3=py37h7b0cdae_0
  - scipy=1.3.2=py37h921218d_0
