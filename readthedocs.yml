@@ -19,5 +19,5 @@ conda:
     environment: docs/environment_export.yml
 python:
     version: 3.7
-    setup_py_install: true
+
 formats: []
