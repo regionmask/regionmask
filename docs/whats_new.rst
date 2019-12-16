@@ -15,6 +15,7 @@ v0.5.0 (unreleased)
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
+
  - :doc:`New behavior<notebooks/new_behavior>` for 'point-on-border' and region interiors:
 
    - New "edge behaviour": points that fall on the border of the region are now
