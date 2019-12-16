@@ -31,7 +31,7 @@ def expected_mask(a=0, b=1, fill=np.NaN):
     return np.array([[a, fill], [b, fill]])
 
 
-@pytest.mark.filterwarnings("ignore:Using `create_mask_contains` is deprecated")
+@pytest.mark.filterwarnings("ignore:The function `create_mask_contains` is deprecated")
 def test_create_mask_contains():
 
     # standard
@@ -57,7 +57,7 @@ def test_create_mask_contains():
 def test_create_mask_contains_warns():
 
     with pytest.warns(
-        FutureWarning, match="Using `create_mask_contains` is deprecated"
+        FutureWarning, match="The function `create_mask_contains` is deprecated"
     ):
         create_mask_contains(lon, lat, outlines)
 
@@ -258,7 +258,7 @@ lon_2D = [[0.5, 1.5], [0.5, 1.5]]
 lat_2D = [[0.5, 0.5], [1.5, 1.5]]
 
 
-@pytest.mark.filterwarnings("ignore:Using `create_mask_contains` is deprecated")
+@pytest.mark.filterwarnings("ignore:The function `create_mask_contains` is deprecated")
 def test_create_mask_function_2D():
     result = create_mask_contains(lon_2D, lat_2D, outlines)
     expected = expected_mask()
