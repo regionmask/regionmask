@@ -97,10 +97,10 @@ def _mask(
         warnings.warn(msg, FutureWarning, stacklevel=3)
 
     if method == "legacy":
-        func = create_mask_contains
+        func = _mask_contains
         data = self.coords
     elif method == "rasterize":
-        func = _create_mask_rasterize_fasttrack
+        func = _mask_rasterize
         data = self.polygons
         # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
         lon = lon - 1 * 10 ** -9
@@ -206,9 +206,22 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
         If not given 0:n_coords - 1 is used.
 
     """
-    import matplotlib.path as mplPath
+
+    msg = (
+        "The function `create_mask_contains` is deprecated and will be removed in a"
+        "  future version. Please use ``regionmask.Regions(coords).mask(lon, lat)``"
+        " instead."
+    )
+    warnings.warn(msg, FutureWarning, stacklevel=3)
 
     lon, lat, numbers = _parse_input(lon, lat, coords, fill, numbers)
+
+    return _mask_contains(lon, lat, coords, numbers, fill=fill)
+
+
+def _mask_contains(lon, lat, coords, numbers, fill=np.NaN):
+
+    import matplotlib.path as mplPath
 
     LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill)
 
@@ -234,7 +247,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
     return out.reshape(shape)
 
 
-def _mask_shapely(lon, lat, polygons, fill=np.NaN, numbers=None):
+def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN):
     """
     create a mask using shapely.vectorized.contains
     """
@@ -291,46 +304,6 @@ def _get_LON_LAT_out_shape(lon, lat, fill):
     return LON, LAT, out, shape
 
 
-def create_mask_rasterize(lon, lat, polygons, fill=np.NaN, numbers=None):
-    """
-    create the mask of a list of regions, given the lat and lon coords
-
-    Parameters
-    ----------
-    lon : ndarray
-        Numpy array containing the midpoints of the longitude.
-    lat : ndarray
-        Numpy array containing the midpoints of the latitude.
-    polygons : list shapely Polygon/ MultiPolygon
-        List of the coordinates outlining the regions
-    fill : float, optional
-        Fill value for  for Default: np.NaN.
-    numbers : list of int, optional
-        If not given 0:n_coords - 1 is used.
-    """
-
-    if not equally_spaced(lon, lat):
-        msg = "'lat' and 'lon' must be equally spaced."
-        raise ValueError(msg)
-
-    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
-
-    # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
-    lon = lon - 1 * 10 ** -9
-    lat = lat - 1 * 10 ** -9
-
-    return _create_mask_rasterize_fasttrack(lon, lat, polygons, numbers, fill)
-
-
-def _create_mask_rasterize_fasttrack(lon, lat, polygons, numbers, fill=np.NaN):
-    """ for internal use: does not check valitity of input
-    """
-
-    shapes = zip(polygons, numbers)
-
-    return _rasterize(shapes, lon, lat, fill=fill)
-
-
 def _transform_from_latlon(lon, lat):
     """perform an affine tranformation to the latitude/longitude coordinates"""
 
@@ -347,13 +320,17 @@ def _transform_from_latlon(lon, lat):
     return trans * scale
 
 
-def _rasterize(shapes, lon, lat, fill=np.nan, **kwargs):
+def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     """ Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
         This only works for 1D lat and lon arrays.
+
+        for internal use: does not check valitity of input
     """
 
     from rasterio import features
+
+    shapes = zip(polygons, numbers)
 
     transform = _transform_from_latlon(lon, lat)
     out_shape = (len(lat), len(lon))

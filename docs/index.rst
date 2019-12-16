@@ -31,6 +31,13 @@ regionmask is a Python module that:
   `xarray <http://xarray.pydata.org/>`__ (:doc:`tutorial<notebooks/mask_xarray>`)
 - arbitrary regions can be defined easily (:doc:`tutorial<notebooks/create_own_regions>`)
 
+.. note::
+   From version 0.5 ``regionmask`` treats points on the region borders differently
+   and also considers poygon interiors (holes), e.g. the Caspian Sea in
+   ``natural_earth.land_110`` region. The differences are illustrated in a
+   `notebook<notebooks/new_behavior>`.
+
+
 Usage
 =====
 Please have a look at the tutorials.

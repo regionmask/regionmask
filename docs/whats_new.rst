@@ -16,33 +16,45 @@ v0.5.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
- - New "edge behaviour": points that fall on the border of the region are now
-   treated consistently, see TODO (:pull:`63`). Previously the edge behaviour was
-   not well defined and depended on the orientation of the outline (clockwise
-   vs. counter clockwise) (:issue:`69` and `matplotlib/matplotlib#9704 <https://github.com/matplotlib/matplotlib/issues/9704>`_).
- - Holes in regions are now excluded from the mask; previously they were included.
-   For the :code:`defined_regions`, this is relevant for the Caspian Sea in the
-   :code:`naturalearth.land110` region and also for some countries in
-   :code:`naturalearth.countries_50` (closes :issue:`22`).
+ - :doc:`New behavior<notebooks/new_behavior>` for 'point-on-border' and region interiors:
+
+   - New "edge behaviour": points that fall on the border of the region are now
+     treated consistently (:pull:`63`). Previously the edge behaviour was
+     not well defined and depended on the orientation of the outline (clockwise
+     vs. counter clockwise) (:issue:`69` and `matplotlib/matplotlib#9704 <https://github.com/matplotlib/matplotlib/issues/9704>`_).
+
+   - Holes in regions are now excluded from the mask; previously they were included.
+     For the :code:`defined_regions`, this is relevant for the Caspian Sea in the
+     :code:`naturalearth.land110` region and also for some countries in
+     :code:`naturalearth.countries_50` (closes :issue:`22`).
+
  - Renamed :code:`Regions_cls` to :code:`Regions` and changed its call
    signature. This allows to make all arguments except :code:`outlines` optional.
-   - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity.
+ - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity.
  - Deprecated the :code:`centroids` keyword for :code:`Regions` (:issue:`51`).
  - `xarray <http://xarray.pydata.org>`_ is now a hard dependency (:issue:`64`).
+ - The function ``regionmask.create_mask_contains`` is deprecated and will be
+   removed in a future version. Use ``regionmask.Regions(coords).mask(lon, lat)``
+   instead.
 
 Enhancements
 ~~~~~~~~~~~~
-
- - New algorithm to rasterize regions for equally-spaced longitude/ latitude grids.
-   Uses ``rasterio.features.rasterize``: this offers a 50x to 100x speedup compared
-   to the old method, and also has consistent edge behavior (closes :issue:`22` and
-   :issue:`24`).
- - New algorithm to rasterize regions for grids that are not equally-spaced.
-   Uses ``shapely.vectorized.contains``: this offers a 2x to 50x speedup compared
-   to the old method. To achieve the same edge-behavior a tiny (10 ** -9) offset
-   is subtracted from lon and lat (closes :issue:`22` and :issue:`62`).
- - Added a test to ensure that the two new algorithms ("rasterize", "shapely")
-   yield the same result. Currently for 1° and 2° grid spacing (:issue:`74`).
+ 
+ - New faster and consistent methods to rasterize regions:
+ 
+   - New algorithm to rasterize regions for equally-spaced longitude/ latitude grids.
+     Uses ``rasterio.features.rasterize``: this offers a 50x to 100x speedup compared
+     to the old method, and also has consistent edge behavior (closes :issue:`22` and
+     :issue:`24`).
+   - New algorithm to rasterize regions for grids that are not equally-spaced.
+     Uses ``shapely.vectorized.contains``: this offers a 2x to 50x speedup compared
+     to the old method. To achieve the same edge-behavior a tiny (10 ** -9) offset
+     is subtracted from lon and lat (closes :issue:`22` and :issue:`62`).
+   - Added a new page to the documentation, illustrating the algorithms, the edge
+     behavior and treatment of holes (closes :issue:`16`).
+   - Added a test to ensure that the two new algorithms ("rasterize", "shapely")
+     yield the same result. Currently for 1° and 2° grid spacing (:issue:`74`).
+ 
  - Automatically detect whether the longitude of the grid needs to be wrapped,
    depending on the extent of the grid and the regions (closes :issue:`34`).
  - Make all arguments to :code:`Regions` optional (except :code:`outlines`)
@@ -58,8 +70,6 @@ Enhancements
  - Add possibility to create an example dataset containing lon, lat and their
    bounds (closes :issue:`66`).
  - Added code coverage with pytest-cov and codecov.
- - Added a new page to the documentation, illustrating the algorithms, the edge
-   behavior and treatment of holes (closes :issue:`16`).
 
 Bug Fixes
 ~~~~~~~~~
