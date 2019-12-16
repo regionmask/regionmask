@@ -283,7 +283,6 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
     return lon, lat, numbers
 
-
 def _get_LON_LAT_out_shape(lon, lat, fill):
 
     if lon.ndim == 2:
@@ -325,14 +324,26 @@ def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
 
         for internal use: does not check valitity of input
     """
+    # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
+    lon = np.asarray(lon) - 1 * 10 ** -9
+    lat = np.asarray(lat) - 1 * 10 ** -9
+
+    return _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill, **kwargs)
+
+def _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+    """ Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
+
+        This only works for 1D lat and lon arrays.
+
+        for internal use: does not check valitity of input
+    """
+    #TODO: use only this function once https://github.com/mapbox/rasterio/issues/1844
+    # is resolved
 
     from rasterio import features
 
     shapes = zip(polygons, numbers)
 
-    # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
-    lon = np.asarray(lon) - 1 * 10 ** -9
-    lat = np.asarray(lat) - 1 * 10 ** -9
 
     transform = _transform_from_latlon(lon, lat)
     out_shape = (len(lat), len(lon))
@@ -347,5 +358,3 @@ def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     )
 
     return raster
-
-    # xr.DataArray(raster, coords=(lat, lon), dims=('lat', 'lon'), name='region')

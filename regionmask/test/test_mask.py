@@ -5,7 +5,12 @@ from affine import Affine
 from shapely.geometry import Polygon
 
 from regionmask import Regions, create_mask_contains
-from regionmask.core.mask import _mask_rasterize, _mask_shapely, _transform_from_latlon
+from regionmask.core.mask import (
+    _mask_rasterize,
+    _mask_rasterize_no_offset,
+    _mask_shapely,
+    _transform_from_latlon,
+)
 from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
 
 # =============================================================================
@@ -489,6 +494,6 @@ def test_rasterize_edge():
     lat = ds_US_180.lat
 
     expected = expected_mask_edge(ds_US_180, is_360=False)
-    result = _mask_rasterize(lon, lat, r_US_180_ccw.polygons, numbers=[0])
+    result = _mask_rasterize_no_offset(lon, lat, r_US_180_ccw.polygons, numbers=[0])
 
     assert np.allclose(result, expected, equal_nan=True)
