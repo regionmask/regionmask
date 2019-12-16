@@ -89,13 +89,11 @@ def test_mask_shapely_wrong_number_fill():
 
 
 @pytest.mark.xfail(reason="Not implemented")
-def test_mask_rasterize_wrong_number_fill():
+@pytest.mark.parametrize("numbers, fill", [[[0, 1], [0]], [[0], [np.NaN]]])
+def test_mask_rasterize_wrong_number_fill(numbers, fill):
 
     with pytest.raises(AssertionError):
-        _mask_rasterize(lon, lat, outlines_poly, numbers=[0, 1], fill=0)
-
-    with pytest.raises(AssertionError):
-        _mask_rasterize(lon, lat, outlines, numbers=[5])
+        _mask_rasterize(lon, lat, outlines_poly, numbers=numbers, fill=fill)
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
