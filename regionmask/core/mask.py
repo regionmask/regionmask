@@ -1,9 +1,8 @@
-import warnings
-
 import numpy as np
+import warnings
 import xarray as xr
 
-from .utils import _is_180, _wrapAngle, equally_spaced
+from .utils import _wrapAngle, _is_180, equally_spaced
 
 
 def _mask(
@@ -103,9 +102,6 @@ def _mask(
     elif method == "rasterize":
         func = _mask_rasterize
         data = self.polygons
-        # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
-        lon = lon - 1 * 10 ** -9
-        lat = lat - 1 * 10 ** -9
     elif method == "shapely":
         func = _mask_shapely
         data = self.polygons
@@ -287,7 +283,6 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
     return lon, lat, numbers
 
-
 def _get_LON_LAT_out_shape(lon, lat, fill):
 
     if lon.ndim == 2:
@@ -333,6 +328,10 @@ def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     from rasterio import features
 
     shapes = zip(polygons, numbers)
+
+    # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
+    lon = np.asarray(lon) - 1 * 10 ** -9
+    lat = np.asarray(lat) - 1 * 10 ** -9
 
     transform = _transform_from_latlon(lon, lat)
     out_shape = (len(lat), len(lon))
