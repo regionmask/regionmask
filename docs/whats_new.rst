@@ -85,7 +85,7 @@ Bug Fixes
  - Fix regression: the offset was subtracted in ``mask.lon`` and ``mask.lat``;
    test ``np.all(np.equal(mask.lon, lon))``, instead of ``np.allclose`` (closes
    :issue:`78`).
- - Rasterizing with ``"rasterize"` and ``"shapely"`` was not equal when gridpoints
+ - Rasterizing with ``"rasterize"`` and ``"shapely"`` was not equal when gridpoints
    exactly fall on a 45° border outline (:issue:`80`).
  - Conda channel mixing breaks travis tests. Only use conda-forge, add strict
    channel priority (:issue:`27`).
