@@ -116,8 +116,8 @@ def test_mask_xarray(method):
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
-    assert np.allclose(result.lat, lat)
-    assert np.allclose(result.lon, lon)
+    assert np.all(np.equal(result.lat.values, lat))
+    assert np.all(np.equal(result.lon.values, lon))
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
@@ -284,11 +284,11 @@ def test_mask_xarray_out_2D(method):
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
 
-    assert np.allclose(result.lat.values, lat_2D)
-    assert np.allclose(result.lon.values, lon_2D)
+    assert np.all(np.equal(result.lat.values, lat_2D))
+    assert np.all(np.equal(result.lon.values, lon_2D))
 
-    assert np.allclose(result.lat_idx, [0, 1])
-    assert np.allclose(result.lon_idx, [0, 1])
+    assert np.all(np.equal(result.lat_idx.values, [0, 1]))
+    assert np.all(np.equal(result.lon_idx.values, [0, 1]))
 
 
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
@@ -322,11 +322,11 @@ def test_mask_xarray_in_out_2D(method):
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
-    assert np.allclose(result.lat_2D, lat_2D)
-    assert np.allclose(result.lon_2D, lon_2D)
+    assert np.all(np.equal(result.lat_2D.values, lat_2D))
+    assert np.all(np.equal(result.lon_2D.values, lon_2D))
 
-    assert np.allclose(result.lat_1D, [1, 2])
-    assert np.allclose(result.lon_1D, [1, 2])
+    assert np.all(np.equal(result.lat_1D.values, [1, 2]))
+    assert np.all(np.equal(result.lon_1D.values, [1, 2]))
 
 
 @pytest.mark.parametrize("xarray", [True, False])
@@ -458,8 +458,8 @@ def test_mask_edge(method, regions, ds_US, is_360):
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
-    assert np.allclose(result.lat, ds_US.lat)
-    assert np.allclose(result.lon, ds_US.lon)
+    assert np.all(np.equal(result.lat, ds_US.lat))
+    assert np.all(np.equal(result.lon, ds_US.lon))
 
 
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
@@ -476,8 +476,8 @@ def test_mask_interior_and_edge(method, regions, ds_US, is_360):
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
-    assert np.allclose(result.lat, ds_US.lat)
-    assert np.allclose(result.lon, ds_US.lon)
+    assert np.all(np.equal(result.lat.values, ds_US.lat))
+    assert np.all(np.equal(result.lon.values, ds_US.lon))
 
 
 @pytest.mark.xfail(
