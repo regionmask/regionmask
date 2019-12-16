@@ -1,6 +1,7 @@
 import numpy as np
-from regionmask.core.utils import _wrapAngle360, _wrapAngle180, _wrapAngle
 from pytest import raises
+
+from regionmask.core.utils import _wrapAngle, _wrapAngle180, _wrapAngle360
 
 
 def test__wrapAngle360():

@@ -1,16 +1,8 @@
 import numpy as np
-
-from regionmask import Regions
-
 import pytest
 
-import xarray as xr
-from affine import Affine
-from shapely.geometry import Polygon
-
-from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
 from regionmask import defined_regions
-
+from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
 
 regions = [
     defined_regions.giorgi,

@@ -1,5 +1,5 @@
-import six
 import numpy as np
+import six
 import xarray as xr
 
 

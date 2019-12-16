@@ -1,8 +1,9 @@
-import numpy as np
 import warnings
+
+import numpy as np
 import xarray as xr
 
-from .utils import _wrapAngle, _is_180, equally_spaced
+from .utils import _is_180, _wrapAngle, equally_spaced
 
 
 def _mask(
@@ -285,6 +286,7 @@ def _parse_input(lon, lat, coords, fill, numbers):
     assert fill not in numbers, msg
 
     return lon, lat, numbers
+
 
 def _get_LON_LAT_out_shape(lon, lat, fill):
 

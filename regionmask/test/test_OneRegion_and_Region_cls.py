@@ -1,10 +1,8 @@
 import numpy as np
+import pytest
+from shapely.geometry import MultiPolygon, Polygon
 
 from regionmask import Region_cls, _OneRegion
-
-from shapely.geometry import Polygon, MultiPolygon
-
-import pytest
 
 
 @pytest.mark.filterwarnings("ignore:Using 'Region_cls'")

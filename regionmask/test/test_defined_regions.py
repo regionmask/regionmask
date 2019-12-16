@@ -1,7 +1,7 @@
-from regionmask import defined_regions, Regions
-from regionmask.defined_regions import _maybe_get_column
-
 from pytest import raises
+
+from regionmask import Regions, defined_regions
+from regionmask.defined_regions import _maybe_get_column
 
 
 def _defined_region(regions, n_regions):

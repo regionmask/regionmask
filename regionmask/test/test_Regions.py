@@ -1,12 +1,9 @@
 import numpy as np
+import pytest
+import six
+from shapely.geometry import MultiPolygon, Polygon
 
 from regionmask import Regions, _OneRegion
-
-from shapely.geometry import Polygon, MultiPolygon
-
-import pytest
-
-import six
 
 # =============================================================================
 # set up the testing regions
@@ -17,8 +14,8 @@ numbers1 = [0, 1]
 names = ["Unit Square1", "Unit Square2"]
 abbrevs = ["uSq1", "uSq2"]
 
-outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
-outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
+outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
+outl2 = ((0, 1), (0, 2), (1, 2.0), (1, 1))
 
 outlines = [outl1, outl2]
 
@@ -124,7 +121,7 @@ def test_centroid_multipolygon():
     assert np.allclose(test_regions_multipoly_equal.centroids, [[0.5, 0.5]])
 
     # two un-equally sized polygons: uses the centroid of the larger one
-    outl2_unequal = ((0, 1), (0, 2), (2, 2.), (2, 1))
+    outl2_unequal = ((0, 1), (0, 2), (2, 2.0), (2, 1))
     poly2_unequal = Polygon(outl2_unequal)
     multipoly_unequal = [MultiPolygon([poly1, poly2_unequal])]
     test_regions_multipoly_unequal = Regions(multipoly_unequal)
