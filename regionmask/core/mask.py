@@ -256,8 +256,8 @@ def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN):
     LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill)
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10 ** -9
-    LAT = LAT - 1 * 10 ** -9
+    LON = LON - 1 * 10 ** -8
+    LAT = LAT - 1 * 10 ** -10
 
     for i, polygon in enumerate(polygons):
         sel = shp_vect.contains(polygon, LON, LAT)
@@ -282,6 +282,7 @@ def _parse_input(lon, lat, coords, fill, numbers):
     assert fill not in numbers, msg
 
     return lon, lat, numbers
+
 
 def _get_LON_LAT_out_shape(lon, lat, fill):
 
@@ -325,10 +326,11 @@ def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
         for internal use: does not check valitity of input
     """
     # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
-    lon = np.asarray(lon) - 1 * 10 ** -9
-    lat = np.asarray(lat) - 1 * 10 ** -9
+    lon = np.asarray(lon) - 1 * 10 ** -8
+    lat = np.asarray(lat) - 1 * 10 ** -10
 
     return _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill, **kwargs)
+
 
 def _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     """ Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
@@ -337,13 +339,12 @@ def _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill=np.NaN, **kwargs
 
         for internal use: does not check valitity of input
     """
-    #TODO: use only this function once https://github.com/mapbox/rasterio/issues/1844
+    # TODO: use only this function once https://github.com/mapbox/rasterio/issues/1844
     # is resolved
 
     from rasterio import features
 
     shapes = zip(polygons, numbers)
-
 
     transform = _transform_from_latlon(lon, lat)
     out_shape = (len(lat), len(lon))

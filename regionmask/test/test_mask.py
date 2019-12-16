@@ -497,3 +497,36 @@ def test_rasterize_edge():
     result = _mask_rasterize_no_offset(lon, lat, r_US_180_ccw.polygons, numbers=[0])
 
     assert np.allclose(result, expected, equal_nan=True)
+
+
+ds_for_45_deg = create_lon_lat_dataarray_from_bounds(*(-0.5, 16, 1) + (10.5, -0.5, -1))
+
+# add a small offset to y to avoid https://github.com/mapbox/rasterio/issues/1844
+outline_45_deg = np.array([[0, 10.1], [0, 0.1], [5.1, 0.1], [15.1, 10.1]])
+
+r_45_def_ccw = Regions([outline_45_deg])
+r_45_def_cw = Regions([outline_45_deg[::-1]])
+
+
+@pytest.mark.parametrize("regions", [r_45_def_ccw, r_45_def_cw])
+def test_deg45_rasterize_shapely_equal(regions):
+    # https://github.com/mathause/regionmask/issues/80
+
+    shapely = regions.mask(ds_for_45_deg, method="shapely")
+    rasterize = regions.mask(ds_for_45_deg, method="rasterize")
+
+    xr.testing.assert_equal(shapely, rasterize)
+
+
+@pytest.mark.parametrize("regions", [r_45_def_ccw, r_45_def_cw])
+def test_deg45_rasterize_offset_equal(regions):
+    # https://github.com/mathause/regionmask/issues/80
+
+    polygons = regions.polygons
+    lon = ds_for_45_deg.lon
+    lat = ds_for_45_deg.lat
+
+    result_no_offset = _mask_rasterize_no_offset(lon, lat, polygons, numbers=[0])
+    result_offset = _mask_rasterize(lon, lat, polygons, numbers=[0])
+
+    assert np.allclose(result_no_offset, result_offset, equal_nan=True)
