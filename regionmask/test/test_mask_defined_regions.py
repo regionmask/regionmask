@@ -5,6 +5,10 @@ from regionmask import defined_regions
 from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
 
 regions = [
+    defined_regions.ar6,
+    defined_regions.ar6_land,
+    defined_regions.ar6_ocean,
+    defined_regions.ar6_separate_pacific,
     defined_regions.giorgi,
     defined_regions.srex,
     defined_regions.natural_earth.countries_110,
