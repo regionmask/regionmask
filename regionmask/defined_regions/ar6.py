@@ -1,8 +1,8 @@
-import pkg_resources
 import os
-from shapely import geometry
 
 import geopandas as gp
+import pkg_resources
+from shapely import geometry
 
 from ..core.regions import Regions
 
