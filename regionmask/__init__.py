@@ -2,17 +2,10 @@
 
 # flake8: noqa
 
-# get version
+
+from . import core, defined_regions
+from .core.mask import create_mask_contains
+from .core.regions import Region_cls, Regions, Regions_cls, _OneRegion
 from .version import version
 
 __version__ = version
-
-# import
-from .core.regions import Regions_cls, Region_cls, Regions, _OneRegion
-
-from . import defined_regions
-
-from .core.mask import create_mask_contains
-
-# for testing
-from . import core

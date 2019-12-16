@@ -1,15 +1,13 @@
 # ignore deprection warning -> is tested at end of this file
 import warnings
 
-warnings.filterwarnings(message="Using 'Regions_cls'", action="ignore")
-
 import numpy as np
+import pytest
+from shapely.geometry import Polygon
 
 from regionmask import Regions_cls, _OneRegion
 
-from shapely.geometry import Polygon
-
-import pytest
+warnings.filterwarnings(message="Using 'Regions_cls'", action="ignore")
 
 
 # =============================================================================

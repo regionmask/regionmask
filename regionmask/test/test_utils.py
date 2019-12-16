@@ -1,11 +1,11 @@
-import pytest
 import numpy as np
+import pytest
 
 from regionmask.core.utils import (
     _create_dict_of_numbered_string,
+    _is_180,
     _maybe_to_dict,
     _sanitize_names_abbrevs,
-    _is_180,
     create_lon_lat_dataarray_from_bounds,
     equally_spaced,
 )

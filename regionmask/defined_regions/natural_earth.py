@@ -1,6 +1,5 @@
-import six
-
 import numpy as np
+import six
 
 from ..core.regions import Regions
 

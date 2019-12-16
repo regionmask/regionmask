@@ -3,21 +3,17 @@
 
 # Author: Mathias Hauser
 # Date:
-# ds = xray.Dataset(coords={'longitude': np.arange(-125, -65, 0.5),
-#                           'latitude': np.arange(50, 25, -0.5)})
-
 
 import copy
-import numpy as np
-import six
 import warnings
 
-from shapely.geometry import Polygon, MultiPolygon
-
+import numpy as np
+import six
+from shapely.geometry import MultiPolygon, Polygon
 
 from .mask import _mask
 from .plot import _plot, _plot_regions
-from .utils import _sanitize_names_abbrevs, _maybe_to_dict, _is_180
+from .utils import _is_180, _maybe_to_dict, _sanitize_names_abbrevs
 
 
 class Regions(object):
