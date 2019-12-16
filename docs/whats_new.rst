@@ -30,7 +30,7 @@ Breaking Changes
 
  - Renamed :code:`Regions_cls` to :code:`Regions` and changed its call
    signature. This allows to make all arguments except :code:`outlines` optional.
-   - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity.
+ - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity.
  - Deprecated the :code:`centroids` keyword for :code:`Regions` (:issue:`51`).
  - `xarray <http://xarray.pydata.org>`_ is now a hard dependency (:issue:`64`).
  - The function ``regionmask.create_mask_contains`` is deprecated and will be
