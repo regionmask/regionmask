@@ -283,6 +283,7 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
     return lon, lat, numbers
 
+
 def _get_LON_LAT_out_shape(lon, lat, fill):
 
     if lon.ndim == 2:
