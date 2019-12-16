@@ -39,9 +39,9 @@ Breaking Changes
 
 Enhancements
 ~~~~~~~~~~~~
- 
+
  - New faster and consistent methods to rasterize regions:
- 
+
    - New algorithm to rasterize regions for equally-spaced longitude/ latitude grids.
      Uses ``rasterio.features.rasterize``: this offers a 50x to 100x speedup compared
      to the old method, and also has consistent edge behavior (closes :issue:`22` and
@@ -54,7 +54,7 @@ Enhancements
      behavior and treatment of holes (closes :issue:`16`).
    - Added a test to ensure that the two new algorithms ("rasterize", "shapely")
      yield the same result. Currently for 1° and 2° grid spacing (:issue:`74`).
- 
+
  - Automatically detect whether the longitude of the grid needs to be wrapped,
    depending on the extent of the grid and the regions (closes :issue:`34`).
  - Make all arguments to :code:`Regions` optional (except :code:`outlines`)
@@ -82,6 +82,9 @@ Bug Fixes
  - For a region defined via :code:`MultiPolygon`: use the centroid of the largest
    :code:`Polygon` to add the label on a map. Previously the label could be placed
    outside of the region (closes :issue:`59`).
+ - Fix regression: the offset was subtracted in ``mask.lon`` and ``mask.lat``;
+   test ``np.all(np.equal(mask.lon, lon))``, instead of ``np.allclose`` (closes
+   :issue:`78`).
  - Conda channel mixing breaks travis tests. Only use conda-forge, add strict
    channel priority (:issue:`27`).
  - Fix documentation compilation on readthedocs (aborted, did not display
