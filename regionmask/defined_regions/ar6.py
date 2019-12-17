@@ -93,6 +93,7 @@ land = [
     "SAU",
     "NZ",
     "EAN",
+    "WAN",
 ]
 
 
@@ -100,7 +101,6 @@ ar6_land = ar6[land]
 ar6_land.name = "IPCC AR6 WGI Reference Regions (combined Pacific regions, land only)"
 
 ocean = [
-    "WAN",
     "ARO",
     "SPO",
     "EPO",
