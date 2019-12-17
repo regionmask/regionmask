@@ -1,4 +1,4 @@
 include requirements.txt
 include LICENSE
-include regionmask/defined_regions/data/*
+recursive-include regionmask/defined_regions/data *
 
