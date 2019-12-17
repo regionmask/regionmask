@@ -55,12 +55,12 @@ def test_ar6():
 
 def test_ar6_land():
     regions = defined_regions.ar6_land
-    _defined_region(regions, 42)
+    _defined_region(regions, 43)
 
 
 def test_ar6_ocean():
     regions = defined_regions.ar6_ocean
-    _defined_region(regions, 13)
+    _defined_region(regions, 12)
 
 
 def test_ar6_separate_pacific():
