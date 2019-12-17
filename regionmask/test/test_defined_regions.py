@@ -49,22 +49,22 @@ def test_land_110():
 
 
 def test_ar6():
-    regions = defined_regions.ar6
+    regions = defined_regions.ar6.all
     _defined_region(regions, 55)
 
 
 def test_ar6_land():
-    regions = defined_regions.ar6_land
+    regions = defined_regions.ar6.land
     _defined_region(regions, 43)
 
 
 def test_ar6_ocean():
-    regions = defined_regions.ar6_ocean
+    regions = defined_regions.ar6.ocean
     _defined_region(regions, 12)
 
 
 def test_ar6_separate_pacific():
-    regions = defined_regions.ar6_separate_pacific
+    regions = defined_regions.ar6.separate_pacific
     _defined_region(regions, 58)
 
 
