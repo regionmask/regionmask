@@ -10,7 +10,7 @@ What's New
 
 .. _whats-new.0.5.0:
 
-v0.5.0 (unreleased)
+v0.5.0 (19.12.2019)
 -------------------
 
 Version v0.5.0 offers a better performance, a consistent point-on-border behavior,
