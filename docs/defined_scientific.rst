@@ -1,6 +1,6 @@
-####################
-'Scientific' Regions
-####################
+##################
+Scientific Regions
+##################
 
 The following regions, used in the scientific literature, are already defined:
 
