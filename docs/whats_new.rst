@@ -13,6 +13,12 @@ What's New
 v0.5.0 (unreleased)
 -------------------
 
+Version v0.5.0 offers a better performance, a consistent point-on-border behavior,
+and also unmasks region interiors (holes). It also introduces a number of
+deprecations. Please check the notebook on :doc:`methods<notebooks/method>` and
+What's New.
+
+
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
