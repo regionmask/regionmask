@@ -22,11 +22,7 @@ plotting and creation of masks of spatial regions
     :target: https://github.com/ambv/black
 
 
-.. note::
-   Version v0.5.0 offers a better performance, a consistent point-on-border behavior,
-   and unmasks region interiors (holes). It also introduces a number of deprecations.
-   Please check the `notebook on methods <https://regionmask.readthedocs.io/en/stable/notebooks/method.html>`_ and
-   `What's New<https://regionmask.readthedocs.io/en/stable/whats_new.html>`_.
+    Version v0.5.0 offers a better performance, a consistent point-on-border behavior, and unmasks region interiors (holes). It also introduces a number of deprecations. Please check the `notebook on methods <https://regionmask.readthedocs.io/en/stable/notebooks/method.html>` and `What's New <https://regionmask.readthedocs.io/en/stable/whats_new.html>`.
 
 
 Documentation
