@@ -32,26 +32,36 @@ regionmask is a Python module that:
 - arbitrary regions can be defined easily (:doc:`tutorial<notebooks/create_own_regions>`)
 
 .. note::
-   From version 0.5 ``regionmask`` treats points on the region borders differently
+   From version 0.5 ``regionmask`` treats points on borders differently
    and also considers poygon interiors (holes), e.g. the Caspian Sea in
    ``natural_earth.land_110`` region. The differences are illustrated in a
-   `notebook<notebooks/new_behavior>`.
+   :doc:`notebook<notebooks/method>`. See also in :doc:`What's new<whats_new>`
 
 
-Usage
-=====
-Please have a look at the tutorials.
-
-
-Contents
-========
+Documentation
+=============
 
 .. toctree::
    :maxdepth: 2
+   :caption: Getting Started
 
-   whats_new
    installation
-   notebooks/new_behavior
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Methods
+
+   notebooks/method
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Usage: Tutorials
+
+   notebooks/plotting
+   notebooks/mask_xarray
+   notebooks/mask_numpy
+   notebooks/mask_multidim
+   notebooks/create_own_regions
 
 .. toctree::
    :maxdepth: 2
@@ -61,21 +71,11 @@ Contents
    defined_landmask
    defined_scientific
 
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Tutorials
-
-   notebooks/plotting
-   notebooks/mask_numpy
-   notebooks/mask_xarray
-   notebooks/mask_multidim
-   notebooks/create_own_regions
-
 .. toctree::
    :maxdepth: 2
    :caption: API Reference
 
+   whats_new
    api
 
 
@@ -100,4 +100,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
