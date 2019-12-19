@@ -16,24 +16,24 @@ v0.5.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
- - :doc:`New behavior<notebooks/new_behavior>` for 'point-on-border' and region interiors:
+ - :doc:`New behavior<notebooks/method>` for 'point-on-border' and region interiors:
 
-   - New "edge behaviour": points that fall on the border of the region are now
+   - New 'edge behaviour': points that fall on the border of a region are now
      treated consistently (:pull:`63`). Previously the edge behaviour was
      not well defined and depended on the orientation of the outline (clockwise
-     vs. counter clockwise) (:issue:`69` and `matplotlib/matplotlib#9704 <https://github.com/matplotlib/matplotlib/issues/9704>`_).
+     vs. counter clockwise; :issue:`69` and `matplotlib/matplotlib#9704 <https://github.com/matplotlib/matplotlib/issues/9704>`_).
 
    - Holes in regions are now excluded from the mask; previously they were included.
      For the :code:`defined_regions`, this is relevant for the Caspian Sea in the
-     :code:`naturalearth.land110` region and also for some countries in
-     :code:`naturalearth.countries_50` (closes :issue:`22`).
+     :py:attr:`naturalearth.land110` region and also for some countries in
+     :py:attr:`naturalearth.countries_50` (closes :issue:`22`).
 
- - Renamed :code:`Regions_cls` to :code:`Regions` and changed its call
+ - Renamed :py:class:`Regions_cls` to :py:class:`Regions` and changed its call
    signature. This allows to make all arguments except :code:`outlines` optional.
- - Renamed :code:`Region_cls` to :code:`_OneRegion` for clarity.
- - Deprecated the :code:`centroids` keyword for :code:`Regions` (:issue:`51`).
+ - Renamed :py:class:`Region_cls` to :py:class:`_OneRegion` for clarity.
+ - Deprecated the :code:`centroids` keyword for :py:class:`Regions` (:issue:`51`).
  - `xarray <http://xarray.pydata.org>`_ is now a hard dependency (:issue:`64`).
- - The function ``regionmask.create_mask_contains`` is deprecated and will be
+ - The function :py:func:`regionmask.create_mask_contains` is deprecated and will be
    removed in a future version. Use ``regionmask.Regions(coords).mask(lon, lat)``
    instead.
 
@@ -50,23 +50,24 @@ Enhancements
      Uses ``shapely.vectorized.contains``: this offers a 2x to 50x speedup compared
      to the old method. To achieve the same edge-behavior a tiny (10 ** -9) offset
      is subtracted from lon and lat (closes :issue:`22` and :issue:`62`).
-   - Added a new page to the documentation, illustrating the algorithms, the edge
-     behavior and treatment of holes (closes :issue:`16`).
+   - Added a :doc:`methods page<notebooks/method>` to the documentation, illustrating
+     the algorithms, the edge behavior and treatment of holes (closes :issue:`16`).
    - Added a test to ensure that the two new algorithms ("rasterize", "shapely")
      yield the same result. Currently for 1° and 2° grid spacing (:issue:`74`).
 
  - Automatically detect whether the longitude of the grid needs to be wrapped,
    depending on the extent of the grid and the regions (closes :issue:`34`).
- - Make all arguments to :code:`Regions` optional (except :code:`outlines`)
+ - Make all arguments to :py:class:`Regions` optional (except :code:`outlines`)
    this should make it easier to create your own region definitions (closes :issue:`37`).
- - Allow to pass arbitrary iterables to :code:`Regions` - previously these had to be of
+ - Allow to pass arbitrary iterables to :py:class:`Regions` - previously these had to be of
    type :code:`dict` (closes :issue:`43`).
- - Added a :code:`plot_regions` method that only plots the region borders and not a map,
-   as :code:`plot`. The :code:`plot_region` function can be used to plots the regions on a
-   existing cartopy map or a regular axes (closes :issue:`31`).
- - Added :code:`bounds` and :code:`bounds_global` to :code:`Regions` indicating the
-   minimum bounding region of each and all regions, respectively. Added
-   :code:`bounds` to :code:`_OneRegion` (closes :issue:`33`).
+ - Added a :py:meth:`Regions.plot_regions` method that only plots the region borders
+   and not a map, as :py:meth:`Regions.plot`. The :py:meth:`Regions.plot_regions`
+   method can be used to plot the regions on a existing :code:`cartopy` map or a
+   regular axes (closes :issue:`31`).
+ - Added :py:attr:`Regions.bounds` and :py:attr:`Regions.bounds_global`
+   indicating the minimum bounding region of each and all regions, respectively.
+   Added :py:attr:`_OneRegion.bounds` (closes :issue:`33`).
  - Add possibility to create an example dataset containing lon, lat and their
    bounds (closes :issue:`66`).
  - Added code coverage with pytest-cov and codecov.
@@ -74,7 +75,7 @@ Enhancements
 Bug Fixes
 ~~~~~~~~~
 
- - Regions were missing a line when the coords was not closed and
+ - Regions were missing a line when the coords were not closed and
    :code:`subsample=False`  (:issue:`46`).
  - Fix a regression introduced by :pull:`47`: when plotting regions containing
    multipolygons :code:`_draw_poly` closed the region again and introduced a spurious
@@ -90,7 +91,7 @@ Bug Fixes
  - Conda channel mixing breaks travis tests. Only use conda-forge, add strict
    channel priority (:issue:`27`).
  - Fix documentation compilation on readthedocs (aborted, did not display
-   figures.
+   figures).
  - Fix wrong figure in docs: countries showed landmask (:issue:`39`).
 
 v0.4.0 (02.03.2018)

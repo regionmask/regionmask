@@ -13,7 +13,6 @@ Top-level functions
 .. autosummary::
    :toctree: generated/
 
-   create_mask_rasterize
    create_mask_contains
 
 
@@ -117,3 +116,4 @@ Private Functions
    core.utils._wrapAngle180
    core.utils._wrapAngle
    core.utils._is_180
+

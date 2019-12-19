@@ -2,7 +2,7 @@
 Countries/ States (NaturalEarth)
 ################################
 
-The outline of the countries are obtained from 
+The outline of the countries are obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
 They are automatically downloaded on-the-fly (but only once) with cartopy and opened with geopandas.
 The following countries and regions are defined in regionmask.
@@ -56,9 +56,9 @@ US States
 Also create a mask for a 1° grid over the US:
 
 .. ipython:: python
-    
+
     import numpy as np
-    
+
     # create a grid
     lon = np.arange(200.5, 325)
     lat = np.arange(74.5, 14, -1)
@@ -67,7 +67,7 @@ Also create a mask for a 1° grid over the US:
     mask_ma = np.ma.masked_invalid(mask)
 
     states.plot(add_label=False);
-    
+
     LON_EDGE = np.arange(200, 326)
     LAT_EDGE = np.arange(75, 13, -1)
 
@@ -75,4 +75,3 @@ Also create a mask for a 1° grid over the US:
 
     @savefig plotting_states_mask.png width=6in
     plt.tight_layout()
-    

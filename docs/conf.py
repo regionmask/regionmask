@@ -307,7 +307,7 @@ warnings.filterwarnings("ignore")
 from subprocess import call
 
 notebooks = (
-    "notebooks/new_behavior",
+    "notebooks/method",
     "notebooks/plotting",
     "notebooks/mask_numpy",
     "notebooks/mask_xarray",
@@ -316,6 +316,17 @@ notebooks = (
 )
 
 for nb in notebooks:
+
+    # only render notebooks if necessary
+    f1 = os.path.getmtime(nb + ".ipynb")
+    try:
+        f2 = os.path.getmtime(nb + ".rst")
+
+        if f2 > f1:
+            continue
+    except FileNotFoundError:
+        pass
+
     call(
         (
             "jupyter nbconvert "
