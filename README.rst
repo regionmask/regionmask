@@ -20,6 +20,8 @@ plotting and creation of masks of spatial regions
    :target: https://anaconda.org/conda-forge/regionmask
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/ambv/black
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3585543.svg
+   :target: https://doi.org/10.5281/zenodo.3585543
 
 
 Version 0.5.0 (19.12.2019)
