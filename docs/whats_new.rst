@@ -14,6 +14,15 @@ What's New
 v0.6.0 (unreleased)
 -------------------
 
+.. warning::
+
+  This is the last release of regionmask that will support Python 2.7. Future releases
+  will be Python 3 only, but older versions of regionmask will always be available
+  for Python 2.7 users. For the more details, see:
+
+  - `Python 3 Statement <http://www.python3statement.org/>`__
+
+
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
