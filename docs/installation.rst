@@ -6,8 +6,9 @@ Required dependencies
 
 - Python 2.7, 3,6, or 3.7.
 - `numpy <http://www.numpy.org/>`__
-- `shapely <http://toblerity.org/shapely/>`__
 - `matplotlib <http://matplotlib.org/>`__
+- `rasterio <https://rasterio.readthedocs.io/>`__
+- `shapely <http://toblerity.org/shapely/>`__
 - `xarray <http://xarray.pydata.org/>`__
 
 For plotting on geographical maps:
@@ -22,8 +23,8 @@ Instructions
 ------------
 
 regionmask itself is a pure Python package, but its dependencies are not. The
-easiest way to get them installed is to use conda_. The package is only
-avilable on the conda-forge channel.
+easiest way to get them installed is to use conda_. The package is avilable
+on the conda-forge channel.
 
 .. code-block:: bash
 
@@ -44,7 +45,6 @@ To install the development version (master), do:
 .. code-block:: bash
 
    pip install git+https://github.com/mathause/regionmask
-
 
 
 .. _conda: http://conda.io/

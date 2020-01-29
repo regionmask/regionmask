@@ -1,8 +1,9 @@
-import numpy as np
 import warnings
+
+import numpy as np
 import xarray as xr
 
-from .utils import _wrapAngle, _is_180, equally_spaced
+from .utils import _is_180, _wrapAngle, equally_spaced
 
 
 def _mask(
