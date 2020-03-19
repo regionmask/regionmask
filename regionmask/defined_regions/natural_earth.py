@@ -133,6 +133,7 @@ class natural_earth_cls(object):
         self._us_states_10 = None
 
         self._land_110 = None
+        self._ocean_basins_50 = None
 
     def __repr__(self):
         return "Combines Region Definitions from 'http://www.naturalearthdata.com'."
@@ -212,6 +213,23 @@ class natural_earth_cls(object):
 
             self._land_110 = _obtain_ne(**opt)
         return self._land_110
+
+    @property
+    def ocean_basins_50(self):
+        if self._ocean_basins_50 is None:
+
+            opt = dict(
+                resolution="50m",
+                category="physical",
+                name="geography_marine_polys",
+                title="Natural Earth: ocean basins 50m",
+                names="name",
+                abbrevs="name",
+                # query="featurecla == 'ocean'",
+            )
+
+            self._ocean_basins_50 = _obtain_ne(**opt)
+        return self._ocean_basins_50
 
 
 natural_earth = natural_earth_cls()
