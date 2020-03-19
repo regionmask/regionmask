@@ -48,6 +48,11 @@ def test_land_110():
     _defined_region(regions, 1)
 
 
+def test_ocean_basins_50():
+    regions = defined_regions.natural_earth.ocean_basins_50
+    _defined_region(regions, 119)
+
+
 def test_maybe_get_column():
     class lowercase(object):
         @property
