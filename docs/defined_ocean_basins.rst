@@ -52,10 +52,8 @@ Also create a mask for a 1° grid globally:
 
     basins.plot(add_label=False, add_ocean=False);
 
-    LON_EDGE = np.arange(0, 360)
-    LAT_EDGE = np.arange(90, -90, -1)
-
-    plt.pcolormesh(LON_EDGE, LAT_EDGE, mask_ma, cmap='viridis');
+     # plot using xarray
+     mask.plot()
 
     @savefig plotting_basins_mask.png width=6in
     plt.tight_layout()
