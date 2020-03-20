@@ -8,6 +8,7 @@ They are automatically downloaded on-the-fly (but only once) with cartopy and op
 The following marine regions are defined in regionmask:
 
 * Marine Areas 1:50m
+* Marine Areas 1:110m
 
 
 .. ipython:: python
