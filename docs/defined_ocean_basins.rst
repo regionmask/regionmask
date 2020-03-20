@@ -47,7 +47,7 @@ Also create a mask for a 1° grid globally:
     lon = np.arange(0.5, 359.5)
     lat = np.arange(89.5, -89.5, -1)
 
-    mask = states.mask(lon, lat, wrap_lon=True)
+    mask = states.mask(lon, lat)
     mask_ma = np.ma.masked_invalid(mask)
 
     basins.plot(add_label=False, add_ocean=False);
