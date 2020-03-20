@@ -1,6 +1,6 @@
-################################
+########################################
 Marine Areas/Ocean Basins (NaturalEarth)
-################################
+########################################
 
 The outline of the marine areas are obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
