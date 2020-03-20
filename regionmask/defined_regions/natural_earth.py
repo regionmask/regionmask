@@ -135,7 +135,6 @@ class natural_earth_cls(object):
         self._land_110 = None
 
         self._ocean_basins_50 = None
-        self._ocean_basins_110 = None
 
     def __repr__(self):
         return "Combines Region Definitions from 'http://www.naturalearthdata.com'."
@@ -230,34 +229,30 @@ class natural_earth_cls(object):
             )
 
             regs = _obtain_ne(**opt)
-            
+
             # NOTE: naturalearth includes duplicate names
 
             # raise an error if naturalearth changes the name
-            msg = "naturalearth renamed this region, please raise an issue in regionmask"
-            assert regs[14].name == 'Mediterranean Sea' , msg
+            msg = (
+                "naturalearth renamed this region, please raise an issue in regionmask"
+            )
+            assert regs[14].name == "Mediterranean Sea", msg
 
-            regs[14].name = 'Mediterranean Sea East'                                                                                                                                                    
-            regs[14].abbrev = 'Mediterranean Sea East'
-            # dito for regs[30] 
+            regs[14].name = "Mediterranean Sea Eastern Basin"
+            regs[14].abbrev = "Mediterranean Sea Eastern Basin"
+            # dito for regs[30]
+            regs[30].name = "Mediterranean Sea Western Basin"
+            regs[30].abbrev = "Mediterranean Sea Western Basin"
+
+            assert regs[26].name == "Ross Sea", msg
+            regs[26].name = "Ross Sea Eastern Basin"
+            regs[26].abbrev = "Ross Sea Eastern Basin"
+            # dito for regs[30]
+            regs[29].name = "Ross Sea Western Basin"
+            regs[29].abbrev = "Ross Sea Western Basin"
+
             self._ocean_basins_50 = regs
         return self._ocean_basins_50
-
-    @property
-    def ocean_basins_110(self):
-        if self._ocean_basins_110 is None:
-
-            opt = dict(
-                resolution="110m",
-                category="physical",
-                name="geography_marine_polys",
-                title="Natural Earth: ocean basins 110m",
-                names="name",
-                abbrevs="name",
-            )
-
-            self._ocean_basins_110 = _obtain_ne(**opt)
-        return self._ocean_basins_110
 
 
 natural_earth = natural_earth_cls()
