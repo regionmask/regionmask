@@ -5,7 +5,7 @@ Marine Areas/Ocean Basins (NaturalEarth)
 The outline of the marine areas are obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
 They are automatically downloaded on-the-fly (but only once) with cartopy and opened with geopandas.
-The following countries and regions are defined in regionmask.
+The following marine regions are defined in regionmask:
 
 * Marine Areas 1:50m
 
