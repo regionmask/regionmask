@@ -69,6 +69,7 @@ Documentation
 
    defined_countries
    defined_landmask
+   defined_ocean_basins
    defined_scientific
 
 .. toctree::
