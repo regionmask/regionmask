@@ -229,7 +229,18 @@ class natural_earth_cls(object):
                 abbrevs="name",
             )
 
-            self._ocean_basins_50 = _obtain_ne(**opt)
+            regs = _obtain_ne(**opt)
+            
+            # NOTE: naturalearth includes duplicate names
+
+            # raise an error if naturalearth changes the name
+            msg = "naturalearth renamed this region, please raise an issue in regionmask"
+            assert regs[14].name == 'Mediterranean Sea' , msg
+
+            regs[14].name = 'Mediterranean Sea East'                                                                                                                                                    
+            regs[14].abbrev = 'Mediterranean Sea East'
+            # dito for regs[30] 
+            self._ocean_basins_50 = regs
         return self._ocean_basins_50
 
     @property
