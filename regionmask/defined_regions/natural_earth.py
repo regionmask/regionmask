@@ -133,6 +133,7 @@ class natural_earth_cls(object):
         self._us_states_10 = None
 
         self._land_110 = None
+
         self._ocean_basins_50 = None
 
     def __repr__(self):
