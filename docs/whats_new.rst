@@ -29,6 +29,9 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- New marine regions from natural earth added as :py:attr:`naturalearth.ocean_basins_50`
+  (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_)
+
 Bug Fixes
 ~~~~~~~~~
 

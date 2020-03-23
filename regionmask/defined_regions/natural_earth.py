@@ -134,6 +134,8 @@ class natural_earth_cls(object):
 
         self._land_110 = None
 
+        self._ocean_basins_50 = None
+
     def __repr__(self):
         return "Combines Region Definitions from 'http://www.naturalearthdata.com'."
 
@@ -212,6 +214,49 @@ class natural_earth_cls(object):
 
             self._land_110 = _obtain_ne(**opt)
         return self._land_110
+
+    @property
+    def ocean_basins_50(self):
+        if self._ocean_basins_50 is None:
+
+            opt = dict(
+                resolution="50m",
+                category="physical",
+                name="geography_marine_polys",
+                title="Natural Earth: ocean basins 50m",
+                names="name",
+                abbrevs="name",
+            )
+
+            regs = _obtain_ne(**opt)
+
+            # NOTE: naturalearth includes duplicate names
+
+            # raise an error if naturalearth changes the name
+            msg = (
+                "naturalearth renamed this region, please raise an issue in regionmask"
+            )
+
+           # rename the "Mediterranean Sea" region
+            assert regs[14].name == "Mediterranean Sea", msg
+            regs[14].name = "Mediterranean Sea Eastern Basin"
+            regs[14].abbrev = "Mediterranean Sea Eastern Basin"
+
+            assert regs[30].name == "Mediterranean Sea", msg
+            regs[30].name = "Mediterranean Sea Western Basin"
+            regs[30].abbrev = "Mediterranean Sea Western Basin"
+
+           # rename the "Ross Sea" region
+            assert regs[26].name == "Ross Sea", msg
+            regs[26].name = "Ross Sea Eastern Basin"
+            regs[26].abbrev = "Ross Sea Eastern Basin"
+            
+            assert regs[29].name == "Ross Sea", msg
+            regs[29].name = "Ross Sea Western Basin"
+            regs[29].abbrev = "Ross Sea Western Basin"
+
+            self._ocean_basins_50 = regs
+        return self._ocean_basins_50
 
 
 natural_earth = natural_earth_cls()
