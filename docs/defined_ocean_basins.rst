@@ -43,15 +43,15 @@ Also create a mask for a 1° grid globally:
     import numpy as np
 
     # create a grid
-    lon = np.arange(0.5, 359.5)
-    lat = np.arange(89.5, -89.5, -1)
+    lon = np.arange(0.5, 360)
+    lat = np.arange(89.5, -90, -1)
 
     mask = basins.mask(lon, lat)
 
     basins.plot(add_label=False, add_ocean=False);
 
      # plot using xarray
-     mask.plot();
+     mask.plot(add_colorbar=False);
 
     @savefig plotting_basins_mask.png width=6in
     plt.tight_layout()
