@@ -136,6 +136,8 @@ class natural_earth_cls(object):
 
         self._ocean_basins_50 = None
 
+        self._states_provinces_10 = None
+
     def __repr__(self):
         return "Combines Region Definitions from 'http://www.naturalearthdata.com'."
 
