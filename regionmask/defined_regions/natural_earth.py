@@ -258,5 +258,17 @@ class natural_earth_cls(object):
             self._ocean_basins_50 = regs
         return self._ocean_basins_50
 
+    @property
+    def states_provinces_10(self):
+        if self._states_provinces_10 is None:
+            opt = dict(
+                resolution="10m",
+                category="cultural",
+                name="admin_1_states_provinces",
+                title="Natural Earth States/Provinces: 10m"
+            )
+
+            self._states_provinces_10 = _obtain_ne(**opt)
+        return self._states_provinces_10
 
 natural_earth = natural_earth_cls()

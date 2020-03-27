@@ -156,7 +156,8 @@ class Regions(object):
         return key
 
     def __repr__(self):
-        abbrevs = " ".join(self.abbrevs)
+        abbrevs = ['None' if abbr is None else abbr for abbr in self.abbrevs]
+        abbrevs = " ".join(abbrevs)
         if self.source:
             msg = "{} '{}' Regions ({})\n{}"
             msg = msg.format(len(self.numbers), self.name, self.source, abbrevs)
