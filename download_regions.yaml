@@ -1,0 +1,79 @@
+# this yaml contains information about where to download shapefiles from
+# doesnt apply to NaturalEarth which is handled in other file (add filename.py)
+
+MEOW:
+  keywords: ['MEOW','meow','Marine_Ecoregions_Of_the_World']
+  long_name: 'Marine Ecoregions Of the World'
+  website: 'http://maps.tnc.org/gis_data.html'
+  download:
+    url: 'http://maps.tnc.org/files/shp/MEOW-TNC.zip'
+  metadata: 'http://maps.tnc.org/files/metadata/MEOW.xml'
+  description: "The Marine Ecoregions Of the World (MEOW) data set is a biogeographic classification of the world's coasts and shelves. The ecoregions nest within the broader biogeographic tiers of Realms and Provinces. Further details about the MEOW system and PDFs of the BioScience paper the comprehensive listing of sources are available from www.worldwildlife.org/MEOW/ and www.nature.org/MEOW."
+  create_region_from_shapefile_args:
+    name: 'MEOW'
+    name_col: 'ECOREGION'
+    number_col: 'ECO_CODE_X'
+    shp_file_str: 'MEOW-TNC/meow_ecos.shp'
+
+
+FEOW:
+  keywords: ['FEOW','feow','Freshwater_Ecoregions_Of_the_World']
+  long_name: 'Freshwater Ecoregions Of the World'
+  website: 'http://maps.tnc.org/gis_data.html'
+  download:
+    url: 'http://maps.tnc.org/files/shp/FEOW-TNC.zip'
+  metadata: 'http://maps.tnc.org/files/metadata/FEOW.xml'
+  description: "The Freshwater Ecoregions Of the World (FEOW) provide a global biogeographic regionalization of the Earth's freshwater biodiversity. This version of the FEOW, modified by The Nature Conservancy, includes additional tabular data describing Major Habitat Types (MHTs, similar to terrestrial biomes, but unpublished).You can read more about the FEOW, and obtain the unmodified shapefile at www.feow.org."
+  create_region_from_shapefile_args:
+    name: 'FEOW'
+    name_col: 'ECOREGION'
+    number_col: 'ECO_ID'
+    shp_file_str: 'FEOW-TNC/FEOWv1_TNC.shp'
+
+
+TEOW:
+  keywords: ['TerrEcos','terrecos','Terrestrial_Ecoregions_Of_the_World','TEOW']
+  long_name: 'Terrestrial Ecoregions Of the World'
+  website: 'http://maps.tnc.org/gis_data.html#TerrEcos'
+  download:
+    url: 'http://maps.tnc.org/files/shp/terr-ecoregions-TNC.zip'
+  metadata: 'http://maps.tnc.org/files/metadata/TerrEcos.xml'
+  description: "This is the master spatial data layer for TNC's terrestrial ecoregions of the world, exported from the geodatabase listed above. Note that it includes Mangroves, Inland Water, and Rock and Ice MHTs, although they are not being handled by terrestrial assessments. This layer is based on WWF's ecoregions outside the United States, and loosely based on Bailey's ecoregions (from the USDA Forest Service) within the United States."
+  create_region_from_shapefile_args:
+    name: 'TEOW'
+    name_col: 'ECO_NAME'
+    number_col: 'ECO_ID_U'
+    shp_file_str: 'terr-ecoregions-TNC/tnc_terr_ecoregions.shp'
+
+
+LME:
+  keywords: ['lme','LMEs','lmes','LME','Large_Marine_Ecosystems']
+  long_name: 'Marine Ecoregions Of the World'
+  website: 'http://maps.tnc.org/gis_data.html'
+  download:
+    url:
+    manually: 'Click on LME66.zip on https://www.sciencebase.gov/catalog/item/55c77722e4b08400b1fd8244.'
+  metadata: 
+  description: "Large Marine Ecosystems (LMEs) are relatively large areas of ocean space of approximately 200,000 sq km; or greater, adjacent to the continents in coastal waters where primary productivity is generally higher than in open ocean areas."
+  create_region_from_shapefile_args:
+    name: 'LME'
+    name_col: 'LME_NAME'
+    number_col: 'OBJECTID' # should be 'LME_NUMBER'
+    shp_file_str: 'LME66/LMEs66.shp'
+    
+    
+Longhurst:
+  keywords: ['Longhurst']
+  long_name: 'Longhurst regions'
+  website:
+  download:
+    url:
+    manually: 'Download Version 4 from https://www.marineregions.org/downloads.php#longhurst.'
+  create_region_from_shapefile_args:
+    name: 'Longhurst'
+    name_col: 'ProvDescr'
+    number_col:
+    abbrev_col: 'ProvCode'
+    shp_file_str: 'longhurst_v4_2010/Longhurst_world_v4_2010.shp'
+  
+
