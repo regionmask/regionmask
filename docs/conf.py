@@ -12,12 +12,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys  # NOQA
 import os
-
-# get version
-# with open("../regionmask/version.py") as f:
-#     __version__ = f.read().strip()
+import sys  # NOQA
+import warnings
+from subprocess import call
 
 import regionmask
 
@@ -298,13 +296,9 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
 
-
 # disable warnings
-import warnings
-
 warnings.filterwarnings("ignore")
 
-from subprocess import call
 
 notebooks = (
     "notebooks/method",
