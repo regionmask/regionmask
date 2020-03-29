@@ -53,6 +53,14 @@ def test_ocean_basins_50():
     _defined_region(regions, 119)
 
 
+def test_natural_earth_loaded_as_utf8():
+    # GH 95
+    regions = defined_regions.natural_earth.ocean_basins_50
+    r = regions[90]
+
+    assert r.name == "Río de la Plata"
+
+
 def test_maybe_get_column():
     class lowercase(object):
         @property
