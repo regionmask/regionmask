@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from pytest import raises
 
 from regionmask import Regions, defined_regions
@@ -58,7 +60,7 @@ def test_natural_earth_loaded_as_utf8():
     regions = defined_regions.natural_earth.ocean_basins_50
     r = regions[90]
 
-    assert r.name == "Río de la Plata"
+    assert r.name == u"Río de la Plata"
 
 
 def test_maybe_get_column():
