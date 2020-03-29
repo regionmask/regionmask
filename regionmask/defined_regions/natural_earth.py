@@ -82,7 +82,7 @@ def _obtain_ne(
     shpfilename = shapereader.natural_earth(resolution, category, name)
 
     # read the file with geopandas
-    df = geopandas.read_file(shpfilename)
+    df = geopandas.read_file(shpfilename, encoding="utf8")
 
     # subset the whole dataset if necessary
     if query is not None:
