@@ -5,6 +5,26 @@ from ..core.regions import Regions
 from .natural_earth import _maybe_get_column
 
 
+def _check_duplicates(to_check):
+    """Checks if `to_check` has duplicates. If so, raises error. If not, return True."""
+    if len(set(to_check)) == len(to_check):
+        return True
+    else:
+        if isinstance(to_check, list):
+            duplicates = set(
+                [x for x in to_check if to_check.count(x) > 1])
+        elif isinstance(to_check, pd.core.series.Series):
+            duplicates = to_check[to_check.duplicated(keep=False)]
+        else:
+            raise ValueError(
+                f'to_check not in [list, pd.Series], found {type(to_check)}')
+        if len(duplicates) > 0:
+            raise ValueError(
+                f"Found duplicates {duplicates}, but should not. {to_check}")
+        else:
+            return True
+
+
 def from_geopandas(
     geodataframe,
     numbers=None,
@@ -24,11 +44,11 @@ def from_geopandas(
         Number of the column in shapefile that gives a region its number.
         This column shouldnt have duplicates. If None (default), takes shapefile.index.
     names : str
-        Name of the column in shapefile that names a region. Breaks for doublicates.
+        Name of the column in shapefile that names a region. Breaks for duplicates.
     abbrev_col : str (optional)
         Abbreviation of the column in shapefile that five a region its abbreviation.
         If 'construct', a combination of the first letters of region name is taken.
-        Breaks for doublicates.
+        Breaks for duplicates.
     name : str (optional)
         name of the regionmask.Region instance created
     source : str (optional)
@@ -64,7 +84,7 @@ def from_geopandas(
                 # remove certain chars
                 for char_to_remove in ['-', ' ', ')', '(']:
                     abbrev = abbrev.replace(char_to_remove, '')
-                # if find doublicates, add counter
+                # if find duplicates, add counter
                 counter = 2
                 if abbrev in abbrevs:
                     while (abbrev + str(counter)) in abbrevs:
@@ -84,16 +104,9 @@ def from_geopandas(
 
     outlines = _maybe_get_column(geodataframe, 'geometry')
 
-    # check doublicates
+    # check duplicates
     for to_check in [abbrevs, names]:
-        if len(set(to_check)) != len(to_check):
-            if isinstance(to_check, list):
-                doublicates = set(
-                    [x for x in to_check if to_check.count(x) > 1])
-            elif isinstance(pd.Series):
-                doublicates = to_check[to_check.duplicated(keep=False)]
-            raise ValueError(
-                f"Found doublicates {doublicates}, but should not. {to_check}")
+        assert _check_duplicates(to_check)
 
     return Regions(outlines,
                    numbers=numbers, names=names,
