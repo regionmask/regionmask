@@ -81,6 +81,9 @@ def from_geopandas(
 
     outlines = _maybe_get_column(geodataframe, 'geometry')
 
+    # check doublicates
+    #assert len(abbrevs.unique()) == len(abbrevs)
+
     return Regions(outlines,
                    numbers=numbers, names=names,
                    abbrevs=abbrevs, name=name, source=source)
