@@ -10,12 +10,7 @@ def from_geopandas(
     names=None,
     abbrevs=None,
     name='unnamed',
-    source=None,
-    # not implemented yet
-    on_name_missing="error",
-    on_name_duplicates="error",
-    on_abbrev_missing="error",
-    on_abbrev_duplicates="error"
+    source=None
 ):
     """
     create Regions from geodataframe data
@@ -82,7 +77,9 @@ def from_geopandas(
     outlines = _maybe_get_column(geodataframe, 'geometry')
 
     # check doublicates
-    #assert len(abbrevs.unique()) == len(abbrevs)
+    for to_check in [abbrevs, names]:
+        if len(set(to_check)) == len(to_check):
+            raise ValueError(f"{to_check} has doublicates, but should not.")
 
     return Regions(outlines,
                    numbers=numbers, names=names,
