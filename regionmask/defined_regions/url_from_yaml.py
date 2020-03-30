@@ -1,24 +1,9 @@
 import os
 
 import geopandas
-import yaml
 
-from ..core.io import download_dataset, longdir
+from ..core.io import download_dataset, longdir, keywords_dict, download_regions_config
 from .from_geopandas import from_geopandas
-
-fn_download_yaml = "download_regions.yaml"
-with open(fn_download_yaml, 'r') as f:
-    metadata = yaml.safe_load(f)
-    keywords_dict = {}
-    for k, v in metadata.items():
-        keywords_dict[k] = k
-        if v['keywords'] is not None:
-            for keyword in v['keywords']:
-                keywords_dict.update({keyword: k})
-
-with open(fn_download_yaml) as f:
-    download_regions_config = yaml.safe_load(f)
-f.close()
 
 
 def build_region(dataset_key):

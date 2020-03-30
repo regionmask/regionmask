@@ -59,17 +59,25 @@ def from_geopandas(
     numbers = np.array(numbers)
 
     if abbrevs is not None:
-        abbrevs = _maybe_get_column(geodataframe, abbrevs)
+        if abbrevs == 'construct':
+            abbrevs = []
+            for item in geodataframe.T:
+                name_for_abbrev = geodataframe.loc[item][names]
+                # catch region with no name
+                if name_for_abbrev is None:
+                    name_for_abbrev = 'UND'  # for undefined
+                abbrev = "".join(word[0] for word in name_for_abbrev.split(' '))
+                abbrevs.append(abbrev)
+        else:
+            abbrevs = _maybe_get_column(geodataframe, abbrevs)
     else:
-        abbrevs = []
-        for item in geodataframe.T:
-            name_for_abbrev = geodataframe.loc[item][names]
-            # catch region with no name
-            if name_for_abbrev is None:
-                name_for_abbrev = 'UND'  # for undefined
-            abbrev = "".join(word[0] for word in name_for_abbrev.split(' '))
-            abbrevs.append(abbrev)
-    names = _maybe_get_column(geodataframe, names)
+        raise ValueError('Please provide a string take can be taken from '
+                         f' geodataframe.columns for `abbrevs`, found {abbrevs}')
+    if names is not None:
+        names = _maybe_get_column(geodataframe, names)
+    else:
+        raise ValueError('Please provide a string take can be taken from '
+                         f' geodataframe.columns for `names`, found {names}')
 
     outlines = _maybe_get_column(geodataframe, 'geometry')
 

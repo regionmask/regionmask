@@ -1,11 +1,25 @@
 import os
 import zipfile
+import yaml
 
 import requests
 
 _default_cache_dir = os.sep.join(('~', '.regionmask_data'))
-longdir = os.path.expanduser(_default_cache_dir)
+longdir_cache = os.path.expanduser(_default_cache_dir)
 
+fn_download_yaml = "regionmask/defined_regions/download_regions.yaml"
+with open(fn_download_yaml, 'r') as f:
+    metadata = yaml.safe_load(f)
+    keywords_dict = {}
+    for k, v in metadata.items():
+        keywords_dict[k] = k
+        if v['keywords'] is not None:
+            for keyword in v['keywords']:
+                keywords_dict.update({keyword: k})
+
+with open(fn_download_yaml) as f:
+    download_regions_config = yaml.safe_load(f)
+f.close()
 
 
 def is_downloadable(url):
@@ -83,7 +97,7 @@ def download_dataset(dataset_key):
 
     file_name = url.split('/')[-1]
 
-    destination = f'{longdir}/{file_name}'
+    destination = f'{longdir_cache}/{file_name}'
     download_to(url, destination)
 
     file_extension = file_name.split('.')[-1]
