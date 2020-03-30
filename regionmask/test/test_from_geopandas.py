@@ -1,72 +1,39 @@
-from pytest import raises
-
-from regionmask import Regions, defined_regions
-from regionmask.defined_regions import _maybe_get_column
-
-
-def _defined_region(regions, n_regions):
-
-    assert isinstance(regions, Regions)
-    assert len(regions) == n_regions
-
-    # currently all regionas are -180..180
-    assert regions.lon_180
+import pytest
+import regionmask
+import geopandas
 
 
-def test_giorgi():
-    regions = defined_regions.giorgi
-    _defined_region(regions, 21)
+@pytest.fixture
+def MEOW_geodataframe():
+    return geopandas.read_file('http://maps.tnc.org/files/shp/MEOW-TNC.zip')
 
 
-def test_srex():
-    regions = defined_regions.srex
-    _defined_region(regions, 26)
+source = 'http://maps.tnc.org/gis_data.html'
+name = 'MEOW'
 
 
-def test_countries_110():
-    regions = defined_regions.natural_earth.countries_110
-    _defined_region(regions, 177)
+def test_from_geopandas_is_region(MEOW_geodataframe):
+    region = regionmask.from_geopandas(MEOW_geodataframe, numbers=None,
+                                       names='ECOREGION',
+                                       abbrevs='construct',
+                                       name=name,
+                                       source=source)
+    assert isinstance(region, regionmask.core.regions.Regions)
 
 
-def test_countries_50():
-    regions = defined_regions.natural_earth.countries_50
-    _defined_region(regions, 241)
+@pytest.mark.xfail
+def test_from_geopandas_fail_no_abbrevs(MEOW_geodataframe):
+    region = regionmask.from_geopandas(MEOW_geodataframe, numbers=None,
+                                       names='ECOREGION',
+                                       abbrevs=None,
+                                       name=name,
+                                       source=source)
 
 
-def test_us_states_50():
-    regions = defined_regions.natural_earth.us_states_50
-    _defined_region(regions, 51)
-
-
-def test_us_states_10():
-    regions = defined_regions.natural_earth.us_states_10
-    _defined_region(regions, 51)
-
-
-def test_land_110():
-    regions = defined_regions.natural_earth.land_110
-    _defined_region(regions, 1)
-
-
-def test_ocean_basins_50():
-    regions = defined_regions.natural_earth.ocean_basins_50
-    _defined_region(regions, 119)
-
-
-def test_maybe_get_column():
-    class lowercase(object):
-        @property
-        def name(self):
-            return 1
-
-    class uppercase(object):
-        @property
-        def NAME(self):
-            return 2
-
-    assert _maybe_get_column(lowercase(), "name") == 1
-    assert _maybe_get_column(uppercase(), "name") == 2
-    assert _maybe_get_column(uppercase(), "NAME") == 2
-
-    with raises(KeyError):
-        _maybe_get_column(lowercase, "nam")
+@pytest.mark.xfail
+def test_from_geopandas_fail_no_names(MEOW_geodataframe):
+    region = regionmask.from_geopandas(MEOW_geodataframe, numbers=None,
+                                       names=None,
+                                       abbrevs='construct',
+                                       name=name,
+                                       source=source)
