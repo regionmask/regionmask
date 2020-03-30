@@ -13,7 +13,7 @@ MEOW:
     names: ECOREGION
     numbers: ECO_CODE_X
     abbrevs: construct
-    shp_file_str: MEOW-TNC/meow_ecos.shp
+    shp_file_str: 'MEOW-TNC/meow_ecos.shp'
 
 
 FEOW:
@@ -29,7 +29,7 @@ FEOW:
     names: ECOREGION
     numbers: ECO_ID
     abbrevs: construct
-    shp_file_str: FEOW-TNC/FEOWv1_TNC.shp
+    shp_file_str: 'FEOW-TNC/FEOWv1_TNC.shp'
 
 
 TEOW:
@@ -45,7 +45,7 @@ TEOW:
     names: ECO_NAME
     numbers: ECO_ID_U
     abbrevs: construct
-    shp_file_str: terr-ecoregions-TNC/tnc_terr_ecoregions.shp
+    shp_file_str: 'terr-ecoregions-TNC/tnc_terr_ecoregions.shp'
 
 
 LME:
@@ -62,7 +62,7 @@ LME:
     names: LME_NAME
     numbers: OBJECTID # should be LME_NUMBER
     abbrevs: 'construct'
-    shp_file_str: LME66/LMEs66.shp
+    shp_file_str: 'LME66/LMEs66.shp'
     
     
 Longhurst:
@@ -77,6 +77,4 @@ Longhurst:
     names: ProvDescr
     numbers:
     abbrevs: ProvCode
-    shp_file_str: longhurst_v4_2010/Longhurst_world_v4_2010.shp
-  
-
+    shp_file_str: 'longhurst_v4_2010/Longhurst_world_v4_2010.shp'

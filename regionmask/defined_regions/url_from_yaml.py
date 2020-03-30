@@ -32,10 +32,10 @@ def build_region(dataset_key):
     if not os.path.exists(shp_file_str_long):
         url = download_regions_config[dataset_key]['download']['url']
         # aim to download from url given in yaml
-        if url != 'None':
+        if url != None:
             download_dataset(dataset_key=dataset_key)
-            print(f"Download dataset {dataset_key} from website "
-                  f" {download_regions_config[dataset_key]['website']} and url "
+            print(f"Download dataset {dataset_key} from website"
+                  f" {download_regions_config[dataset_key]['website']} and url"
                   f" {download_regions_config[dataset_key]['download']['url']}.")
         # if no downloadable url is present in yaml,
         # print message to download manually
@@ -44,7 +44,7 @@ def build_region(dataset_key):
                 f"Dataset {dataset_key} cannot be automatically downloaded. "
                 f"Please follw these instructions: "
                 f"{download_regions_config[dataset_key]['download']['manually']}. "
-                f"Then unzip if needed and ensure that ~/.regionmask_data/ "
+                f"Then unzip if needed and ensure that ~/.regionmask_data/"
                 f"{shapefile_args['shp_file_str']} exists.")
     # open shapefile
     shp = geopandas.read_file(shp_file_str_long)

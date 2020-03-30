@@ -89,9 +89,11 @@ def download_dataset(dataset_key):
         String of dataset_key. Must be in download_regions.yaml as keyword.
 
     """
+    if not os.path.exists(longdir_cache):
+        os.makedirs(longdir_cache)
     url = download_regions_config[dataset_key]['download']['url']
-    if download_regions_config[dataset_key]['download']['url'] is None:
-        print(download_regions_config[dataset_key]['download']['manually'])
+    if url is None:
+        raise ValueError(download_regions_config[dataset_key]['download']['manually'])
     else:
         assert is_downloadable(url)
 
