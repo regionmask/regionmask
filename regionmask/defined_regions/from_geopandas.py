@@ -25,6 +25,29 @@ def _check_duplicates(to_check):
             return True
 
 
+def _construct_abbrevs(geodataframe, names):
+    """Construct unique abbreviations based on geodataframe.names."""
+    abbrevs = []
+    for item in geodataframe.T:
+        name_for_abbrev = geodataframe.loc[item][names]
+        # catch region with no name
+        if name_for_abbrev is None:
+            name_for_abbrev = 'UND'  # for undefined
+        abbrev = "".join(word[0]
+                         for word in name_for_abbrev.split(' '))
+        # remove certain chars
+        for char_to_remove in ['-', ' ', ')', '(']:
+            abbrev = abbrev.replace(char_to_remove, '')
+        # if find duplicates, add counter
+        counter = 2
+        if abbrev in abbrevs:
+            while (abbrev + str(counter)) in abbrevs:
+                counter += 1
+            abbrev = abbrev + str(counter)
+        abbrevs.append(abbrev)
+    return abbrevs
+
+
 def from_geopandas(
     geodataframe,
     numbers=None,
@@ -73,24 +96,7 @@ def from_geopandas(
 
     if abbrevs is not None:
         if abbrevs == 'construct':
-            abbrevs = []
-            for item in geodataframe.T:
-                name_for_abbrev = geodataframe.loc[item][names]
-                # catch region with no name
-                if name_for_abbrev is None:
-                    name_for_abbrev = 'UND'  # for undefined
-                abbrev = "".join(word[0]
-                                 for word in name_for_abbrev.split(' '))
-                # remove certain chars
-                for char_to_remove in ['-', ' ', ')', '(']:
-                    abbrev = abbrev.replace(char_to_remove, '')
-                # if find duplicates, add counter
-                counter = 2
-                if abbrev in abbrevs:
-                    while (abbrev + str(counter)) in abbrevs:
-                        counter += 1
-                    abbrev = abbrev + str(counter)
-                abbrevs.append(abbrev)
+            abbrevs = _construct_abbrevs(geodataframe, names)
         else:
             abbrevs = _maybe_get_column(geodataframe, abbrevs)
     else:

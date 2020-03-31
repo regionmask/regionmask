@@ -4,7 +4,10 @@ import pandas as pd
 import pytest
 
 import regionmask
-from regionmask.defined_regions.from_geopandas import _check_duplicates
+from regionmask.defined_regions.from_geopandas import (
+    _check_duplicates,
+    _construct_abbrevs,
+)
 
 
 @pytest.fixture
@@ -62,3 +65,8 @@ my_list = list(np.arange(2, 5))
                          ids=["list", "pd.Series"])
 def test_check_duplicates_return_True(to_check):
     assert _check_duplicates(to_check)
+
+
+def test_construct_abbrevs_unique(MEOW_geodataframe):
+    abbrevs = _construct_abbrevs(MEOW_geodataframe, 'ECOREGION')
+    assert _check_duplicates(abbrevs)
