@@ -18,12 +18,7 @@ def _check_duplicates(to_check):
             raise ValueError(
                 "to_check not in [list, pd.Series], found {}".format(type(to_check))
             )
-        if len(duplicates) > 0:
-            raise ValueError(
-                "Found duplicates {}, but should not. {}".format(duplicates, to_check)
-            )
-        else:
-            return True
+        raise ValueError("Found duplicates {}. {}".format(duplicates, to_check))
 
 
 def _construct_abbrevs(geodataframe, names):

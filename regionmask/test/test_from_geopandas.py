@@ -71,7 +71,8 @@ my_list = [1, 1, 2, 3, 4]
 
 
 @pytest.mark.parametrize(
-    "to_check", [my_list, pd.Series(my_list)], ids=["list", "pd.Series"]
+    "to_check", [my_list, pd.Series(my_list), np.array(my_list)],
+    ids=["list", "pd.Series", 'np.array']
 )
 def test_check_duplicates_raise_ValueError(to_check):
     with pytest.raises(ValueError):
