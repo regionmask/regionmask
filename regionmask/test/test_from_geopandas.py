@@ -20,7 +20,18 @@ name = 'MEOW'
 
 
 def test_from_geopandas_is_region(MEOW_geodataframe):
-    region = regionmask.from_geopandas(MEOW_geodataframe, numbers=None,
+    region = regionmask.from_geopandas(MEOW_geodataframe,
+                                       numbers=None,
+                                       names='ECOREGION',
+                                       abbrevs='construct',
+                                       name=name,
+                                       source=source)
+    assert isinstance(region, regionmask.core.regions.Regions)
+
+
+def test_from_geopandas_is_region_provide_numbers(MEOW_geodataframe):
+    region = regionmask.from_geopandas(MEOW_geodataframe,
+                                       numbers='ECO_CODE_X',
                                        names='ECOREGION',
                                        abbrevs='construct',
                                        name=name,
@@ -30,7 +41,8 @@ def test_from_geopandas_is_region(MEOW_geodataframe):
 
 @pytest.mark.xfail
 def test_from_geopandas_fail_no_abbrevs(MEOW_geodataframe):
-    regionmask.from_geopandas(MEOW_geodataframe, numbers=None,
+    regionmask.from_geopandas(MEOW_geodataframe,
+                              numbers=None,
                               names='ECOREGION',
                               abbrevs=None,
                               name=name,
@@ -39,7 +51,8 @@ def test_from_geopandas_fail_no_abbrevs(MEOW_geodataframe):
 
 @pytest.mark.xfail
 def test_from_geopandas_fail_no_names(MEOW_geodataframe):
-    regionmask.from_geopandas(MEOW_geodataframe, numbers=None,
+    regionmask.from_geopandas(MEOW_geodataframe,
+                              numbers=None,
                               names=None,
                               abbrevs='construct',
                               name=name,

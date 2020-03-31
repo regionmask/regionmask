@@ -27,6 +27,9 @@ def _check_duplicates(to_check):
 
 def _construct_abbrevs(geodataframe, names):
     """Construct unique abbreviations based on geodataframe.names."""
+    if names is None:
+        raise ValueError('names is None, but should be a valid column name of'
+                         'geodataframe, choose from {}'.format(geodataframe.columns))
     abbrevs = []
     for item in geodataframe.T:
         name_for_abbrev = geodataframe.loc[item][names]
