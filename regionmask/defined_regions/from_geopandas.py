@@ -56,31 +56,32 @@ def _construct_abbrevs(geodataframe, names):
 def from_geopandas(
     geodataframe, numbers=None, names=None, abbrevs=None, name="unnamed", source=None
 ):
-    """
-    create Regions from geodataframe data
-    manually downloaded or by url from download_regions.yaml
+    """Create ``regionmask.Region`` from ``geopandas.geodataframe.GeoDataFrame``.
+
     Parameters
     ----------
     geodataframe : geopandas.geodataframe.GeoDataFrame
-        Shapefile to be downloaded. File has extensions .shp.
+        Shapefile to be downloaded. File has extensions ``.shp`` or ``.zip``.
     number : str (optional)
         Number of the column in shapefile that gives a region its number.
-        This column shouldnt have duplicates. If None (default), takes shapefile.index.
+        This column shouldnt have duplicates. If None (default), takes
+        ``geodataframe.index.values``.
     names : str
         Name of the column in shapefile that names a region. Breaks for duplicates.
     abbrev_col : str (optional)
         Abbreviation of the column in shapefile that five a region its abbreviation.
-        If 'construct', a combination of the first letters of region name is taken.
-        Breaks for duplicates.
+        Breaks for duplicates. If ``construct``, a combination of the first letters of
+        region name is taken.
     name : str (optional)
-        name of the regionmask.Region instance created
+        name of the ``regionmask.Region`` instance created
     source : str (optional)
         source of the shapefile
+
     Returns
     -------
     regionmask.core.regions.Regions
-    """
 
+    """
     # get necessary data for Regions
 
     if numbers is not None:
