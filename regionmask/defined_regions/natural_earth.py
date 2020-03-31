@@ -237,7 +237,7 @@ class natural_earth_cls(object):
                 "naturalearth renamed this region, please raise an issue in regionmask"
             )
 
-           # rename the "Mediterranean Sea" region
+            # rename the "Mediterranean Sea" region
             assert regs[14].name == "Mediterranean Sea", msg
             regs[14].name = "Mediterranean Sea Eastern Basin"
             regs[14].abbrev = "Mediterranean Sea Eastern Basin"
@@ -246,11 +246,11 @@ class natural_earth_cls(object):
             regs[30].name = "Mediterranean Sea Western Basin"
             regs[30].abbrev = "Mediterranean Sea Western Basin"
 
-           # rename the "Ross Sea" region
+            # rename the "Ross Sea" region
             assert regs[26].name == "Ross Sea", msg
             regs[26].name = "Ross Sea Eastern Basin"
             regs[26].abbrev = "Ross Sea Eastern Basin"
-            
+
             assert regs[29].name == "Ross Sea", msg
             regs[29].name = "Ross Sea Western Basin"
             regs[29].abbrev = "Ross Sea Western Basin"

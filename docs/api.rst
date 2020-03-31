@@ -14,6 +14,7 @@ Top-level functions
    :toctree: generated/
 
    create_mask_contains
+   from_geopandas
 
 
 Regions
