@@ -1,9 +1,9 @@
-import pytest
-import regionmask
 import geopandas
 import numpy as np
 import pandas as pd
+import pytest
 
+import regionmask
 from regionmask.defined_regions.from_geopandas import _check_duplicates
 
 
@@ -27,30 +27,38 @@ def test_from_geopandas_is_region(MEOW_geodataframe):
 
 @pytest.mark.xfail
 def test_from_geopandas_fail_no_abbrevs(MEOW_geodataframe):
-    region = regionmask.from_geopandas(MEOW_geodataframe, numbers=None,
-                                       names='ECOREGION',
-                                       abbrevs=None,
-                                       name=name,
-                                       source=source)
+    regionmask.from_geopandas(MEOW_geodataframe, numbers=None,
+                              names='ECOREGION',
+                              abbrevs=None,
+                              name=name,
+                              source=source)
 
 
 @pytest.mark.xfail
 def test_from_geopandas_fail_no_names(MEOW_geodataframe):
-    region = regionmask.from_geopandas(MEOW_geodataframe, numbers=None,
-                                       names=None,
-                                       abbrevs='construct',
-                                       name=name,
-                                       source=source)
+    regionmask.from_geopandas(MEOW_geodataframe, numbers=None,
+                              names=None,
+                              abbrevs='construct',
+                              name=name,
+                              source=source)
 
 
 my_list = [1, 1, 2, 3, 4]
-@pytest.mark.parametrize("to_check", [my_list, pd.Series(my_list)], ids=["list", "pd.Series"])
+
+
+@pytest.mark.parametrize("to_check",
+                         [my_list, pd.Series(my_list)],
+                         ids=["list", "pd.Series"])
 def test_check_duplicates_raise_ValueError(to_check):
     with pytest.raises(ValueError):
-        actual = _check_duplicates(to_check)
+        _check_duplicates(to_check)
 
 
 my_list = list(np.arange(2, 5))
-@pytest.mark.parametrize("to_check", [my_list, pd.Series(my_list)], ids=["list", "pd.Series"])
+
+
+@pytest.mark.parametrize("to_check",
+                         [my_list, pd.Series(my_list)],
+                         ids=["list", "pd.Series"])
 def test_check_duplicates_return_True(to_check):
     assert _check_duplicates(to_check)

@@ -17,10 +17,10 @@ def _check_duplicates(to_check):
             duplicates = to_check[to_check.duplicated(keep=False)]
         else:
             raise ValueError(
-                f'to_check not in [list, pd.Series], found {type(to_check)}')
+                "to_check not in [list, pd.Series], found {}".format(type(to_check)))
         if len(duplicates) > 0:
             raise ValueError(
-                f"Found duplicates {duplicates}, but should not. {to_check}")
+                "Found duplicates {}, but should not. {}".format(duplicates, to_check))
         else:
             return True
 
@@ -95,12 +95,13 @@ def from_geopandas(
             abbrevs = _maybe_get_column(geodataframe, abbrevs)
     else:
         raise ValueError('Please provide a string take can be taken from '
-                         f' geodataframe.columns for `abbrevs`, found {abbrevs}')
+                         'geodataframe.columns for `abbrevs`, '
+                         'found {}'.format(abbrevs))
     if names is not None:
         names = _maybe_get_column(geodataframe, names)
     else:
         raise ValueError('Please provide a string take can be taken from '
-                         f' geodataframe.columns for `names`, found {names}')
+                         'geodataframe.columns for `names`, found {}'.format(names))
 
     outlines = _maybe_get_column(geodataframe, 'geometry')
 
