@@ -21,6 +21,11 @@ def _check_duplicates(to_check):
         raise ValueError("Found duplicates {}. {}".format(duplicates, to_check))
 
 
+def _check_missing(data, name):
+    if data.isnull().any():
+        raise ValueError("{name} cannot contain duplicate values".format(name))
+
+
 def _construct_abbrevs(geodataframe, names):
     """Construct unique abbreviations based on geodataframe.names."""
     if names is None:
