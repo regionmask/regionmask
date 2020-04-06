@@ -1,6 +1,6 @@
-####################
-'Scientific' Regions
-####################
+##################
+Scientific Regions
+##################
 
 The following regions, used in the scientific literature, are already defined:
 
@@ -30,7 +30,7 @@ Giorgi Regions
 
     regionmask.defined_regions.giorgi.plot(label='abbrev');
 
-    @savefig plotting_giorgi.png width=6in height=3in
+    @savefig plotting_giorgi.png width=6in
     plt.tight_layout()
 
 SREX Regions

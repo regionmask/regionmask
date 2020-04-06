@@ -1,7 +1,13 @@
+
+devel
+docs/notebooks/*.rst
+
 *.py[cod]
 __pycache__
 
 .cache/
+
+.pytest_cache/
 
 # C extensions
 *.so
@@ -26,6 +32,7 @@ pip-log.txt
 
 # Unit test / coverage reports
 .coverage
+coverage.*
 .tox
 nosetests.xml
 

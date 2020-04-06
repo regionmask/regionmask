@@ -1,0 +1,5 @@
+#!/bin/bash
+
+jupyter nbconvert ./notebooks/*.ipynb --to notebook --inplace --ClearOutputPreprocessor.enabled=True
+
+

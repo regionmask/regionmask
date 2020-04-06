@@ -1,6 +1,8 @@
 import numpy as np
-from regionmask import _wrapAngle360, _wrapAngle180, _wrapAngle
 from pytest import raises
+
+from regionmask.core.utils import _wrapAngle, _wrapAngle180, _wrapAngle360
+
 
 def test__wrapAngle360():
 
@@ -8,16 +10,14 @@ def test__wrapAngle360():
     assert _wrapAngle360(1) == 1
     assert _wrapAngle360(180) == 180
     assert _wrapAngle360(360) == 0
-    
+
     assert _wrapAngle360(-1) == 359
     assert _wrapAngle360(-180) == 180
-
 
     lon = np.arange(-180, 180)
     result = _wrapAngle360(lon)
 
-    expected = np.concatenate((np.arange(180, 360), 
-                               np.arange(0, 180)))
+    expected = np.concatenate((np.arange(180, 360), np.arange(0, 180)))
 
     assert np.allclose(result, expected)
 
@@ -29,16 +29,14 @@ def test__wrapAngle180():
     assert _wrapAngle180(180) == -180
     assert _wrapAngle180(181) == -179
     assert _wrapAngle180(200) == -160
-    assert _wrapAngle180(360) == 0  
+    assert _wrapAngle180(360) == 0
     assert _wrapAngle180(-1) == -1
     assert _wrapAngle180(-180) == -180
-
 
     lon = np.arange(0, 360)
     result = _wrapAngle180(lon)
 
-    expected = np.concatenate((np.arange(0, 180), 
-                               np.arange(-180, 0)))
+    expected = np.concatenate((np.arange(0, 180), np.arange(-180, 0)))
 
     assert np.allclose(result, expected)
 
@@ -57,7 +55,7 @@ def test__wrapAngle():
     assert np.allclose(result, expected)
 
     raises(RuntimeError, _wrapAngle, [-1, 181])
-    
+
     raises(IndexError, _wrapAngle, [0, 0])
 
     # test explicit argument
@@ -69,4 +67,3 @@ def test__wrapAngle():
     assert _wrapAngle(181, 180) == -179
     assert _wrapAngle(181, 360) == 181
     assert _wrapAngle(181) == -179
-

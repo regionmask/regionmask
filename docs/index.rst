@@ -17,56 +17,66 @@ regionmask is a Python module that:
 
 - contains a number of defined regions, including:
   :doc:`countries</defined_countries>` (from
-  `Natural Earth <http://www.naturalearthdata.com/>`_),
-  and regions used in the
-  :doc:`scientific literature</defined_scientific>` 
+  `Natural Earth <http://www.naturalearthdata.com/>`_), a
+  :doc:`landmask</defined_landmask>` and regions used in the
+  :doc:`scientific literature</defined_scientific>`
   (the Giorgi regions [#]_ and   the SREX regions [#]_).
-- can plot figures of these regions (:doc:`tutorial</_static/notebooks/plotting>`) with 
-  `matplotlib <http://matplotlib.org/>`_ and 
+- can plot figures of these regions (:doc:`tutorial<notebooks/plotting>`) with
+  `matplotlib <http://matplotlib.org/>`_ and
   `cartopy <http://scitools.org.uk/cartopy/>`_
 - can be used to create masks of the regions for arbitrary longitude
   and latitude grids with
-  `numpy <http://www.numpy.org/>`_ (:doc:`tutorial</_static/notebooks/mask_numpy>`)
+  `numpy <http://www.numpy.org/>`_ (:doc:`tutorial<notebooks/mask_numpy>`)
   and
-  `xarray <http://xarray.pydata.org/>`__ (:doc:`tutorial</_static/notebooks/mask_xarray>`)
-- arbitrary regions can be defined easily (:doc:`tutorial<_static/notebooks/create_own_regions>`)
+  `xarray <http://xarray.pydata.org/>`__ (:doc:`tutorial<notebooks/mask_xarray>`)
+- arbitrary regions can be defined easily (:doc:`tutorial<notebooks/create_own_regions>`)
 
-Usage
-=====
-Please have a look at the tutorials.
+.. note::
+   From version 0.5 ``regionmask`` treats points on borders differently
+   and also considers poygon interiors (holes), e.g. the Caspian Sea in
+   ``natural_earth.land_110`` region. The differences are illustrated in a
+   :doc:`notebook<notebooks/method>`. See also in :doc:`What's new<whats_new>`
 
 
-Contents
-========
+Documentation
+=============
 
 .. toctree::
    :maxdepth: 2
+   :caption: Getting Started
 
-   whats_new
    installation
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Methods
+
+   notebooks/method
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Usage: Tutorials
+
+   notebooks/plotting
+   notebooks/mask_xarray
+   notebooks/mask_numpy
+   notebooks/mask_multidim
+   notebooks/create_own_regions
 
 .. toctree::
    :maxdepth: 2
    :caption: Defined Regions
 
    defined_countries
+   defined_landmask
+   defined_ocean_basins
    defined_scientific
-
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Tutorials
-   
-   _static/notebooks/plotting
-   _static/notebooks/mask_numpy
-   _static/notebooks/mask_xarray
-   _static/notebooks/mask_multidim
-   _static/notebooks/create_own_regions
 
 .. toctree::
    :maxdepth: 2
    :caption: API Reference
 
+   whats_new
    api
 
 
@@ -91,4 +101,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

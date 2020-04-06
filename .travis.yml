@@ -3,16 +3,10 @@ language: python
 
 python:
     - "2.7"
-    - "3.4"
-    - "3.5"
+    - "3.6"
+    - "3.7"
 
 before_install:
-    # https://docs.travis-ci.com/user/gui-and-headless-browsers/
-    # http://stackoverflow.com/questions/21321292/using-matplotlib-when-display-is-undefined
-    - "export DISPLAY=:99.0"
-    - "sh -e /etc/init.d/xvfb start"
-    - sleep 3 # give xvfb some time to start
-
     # setup miniconda
     - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
         wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -23,15 +17,22 @@ before_install:
     - export PATH="$HOME/miniconda/bin:$PATH"
     - hash -r
     - conda config --set always_yes yes --set changeps1 no --set show_channel_urls true
+    - conda config --set channel_priority strict
     - conda update -q conda
     - conda info -a
 
 install:
-    - conda create --name regionmask python=$TRAVIS_PYTHON_VERSION
+    - conda create --name regionmask -c conda-forge python=$TRAVIS_PYTHON_VERSION
     - source activate regionmask
-    - conda install -c scitools -c conda-forge cartopy geopandas xarray
-    - python setup.py install
-    - conda install pytest
+    - conda install -c conda-forge cartopy geopandas xarray pytest pytest-cov codecov rasterio libnetcdf=4.7.3
+    - pip install -e .
+    #- https://stackoverflow.com/a/48728877/3010700
+    - "export MPLBACKEND=Agg"
 
 script:
-    - py.test .
+    - py.test --cov=regionmask .
+
+after_success:
+    - if [[ "$TRAVIS_PYTHON_VERSION" == "3.7" ]]; then
+        codecov -t 32cfbc8b-8d1a-4540-8bc3-f6a1a695c554;
+      fi 

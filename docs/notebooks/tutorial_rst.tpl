@@ -1,10 +1,9 @@
 {%- extends 'display_priority.tpl' -%}
 
 {% block header %}
-.. module:: regionmask
 
 .. note:: This tutorial was generated from an IPython notebook that can be
-          downloaded `here <../../_static/notebooks/{{ resources.metadata.name }}.ipynb>`_.
+          downloaded `here <../../notebooks/{{ resources.metadata.name }}.ipynb>`_.
 
 .. _{{resources.metadata.name}}:
 {% endblock %}
@@ -20,7 +19,9 @@
 .. code:: python
 
 {{ cell.source | indent}}
+
 {%- endif -%}
+{%- print('\n') -%}
 {% endblock input %}
 
 {% block error %}
