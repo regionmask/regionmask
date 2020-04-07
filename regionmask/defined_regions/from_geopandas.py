@@ -18,7 +18,7 @@ def _check_duplicates(data, name=""):
             raise ValueError(
                 "to_check not in [list, pd.Series], found {}".format(type(to_check))
             )
-        raise ValueError("Found duplicates {}. {}".format(duplicates, to_check))
+        raise ValueError(""{name} cannot contain duplicate values"".format(name))
 
 
 def _check_missing(data, name):
