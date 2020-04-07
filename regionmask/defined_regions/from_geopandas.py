@@ -90,6 +90,8 @@ def from_geopandas(
         # ensure integer
         geodataframe[numbers] = geodataframe[numbers].astype("int")
         numbers = _maybe_get_column(geodataframe, numbers)
+        _check_missing(numbers)
+        _check_duplicates(numbers)
     else:
         numbers = geodataframe.index.values
     # make sure numbers is a list
