@@ -40,10 +40,6 @@ def _construct_abbrevs(geodataframe, names):
         # catch region with no name
         if name_for_abbrev is None:
             name_for_abbrev = "UND"  # for undefined
-        abbrev = "".join(word[0] for word in name_for_abbrev.split(" "))
-        # remove certain chars
-        for char_to_remove in ["-", " ", ")", "("]:
-            abbrev = abbrev.replace(char_to_remove, "")
         # if find duplicates, add counter
         counter = 2
         if abbrev in abbrevs:
