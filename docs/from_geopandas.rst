@@ -36,7 +36,7 @@ which creates unique abbreviations.
 
     meow_regions = regionmask.from_geopandas(meow,
                                              names='ECOREGION',
-                                             abbrevs='construct')
+                                             abbrevs='_from_name')
 
     meow_regions.plot(add_label=False);
 
