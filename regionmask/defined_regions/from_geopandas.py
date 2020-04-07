@@ -100,6 +100,8 @@ def from_geopandas(
             abbrevs = _construct_abbrevs(geodataframe, names)
         else:
             abbrevs = _maybe_get_column(geodataframe, abbrevs)
+        _check_missing(abbrevs)
+        _check_duplicates(abbrevs)
     if names is not None:
         names = _maybe_get_column(geodataframe, names)
     else:
