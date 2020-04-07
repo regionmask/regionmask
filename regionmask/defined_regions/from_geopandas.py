@@ -100,12 +100,6 @@ def from_geopandas(
             abbrevs = _construct_abbrevs(geodataframe, names)
         else:
             abbrevs = _maybe_get_column(geodataframe, abbrevs)
-    else:
-        raise ValueError(
-            "Please provide a string take can be taken from "
-            "geodataframe.columns for `abbrevs`, "
-            "found {}".format(abbrevs)
-        )
     if names is not None:
         names = _maybe_get_column(geodataframe, names)
     else:
