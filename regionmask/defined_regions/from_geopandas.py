@@ -5,7 +5,7 @@ from ..core.regions import Regions
 from .natural_earth import _maybe_get_column
 
 
-def _check_duplicates(to_check):
+def _check_duplicates(data, name=""):
     """Checks if `to_check` has duplicates. If so, raises error. If not, return True."""
     if len(set(to_check)) == len(to_check):
         return True
