@@ -82,6 +82,8 @@ def from_geopandas(
     """
     # get necessary data for Regions
 
+    if not isinstance(geodataframe, (GeoDataFrame, GeoSeries)):
+        raise TypeError("geodataframe must be a geopandas.GeoDataFrame")
     if numbers is not None:
         # sort, otherwise breaks
         geodataframe = geodataframe.sort_values(numbers)
