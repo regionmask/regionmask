@@ -49,7 +49,7 @@ def _construct_abbrevs(geodataframe, names):
         if len(name.split(" ")) == 1:
             abbrev = name[:3]
         else:  # combine initial letters
-            abbrev = " ".join(word[0] for word in name.split(" "))
+            abbrev = "".join(word[0].upper() for word in name.split(" "))
         # if find duplicates, add counter
         counter = 2
         if abbrev in abbrevs:

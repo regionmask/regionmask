@@ -139,3 +139,14 @@ def test_check_duplicates_return_True(to_check):
 
 def test_construct_abbrevs(geodataframe_clean):
     _construct_abbrevs(geodataframe_clean, "names")
+
+
+def test_construct_abbrevs_duplicates(geodataframe_duplicates):
+    abbrevs = _construct_abbrevs(geodataframe_duplicates, "names")
+    assert abbrevs[0] == abbrevs[1][:-1]
+
+
+def test_construct_abbrevs_two_words(geodataframe_clean):
+    abbrevs = _construct_abbrevs(geodataframe_clean, "names")
+    assert abbrevs[0] == "US"
+    assert abbrevs[1] == "US2"
