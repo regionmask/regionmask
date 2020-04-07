@@ -34,8 +34,9 @@ def _construct_abbrevs(geodataframe, names):
             "geodataframe, choose from {}".format(geodataframe.columns)
         )
     abbrevs = []
-    for item in geodataframe.T:
-        name_for_abbrev = geodataframe.loc[item][names]
+    names = geodataframe[names]
+    names = names.str.replace("[ ()\.]", "")
+    for name in names:
         # catch region with no name
         if name_for_abbrev is None:
             name_for_abbrev = "UND"  # for undefined
