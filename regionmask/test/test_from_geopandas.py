@@ -2,14 +2,13 @@ import geopandas as gp
 import numpy as np
 import pandas as pd
 import pytest
-
 from shapely.geometry import Polygon
 
 import regionmask
 from regionmask.defined_regions.from_geopandas import (
     _check_duplicates,
     _construct_abbrevs,
-    from_geopandas
+    from_geopandas,
 )
 
 # create dummy Polygons for testing
@@ -45,7 +44,7 @@ def geodataframe_missing():
 @pytest.fixture
 def geodataframe_duplicates():
 
-    numbers = [1, 1.1]
+    numbers = [1, 1]
     names = ["Unit Square", "Unit Square"]
     abbrevs = ["uSq1", "uSq1"]
 
@@ -55,9 +54,8 @@ def geodataframe_duplicates():
 
 
 def test_from_geopandas_wrong_input():
-
     with pytest.raises(
-        ValueError, match="'geodataframe' must be a geopandas.GeoDataFrame"
+        TypeError, match="`geodataframe` must be a geopandas.geodataframe.GeoDataFrame"
     ):
         from_geopandas(None)
 
@@ -104,7 +102,7 @@ def test_from_geopandas_default(geodataframe_clean):
 def test_from_geopandas_missing_error(geodataframe_missing, arg):
 
     with pytest.raises(
-        ValueError, match="{arg} cannot contain missing values".format(arg)
+        ValueError, match="{} cannot contain missing values".format(arg)
     ):
         from_geopandas(geodataframe_missing, **{arg: arg})
 
@@ -113,7 +111,7 @@ def test_from_geopandas_missing_error(geodataframe_missing, arg):
 def test_from_geopandas_duplicates_error(geodataframe_duplicates, arg):
 
     with pytest.raises(
-        ValueError, match="{arg} cannot contain duplicate values".format(arg)
+        ValueError, match="{} cannot contain duplicate values".format(arg)
     ):
         from_geopandas(geodataframe_duplicates, **{arg: arg})
 

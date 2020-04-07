@@ -29,7 +29,7 @@ The Marine Ecosystems Of the World (MEOW) shapefile can be accessed from
 
 When creating a region with ``regionmask.from_geopandas``, you must provide the
 arguments ``names`` and ``abbrevs`` as strings of the columns of the ``GeoDataFrame``.
-If ``abbrevs`` is not present, you can use ``abbrevs='construct'``,
+If ``abbrevs`` is not present, you can use ``abbrevs='_from_name'``,
 which creates unique abbreviations.
 
 .. ipython:: python

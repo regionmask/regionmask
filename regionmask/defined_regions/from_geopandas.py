@@ -1,3 +1,4 @@
+import geopandas
 import numpy as np
 import pandas as pd
 
@@ -6,24 +7,31 @@ from .natural_earth import _maybe_get_column
 
 
 def _check_duplicates(data, name=""):
-    """Checks if `to_check` has duplicates. If so, raises error. If not, return True."""
-    if len(set(to_check)) == len(to_check):
+    """Checks if `data` has duplicates. Checks column `name` if given and data is DataFrame. If so, raises error. If not, return True."""
+    if (
+        isinstance(data, (pd.core.frame.DataFrame, geopandas.geodataframe.GeoDataFrame))
+        and name != ""
+    ):
+        data = data[name]
+    if len(set(data)) == len(data):
         return True
     else:
-        if isinstance(to_check, list):
-            duplicates = set([x for x in to_check if to_check.count(x) > 1])
-        elif isinstance(to_check, pd.core.series.Series):
-            duplicates = to_check[to_check.duplicated(keep=False)]
+        if isinstance(data, list):
+            duplicates = set([x for x in data if data.count(x) > 1])
+        elif isinstance(data, pd.core.series.Series):
+            duplicates = data[data.duplicated(keep=False)]
         else:
             raise ValueError(
-                "to_check not in [list, pd.Series], found {}".format(type(to_check))
+                "data not in [list, pd.Series], found {}".format(type(data))
             )
-        raise ValueError(""{name} cannot contain duplicate values"".format(name))
+        raise ValueError(
+            "{} cannot contain duplicate values, found {}".format(name, duplicates)
+        )
 
 
 def _check_missing(data, name):
     if data.isnull().any():
-        raise ValueError("{name} cannot contain duplicate values".format(name))
+        raise ValueError("{} cannot contain missing values".format(name))
 
 
 def _construct_abbrevs(geodataframe, names):
@@ -35,11 +43,13 @@ def _construct_abbrevs(geodataframe, names):
         )
     abbrevs = []
     names = geodataframe[names]
-    names = names.str.replace("[ ()\.]", "")
+    names = names.str.replace("[().]", "")
     for name in names:
-        # catch region with no name
-        if name_for_abbrev is None:
-            name_for_abbrev = "UND"  # for undefined
+        # only one word, take first three letters
+        if len(name.split(" ")) == 1:
+            abbrev = name[:3]
+        else:  # combine initial letters
+            abbrev = " ".join(word[0] for word in name.split(" "))
         # if find duplicates, add counter
         counter = 2
         if abbrev in abbrevs:
@@ -82,41 +92,36 @@ def from_geopandas(
     """
     # get necessary data for Regions
 
-    if not isinstance(geodataframe, (GeoDataFrame, GeoSeries)):
-        raise TypeError("geodataframe must be a geopandas.GeoDataFrame")
+    if not isinstance(
+        geodataframe, (geopandas.geodataframe.GeoDataFrame, geopandas.GeoSeries)
+    ):
+        raise TypeError("`geodataframe` must be a geopandas.geodataframe.GeoDataFrame")
+
     if numbers is not None:
         # sort, otherwise breaks
         geodataframe = geodataframe.sort_values(numbers)
-        # ensure integer
-        geodataframe[numbers] = geodataframe[numbers].astype("int")
         numbers = _maybe_get_column(geodataframe, numbers)
-        _check_missing(numbers)
-        _check_duplicates(numbers)
+        _check_missing(numbers, "numbers")
+        _check_duplicates(numbers, "numbers")
     else:
         numbers = geodataframe.index.values
     # make sure numbers is a list
     numbers = np.array(numbers)
 
+    if names is not None:
+        names = _maybe_get_column(geodataframe, names)
+        _check_missing(names, "names")
+        _check_duplicates(names, "names")
+
     if abbrevs is not None:
-        if abbrevs == "construct":
+        if abbrevs == "_from_name":
             abbrevs = _construct_abbrevs(geodataframe, names)
         else:
             abbrevs = _maybe_get_column(geodataframe, abbrevs)
-        _check_missing(abbrevs)
-        _check_duplicates(abbrevs)
-    if names is not None:
-        names = _maybe_get_column(geodataframe, names)
-    else:
-        raise ValueError(
-            "Please provide a string take can be taken from "
-            "geodataframe.columns for `names`, found {}".format(names)
-        )
+        _check_missing(abbrevs, "abbrevs")
+        _check_duplicates(abbrevs, "abbrevs")
 
     outlines = _maybe_get_column(geodataframe, "geometry")
-
-    # check duplicates
-    for to_check in [abbrevs, names]:
-        assert _check_duplicates(to_check)
 
     return Regions(
         outlines,
