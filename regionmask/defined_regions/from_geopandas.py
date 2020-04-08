@@ -93,7 +93,7 @@ def from_geopandas(
     # get necessary data for Regions
 
     if not isinstance(
-        geodataframe, (geopandas.geodataframe.GeoDataFrame, geopandas.GeoSeries)
+        geodataframe, (geopandas.geodataframe.GeoDataFrame)
     ):
         raise TypeError("`geodataframe` must be a geopandas.geodataframe.GeoDataFrame")
 
