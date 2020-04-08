@@ -6,24 +6,11 @@ from ..core.regions import Regions
 from .natural_earth import _maybe_get_column
 
 
-def _check_duplicates(data, name=""):
-    """Checks if `data` has duplicates. Checks column `name` if given and data is DataFrame. If so, raises error. If not, return True."""
-    if (
-        isinstance(data, (pd.core.frame.DataFrame, geopandas.geodataframe.GeoDataFrame))
-        and name != ""
-    ):
-        data = data[name]
-    if len(set(data)) == len(data):
-        return True
-    else:
-        if isinstance(data, list):
-            duplicates = set([x for x in data if data.count(x) > 1])
-        elif isinstance(data, pd.core.series.Series):
-            duplicates = data[data.duplicated(keep=False)]
-        else:
-            raise ValueError(
-                "data not in [list, pd.Series], found {}".format(type(data))
-            )
+def _check_duplicates(data, name):
+    """Checks if `data` has duplicates"""
+
+    if data.duplicated().any():
+        duplicates = data[data.duplicated(keep=False)]
         raise ValueError(
             "{} cannot contain duplicate values, found {}".format(name, duplicates)
         )
