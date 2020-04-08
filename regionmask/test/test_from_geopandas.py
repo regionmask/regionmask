@@ -150,3 +150,20 @@ def test_construct_abbrevs_two_words(geodataframe_clean):
     abbrevs = _construct_abbrevs(geodataframe_clean, "names")
     assert abbrevs[0] == "US"
     assert abbrevs[1] == "US2"
+
+
+def test_enumerate_duplicates():
+
+    data = pd.Series(["a", "a", "b"])
+
+    result = _enumerate_duplicates(data)
+    expected = pd.Series(["a0", "a1", "b"])
+    pd.testing.assert_series_equal(result, expected)
+
+    result = _enumerate_duplicates(data, keep="first")
+    expected = pd.Series(["a", "a0", "b"])
+    pd.testing.assert_series_equal(result, expected)
+
+    result = _enumerate_duplicates(data, keep="last")
+    expected = pd.Series(["a0", "a", "b"])
+    pd.testing.assert_series_equal(result, expected)

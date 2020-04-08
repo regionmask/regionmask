@@ -20,6 +20,15 @@ def _check_missing(data, name):
     if data.isnull().any():
         raise ValueError("{} cannot contain missing values".format(name))
 
+def _enumerate_duplicates(series, keep=False):
+    """append numbers to duplicates"""
+    
+    sel = series.duplicated(keep)
+    duplicates = series.loc[sel]
+
+    cumcount = duplicates.groupby(duplicates).cumcount().astype(str)
+    
+    return series.str.cat(cumcount, na_rep="", join="left")
 
 def _construct_abbrevs(geodataframe, names):
     """Construct unique abbreviations based on geodataframe.names."""
