@@ -44,6 +44,7 @@ def _construct_abbrevs(geodataframe, names):
     abbrevs = []
     names = geodataframe[names]
     names = names.str.replace("[().]", "")
+    names = names.str.replace("/", " ")
     for name in names:
         # only one word, take first three letters
         if len(name.split(" ")) == 1:
