@@ -119,22 +119,12 @@ def test_from_geopandas_duplicates_error(geodataframe_duplicates, arg):
 list_duplicates = [1, 1, 2, 3, 4]
 list_unique = list(np.arange(2, 5))
 
-
-@pytest.mark.parametrize(
-    "to_check",
-    [list_duplicates, pd.Series(list_duplicates), np.array(list_duplicates)],
-    ids=["list", "pd.Series", "np.array"],
-)
-def test_check_duplicates_raise_ValueError(to_check):
+def test_check_duplicates_raise_ValueError():
     with pytest.raises(ValueError):
-        _check_duplicates(to_check, "name")
+        _check_duplicates(pd.Series(list_duplicates), "name")
 
-
-@pytest.mark.parametrize(
-    "to_check", [list_unique, pd.Series(list_unique)], ids=["list", "pd.Series"]
-)
-def test_check_duplicates_return_True(to_check):
-    assert _check_duplicates(to_check, "name")
+def test_check_duplicates_return_True():
+    assert _check_duplicates(pd.Series(list_unique), "name")
 
 
 def test_construct_abbrevs(geodataframe_clean):
