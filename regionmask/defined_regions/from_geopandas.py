@@ -51,13 +51,7 @@ def _construct_abbrevs(geodataframe, names):
             abbrev = name[:3]
         else:  # combine initial letters
             abbrev = "".join(word[0].upper() for word in name.split(" "))
-        # if find duplicates, add counter
-        counter = 2
-        if abbrev in abbrevs:
-            while (abbrev + str(counter)) in abbrevs:
-                counter += 1
-            abbrev = abbrev + str(counter)
-        abbrevs.append(abbrev)
+abbrevs = _enumerate_duplicates(abbrevs)
     return abbrevs
 
 
