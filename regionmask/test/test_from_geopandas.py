@@ -8,6 +8,7 @@ import regionmask
 from regionmask.defined_regions.from_geopandas import (
     _check_duplicates,
     _construct_abbrevs,
+    _enumerate_duplicates,
     from_geopandas,
 )
 
