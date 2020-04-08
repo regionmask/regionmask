@@ -15,6 +15,8 @@ def _check_duplicates(data, name):
             "{} cannot contain duplicate values, found {}".format(name, duplicates)
         )
 
+        return True
+
 
 def _check_missing(data, name):
     if data.isnull().any():

@@ -127,14 +127,14 @@ list_unique = list(np.arange(2, 5))
 )
 def test_check_duplicates_raise_ValueError(to_check):
     with pytest.raises(ValueError):
-        _check_duplicates(to_check)
+        _check_duplicates(to_check, "name")
 
 
 @pytest.mark.parametrize(
     "to_check", [list_unique, pd.Series(list_unique)], ids=["list", "pd.Series"]
 )
 def test_check_duplicates_return_True(to_check):
-    assert _check_duplicates(to_check)
+    assert _check_duplicates(to_check, "name")
 
 
 def test_construct_abbrevs(geodataframe_clean):
