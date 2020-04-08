@@ -117,24 +117,21 @@ def test_from_geopandas_duplicates_error(geodataframe_duplicates, arg):
         from_geopandas(geodataframe_duplicates, **{arg: arg})
 
 
-list_duplicates = [1, 1, 2, 3, 4]
-list_unique = list(np.arange(2, 5))
+series_duplicates = pd.Series([1, 1, 2, 3, 4])
+series_unique = pd.Series(list(np.arange(2, 5)))
+
 
 def test_check_duplicates_raise_ValueError():
     with pytest.raises(ValueError):
-        _check_duplicates(pd.Series(list_duplicates), "name")
+        _check_duplicates(series_duplicates, "name")
+
 
 def test_check_duplicates_return_True():
-    assert _check_duplicates(pd.Series(list_unique), "name")
+    assert _check_duplicates(series_unique, "name")
 
 
 def test_construct_abbrevs(geodataframe_clean):
     _construct_abbrevs(geodataframe_clean, "names")
-
-
-def test_construct_abbrevs_duplicates(geodataframe_duplicates):
-    abbrevs = _construct_abbrevs(geodataframe_duplicates, "names")
-    assert abbrevs[0] == abbrevs[1][:-1]
 
 
 def test_construct_abbrevs_two_words(geodataframe_clean):

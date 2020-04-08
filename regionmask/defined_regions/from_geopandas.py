@@ -7,15 +7,28 @@ from .natural_earth import _maybe_get_column
 
 
 def _check_duplicates(data, name):
-    """Checks if `data` has duplicates"""
+    """Checks if `data` has duplicates.
 
+    Parameters
+    ----------
+    data : pd.core.series.Series
+    name : str
+        Name of the column (extracted from geopandas.GeoDataFrame) to check duplicates.
+
+    Returns
+    -------
+    bool : True if no duplicates in data.
+
+    Raises
+    ------
+    """
+    assert isinstance(data, pd.core.series.Series), "found {}".format(type(data))
     if data.duplicated().any():
         duplicates = data[data.duplicated(keep=False)]
         raise ValueError(
             "{} cannot contain duplicate values, found {}".format(name, duplicates)
         )
-
-        return True
+    return True
 
 
 def _check_missing(data, name):
@@ -24,8 +37,7 @@ def _check_missing(data, name):
 
 
 def _enumerate_duplicates(series, keep=False):
-    """append numbers to duplicates"""
-
+    """append numbers to duplicates."""
     sel = series.duplicated(keep)
     duplicates = series.loc[sel]
 
@@ -42,16 +54,11 @@ def _construct_abbrevs(geodataframe, names):
             "geodataframe, choose from {}".format(geodataframe.columns)
         )
     abbrevs = []
-    names = geodataframe[names]
+    names = _maybe_get_column(geodataframe, names)
     names = names.str.replace("[().]", "")
-    names = names.str.replace("/", " ")
-    for name in names:
-        # only one word, take first three letters
-        if len(name.split(" ")) == 1:
-            abbrev = name[:3]
-        else:  # combine initial letters
-            abbrev = "".join(word[0].upper() for word in name.split(" "))
-abbrevs = _enumerate_duplicates(abbrevs)
+    names = names.str.replace("/-", " ")
+    abbrevs = names.str.split(" ").map(lambda x: "".join([y[:3] for y in x]))
+    abbrevs = _enumerate_duplicates(abbrevs)
     return abbrevs
 
 
@@ -87,9 +94,7 @@ def from_geopandas(
     """
     # get necessary data for Regions
 
-    if not isinstance(
-        geodataframe, (geopandas.geodataframe.GeoDataFrame)
-    ):
+    if not isinstance(geodataframe, (geopandas.geodataframe.GeoDataFrame)):
         raise TypeError("`geodataframe` must be a geopandas.geodataframe.GeoDataFrame")
 
     if numbers is not None:
