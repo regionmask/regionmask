@@ -85,7 +85,6 @@ def test_from_geopandas_use_columns(geodataframe_clean):
 
 def test_from_geopandas_default(geodataframe_clean):
 
-    # note: you can just pass None to Regions
     result = from_geopandas(geodataframe_clean)
 
     assert isinstance(result, regionmask.core.regions.Regions)
