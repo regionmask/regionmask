@@ -82,7 +82,7 @@ def from_geopandas(
         Name of the column in shapefile that five a region its abbreviation.
         Breaks for duplicates. If ``construct``, a combination of the first letters of
         region name is taken.
-    name : str (optional)
+    name : str, optional
         name of the ``regionmask.Region`` instance created
     source : str (optional)
         source of the shapefile
