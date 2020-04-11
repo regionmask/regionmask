@@ -71,7 +71,7 @@ def from_geopandas(
     ----------
     geodataframe : geopandas.geodataframe.GeoDataFrame
         GeoDataFrame to be transformed to a Regions class.
-    numbers : str (optional)
+    numbers : str, optional
         Name of the column in geodataframe that gives each region its number.
         This column must not have duplicates. If None (default), takes
         ``geodataframe.index.values``.
