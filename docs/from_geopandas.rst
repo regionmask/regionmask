@@ -30,6 +30,7 @@ The Marine Ecosystems Of the World (MEOW) shapefile can be accessed from
 Creating a region with ``regionmask.from_geopandas`` only requires a ``GeoDataFrame``:
 
 .. ipython:: python
+
     meow_regions = regionmask.from_geopandas(meow)
 
 This creates default names (``"Region0"``, ..., ``"RegionN"``) and
