@@ -129,8 +129,9 @@ def test_check_duplicates_return_True():
     assert _check_duplicates(series_unique, "name")
 
 
-def test_construct_abbrevs(geodataframe_clean):
-    _construct_abbrevs(geodataframe_clean, "names")
+def test_construct_abbrevs_wrong_name(geodataframe_clean):
+    with pytest.raises(ValueError)
+        _construct_abbrevs(geodataframe_clean, "wrong_name")
 
 
 def test_construct_abbrevs_two_words(geodataframe_clean):
