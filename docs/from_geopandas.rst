@@ -32,13 +32,14 @@ Creating a region with ``regionmask.from_geopandas`` only requires a ``GeoDataFr
 .. ipython:: python
 
     meow_regions = regionmask.from_geopandas(meow)
+    display(meow_regions)
 
 This creates default names (``"Region0"``, ..., ``"RegionN"``) and
 abbreviations (``"r0"``, ..., ``"rN"``).
 
 However, it is often advantageous to use columns of the ``GeoDataFrame``
 as ``names`` and ``abbrevs``. If no column with abbreviations is available,
- you can use ``abbrevs='_from_name'``, which creates unique abbreviations
+you can use ``abbrevs='_from_name'``, which creates unique abbreviations
 using the names column.
 
 .. ipython:: python
@@ -47,6 +48,7 @@ using the names column.
                                              names='ECOREGION',
                                              abbrevs='_from_name'
                                              )
+    display(meow_regions)
 
     meow_regions.plot(add_label=False);
 
