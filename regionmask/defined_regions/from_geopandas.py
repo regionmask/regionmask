@@ -77,6 +77,7 @@ def from_geopandas(
         ``geodataframe.index.values``.
     names : str
         Name of the column in shapefile that names a region. Breaks for duplicates.
+        If None (default) uses "Region0", .., "RegionN".
     abbrevs : str, optional
         Name of the column in shapefile that five a region its abbreviation.
         Breaks for duplicates. If ``construct``, a combination of the first letters of
