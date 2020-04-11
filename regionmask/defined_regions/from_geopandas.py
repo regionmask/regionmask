@@ -84,7 +84,7 @@ def from_geopandas(
         region name is taken.
     name : str, optional
         name of the ``regionmask.Region`` instance created
-    source : str (optional)
+    source : str, optional
         source of the shapefile
 
     Returns
