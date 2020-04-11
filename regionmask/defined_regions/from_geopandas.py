@@ -22,7 +22,6 @@ def _check_duplicates(data, name):
     Raises
     ------
     """
-    assert isinstance(data, pd.core.series.Series), "found {}".format(type(data))
     if data.duplicated().any():
         duplicates = data[data.duplicated(keep=False)]
         raise ValueError(
