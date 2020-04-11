@@ -37,7 +37,7 @@ This creates default names (``"Region0"``, ..., ``"RegionN"``) and
 abbreviations (``"r0"``, ..., ``"rN"``).
 
 However, it is often advantageous to use columns of the ``GeoDataFrame``
-as ``names`` and ``abbrevs``. If no column with abbreviations is available
+as ``names`` and ``abbrevs``. If no column with abbreviations is available,
  you can use ``abbrevs='_from_name'``, which creates unique abbreviations
 using the names column.
 
