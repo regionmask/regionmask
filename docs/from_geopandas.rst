@@ -2,7 +2,7 @@
 Region from geopandas
 #####################
 
-regionmask can also create regions from a ``geopandas.GeoDataFrame``. 
+regionmask can create regions from a ``geopandas.GeoDataFrame``. 
 These are often shapefiles, which can be opened in the formats ``.zip``
 or ``.shp`` with ``geopandas.read_file(url_or_path)``.
 
