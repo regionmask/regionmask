@@ -75,7 +75,7 @@ def from_geopandas(
         Name of the column in geodataframe that gives each region its number.
         This column must not have duplicates. If None (default), takes
         ``geodataframe.index.values``.
-    names : str
+    names : str, optional
         Name of the column in shapefile that names a region. Breaks for duplicates.
         If None (default) uses "Region0", .., "RegionN".
     abbrevs : str, optional
