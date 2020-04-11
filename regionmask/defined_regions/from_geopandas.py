@@ -77,7 +77,7 @@ def from_geopandas(
         ``geodataframe.index.values``.
     names : str
         Name of the column in shapefile that names a region. Breaks for duplicates.
-    abbrevs : str
+    abbrevs : str, optional
         Name of the column in shapefile that five a region its abbreviation.
         Breaks for duplicates. If ``construct``, a combination of the first letters of
         region name is taken.
