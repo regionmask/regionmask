@@ -71,7 +71,7 @@ def from_geopandas(
     Parameters
     ----------
     geodataframe : geopandas.geodataframe.GeoDataFrame
-        Shapefile to be downloaded. File has extensions ``.shp`` or ``.zip``.
+        GeoDataFrame to be transformed to a Regions class.
     numbers : str (optional)
         Number of the column in shapefile that gives a region its number.
         This column shouldnt have duplicates. If None (default), takes
