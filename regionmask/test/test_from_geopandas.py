@@ -130,7 +130,7 @@ def test_check_duplicates_return_True():
 
 
 def test_construct_abbrevs_wrong_name(geodataframe_clean):
-    with pytest.raises(ValueError)
+    with pytest.raises(KeyError):
         _construct_abbrevs(geodataframe_clean, "wrong_name")
 
 
@@ -155,3 +155,13 @@ def test_enumerate_duplicates():
     result = _enumerate_duplicates(data, keep="last")
     expected = pd.Series(["a0", "a", "b"])
     pd.testing.assert_series_equal(result, expected)
+
+
+def test_construct_abbrevs():
+    strings = ["A", "Bcef", "G[hi]", "J(k)", "L.mn", "Op/Qr", "Stuvw-Xyz"]
+
+    df = pd.DataFrame(strings, columns=["strings"])
+    result = _construct_abbrevs(df, "strings")
+    expected = ["A", "Bce", "Ghi", "Jk", "Lmn", "OpQr", "StuXyz"]
+    for i in range(len(result)):
+        assert result[i] == expected[i]

@@ -54,8 +54,8 @@ def _construct_abbrevs(geodataframe, names):
         )
     abbrevs = []
     names = _maybe_get_column(geodataframe, names)
-    names = names.str.replace("[().]", "")
-    names = names.str.replace("/-", " ")
+    names = names.str.replace("[(\[\]).]", "")
+    names = names.str.replace("[/-]", " ")
     abbrevs = names.str.split(" ").map(lambda x: "".join([y[:3] for y in x]))
     abbrevs = _enumerate_duplicates(abbrevs)
     return abbrevs
@@ -91,8 +91,6 @@ def from_geopandas(
     regionmask.core.regions.Regions
 
     """
-    # get necessary data for Regions
-
     if not isinstance(geodataframe, (geopandas.geodataframe.GeoDataFrame)):
         raise TypeError("`geodataframe` must be a geopandas.geodataframe.GeoDataFrame")
 
@@ -111,6 +109,8 @@ def from_geopandas(
         names = _maybe_get_column(geodataframe, names)
         _check_missing(names, "names")
         _check_duplicates(names, "names")
+    else:
+        names = pd.Series(["Region" + str(i) for i in geodataframe.index])
 
     if abbrevs is not None:
         if abbrevs == "_from_name":
@@ -119,6 +119,8 @@ def from_geopandas(
             abbrevs = _maybe_get_column(geodataframe, abbrevs)
         _check_missing(abbrevs, "abbrevs")
         _check_duplicates(abbrevs, "abbrevs")
+    else:
+        abbrevs = pd.Series(["r" + str(i) for i in geodataframe.index])
 
     outlines = _maybe_get_column(geodataframe, "geometry")
 
