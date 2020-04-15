@@ -1,8 +1,8 @@
 import geopandas
 import numpy as np
 
-from ..core.regions import Regions
-from .natural_earth import _maybe_get_column
+from ..defined_regions.natural_earth import _maybe_get_column
+from .regions import Regions
 
 
 def _check_duplicates(data, name):
