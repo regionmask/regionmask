@@ -62,7 +62,7 @@ Documentation
    notebooks/mask_numpy
    notebooks/mask_multidim
    notebooks/create_own_regions
-   from_geopandas
+   geopandas
 
 .. toctree::
    :maxdepth: 2
