@@ -5,7 +5,7 @@ import pytest
 from shapely.geometry import Polygon
 
 import regionmask
-from regionmask.defined_regions.from_geopandas import (
+from regionmask.core._geopandas import (
     _check_duplicates,
     _construct_abbrevs,
     _enumerate_duplicates,
