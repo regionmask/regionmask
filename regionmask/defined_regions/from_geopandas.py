@@ -110,8 +110,6 @@ def from_geopandas(
         names = _maybe_get_column(geodataframe, names)
         _check_missing(names, "names")
         _check_duplicates(names, "names")
-    else:
-        names = pd.Series(["Region" + str(i) for i in geodataframe.index])
 
     if abbrevs is not None:
         if abbrevs == "_from_name":
@@ -120,8 +118,6 @@ def from_geopandas(
             abbrevs = _maybe_get_column(geodataframe, abbrevs)
         _check_missing(abbrevs, "abbrevs")
         _check_duplicates(abbrevs, "abbrevs")
-    else:
-        abbrevs = pd.Series(["r" + str(i) for i in geodataframe.index])
 
     outlines = _maybe_get_column(geodataframe, "geometry")
 
