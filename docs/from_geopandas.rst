@@ -2,7 +2,7 @@
 Region from geopandas
 #####################
 
-regionmask can create regions from a ``geopandas.GeoDataFrame``. 
+regionmask can create regions from a ``geopandas.GeoDataFrame``.
 These are often shapefiles, which can be opened in the formats ``.zip``
 or ``.shp`` with ``geopandas.read_file(url_or_path)``.
 
@@ -44,11 +44,16 @@ using the names column.
 
 .. ipython:: python
 
-    meow_regions = regionmask.from_geopandas(meow,
-                                             names='ECOREGION',
-                                             abbrevs='_from_name'
-                                             )
+    meow_regions = regionmask.from_geopandas(
+        meow,
+        names="ECOREGION",
+        abbrevs="_from_name"
+    )
     display(meow_regions)
+
+As usual the newly created ``Regions`` object can be plotted on a world map:
+
+.. ipython:: python
 
     meow_regions.plot(add_label=False);
 
