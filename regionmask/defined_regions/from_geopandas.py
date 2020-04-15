@@ -1,6 +1,5 @@
 import geopandas
 import numpy as np
-import pandas as pd
 
 from ..core.regions import Regions
 from .natural_earth import _maybe_get_column
