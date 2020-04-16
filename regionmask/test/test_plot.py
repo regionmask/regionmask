@@ -1,5 +1,9 @@
+# import mpl and change the backend before other mpl imports
+import matplotlib as mpl # isort:skip
+# Order of imports is important here: using Agg for non-display environments
+mpl.use("Agg")
+
 import cartopy.crs as ccrs
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
@@ -7,9 +11,6 @@ from shapely.geometry import MultiPolygon, Polygon
 
 from regionmask import Regions
 from regionmask.core.plot import _subsample
-
-matplotlib.use("Agg")
-
 
 # =============================================================================
 
