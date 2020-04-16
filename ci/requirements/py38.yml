@@ -4,8 +4,6 @@ channels:
 dependencies:
   - python=3.8
   - cartopy
-  - numpydoc
-  - ipython
   - geopandas
   - xarray
   - numpy
@@ -16,3 +14,4 @@ dependencies:
   - pytest
   - pytest-cov
   - pytest-env
+  - isort

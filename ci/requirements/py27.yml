@@ -4,8 +4,6 @@ channels:
 dependencies:
   - python=2.7
   - cartopy
-  - numpydoc
-  - ipython
   - geopandas
   - xarray
   - numpy
