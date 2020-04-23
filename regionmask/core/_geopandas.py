@@ -1,9 +1,8 @@
-import geopandas
 import numpy as np
 
 from ..defined_regions.natural_earth import _maybe_get_column
 from .regions import Regions
-
+from .mask import _mask
 
 def _check_duplicates(data, name):
     """Checks if `data` has duplicates.
@@ -91,8 +90,10 @@ def from_geopandas(
     regionmask.core.regions.Regions
 
     """
-    if not isinstance(geodataframe, (geopandas.geodataframe.GeoDataFrame)):
-        raise TypeError("`geodataframe` must be a geopandas.geodataframe.GeoDataFrame")
+    from geopandas import GeoDataFrame
+
+    if not isinstance(geodataframe, (GeoDataFrame)):
+        raise TypeError("`geodataframe` must be a geopandas 'GeoDataFrame'")
 
     if numbers is not None:
         # sort, otherwise breaks
@@ -127,4 +128,49 @@ def from_geopandas(
         abbrevs=abbrevs,
         name=name,
         source=source,
+    )
+
+
+def mask_geopandas(
+    geodataframe,
+    lon_or_obj,
+    lat=None,
+    lon_name="lon",
+    lat_name="lat",
+    method=None,
+    wrap_lon=None,
+):
+
+    from geopandas import GeoDataFrame, GeoSeries
+
+    if not isinstance(geodataframe, (GeoDataFrame, GeoSeries)):
+        raise TypeError("input must be a geopandas 'GeoDataFrame' or 'GeoSeries'")
+
+    if method == "legacy":
+        raise ValueError("method 'legacy' not supported in 'mask_geopandas'")
+
+    lon_min = geodataframe.bounds["minx"].min()
+    lon_max = geodataframe.bounds["maxx"].max()
+    is_180 = regionmask.core.utils._is_180(lon_min, lon_max)
+
+    polygons = geodataframe["geometry"].tolist()
+
+    numbers = geodataframe.index.values.tolist()
+
+    # _mask requires 'dot' attributes - create a dummy class for now...
+    class dummy(object):
+        def __init__(self, polygons, is_180, numbers):
+            self.polygons = polygons
+            self.lon_180 = is_180
+            self.numbers = numbers
+
+    return _mask(
+        dummy(polygons, is_180, numbers),
+        lon_or_obj,
+        lat=lat,
+        lon_name=lon_name,
+        lat_name=lat_name,
+        method=method,
+        xarray=xarray,
+        wrap_lon=wrap_lon,
     )
