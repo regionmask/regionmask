@@ -124,6 +124,28 @@ def test_mask_xarray(method):
     assert np.all(np.equal(result.lat.values, lat))
     assert np.all(np.equal(result.lon.values, lon))
 
+@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
+@pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
+def test_mask_poly_z_value(method):
+
+    if method == "legacy":
+        pytest.xfail("legacy does not support z-values")
+
+    outl1 = Polygon(((0, 0, 1), (0, 1, 1), (1, 1.0, 1), (1, 0, 1)))
+    outl2 = Polygon(((0, 1, 1), (0, 2, 1), (1, 2.0, 1), (1, 1, 1)))
+    outlines = [outl1, outl2]
+
+    r_z = Regions(outlines)
+
+    expected = expected_mask()
+    result = r_z.mask(lon, lat, method=method, xarray=True)
+
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+    assert np.all(np.equal(result.lat.values, lat))
+    assert np.all(np.equal(result.lon.values, lon))
+
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
