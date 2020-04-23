@@ -44,6 +44,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Using azure pipelines for testing (:pull:`110`).
+- Enabel codecov on azure (:pull:`115`).
 
 v0.5.0 (19.12.2019)
 -------------------
