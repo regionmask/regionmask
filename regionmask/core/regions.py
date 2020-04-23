@@ -256,12 +256,81 @@ class Regions(object):
         """
         return not self.lon_180
 
+    def mask(
+        self,
+        lon_or_obj,
+        lat=None,
+        lon_name="lon",
+        lat_name="lat",
+        method=None,
+        xarray=None,
+        wrap_lon=None,
+    ):
+        """
+        create a grid as mask of a set of regions for given lat/ lon grid
+
+        Parameters
+        ----------
+        lon_or_obj : array_like or object
+            Can either be (1) a longitude array and then lat needs to be
+            given. Or an object where the longitude and latitude can be
+            retrived as:
+            lon = lon_or_obj[lon_name]
+            lat = lon_or_obj[lat_name]
+        lat : array_like, optional
+            If 'lon_or_obj' is a longitude array, the latitude needs to be
+            specified here.
+        lon_name, optional
+            Name of longitude in 'lon_or_obj'. Default: 'lon'.
+        lat_name, optional
+            Name of latgitude in 'lon_or_obj'. Default: 'lat'
+        method : None | "rasterize" | "shapely" | "legacy"
+            Set method used to determine wether a gridpoint lies in a region.
+        xarray : None | bool, optional
+            Deprecated. If None or True returns an xarray DataArray, if False returns a
+            numpy ndarray. Default: None.
+        wrap_lon : None | bool | 180 | 360, optional
+            Whether to wrap the longitude around, should be inferred automatically.
+            If the regions and the provided longitude do not have the same
+            base (i.e. one is -180..180 and the other 0..360) one of them
+            must be wrapped. This can be done with wrap_lon.
+            If wrap_lon is None autodetects whether the longitude needs to be
+            wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
+            longitude data is wrapped to 360 if its minimum is smaller
+            than 0 and wrapped to 180 if its maximum is larger than 180.
+        
+        Returns
+        -------
+        mask : ndarray or xarray DataSet
+
+        Method
+        ------
+        See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
+
+        """
+
+        if method == "legacy":
+            outlines = self.coords
+        else:
+            outlines = self.polygons
+
+        return _mask(
+            outlines=outlines,
+            regions_is_180=self.lon_180,
+            numbers=self.numbers,
+            lon_or_obj=lon_or_obj,
+            lat=lat,
+            lon_name=lon_name,
+            lat_name=lat_name,
+            method=method,
+            xarray=xarray,
+            wrap_lon=wrap_lon,
+        )
+
 
 # add the plotting methods
 Regions.plot = _plot
 Regions.plot_regions = _plot_regions
-# add the mask method
-Regions.mask = _mask
 
 
 class Regions_cls(Regions):

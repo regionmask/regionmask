@@ -7,7 +7,9 @@ from .utils import _is_180, _wrapAngle, equally_spaced
 
 
 def _mask(
-    self,
+    outlines,
+    regions_is_180,
+    numbers,
     lon_or_obj,
     lat=None,
     lon_name="lon",
@@ -17,55 +19,7 @@ def _mask(
     wrap_lon=None,
 ):
     """
-    create a grid as mask of a set of regions for given lat/ lon grid
-
-    Parameters
-    ----------
-    lon_or_obj : array_like or object
-        Can either be (1) a longitude array and then lat needs to be
-        given. Or an object where the longitude and latitude can be
-        retrived as:
-        lon = lon_or_obj[lon_name]
-        lat = lon_or_obj[lat_name]
-    lat : array_like, (optional)
-        If 'lon_or_obj' is a longitude array, the latitude needs to be
-        specified here.
-    lon_name, optional
-        Name of longitude in 'lon_or_obj'. Default: 'lon'.
-    lat_name, optional
-        Name of latgitude in 'lon_or_obj'. Default: 'lat'
-    method : None | "rasterize" | "shapely" | "legacy"
-        Set method used to determine wether a gridpoint lies in a region.
-    xarray : None | bool, optional
-        Deprecated. If None or True returns an xarray DataArray, if False returns a
-        numpy ndarray. Default: None.
-    wrap_lon : None | bool | 180 | 360, optional
-        If the regions and the provided longitude do not have the same
-        base (i.e. one is -180..180 and the other 0..360) one of them
-        must be wrapped. This can be done with wrap_lon.
-        If wrap_lon is None autodetects whether the longitude needs to be
-        wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
-        longitude data is wrapped to 360 if its minimum is smaller
-        than 0 and wrapped to 180 if its maximum is larger than 180.
-    Returns
-    -------
-    mask : ndarray or xarray DataSet
-
-    Method - rasterize
-    ------------------
-    "rasterize" uses `rasterio.features.rasterize`. This method offers a 50 to 100
-    speedup compared to "legacy". It only works for equally spaced lon and lat grids.
-
-    Method - legacy
-    ---------------
-    Uses the following:
-    >>> from matplotlib.path import Path
-    >>> bbPath = Path(((0, 0), (0, 1), (1, 1.), (1, 0)))
-    >>> bbPath.contains_point((0.5, 0.5))
-
-    This method is slower than the others and its edge behaviour is inconsistent
-    (see https://github.com/matplotlib/matplotlib/issues/9704).
-
+    internal function to create a mask
     """
 
     lat_orig = lat
@@ -77,7 +31,6 @@ def _mask(
 
     # automatically detect whether wrapping is necessary
     if wrap_lon is None:
-        regions_is_180 = self.lon_180
         grid_is_180 = _is_180(lon.min(), lon.max())
 
         wrap_lon = not regions_is_180 == grid_is_180
@@ -99,18 +52,15 @@ def _mask(
 
     if method == "legacy":
         func = _mask_contains
-        data = self.coords
     elif method == "rasterize":
         func = _mask_rasterize
-        data = self.polygons
     elif method == "shapely":
         func = _mask_shapely
-        data = self.polygons
     else:
         msg = "Only methods 'rasterize', 'shapely', and 'legacy' are implemented"
         raise NotImplementedError(msg)
 
-    mask = func(lon, lat, data, numbers=self.numbers)
+    mask = func(lon, lat, outlines, numbers=numbers)
 
     if np.all(np.isnan(mask)):
         msg = "All elements of mask are NaN. Try to set 'wrap_lon=True'."
