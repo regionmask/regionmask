@@ -33,7 +33,7 @@ Enhancements
   (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_)
 - Create regions from geopandas/shapefiles :py:attr:`from_geopandas`
   (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_)
-- Added test to ensure ``Polygons`` with a z-value work correctly (closes :issue:`36`).
+- Added test to ensure ``Polygons`` with z-coordinates work correctly (closes :issue:`36`).
 
 Bug Fixes
 ~~~~~~~~~

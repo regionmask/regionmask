@@ -131,7 +131,7 @@ def test_mask_xarray(method):
 def test_mask_poly_z_value(method):
 
     if method == "legacy":
-        pytest.xfail("legacy does not support z-values")
+        pytest.xfail("legacy does not support z-coordinates")
 
     outl1 = Polygon(((0, 0, 1), (0, 1, 1), (1, 1.0, 1), (1, 0, 1)))
     outl2 = Polygon(((0, 1, 1), (0, 2, 1), (1, 2.0, 1), (1, 1, 1)))
