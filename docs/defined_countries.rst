@@ -63,15 +63,10 @@ Also create a mask for a 1° grid over the US:
     lon = np.arange(200.5, 325)
     lat = np.arange(74.5, 14, -1)
 
-    mask = states.mask(lon, lat, wrap_lon=True)
-    mask_ma = np.ma.masked_invalid(mask)
+    mask = states.mask(lon, lat)
 
     states.plot(add_label=False);
-
-    LON_EDGE = np.arange(200, 326)
-    LAT_EDGE = np.arange(75, 13, -1)
-
-    plt.pcolormesh(LON_EDGE, LAT_EDGE, mask_ma, cmap='viridis');
+    mask.plot(add_colorbar=False)
 
     @savefig plotting_states_mask.png width=6in
     plt.tight_layout()

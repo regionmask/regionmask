@@ -31,12 +31,19 @@ Enhancements
 
 - New marine regions from natural earth added as :py:attr:`naturalearth.ocean_basins_50`
   (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_)
+- Create regions from geopandas/shapefiles :py:attr:`from_geopandas`
+  (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_)
+- Added test to ensure ``Polygons`` with z-coordinates work correctly (closes :issue:`36`).
 
 Bug Fixes
 ~~~~~~~~~
 
 - The natural earth shapefiles are now loaded with ``encoding="utf8"`` (:issue:`95`).
 
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Using azure pipelines for testing (:pull:`110`).
 
 v0.5.0 (19.12.2019)
 -------------------

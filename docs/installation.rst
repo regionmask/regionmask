@@ -4,7 +4,7 @@ Installation
 Required dependencies
 ---------------------
 
-- Python 2.7, 3,6, or 3.7.
+- Python 2.7, 3,6, 3.7, or 3.8.
 - `numpy <http://www.numpy.org/>`__
 - `matplotlib <http://matplotlib.org/>`__
 - `rasterio <https://rasterio.readthedocs.io/>`__
