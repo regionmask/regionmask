@@ -280,9 +280,9 @@ class Regions(object):
         lat : array_like, optional
             If 'lon_or_obj' is a longitude array, the latitude needs to be
             specified here.
-        lon_name, optional
+        lon_name : str, optional
             Name of longitude in 'lon_or_obj'. Default: 'lon'.
-        lat_name, optional
+        lat_name : str, optional
             Name of latgitude in 'lon_or_obj'. Default: 'lat'
         method : None | "rasterize" | "shapely" | "legacy"
             Set method used to determine wether a gridpoint lies in a region.
@@ -298,10 +298,10 @@ class Regions(object):
             wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
             longitude data is wrapped to 360 if its minimum is smaller
             than 0 and wrapped to 180 if its maximum is larger than 180.
-        
+
         Returns
         -------
-        mask : ndarray or xarray DataSet
+        mask : ndarray or xarray DataArray
 
         Method
         ------
