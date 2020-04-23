@@ -124,6 +124,7 @@ def test_mask_xarray(method):
     assert np.all(np.equal(result.lat.values, lat))
     assert np.all(np.equal(result.lon.values, lon))
 
+
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
