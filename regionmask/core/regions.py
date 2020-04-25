@@ -271,7 +271,7 @@ class Regions(object):
 
         Parameters
         ----------
-        lon_or_obj : array_like or object
+        lon_or_obj : object or array_like
             Can either be (1) a longitude array and then lat needs to be
             given. Or an object where the longitude and latitude can be
             retrived as:

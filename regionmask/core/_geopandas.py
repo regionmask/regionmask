@@ -52,7 +52,7 @@ def _construct_abbrevs(geodataframe, names):
             "geodataframe, choose from {}".format(geodataframe.columns)
         )
     abbrevs = []
-    names = geodataframe[names]
+    names = _maybe_get_column(geodataframe, names)
     names = names.str.replace(r"[(\[\]).]", "")
     names = names.str.replace("[/-]", " ")
     abbrevs = names.str.split(" ").map(lambda x: "".join([y[:3] for y in x]))
@@ -99,7 +99,7 @@ def from_geopandas(
     if numbers is not None:
         # sort, otherwise breaks
         geodataframe = geodataframe.sort_values(numbers)
-        numbers = geodataframe[numbers]
+    numbers = _maybe_get_column(geodataframe, numbers)
         _check_missing(numbers, "numbers")
         _check_duplicates(numbers, "numbers")
     else:
@@ -108,7 +108,7 @@ def from_geopandas(
     numbers = np.array(numbers)
 
     if names is not None:
-        names = geodataframe[names]
+    names = _maybe_get_column(geodataframe, names)
         _check_missing(names, "names")
         _check_duplicates(names, "names")
 
@@ -116,7 +116,7 @@ def from_geopandas(
         if abbrevs == "_from_name":
             abbrevs = _construct_abbrevs(geodataframe, names)
         else:
-            abbrevs = geodataframe[abbrevs]
+    abbrevs = _maybe_get_column(geodataframe, abbrevs)
         _check_missing(abbrevs, "abbrevs")
         _check_duplicates(abbrevs, "abbrevs")
 
@@ -149,7 +149,7 @@ def mask_geopandas(
     ----------
     geodataframe : GeoDataFrame or GeoSeries
         Object providing the region definitions (outlines).
-    lon_or_obj : array_like or object
+    lon_or_obj : object or array_like
         Can either be a longitude array and then ``lat`` needs to be
         given. Or an object where the longitude and latitude can be
         retrived as:

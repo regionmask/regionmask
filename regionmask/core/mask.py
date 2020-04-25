@@ -57,8 +57,8 @@ def _mask(
     elif method == "shapely":
         func = _mask_shapely
     else:
-        msg = "Only methods 'rasterize', 'shapely', and 'legacy' are implemented"
-        raise NotImplementedError(msg)
+        msg = "Method must be one of 'rasterize', 'shapely', or 'legacy'."
+        raise ValueError(msg)
 
     mask = func(lon, lat, outlines, numbers=numbers)
 

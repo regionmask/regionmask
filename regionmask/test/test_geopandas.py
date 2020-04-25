@@ -175,7 +175,7 @@ def test_construct_abbrevs():
 
 
 # ==============================================================================
-
+# uses the same function as `Regions.mask` - only do minimal tests here
 
 def expected_mask(a=0, b=1, fill=np.NaN):
     return np.array([[a, fill], [b, fill]])
