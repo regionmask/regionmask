@@ -78,5 +78,5 @@ def test_maybe_get_column():
     assert _maybe_get_column(uppercase(), "name") == 2
     assert _maybe_get_column(uppercase(), "NAME") == 2
 
-    with raises(KeyError):
-        _maybe_get_column(lowercase, "nam")
+    with raises(KeyError, match="not on the geopandas dataframe"):
+        _maybe_get_column(lowercase, "not_a_column")
