@@ -41,7 +41,7 @@ def _obtain_ne(
 
     Parameters
     ----------
-    resolution : 10m" | "50m" | "110m"
+    resolution : "10m" | "50m" | "110m"
         Resolution of the dataset.
     category : "cultural" | "physical"
         Natural earth categories.
