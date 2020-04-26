@@ -3,6 +3,7 @@ import numpy as np
 from .mask import _mask
 from .regions import Regions
 from .utils import _is_180
+from ..defined_regions.natural_earth import _maybe_get_column
 
 
 def _check_duplicates(data, name):
@@ -99,7 +100,7 @@ def from_geopandas(
     if numbers is not None:
         # sort, otherwise breaks
         geodataframe = geodataframe.sort_values(numbers)
-    numbers = _maybe_get_column(geodataframe, numbers)
+        numbers = _maybe_get_column(geodataframe, numbers)
         _check_missing(numbers, "numbers")
         _check_duplicates(numbers, "numbers")
     else:
@@ -108,7 +109,7 @@ def from_geopandas(
     numbers = np.array(numbers)
 
     if names is not None:
-    names = _maybe_get_column(geodataframe, names)
+        names = _maybe_get_column(geodataframe, names)
         _check_missing(names, "names")
         _check_duplicates(names, "names")
 
@@ -116,9 +117,9 @@ def from_geopandas(
         if abbrevs == "_from_name":
             abbrevs = _construct_abbrevs(geodataframe, names)
         else:
-    abbrevs = _maybe_get_column(geodataframe, abbrevs)
-        _check_missing(abbrevs, "abbrevs")
-        _check_duplicates(abbrevs, "abbrevs")
+            abbrevs = _maybe_get_column(geodataframe, abbrevs)
+            _check_missing(abbrevs, "abbrevs")
+            _check_duplicates(abbrevs, "abbrevs")
 
     outlines = geodataframe["geometry"]
 
