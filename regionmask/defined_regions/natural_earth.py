@@ -12,15 +12,11 @@ def _maybe_get_column(df, colname):
         # try lower and upper, github #25
         if hasattr(df, colname):
             return getattr(df, colname)
-        elif hasattr(df, colname.upper()):
-            return getattr(df, colname.upper())
+        elif hasattr(df, colname.swapcase()):
+            return getattr(df, colname.swapcase())
         else:
-            msg = (
-                "'{}' (and '{}') not on the geopandas dataframe. "
-                "The naming convention of NaturalEarthData may have "
-                "changed. Please raise an issue."
-            )
-            raise KeyError(msg.format(colname, colname.upper()))
+            msg = "'{}' (and '{}') not on the geopandas dataframe."
+            raise KeyError(msg.format(colname, colname.swapcase()))
 
     else:
         return colname
@@ -39,41 +35,38 @@ def _obtain_ne(
     combine_coords=False,
 ):
     """
-    create Regions_cls from natural_earth data
+    create Regions object from naturalearth data
 
     http://www.naturalearthdata.com
 
     Parameters
     ----------
-    resolution : string
-        Resolution of the dataset ('10m', '50m' or '110m').
-    category : string
-        Natural earth categories ('cultural', 'physical').
+    resolution : "10m" | "50m" | "110m"
+        Resolution of the dataset.
+    category : "cultural" | "physical"
+        Natural earth categories.
     name : string
         Name of natural earth dataset.
     title : string
-        Displayed text in Regions_cls.
-    names : string or list
-        Names of the single regions (Region_cls). If string, obtains
-        them from the geopandas DataFrame, else uses the provided list.
-    abbrevs : string or list
-        Abbreviations of the single regions (Region_cls). If string
-        obtains them from the geopandas DataFrame, else uses the
-        provided list.
-    numbers : string or list
-        Numbers of the single regions (Region_cls). If string obtains
-        them from the geopandas DataFrame, else uses the provided list.
-    coords : string or list
-        Coordinates of the single regions (Region_cls). If string
-        obtains them from the geopandas DataFrame, else uses the
-        provided list.
-    query : None or string
-        If given, the geopandas DataFrame is subset with
-        df.query(query). Optional, default None.
-    combine_coords : bool
-        If False, uses the coords as is, else combines them all to a
-        shapely MultiPolygon (used to combine all land Polygons).
-        Optional, default False.
+        Displayed text in Regions.
+    names : string or list, optional
+        Names of the single regions. If string, obtains them from the geopandas
+        DataFrame, else uses the provided list. Default: "name".
+    abbrevs : string or list, optional
+        Abbreviations of the single regions. If string obtains them from the
+        geopandas DataFrame, else uses the provided list. Default: "postal".
+    numbers : string or list, optional
+        Numbers of the single regions. If string obtains them from the geopandas
+        DataFrame, else uses the provided list. Default: "index".
+    coords : string or list, optional
+        Coordinates of the single regions. If string obtains them from the
+        geopandas DataFrame, else uses the provided list. Default: "geometry".
+    query : None or string, optional
+        If given, the geopandas DataFrame is subset with df.query(query).
+        Default: None.
+    combine_coords : bool, optional
+        If False, uses the coords as is, else combines them all to a shapely
+        MultiPolygon (used to combine all land Polygons). Default: False.
     """
     from cartopy.io import shapereader
     import geopandas

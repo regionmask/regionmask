@@ -43,8 +43,10 @@ Bug Fixes
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- Using azure pipelines for testing (:pull:`110`).
-- Enabel codecov on azure (:pull:`115`).
+- Decouple ``_maybe_get_column`` from its usage for naturalearth - so it can be
+  used to read columns from geodataframes (:issue:`117`).
+- Switch to azure pipelines for testing (:pull:`110`).
+- Enable codecov on azure (:pull:`115`).
 
 v0.5.0 (19.12.2019)
 -------------------
