@@ -1,9 +1,9 @@
 import numpy as np
 
+from ..defined_regions.natural_earth import _maybe_get_column
 from .mask import _mask
 from .regions import Regions
 from .utils import _is_180
-from ..defined_regions.natural_earth import _maybe_get_column
 
 
 def _check_duplicates(data, name):
