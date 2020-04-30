@@ -16,6 +16,9 @@ The following regions, used in the scientific literature, are already defined:
     mpl.rcdefaults()
     mpl.use('Agg')
 
+    # cut border when saving (for maps)
+    mpl.rcParams["savefig.bbox"] = "tight"
+
 The following imports are necessary for the examples.
 
 .. ipython:: python
@@ -30,7 +33,7 @@ Giorgi Regions
 
     regionmask.defined_regions.giorgi.plot(label='abbrev');
 
-    @savefig plotting_giorgi.png width=6in
+    @savefig plotting_giorgi.png width=100%
     plt.tight_layout()
 
 SREX Regions
@@ -40,10 +43,11 @@ SREX Regions
 
     regionmask.defined_regions.srex.plot();
 
-    @savefig plotting_srex.png width=6in
+    @savefig plotting_srex.png width=100%
     plt.tight_layout()
 
 References
 ~~~~~~~~~~
 * Giorgi and Franciso, 2000: `<http://onlinelibrary.wiley.com/doi/10.1029/1999GL011016>`_
 * Seneviratne et al., 2012:  `<https://www.ipcc.ch/pdf/special-reports/srex/SREX-Ch3-Supplement_FINAL.pdf>`_
+

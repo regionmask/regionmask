@@ -20,6 +20,9 @@ The following landmask is currently available:
     mpl.rcdefaults()
     mpl.use('Agg')
 
+    # cut border when saving (for maps)
+    mpl.rcParams["savefig.bbox"] = "tight"
+
 The following imports are necessary for the examples.
 
 .. ipython:: python
@@ -43,6 +46,6 @@ Landmask
     # use add_geometries because land.plot does not add the polygon interiors
     ax.add_geometries(land.polygons, ccrs.PlateCarree(), fc="none", ec="0.1")
 
-    @savefig plotting_landmask.png width=6in
+    @savefig plotting_landmask.png width=100%
     plt.tight_layout()
 

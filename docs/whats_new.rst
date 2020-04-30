@@ -50,6 +50,9 @@ Internal Changes
 - Enable codecov on azure (:pull:`115`).
 - Use ``sphinx.ext.napoleon`` which fixes the look of the API docs. Also some
   small adjustments to the docs (:pull:`125`).
+- Set ``mpl.rcParams["savefig.bbox"] = "tight"`` in ``docs/defined_*.rst`` to avoid
+  spurious borders in the map plots (:issue:`112`).
+
 
 v0.5.0 (19.12.2019)
 -------------------
