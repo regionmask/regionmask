@@ -2,14 +2,14 @@ import geopandas as gp
 import numpy as np
 import pandas as pd
 import pytest
+import xarray as xr
 from shapely.geometry import Polygon
 
-import regionmask
+from regionmask import Regions, from_geopandas, mask_geopandas
 from regionmask.core._geopandas import (
     _check_duplicates,
     _construct_abbrevs,
     _enumerate_duplicates,
-    from_geopandas,
 )
 
 # create dummy Polygons for testing
@@ -56,7 +56,7 @@ def geodataframe_duplicates():
 
 def test_from_geopandas_wrong_input():
     with pytest.raises(
-        TypeError, match="`geodataframe` must be a geopandas.geodataframe.GeoDataFrame"
+        TypeError, match="`geodataframe` must be a geopandas 'GeoDataFrame'"
     ):
         from_geopandas(None)
 
@@ -72,7 +72,7 @@ def test_from_geopandas_use_columns(geodataframe_clean):
         source="source",
     )
 
-    assert isinstance(result, regionmask.core.regions.Regions)
+    assert isinstance(result, Regions)
 
     assert result.polygons[0].equals(poly1)
     assert result.polygons[1].equals(poly2)
@@ -87,7 +87,7 @@ def test_from_geopandas_default(geodataframe_clean):
 
     result = from_geopandas(geodataframe_clean)
 
-    assert isinstance(result, regionmask.core.regions.Regions)
+    assert isinstance(result, Regions)
 
     assert result.polygons[0].equals(poly1)
     assert result.polygons[1].equals(poly2)
@@ -114,6 +114,13 @@ def test_from_geopandas_duplicates_error(geodataframe_duplicates, arg):
         ValueError, match="{} cannot contain duplicate values".format(arg)
     ):
         from_geopandas(geodataframe_duplicates, **{arg: arg})
+
+
+@pytest.mark.parametrize("arg", ["names", "abbrevs", "numbers"])
+def test_from_geopandas_column_missing(geodataframe_clean, arg):
+
+    with pytest.raises(KeyError):
+        from_geopandas(geodataframe_clean, **{arg: "not_a_column"})
 
 
 series_duplicates = pd.Series([1, 1, 2, 3, 4])
@@ -165,3 +172,71 @@ def test_construct_abbrevs():
     expected = ["A", "Bce", "Ghi", "Jk", "Lmn", "OpQr", "StuXyz"]
     for i in range(len(result)):
         assert result[i] == expected[i]
+
+
+# ==============================================================================
+# uses the same function as `Regions.mask` - only do minimal tests here
+
+
+def expected_mask(a=0, b=1, fill=np.NaN):
+    return np.array([[a, fill], [b, fill]])
+
+
+lon = [0.5, 1.5]
+lat = [0.5, 1.5]
+
+
+def test_mask_geopandas_wrong_input():
+
+    with pytest.raises(TypeError, match="'GeoDataFrame' or 'GeoSeries'"):
+        mask_geopandas(None, lon, lat)
+
+
+def test_mask_geopandas_raises_legacy(geodataframe_clean):
+
+    with pytest.raises(ValueError, match="method 'legacy' not supported"):
+        mask_geopandas(geodataframe_clean, lon, lat, method="legacy")
+
+
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_geopandas(geodataframe_clean, method):
+
+    expected = expected_mask()
+    result = mask_geopandas(geodataframe_clean, lon, lat, method=method)
+
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+    assert np.all(np.equal(result.lat.values, lat))
+    assert np.all(np.equal(result.lon.values, lon))
+
+
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_geopandas_numbers(geodataframe_clean, method):
+
+    expected = expected_mask(1, 2)
+    result = mask_geopandas(
+        geodataframe_clean, lon, lat, method=method, numbers="numbers"
+    )
+
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+    assert np.all(np.equal(result.lat.values, lat))
+    assert np.all(np.equal(result.lon.values, lon))
+
+
+def test_mask_geopandas_wrong_numbers(geodataframe_clean):
+
+    with pytest.raises(KeyError):
+        mask_geopandas(geodataframe_clean, lon, lat, numbers="not_a_column")
+
+
+def test_mask_geopandas_missing_error(geodataframe_missing):
+
+    with pytest.raises(ValueError, match="cannot contain missing values"):
+        mask_geopandas(geodataframe_missing, lon, lat, numbers="numbers")
+
+
+def test_mask_geopandas_duplicates_error(geodataframe_duplicates):
+
+    with pytest.raises(ValueError, match="cannot contain duplicate values"):
+        mask_geopandas(geodataframe_duplicates, lon, lat, numbers="numbers")

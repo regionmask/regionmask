@@ -306,6 +306,7 @@ notebooks = (
     "notebooks/mask_numpy",
     "notebooks/mask_xarray",
     "notebooks/mask_multidim",
+    "notebooks/geopandas",
     "notebooks/create_own_regions",
 )
 

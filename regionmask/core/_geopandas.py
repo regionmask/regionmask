@@ -1,8 +1,9 @@
-import geopandas
 import numpy as np
 
 from ..defined_regions.natural_earth import _maybe_get_column
+from .mask import _mask
 from .regions import Regions
+from .utils import _is_180
 
 
 def _check_duplicates(data, name):
@@ -91,8 +92,10 @@ def from_geopandas(
     regionmask.core.regions.Regions
 
     """
-    if not isinstance(geodataframe, (geopandas.geodataframe.GeoDataFrame)):
-        raise TypeError("`geodataframe` must be a geopandas.geodataframe.GeoDataFrame")
+    from geopandas import GeoDataFrame
+
+    if not isinstance(geodataframe, (GeoDataFrame)):
+        raise TypeError("`geodataframe` must be a geopandas 'GeoDataFrame'")
 
     if numbers is not None:
         # sort, otherwise breaks
@@ -115,10 +118,10 @@ def from_geopandas(
             abbrevs = _construct_abbrevs(geodataframe, names)
         else:
             abbrevs = _maybe_get_column(geodataframe, abbrevs)
-        _check_missing(abbrevs, "abbrevs")
-        _check_duplicates(abbrevs, "abbrevs")
+            _check_missing(abbrevs, "abbrevs")
+            _check_duplicates(abbrevs, "abbrevs")
 
-    outlines = _maybe_get_column(geodataframe, "geometry")
+    outlines = geodataframe["geometry"]
 
     return Regions(
         outlines,
@@ -127,4 +130,96 @@ def from_geopandas(
         abbrevs=abbrevs,
         name=name,
         source=source,
+    )
+
+
+def mask_geopandas(
+    geodataframe,
+    lon_or_obj,
+    lat=None,
+    lon_name="lon",
+    lat_name="lat",
+    numbers=None,
+    method=None,
+    wrap_lon=None,
+):
+    """
+    create a grid as mask of a set of regions for given lat/ lon grid
+
+    Parameters
+    ----------
+    geodataframe : GeoDataFrame or GeoSeries
+        Object providing the region definitions (outlines).
+    lon_or_obj : object or array_like
+        Can either be a longitude array and then ``lat`` needs to be
+        given. Or an object where the longitude and latitude can be
+        retrived as:
+        ``lon = lon_or_obj[lon_name]``
+        ``lat = lon_or_obj[lat_name]``
+    lat : array_like, optional
+        If ``lon_or_obj`` is a longitude array, the latitude needs to be
+        specified here.
+    lon_name : str, optional
+        Name of longitude in 'lon_or_obj'. Default: 'lon'.
+    lat_name : str, optional
+        Name of latgitude in 'lon_or_obj'. Default: 'lat'.
+    numbers : str, optional
+        Name of the column to use for numbering the regions.
+        This column must not have duplicates. If None (default),
+        takes ``geodataframe.index.values``.
+    method : None | "rasterize" | "shapely"
+        Method used to determine whether a gridpoint lies in a region.
+        Both methods should lead to the same result. If None (default)
+        automatically choosen depending on the grid spacing.
+    wrap_lon : None | bool | 180 | 360, optional
+        Whether to wrap the longitude around, inferred automatically.
+        If the regions and the provided longitude do not have the same
+        base (i.e. one is -180..180 and the other 0..360) one of them
+        must be wrapped. If wrap_lon is None autodetects whether the
+        longitude needs to be wrapped. If wrap_lon is False, nothing
+        is done. If wrap_lon is True, longitude data is wrapped to 360
+        if its minimum is smaller than 0 and wrapped to 180 if its maximum
+        is larger than 180.
+
+    Returns
+    -------
+    mask : ndarray or xarray DataArray
+
+    Method
+    ------
+    See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
+
+    """
+
+    from geopandas import GeoDataFrame, GeoSeries
+
+    if not isinstance(geodataframe, (GeoDataFrame, GeoSeries)):
+        raise TypeError("input must be a geopandas 'GeoDataFrame' or 'GeoSeries'")
+
+    if method == "legacy":
+        raise ValueError("method 'legacy' not supported in 'mask_geopandas'")
+
+    lon_min = geodataframe.bounds["minx"].min()
+    lon_max = geodataframe.bounds["maxx"].max()
+    is_180 = _is_180(lon_min, lon_max)
+
+    polygons = geodataframe["geometry"].tolist()
+
+    if numbers is not None:
+        numbers = geodataframe[numbers]
+        _check_missing(numbers, "numbers")
+        _check_duplicates(numbers, "numbers")
+    else:
+        numbers = geodataframe.index.values
+
+    return _mask(
+        outlines=polygons,
+        regions_is_180=is_180,
+        numbers=numbers,
+        lon_or_obj=lon_or_obj,
+        lat=lat,
+        lon_name=lon_name,
+        lat_name=lat_name,
+        method=method,
+        wrap_lon=wrap_lon,
     )

@@ -271,8 +271,8 @@ def test_mask_autowrap(method):
 
 def test_mask_wrong_method():
 
-    msg = "Only methods 'rasterize', 'shapely', and 'legacy' are implemented"
-    with pytest.raises(NotImplementedError, match=msg):
+    msg = "Method must be one of 'rasterize', 'shapely', or 'legacy'."
+    with pytest.raises(ValueError, match=msg):
 
         r1.mask(lon, lat, method="method")
 
