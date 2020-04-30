@@ -12,6 +12,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import datetime
 import os
 import sys  # NOQA
 import warnings
@@ -37,7 +38,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.extlinks",
     "sphinx.ext.mathjax",
-    # 'nbsphinx',
+    "sphinx.ext.napoleon",
     "numpydoc",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
@@ -50,9 +51,11 @@ extlinks = {
 
 autosummary_generate = True
 
+apoleon_use_param = True
+napoleon_use_rtype = False
+
 numpydoc_class_members_toctree = True
 numpydoc_show_class_members = False
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -68,7 +71,7 @@ master_doc = "index"
 
 # General information about the project.
 project = u"regionmask"
-copyright = u"2016, Mathias Hauser"
+copyright = "2016-%s, regionmask Developers" % datetime.datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

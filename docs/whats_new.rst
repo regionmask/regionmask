@@ -48,6 +48,8 @@ Internal Changes
   used to read columns from geodataframes (:issue:`117`).
 - Switch to azure pipelines for testing (:pull:`110`).
 - Enable codecov on azure (:pull:`115`).
+- Use ``sphinx.ext.napoleon`` which fixes the look of the API docs. Also some
+  small adjustments to the docs (:pull:`125`).
 
 v0.5.0 (19.12.2019)
 -------------------

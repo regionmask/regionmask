@@ -84,10 +84,13 @@ def _plot(
         array subsamples if it is given as (Multi)Polygons does not
         subsample.
 
+    Returns
+    -------
+    ax : axes handle
+
     Note
     ----
-    plot internally calls plot_regions.
-
+    plot internally calls :py:func:`Regions.plot_regions`.
     """
     import matplotlib.pyplot as plt
     import cartopy.crs as ccrs
@@ -169,6 +172,11 @@ def _plot_regions(
         If None, infers the subsampling -> if the input is given as
         array subsamples if it is given as (Multi)Polygons does not
         subsample.
+
+    Returns
+    -------
+    ax : axes handle
+
     """
 
     import matplotlib.pyplot as plt
