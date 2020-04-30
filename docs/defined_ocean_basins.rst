@@ -17,6 +17,9 @@ The following marine regions are defined in regionmask:
     mpl.rcdefaults()
     mpl.use('Agg')
 
+    # cut border when saving (for maps)
+    mpl.rcParams["savefig.bbox"] = "tight"
+
 The following imports are necessary for the examples.
 
 .. ipython:: python
@@ -33,7 +36,7 @@ Ocean Basins
 
     basins.plot(add_label=False);
 
-    @savefig plotting_basins.png width=6in
+    @savefig plotting_basins.png width=100%
     plt.tight_layout()
 
 Also create a mask for a 1° grid globally:
@@ -53,5 +56,6 @@ Also create a mask for a 1° grid globally:
      # plot using xarray
      mask.plot(add_colorbar=False);
 
-    @savefig plotting_basins_mask.png width=6in
+    @savefig plotting_basins_mask.png width=100%
     plt.tight_layout()
+
