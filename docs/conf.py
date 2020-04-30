@@ -12,11 +12,12 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import datetime
 import os
 import sys  # NOQA
 import warnings
 from subprocess import call
-import datetime
+
 import regionmask
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -37,7 +38,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.extlinks",
     "sphinx.ext.mathjax",
-    'sphinx.ext.napoleon',
+    "sphinx.ext.napoleon",
     "numpydoc",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
