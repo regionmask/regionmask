@@ -118,4 +118,3 @@ Private Functions
    core.utils._wrapAngle180
    core.utils._wrapAngle
    core.utils._is_180
-

@@ -50,30 +50,34 @@ class Regions(object):
 
         Example
         -------
-        from regionmask import Regions
+        Create your own ``Regions``::
 
-        name = 'Example'
-        numbers = [0, 1]
-        names = ['Unit Square1', 'Unit Square2']
-        abbrevs = ['uSq1', 'uSq2']
+            from regionmask import Regions
 
-        outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
-        outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
-        outlines = [outl1, outl2]
+            name = 'Example'
+            numbers = [0, 1]
+            names = ['Unit Square1', 'Unit Square2']
+            abbrevs = ['uSq1', 'uSq2']
 
-        r = Regions(outlines, numbers, names, abbrevs, name)
+            outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
+            outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
+            outlines = [outl1, outl2]
 
-        from shapely.geometry import Polygon
+            r = Regions(outlines, numbers, names, abbrevs, name)
 
-        numbers = [1, 2]
-        names = {1:'Unit Square1', 2: 'Unit Square2'}
-        abbrevs = {1:'uSq1', 2:'uSq2'}
-        poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+        It's also possible to pass shapely Poylgons::
 
-        r = Regions(outlines, numbers, names, abbrevs, name)
+            from shapely.geometry import Polygon
 
-        # arguments are now optional
-        r = Regions(outlines)
+            numbers = [1, 2]
+            names = {1:'Unit Square1', 2: 'Unit Square2'}
+            abbrevs = {1:'uSq1', 2:'uSq2'}
+            poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+
+            r = Regions(outlines, numbers, names, abbrevs, name)
+
+            # arguments are now optional
+            r = Regions(outlines)
 
         """
 
@@ -272,11 +276,10 @@ class Regions(object):
         Parameters
         ----------
         lon_or_obj : object or array_like
-            Can either be (1) a longitude array and then lat needs to be
+            Can either be a longitude array and then ``lat`` needs to be
             given. Or an object where the longitude and latitude can be
-            retrived as:
-            lon = lon_or_obj[lon_name]
-            lat = lon_or_obj[lat_name]
+            retrived as: ``lon = lon_or_obj[lon_name]`` and
+            ``lat = lon_or_obj[lat_name]``
         lat : array_like, optional
             If 'lon_or_obj' is a longitude array, the latitude needs to be
             specified here.
@@ -303,8 +306,8 @@ class Regions(object):
         -------
         mask : ndarray or xarray DataArray
 
-        Method
-        ------
+        References
+        ----------
         See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
 
         """
@@ -361,25 +364,29 @@ class Regions_cls(Regions):
 
         Example
         -------
-        name = 'Example'
-        numbers = [0, 1]
-        names = ['Unit Square1', 'Unit Square2']
-        abbrevs = ['uSq1', 'uSq2']
+        Unsing numpy style outlines::
 
-        outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
-        outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
-        outlines = [outl1, outl2]
+            name = 'Example'
+            numbers = [0, 1]
+            names = ['Unit Square1', 'Unit Square2']
+            abbrevs = ['uSq1', 'uSq2']
 
-        r = Regions_cls(name, numbers, names, abbrevs, outlines)
+            outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
+            outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
+            outlines = [outl1, outl2]
 
-        from shapely.geometry import Polygon
+            r = Regions_cls(name, numbers, names, abbrevs, outlines)
 
-        numbers = [1, 2]
-        names = {1:'Unit Square1', 2: 'Unit Square2'}
-        abbrevs = {1:'uSq1', 2:'uSq2'}
-        poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+        Using shapely Polygons:
 
-        r = Regions_cls(name, numbers, names, abbrevs, poly)
+            from shapely.geometry import Polygon
+
+            numbers = [1, 2]
+            names = {1:'Unit Square1', 2: 'Unit Square2'}
+            abbrevs = {1:'uSq1', 2:'uSq2'}
+            poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+
+            r = Regions_cls(name, numbers, names, abbrevs, poly)
         """
 
         msg = (
@@ -417,22 +424,6 @@ class Regions_cls(Regions):
 
 class _OneRegion(object):
     """a single Region, used as member of 'Regions'
-
-
-    Attributes
-    ----------
-    number : int
-        Number of this region.
-    name : string
-        Long name of this region.
-    abbrev : string
-        Abbreviation of this region.
-    polygon : Polygon or MultiPolygon
-        Coordinates/ outline of the region as shapely Polygon/ MultiPolygon.
-    coords : numpy array
-        Coordinates/ outline of the region as 2D numpy array.
-    centroid : 1x2 ndarray
-        Center of mass of this region. Position of the label on map plots.
     """
 
     def __init__(self, number, name, abbrev, outline, centroid=None):
@@ -455,13 +446,18 @@ class _OneRegion(object):
 
         Example
         -------
-        outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
-        r = _OneRegion(1, 'Unit Square', 'USq', outl)
 
-        from shapely.geometry import Polygon
+        ``_OneRegion`` can be created with numpy-style outlines::
 
-        poly = Polygon(outl)
-        r = _OneRegion(1, 'Unit Square', 'USq', outl, centroid=[0.5, 0.75])
+            outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
+            r = _OneRegion(1, 'Unit Square', 'USq', outl)
+
+        or by passing shapely Polygons::
+
+            from shapely.geometry import Polygon
+
+            poly = Polygon(outl)
+            r = _OneRegion(1, 'Unit Square', 'USq', poly, centroid=[0.5, 0.75])
         """
 
         super(_OneRegion, self).__init__()

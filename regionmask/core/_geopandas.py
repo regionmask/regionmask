@@ -153,8 +153,7 @@ def mask_geopandas(
     lon_or_obj : object or array_like
         Can either be a longitude array and then ``lat`` needs to be
         given. Or an object where the longitude and latitude can be
-        retrived as:
-        ``lon = lon_or_obj[lon_name]``
+        retrived as: ``lon = lon_or_obj[lon_name]`` and
         ``lat = lon_or_obj[lat_name]``
     lat : array_like, optional
         If ``lon_or_obj`` is a longitude array, the latitude needs to be
@@ -185,8 +184,8 @@ def mask_geopandas(
     -------
     mask : ndarray or xarray DataArray
 
-    Method
-    ------
+    References
+    ----------
     See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
 
     """
