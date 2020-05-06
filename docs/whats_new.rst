@@ -35,6 +35,7 @@ Enhancements
   (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_).
 - Directly mask geopandas GeoDataFrame and GeoSeries :py:attr:`mask_geopandas` (:pull:`103`).
 - Added test to ensure ``Polygons`` with z-coordinates work correctly (:issue:`36`).
+- Better repr for ``Regions`` (:issue:`108`).
 
 Bug Fixes
 ~~~~~~~~~

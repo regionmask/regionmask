@@ -11,6 +11,7 @@ import numpy as np
 import six
 from shapely.geometry import MultiPolygon, Polygon
 
+from .formatting import _display
 from .mask import _mask
 from .plot import _plot, _plot_regions
 from .utils import _is_180, _maybe_to_dict, _sanitize_names_abbrevs
@@ -159,15 +160,8 @@ class Regions(object):
 
         return key
 
-    def __repr__(self):
-        abbrevs = " ".join(self.abbrevs)
-        if self.source:
-            msg = "{} '{}' Regions ({})\n{}"
-            msg = msg.format(len(self.numbers), self.name, self.source, abbrevs)
-        else:
-            msg = "{} '{}' Regions\n{}"
-            msg = msg.format(len(self.numbers), self.name, abbrevs)
-        return msg
+    def __repr__(self):  # pragma: no cover
+        return self._display()
 
     def __iter__(self):
         for i in self.numbers:
@@ -259,6 +253,31 @@ class Regions(object):
         """if the regions extend from 0 to 360
         """
         return not self.lon_180
+
+    def _display(self, max_rows=10, max_width=None, max_colwidth=50):
+        """Render ``Regions`` object to a console-friendly tabular output.
+
+        Parameters
+        ----------
+        max_rows : int, optional
+            Maximum number of rows to display in the console. Note that this add_geometries
+            not affect the displayed metadata.
+        max_width : int, optional
+            Width to wrap a line in characters. If none uses console width.
+        max_colwidth : int, optional
+            Max width to truncate each column in characters. Default 50.
+
+        Returns
+        -------
+        str or None
+            Returns the result as a string.
+
+        Note
+        ----
+        Used as the repr.
+
+        """
+        return _display(self, max_rows, max_width, max_colwidth)
 
     def mask(
         self,
