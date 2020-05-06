@@ -254,7 +254,7 @@ class Regions(object):
         """
         return not self.lon_180
 
-    def _display(self, max_rows=12, max_width=None, max_colwidth=50):
+    def _display(self, max_rows=10, max_width=None, max_colwidth=50):
         """Render ``Regions`` object to a console-friendly tabular output.
 
         Parameters

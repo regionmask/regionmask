@@ -1,6 +1,7 @@
 """String formatting routines for __repr__."""
 
 import geopandas as gp
+import six
 from pandas.io.formats import console
 
 
@@ -17,7 +18,7 @@ def pretty_print(x, numchars, right=True):
 
 
 def maybe_truncate(obj, maxlen=500):
-    s = str(obj)
+    s = six.text_type(obj)
     if len(s) > maxlen:
         s = s[: (maxlen - 3)] + "..."
     return s
@@ -51,11 +52,11 @@ def _display_regions_gp(self, max_rows, max_width, max_colwidth):  # pragma: no 
 
     summary.append(
         df.to_string(
+            columns=["numbers", "abbrevs", "names"],
             max_rows=max_rows,
-            min_rows=10,
             max_cols=0,
             line_width=max_width,
-            max_colwidth=max_colwidth,
+            # max_colwidth=max_colwidth,
             show_dimensions=False,
             index=False,
             header=False,
@@ -65,7 +66,7 @@ def _display_regions_gp(self, max_rows, max_width, max_colwidth):  # pragma: no 
     return summary
 
 
-def _display(self, max_rows=12, max_width=None, max_colwidth=50):
+def _display(self, max_rows=10, max_width=None, max_colwidth=50):
 
     summary = ["<regionmask.{}>".format(type(self).__name__)]
 
