@@ -6,7 +6,7 @@ def test_pretty_print():
     assert formatting.pretty_print("abcdefghij", 8) == "abcde..."
     assert formatting.pretty_print("ß", 1) == "ß"
     assert formatting.pretty_print("x", 3) == "x  "
-    assert formatting.pretty_print("x", 3, False) == " x"
+    assert formatting.pretty_print("x", 3, False) == "  x"
 
 
 def test_maybe_truncate():
@@ -46,7 +46,7 @@ def test_display_metadata():
     result = formatting._display_metadata("name", None)
     assert result == expected
 
-    expected = ["Name:     name", "Source:    source"]
+    expected = ["Name:     name", "Source:   source"]
     result = formatting._display_metadata("name", "source")
     assert result == expected
 
