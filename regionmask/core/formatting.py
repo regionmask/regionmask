@@ -10,6 +10,9 @@ def pretty_print(x, numchars, right=True):
     that it is numchars long, padding with trailing spaces or truncating with
     ellipses as necessary
     """
+
+    # copied from xarray
+
     s = maybe_truncate(x, numchars)
     if right:
         return s + " " * max(numchars - len(s), 0)
@@ -18,6 +21,9 @@ def pretty_print(x, numchars, right=True):
 
 
 def maybe_truncate(obj, maxlen=500):
+
+    # copied from xarray
+
     s = six.text_type(obj)
     if len(s) > maxlen:
         s = s[: (maxlen - 3)] + "..."
