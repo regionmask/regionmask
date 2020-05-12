@@ -34,6 +34,8 @@ Enhancements
 - Create regions from geopandas/ shapefiles :py:attr:`from_geopandas`
   (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_).
 - Directly mask geopandas GeoDataFrame and GeoSeries :py:attr:`mask_geopandas` (:pull:`103`).
+- Split longitude if this leads to two equally-spaced parts. This can considerably speed up
+  creating a mask. See :issue:`127` for details.
 - Added test to ensure ``Polygons`` with z-coordinates work correctly (:issue:`36`).
 - Better repr for ``Regions`` (:issue:`108`).
 
