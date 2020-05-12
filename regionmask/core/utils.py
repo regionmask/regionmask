@@ -154,6 +154,12 @@ def create_lon_lat_dataarray_from_bounds(
     return ds
 
 
+def _is_numeric(numbers):
+
+    numbers = np.asarray(numbers)
+    return np.issubdtype(numbers.dtype, np.number)
+
+
 def equally_spaced(lon, lat):
 
     lat = np.asarray(lat)

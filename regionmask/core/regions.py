@@ -14,7 +14,7 @@ from shapely.geometry import MultiPolygon, Polygon
 from .formatting import _display
 from .mask import _mask
 from .plot import _plot, _plot_regions
-from .utils import _is_180, _maybe_to_dict, _sanitize_names_abbrevs
+from .utils import _is_180, _is_numeric, _maybe_to_dict, _sanitize_names_abbrevs
 
 
 class Regions(object):
@@ -86,6 +86,9 @@ class Regions(object):
 
         if numbers is None:
             numbers = range(len(outlines))
+
+        if not _is_numeric(numbers):
+            raise ValueError("'numbers' must be numeric")
 
         outlines = _maybe_to_dict(numbers, outlines)
 

@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 import xarray as xr
 
-from .utils import _is_180, _wrapAngle, equally_spaced
+from .utils import _is_180, _is_numeric, _wrapAngle, equally_spaced
 
 
 def _mask(
@@ -21,6 +21,9 @@ def _mask(
     """
     internal function to create a mask
     """
+
+    if not _is_numeric(numbers):
+        raise ValueError("'numbers' must be numeric")
 
     lat_orig = lat
 
