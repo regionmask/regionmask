@@ -41,6 +41,7 @@ Bug Fixes
 ~~~~~~~~~
 
 - The natural earth shapefiles are now loaded with ``encoding="utf8"`` (:issue:`95`).
+- Explicitly check that the numbers are numeric and raise an informative error (:issue:`130`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
