@@ -76,9 +76,20 @@ def _mask(
         mask = _mask_rasterize(lon, lat, outlines, numbers=numbers)
     elif method == "rasterize_split":
         split_point = _find_splitpoint(lon)
-        mask_l = _mask_rasterize(lon[:split_point], lat, outlines, numbers=numbers)
-        mask_r = _mask_rasterize(lon[split_point:], lat, outlines, numbers=numbers)
-        mask = np.hstack((mask_l, mask_r))
+
+        lon_l, lon_r = lon[:split_point], lon[split_point:]
+        flipped_lon = np.hstack((lon_r, lon_l))
+
+        # a) we can rearange lon and mask once
+        if equally_spaced(flipped_lon, lat):
+            mask = _mask_rasterize(flipped_lon, lat, outlines, numbers=numbers)
+            # revert the mask
+            mask = np.hstack((mask[:, split_point:], mask[:, :split_point]))
+        # b) we have to mask twice
+        else:
+            mask_l = _mask_rasterize(lon_l, lat, outlines, numbers=numbers)
+            mask_r = _mask_rasterize(lon_r, lat, outlines, numbers=numbers)
+            mask = np.hstack((mask_l, mask_r))
     elif method == "shapely":
         mask = _mask_shapely(lon, lat, outlines, numbers=numbers)
 

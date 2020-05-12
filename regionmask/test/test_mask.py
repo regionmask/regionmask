@@ -557,22 +557,26 @@ def test_deg45_rasterize_offset_equal(regions):
 
 # =============================================================================
 
+# the whole globe -> can be re-arranged
 ds_GLOB_360 = create_lon_lat_dataarray_from_bounds(*(0, 360, 2) + (75, 13, -2))
+# not all lon -> must be masked twice
+ds_GLOB_360_part = create_lon_lat_dataarray_from_bounds(*(0, 300, 2) + (75, 13, -2))
 
 
+@pytest.mark.parametrize("ds_360", [ds_GLOB_360, ds_GLOB_360_part])
 @pytest.mark.parametrize("regions_180", [r_US_180_ccw, r_US_180_cw])
-def test_rasterize_on_split_lon(regions_180):
+def test_rasterize_on_split_lon(ds_360, regions_180):
     # https://github.com/mathause/regionmask/issues/127
 
-    # using regions_180 and ds_GLOB_360 lon must be wrapped, making it
+    # using regions_180 and ds_360 lon must be wrapped, making it
     # NOT equally_spaced
-    result = regions_180.mask(ds_GLOB_360, method="rasterize")
+    result = regions_180.mask(ds_360, method="rasterize")
 
-    expected = expected_mask_edge(ds_GLOB_360, is_360=True)
+    expected = expected_mask_edge(ds_360, is_360=True)
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
     assert np.all(np.equal(result.lat, expected.lat))
     assert np.all(np.equal(result.lon, expected.lon))
 
-    expected_shapely = regions_180.mask(ds_GLOB_360, method="shapely")
+    expected_shapely = regions_180.mask(ds_360, method="shapely")
     xr.testing.assert_equal(result, expected_shapely)
