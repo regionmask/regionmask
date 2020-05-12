@@ -4,6 +4,7 @@ import pytest
 from regionmask.core.utils import (
     _create_dict_of_numbered_string,
     _is_180,
+    _is_numeric,
     _maybe_to_dict,
     _sanitize_names_abbrevs,
     create_lon_lat_dataarray_from_bounds,
@@ -103,6 +104,12 @@ def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
     LON_EXPECTED, LAT_EXPECTED = np.meshgrid(lon, lat)
     np.allclose(result["LON"], LON_EXPECTED)
     np.allclose(result["LAT"], LAT_EXPECTED)
+
+
+def test_is_numeric():
+
+    assert _is_numeric([1, 2, 3])
+    assert not _is_numeric(["a"])
 
 
 def test_equally_spaced():

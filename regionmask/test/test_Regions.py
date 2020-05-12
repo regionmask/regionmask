@@ -259,3 +259,10 @@ def test_lon_extent():
 
     with pytest.raises(ValueError, match="lon has both data that is larger than 180 "):
         test_regions_.lon_360
+
+
+@pytest.mark.parametrize("numbers", [["a", "b"], ["a", 2]])
+def test_error_on_non_numeric(numbers):
+
+    with pytest.raises(ValueError, match="'numbers' must be numeric"):
+        Regions(poly, numbers)

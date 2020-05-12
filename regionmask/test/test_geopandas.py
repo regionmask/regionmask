@@ -240,3 +240,9 @@ def test_mask_geopandas_duplicates_error(geodataframe_duplicates):
 
     with pytest.raises(ValueError, match="cannot contain duplicate values"):
         mask_geopandas(geodataframe_duplicates, lon, lat, numbers="numbers")
+
+
+def test_raise_on_non_numeric_numbers(geodataframe_clean):
+
+    with pytest.raises(ValueError, match="'numbers' must be numeric"):
+        mask_geopandas(geodataframe_clean, lon, lat, numbers="abbrevs")
