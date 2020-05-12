@@ -271,7 +271,7 @@ def test_mask_autowrap(method):
 
 def test_mask_wrong_method():
 
-    msg = "Method must be one of 'rasterize', 'shapely', or 'legacy'."
+    msg = "Method must be None or one of 'rasterize', 'shapely', or 'legacy'."
     with pytest.raises(ValueError, match=msg):
 
         r1.mask(lon, lat, method="method")
@@ -553,3 +553,26 @@ def test_deg45_rasterize_offset_equal(regions):
     result_offset = _mask_rasterize(lon, lat, polygons, numbers=[0])
 
     assert np.allclose(result_no_offset, result_offset, equal_nan=True)
+
+
+# =============================================================================
+
+ds_GLOB_360 = create_lon_lat_dataarray_from_bounds(*(0, 360, 2) + (75, 13, -2))
+
+
+@pytest.mark.parametrize("regions_180", [r_US_180_ccw, r_US_180_cw])
+def test_rasterize_on_split_lon(regions_180):
+    # https://github.com/mathause/regionmask/issues/127
+
+    # using regions_180 and ds_GLOB_360 lon must be wrapped, making it
+    # NOT equally_spaced
+    result = regions_180.mask(ds_GLOB_360, method="rasterize")
+
+    expected = expected_mask_edge(ds_GLOB_360, is_360=True)
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+    assert np.all(np.equal(result.lat, expected.lat))
+    assert np.all(np.equal(result.lon, expected.lon))
+
+    expected_shapely = regions_180.mask(ds_GLOB_360, method="shapely")
+    xr.testing.assert_equal(result, expected_shapely)

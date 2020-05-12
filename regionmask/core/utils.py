@@ -175,3 +175,40 @@ def equally_spaced(lon, lat):
     d_lat = np.diff(lat)
 
     return np.allclose(d_lat[0], d_lat) and np.allclose(d_lon[0], d_lon)
+
+
+def _equally_spaced_on_split_lon(lon, lat):
+
+    lat = np.asarray(lat)
+    lon = np.asarray(lon)
+
+    if lat.ndim > 1 or lon.ndim > 1:
+        return False
+
+    if lat.size < 2 or lon.size < 2:
+        return False
+
+    d_lat = np.diff(lat)
+    if not np.allclose(d_lat[0], d_lat):
+        return False
+
+    d_lon = np.diff(lon)
+    d_lon_not_isclose = ~np.isclose(d_lon[0], d_lon)
+
+    # there can only be one breakpoint
+    return (d_lon_not_isclose.sum() == 1) and not d_lon_not_isclose[-1]
+
+
+def _find_splitpoint(lon):
+
+    lon = np.asarray(lon)
+    d_lon = np.diff(lon)
+
+    d_lon_not_isclose = ~np.isclose(d_lon[0], d_lon)
+
+    split_point = np.argwhere(d_lon_not_isclose)
+
+    if len(split_point) != 1:
+        raise ValueError("more or less than one split point found")
+
+    return split_point.squeeze() + 1
