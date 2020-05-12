@@ -7,7 +7,7 @@ dependencies:
   - geopandas
   - xarray
   - numpy
-  - matplotlib
+  - matplotlib-base
   - netcdf4
   - cftime
   - rasterio
