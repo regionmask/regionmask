@@ -117,10 +117,6 @@ def _determine_method(method, lon, lat):
         return "shapely"
 
 
-
-
-
-
 def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
     # extract lon/ lat via __getitem__
     if lat is None:
@@ -301,6 +297,7 @@ def _transform_from_latlon(lon, lat):
     scale = Affine.scale(d_lon, d_lat)
     return trans * scale
 
+
 def _mask_rasterize_flip(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
 
     split_point = _find_splitpoint(lon)
@@ -312,6 +309,7 @@ def _mask_rasterize_flip(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     # revert the mask
     return np.hstack((mask[:, split_point:], mask[:, :split_point]))
 
+
 def _mask_rasterize_split(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
 
     split_point = _find_splitpoint(lon)
@@ -321,6 +319,7 @@ def _mask_rasterize_split(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     mask_r = _mask_rasterize(lon_r, lat, polygons, numbers=numbers)
 
     return np.hstack((mask_l, mask_r))
+
 
 def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     """ Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.

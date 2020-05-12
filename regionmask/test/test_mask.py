@@ -170,7 +170,9 @@ def test_mask_obj(method):
     assert np.allclose(result, expected, equal_nan=True)
 
     obj = dict(longitude=lon, latitude=lat)
-    result = r1.mask(obj, method=method, lon_name="longitude", lat_name="latitude", xarray=False)
+    result = r1.mask(
+        obj, method=method, lon_name="longitude", lat_name="latitude", xarray=False
+    )
 
     assert np.allclose(result, expected, equal_nan=True)
 
