@@ -54,9 +54,9 @@ def _mask(
         raise ValueError(msg)
 
     if method is None:
-        method = _determine_method(method, lon, lat)
+        method = _determine_method(lon, lat)
     elif method == "rasterize":
-        method = _determine_method(method, lon, lat)
+        method = _determine_method(lon, lat)
         if "rasterize" not in method:
             msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
             raise ValueError(msg)
@@ -99,6 +99,7 @@ def _mask(
 
 
 def _determine_method(lon, lat):
+    """ find method to be used -> prefers faster methods"""
 
     if equally_spaced(lon, lat):
         return "rasterize"
