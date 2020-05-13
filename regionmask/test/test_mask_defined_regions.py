@@ -21,7 +21,9 @@ regions = [
 # TODO: use func(*(-161, -29, 2),  *(75, 13, -2)) after dropping py27
 ds_glob_1 = create_lon_lat_dataarray_from_bounds(*(-180, 181, 1) + (90, -91, -1))
 ds_glob_2 = create_lon_lat_dataarray_from_bounds(*(-180, 181, 2) + (90, -91, -2))
+# for _mask_rasterize_flip
 ds_glob_360_2 = create_lon_lat_dataarray_from_bounds(*(0, 361, 2) + (90, -91, -2))
+# for _mask_rasterize_split
 ds_glob_360_2_part = create_lon_lat_dataarray_from_bounds(*(0, 220, 2) + (90, -91, -2))
 
 

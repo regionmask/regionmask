@@ -98,16 +98,14 @@ def _mask(
     return mask
 
 
-def _determine_method(method, lon, lat):
+def _determine_method(lon, lat):
 
     if equally_spaced(lon, lat):
         return "rasterize"
     elif _equally_spaced_on_split_lon(lon, lat):
 
         split_point = _find_splitpoint(lon)
-
-        lon_l, lon_r = lon[:split_point], lon[split_point:]
-        flipped_lon = np.hstack((lon_r, lon_l))
+        flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
 
         if equally_spaced(flipped_lon, lat):
             return "rasterize_flip"
@@ -301,8 +299,7 @@ def _transform_from_latlon(lon, lat):
 def _mask_rasterize_flip(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
 
     split_point = _find_splitpoint(lon)
-    lon_l, lon_r = lon[:split_point], lon[split_point:]
-    flipped_lon = np.hstack((lon_r, lon_l))
+    flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
 
     mask = _mask_rasterize(flipped_lon, lat, polygons, numbers=numbers)
 

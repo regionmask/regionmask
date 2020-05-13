@@ -559,9 +559,9 @@ def test_deg45_rasterize_offset_equal(regions):
 
 # =============================================================================
 
-# the whole globe -> can be re-arranged
+# the whole globe -> can be re-arranged (_mask_rasterize_flip)
 ds_GLOB_360 = create_lon_lat_dataarray_from_bounds(*(0, 360, 2) + (75, 13, -2))
-# not all lon -> must be masked twice
+# not all lon -> must be masked twice (_mask_rasterize_split)
 ds_GLOB_360_part = create_lon_lat_dataarray_from_bounds(*(0, 300, 2) + (75, 13, -2))
 
 
