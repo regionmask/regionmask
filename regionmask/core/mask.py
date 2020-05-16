@@ -3,7 +3,14 @@ import warnings
 import numpy as np
 import xarray as xr
 
-from .utils import _is_180, _is_numeric, _wrapAngle, equally_spaced
+from .utils import (
+    _equally_spaced_on_split_lon,
+    _find_splitpoint,
+    _is_180,
+    _is_numeric,
+    _wrapAngle,
+    equally_spaced,
+)
 
 
 def _mask(
@@ -29,8 +36,8 @@ def _mask(
 
     lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
 
-    lon = np.array(lon)
-    lat = np.array(lat)
+    lon = np.asarray(lon)
+    lat = np.asarray(lat)
 
     # automatically detect whether wrapping is necessary
     if wrap_lon is None:
@@ -38,32 +45,35 @@ def _mask(
 
         wrap_lon = not regions_is_180 == grid_is_180
 
+    lon_orig = lon.copy()
     if wrap_lon:
-        lon_old = lon.copy()
         lon = _wrapAngle(lon, wrap_lon)
 
+    if method not in (None, "rasterize", "shapely", "legacy"):
+        msg = "Method must be None or one of 'rasterize', 'shapely', or 'legacy'."
+        raise ValueError(msg)
+
     if method is None:
-        method = "rasterize" if equally_spaced(lon, lat) else "shapely"
+        method = _determine_method(lon, lat)
     elif method == "rasterize":
-        if not equally_spaced(lon, lat):
-            raise ValueError(
-                "`lat` and `lon` must be equally spaced to use" "`method='rasterize'`"
-            )
+        method = _determine_method(lon, lat)
+        if "rasterize" not in method:
+            msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
+            raise ValueError(msg)
     elif method == "legacy":
         msg = "The method 'legacy' will be removed in a future version."
         warnings.warn(msg, FutureWarning, stacklevel=3)
 
     if method == "legacy":
-        func = _mask_contains
+        mask = _mask_contains(lon, lat, outlines, numbers=numbers)
     elif method == "rasterize":
-        func = _mask_rasterize
+        mask = _mask_rasterize(lon, lat, outlines, numbers=numbers)
+    elif method == "rasterize_flip":
+        mask = _mask_rasterize_flip(lon, lat, outlines, numbers=numbers)
+    elif method == "rasterize_split":
+        mask = _mask_rasterize_split(lon, lat, outlines, numbers=numbers)
     elif method == "shapely":
-        func = _mask_shapely
-    else:
-        msg = "Method must be one of 'rasterize', 'shapely', or 'legacy'."
-        raise ValueError(msg)
-
-    mask = func(lon, lat, outlines, numbers=numbers)
+        mask = _mask_shapely(lon, lat, outlines, numbers=numbers)
 
     if np.all(np.isnan(mask)):
         msg = "All elements of mask are NaN. Try to set 'wrap_lon=True'."
@@ -79,16 +89,32 @@ def _mask(
         warnings.warn(msg, FutureWarning, stacklevel=3)
 
     if xarray:
-        # wrap the angle back
-        if wrap_lon:
-            lon = lon_old
 
         if lon.ndim == 1:
-            mask = _create_xarray(mask, lon, lat, lon_name, lat_name)
+            mask = _create_xarray(mask, lon_orig, lat, lon_name, lat_name)
         else:
             mask = _create_xarray_2D(mask, lon_or_obj, lat_orig, lon_name, lat_name)
 
     return mask
+
+
+def _determine_method(lon, lat):
+    """ find method to be used -> prefers faster methods"""
+
+    if equally_spaced(lon, lat):
+        return "rasterize"
+
+    if _equally_spaced_on_split_lon(lon) and equally_spaced(lat):
+
+        split_point = _find_splitpoint(lon)
+        flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
+
+        if equally_spaced(flipped_lon):
+            return "rasterize_flip"
+        else:
+            return "rasterize_split"
+
+    return "shapely"
 
 
 def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
@@ -270,6 +296,28 @@ def _transform_from_latlon(lon, lat):
     trans = Affine.translation(lon[0] - d_lon / 2, lat[0] - d_lat / 2)
     scale = Affine.scale(d_lon, d_lat)
     return trans * scale
+
+
+def _mask_rasterize_flip(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+
+    split_point = _find_splitpoint(lon)
+    flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
+
+    mask = _mask_rasterize(flipped_lon, lat, polygons, numbers=numbers)
+
+    # revert the mask
+    return np.hstack((mask[:, split_point:], mask[:, :split_point]))
+
+
+def _mask_rasterize_split(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+
+    split_point = _find_splitpoint(lon)
+    lon_l, lon_r = lon[:split_point], lon[split_point:]
+
+    mask_l = _mask_rasterize(lon_l, lat, polygons, numbers=numbers)
+    mask_r = _mask_rasterize(lon_r, lat, polygons, numbers=numbers)
+
+    return np.hstack((mask_l, mask_r))
 
 
 def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
