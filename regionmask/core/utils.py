@@ -160,36 +160,26 @@ def _is_numeric(numbers):
     return np.issubdtype(numbers.dtype, np.number)
 
 
-def equally_spaced(lon, lat):
+def equally_spaced(*args):
 
-    lat = np.asarray(lat)
+    args = [np.asarray(arg) for arg in args]
+
+    if any(arg.ndim > 1 for arg in args):
+        return False
+
+    if any(arg.size < 2 for arg in args):
+        return False
+
+    d_args = (np.diff(arg) for arg in args)
+
+    return all(np.allclose(d_arg[0], d_arg) for d_arg in d_args)
+
+
+def _equally_spaced_on_split_lon(lon):
+
     lon = np.asarray(lon)
 
-    if lat.ndim > 1 or lon.ndim > 1:
-        return False
-
-    if lat.size < 2 or lon.size < 2:
-        return False
-
-    d_lon = np.diff(lon)
-    d_lat = np.diff(lat)
-
-    return np.allclose(d_lat[0], d_lat) and np.allclose(d_lon[0], d_lon)
-
-
-def _equally_spaced_on_split_lon(lon, lat):
-
-    lat = np.asarray(lat)
-    lon = np.asarray(lon)
-
-    if lat.ndim > 1 or lon.ndim > 1:
-        return False
-
-    if lat.size < 2 or lon.size < 2:
-        return False
-
-    d_lat = np.diff(lat)
-    if not np.allclose(d_lat[0], d_lat):
+    if lon.ndim > 1 or lon.size < 2:
         return False
 
     d_lon = np.diff(lon)

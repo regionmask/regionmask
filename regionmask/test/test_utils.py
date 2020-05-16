@@ -123,6 +123,10 @@ def test_equally_spaced():
     grid_2D = np.arange(10).reshape(2, 5)
 
     un_equal = [0, 1, 2, 4, 5, 6]
+    assert equally_spaced(equal)
+    assert not equally_spaced(grid_2D)
+    assert not equally_spaced(un_equal)
+    assert not equally_spaced(1)
 
     assert equally_spaced(equal, equal)
     assert not equally_spaced(grid_2D, equal)
@@ -153,31 +157,23 @@ def test__equally_spaced_on_split_lon():
 
     equal_split = np.asarray([5, 6, 7, 8, 9, 10, 1, 2, 3, 4])
 
-    assert _equally_spaced_on_split_lon(equal_split, equal)
+    assert _equally_spaced_on_split_lon(equal_split)
 
-    assert not _equally_spaced_on_split_lon(equal, equal_split)
-    assert not _equally_spaced_on_split_lon([10, 1, 2, 3], equal)
+    assert not _equally_spaced_on_split_lon([10, 1, 2, 3])
+    assert not _equally_spaced_on_split_lon([1, 2, 3, 10])
 
-    assert not _equally_spaced_on_split_lon([1, 2, 3, 10], equal)
+    assert not _equally_spaced_on_split_lon(equal)
+    assert not _equally_spaced_on_split_lon(grid_2D)
 
-    assert not _equally_spaced_on_split_lon(equal, equal)
-    assert not _equally_spaced_on_split_lon(grid_2D, equal)
-    assert not _equally_spaced_on_split_lon(equal, grid_2D)
-    assert not _equally_spaced_on_split_lon(grid_2D, grid_2D)
+    assert not _equally_spaced_on_split_lon(un_equal)
 
-    assert not _equally_spaced_on_split_lon(un_equal, equal)
-    assert not _equally_spaced_on_split_lon(equal, un_equal)
-    assert not _equally_spaced_on_split_lon(un_equal, un_equal)
-
-    assert not _equally_spaced_on_split_lon(1, equal)
-    assert not _equally_spaced_on_split_lon(equal, 1)
-    assert not _equally_spaced_on_split_lon(1, 1)
+    assert not _equally_spaced_on_split_lon(1)
 
     close_to_equal = equal + np.random.randn(*equal.shape) * 10 ** -6
     close_to_equal_split = equal_split + np.random.randn(*equal_split.shape) * 10 ** -6
 
-    assert not _equally_spaced_on_split_lon(close_to_equal, close_to_equal)
-    assert _equally_spaced_on_split_lon(close_to_equal_split, close_to_equal)
+    assert not _equally_spaced_on_split_lon(close_to_equal)
+    assert _equally_spaced_on_split_lon(close_to_equal_split)
 
 
 def test_find_splitpoint():

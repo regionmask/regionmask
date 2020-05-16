@@ -103,17 +103,18 @@ def _determine_method(lon, lat):
 
     if equally_spaced(lon, lat):
         return "rasterize"
-    elif _equally_spaced_on_split_lon(lon, lat):
+
+    if _equally_spaced_on_split_lon(lon) and equally_spaced(lat):
 
         split_point = _find_splitpoint(lon)
         flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
 
-        if equally_spaced(flipped_lon, lat):
+        if equally_spaced(flipped_lon):
             return "rasterize_flip"
         else:
             return "rasterize_split"
-    else:
-        return "shapely"
+
+    return "shapely"
 
 
 def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
