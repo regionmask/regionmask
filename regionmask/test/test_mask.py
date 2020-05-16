@@ -6,12 +6,13 @@ from shapely.geometry import Polygon
 
 from regionmask import Regions, create_mask_contains
 from regionmask.core.mask import (
+    _determine_method,
     _mask_rasterize,
     _mask_rasterize_no_offset,
     _mask_shapely,
     _transform_from_latlon,
 )
-from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
+from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
 
 # =============================================================================
 
@@ -582,3 +583,34 @@ def test_rasterize_on_split_lon(ds_360, regions_180):
 
     expected_shapely = regions_180.mask(ds_360, method="shapely")
     xr.testing.assert_equal(result, expected_shapely)
+
+
+METHODS = {0: "rasterize", 1: "rasterize_flip", 2: "rasterize_split", 3: "shapely"}
+
+equal = np.arange(0.5, 360)
+grid_2D = np.arange(10).reshape(2, 5)
+un_equal = [0, 1, 2, 4, 5, 6.1]
+close_to_equal = equal + np.random.randn(*equal.shape) * 10 ** -6
+
+
+@pytest.mark.parametrize(
+    "lon, m_lon",
+    [
+        (equal, 0),
+        (close_to_equal, 0),
+        (_wrapAngle(equal), 1),
+        (_wrapAngle(equal)[:-1], 2),
+        ([1], 3),
+        (grid_2D, 3),
+        (un_equal, 3),
+    ],
+)
+@pytest.mark.parametrize(
+    "lat, m_lat",
+    [(equal, 0), (close_to_equal, 0), ([1], 3), (grid_2D, 3), (un_equal, 3)],
+)
+def test_determine_method(lon, m_lon, lat, m_lat):
+
+    expected = METHODS[max((m_lon, m_lat))]
+
+    assert _determine_method(lon, lat) == expected
