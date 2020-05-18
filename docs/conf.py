@@ -306,9 +306,7 @@ warnings.filterwarnings("ignore")
 notebooks = (
     "notebooks/method",
     "notebooks/plotting",
-    "notebooks/mask_numpy",
-    "notebooks/mask_xarray",
-    "notebooks/mask_multidim",
+    "notebooks/mask_2D",
     "notebooks/geopandas",
     "notebooks/create_own_regions",
 )
