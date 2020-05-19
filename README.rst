@@ -2,22 +2,22 @@
    :width: 30 px
    :align: center
 
-|
 
 =================================================
 plotting and creation of masks of spatial regions
 =================================================
 
-.. image:: https://travis-ci.org/mathause/regionmask.svg?style=flat
-        :target: https://travis-ci.org/mathause/regionmask
+
+.. image:: https://dev.azure.com/mathause/regionmask/_apis/build/status/mathause.regionmask?branchName=master
+   :target: https://dev.azure.com/mathause/regionmask/_build/latest?definitionId=1&branchName=master
 .. image:: https://codecov.io/gh/mathause/regionmask/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/mathause/regionmask
 .. image:: https://readthedocs.org/projects/regionmask/badge/?version=latest
    :target: https://regionmask.readthedocs.io
 .. image:: https://img.shields.io/pypi/v/regionmask.svg
    :target: https://pypi.python.org/pypi/regionmask/
-.. image:: https://img.shields.io/conda/dn/conda-forge/regionmask?label=conda-forge
-   :target: https://anaconda.org/conda-forge/regionmask
+.. image:: https://anaconda.org/conda-forge/regionmask/badges/installer/conda.svg
+   :target: https://conda.anaconda.org/conda-forge
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/ambv/black
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3585543.svg

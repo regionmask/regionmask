@@ -14,6 +14,8 @@ Top-level functions
    :toctree: generated/
 
    create_mask_contains
+   mask_geopandas
+   from_geopandas
 
 
 Regions
@@ -116,4 +118,3 @@ Private Functions
    core.utils._wrapAngle180
    core.utils._wrapAngle
    core.utils._is_180
-

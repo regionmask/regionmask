@@ -25,10 +25,10 @@ regionmask is a Python module that:
   `matplotlib <http://matplotlib.org/>`_ and
   `cartopy <http://scitools.org.uk/cartopy/>`_
 - can be used to create masks of the regions for arbitrary longitude
-  and latitude grids with
-  `numpy <http://www.numpy.org/>`_ (:doc:`tutorial<notebooks/mask_numpy>`)
+  and latitude grids (:doc:`tutorial<notebooks/mask_2D>`) with
+  `numpy <http://www.numpy.org/>`_
   and
-  `xarray <http://xarray.pydata.org/>`__ (:doc:`tutorial<notebooks/mask_xarray>`)
+  `xarray <http://xarray.pydata.org/>`_
 - arbitrary regions can be defined easily (:doc:`tutorial<notebooks/create_own_regions>`)
 
 .. note::
@@ -58,9 +58,8 @@ Documentation
    :caption: Usage: Tutorials
 
    notebooks/plotting
-   notebooks/mask_xarray
-   notebooks/mask_numpy
-   notebooks/mask_multidim
+   notebooks/mask_2D
+   notebooks/geopandas
    notebooks/create_own_regions
 
 .. toctree::
@@ -69,6 +68,7 @@ Documentation
 
    defined_countries
    defined_landmask
+   defined_ocean_basins
    defined_scientific
 
 .. toctree::

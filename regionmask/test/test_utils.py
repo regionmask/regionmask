@@ -3,7 +3,10 @@ import pytest
 
 from regionmask.core.utils import (
     _create_dict_of_numbered_string,
+    _equally_spaced_on_split_lon,
+    _find_splitpoint,
     _is_180,
+    _is_numeric,
     _maybe_to_dict,
     _sanitize_names_abbrevs,
     create_lon_lat_dataarray_from_bounds,
@@ -105,6 +108,12 @@ def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
     np.allclose(result["LAT"], LAT_EXPECTED)
 
 
+def test_is_numeric():
+
+    assert _is_numeric([1, 2, 3])
+    assert not _is_numeric(["a"])
+
+
 def test_equally_spaced():
 
     np.random.seed(0)
@@ -114,6 +123,10 @@ def test_equally_spaced():
     grid_2D = np.arange(10).reshape(2, 5)
 
     un_equal = [0, 1, 2, 4, 5, 6]
+    assert equally_spaced(equal)
+    assert not equally_spaced(grid_2D)
+    assert not equally_spaced(un_equal)
+    assert not equally_spaced(1)
 
     assert equally_spaced(equal, equal)
     assert not equally_spaced(grid_2D, equal)
@@ -131,3 +144,49 @@ def test_equally_spaced():
     close_to_equal = equal + np.random.randn(*equal.shape) * 10 ** -6
 
     assert equally_spaced(close_to_equal, close_to_equal)
+
+
+def test__equally_spaced_on_split_lon():
+    np.random.seed(0)
+
+    equal = np.arange(10)
+
+    grid_2D = np.arange(10).reshape(2, 5)
+
+    un_equal = [0, 1, 2, 4, 5, 6.1]
+
+    equal_split = np.asarray([5, 6, 7, 8, 9, 10, 1, 2, 3, 4])
+
+    assert _equally_spaced_on_split_lon(equal_split)
+
+    assert not _equally_spaced_on_split_lon([10, 1, 2, 3])
+    assert not _equally_spaced_on_split_lon([1, 2, 3, 10])
+
+    assert not _equally_spaced_on_split_lon(equal)
+    assert not _equally_spaced_on_split_lon(grid_2D)
+
+    assert not _equally_spaced_on_split_lon(un_equal)
+
+    assert not _equally_spaced_on_split_lon(1)
+
+    close_to_equal = equal + np.random.randn(*equal.shape) * 10 ** -6
+    close_to_equal_split = equal_split + np.random.randn(*equal_split.shape) * 10 ** -6
+
+    assert not _equally_spaced_on_split_lon(close_to_equal)
+    assert _equally_spaced_on_split_lon(close_to_equal_split)
+
+
+def test_find_splitpoint():
+
+    np.random.seed(0)
+    equal_split = np.asarray([5, 6, 7, 8, 9, 10, 1, 2, 3, 4])
+    close_to_equal_split = equal_split + np.random.randn(*equal_split.shape) * 10 ** -6
+
+    assert _find_splitpoint(equal_split) == 6
+    assert _find_splitpoint(close_to_equal_split) == 6
+
+    with pytest.raises(ValueError, match="more or less than one split point found"):
+        _find_splitpoint([0, 1, 2, 3])
+
+    with pytest.raises(ValueError, match="more or less than one split point found"):
+        _find_splitpoint([0, 1, 3, 4, 6, 7])

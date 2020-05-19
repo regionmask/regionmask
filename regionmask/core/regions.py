@@ -11,9 +11,10 @@ import numpy as np
 import six
 from shapely.geometry import MultiPolygon, Polygon
 
+from .formatting import _display
 from .mask import _mask
 from .plot import _plot, _plot_regions
-from .utils import _is_180, _maybe_to_dict, _sanitize_names_abbrevs
+from .utils import _is_180, _is_numeric, _maybe_to_dict, _sanitize_names_abbrevs
 
 
 class Regions(object):
@@ -50,30 +51,34 @@ class Regions(object):
 
         Example
         -------
-        from regionmask import Regions
+        Create your own ``Regions``::
 
-        name = 'Example'
-        numbers = [0, 1]
-        names = ['Unit Square1', 'Unit Square2']
-        abbrevs = ['uSq1', 'uSq2']
+            from regionmask import Regions
 
-        outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
-        outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
-        outlines = [outl1, outl2]
+            name = 'Example'
+            numbers = [0, 1]
+            names = ['Unit Square1', 'Unit Square2']
+            abbrevs = ['uSq1', 'uSq2']
 
-        r = Regions(outlines, numbers, names, abbrevs, name)
+            outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
+            outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
+            outlines = [outl1, outl2]
 
-        from shapely.geometry import Polygon
+            r = Regions(outlines, numbers, names, abbrevs, name)
 
-        numbers = [1, 2]
-        names = {1:'Unit Square1', 2: 'Unit Square2'}
-        abbrevs = {1:'uSq1', 2:'uSq2'}
-        poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+        It's also possible to pass shapely Poylgons::
 
-        r = Regions(outlines, numbers, names, abbrevs, name)
+            from shapely.geometry import Polygon
 
-        # arguments are now optional
-        r = Regions(outlines)
+            numbers = [1, 2]
+            names = {1:'Unit Square1', 2: 'Unit Square2'}
+            abbrevs = {1:'uSq1', 2:'uSq2'}
+            poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+
+            r = Regions(outlines, numbers, names, abbrevs, name)
+
+            # arguments are now optional
+            r = Regions(outlines)
 
         """
 
@@ -81,6 +86,9 @@ class Regions(object):
 
         if numbers is None:
             numbers = range(len(outlines))
+
+        if not _is_numeric(numbers):
+            raise ValueError("'numbers' must be numeric")
 
         outlines = _maybe_to_dict(numbers, outlines)
 
@@ -155,15 +163,8 @@ class Regions(object):
 
         return key
 
-    def __repr__(self):
-        abbrevs = " ".join(self.abbrevs)
-        if self.source:
-            msg = "{} '{}' Regions ({})\n{}"
-            msg = msg.format(len(self.numbers), self.name, self.source, abbrevs)
-        else:
-            msg = "{} '{}' Regions\n{}"
-            msg = msg.format(len(self.numbers), self.name, abbrevs)
-        return msg
+    def __repr__(self):  # pragma: no cover
+        return self._display()
 
     def __iter__(self):
         for i in self.numbers:
@@ -256,12 +257,105 @@ class Regions(object):
         """
         return not self.lon_180
 
+    def _display(self, max_rows=10, max_width=None, max_colwidth=50):
+        """Render ``Regions`` object to a console-friendly tabular output.
+
+        Parameters
+        ----------
+        max_rows : int, optional
+            Maximum number of rows to display in the console. Note that this add_geometries
+            not affect the displayed metadata.
+        max_width : int, optional
+            Width to wrap a line in characters. If none uses console width.
+        max_colwidth : int, optional
+            Max width to truncate each column in characters. Default 50.
+
+        Returns
+        -------
+        str or None
+            Returns the result as a string.
+
+        Note
+        ----
+        Used as the repr.
+
+        """
+        return _display(self, max_rows, max_width, max_colwidth)
+
+    def mask(
+        self,
+        lon_or_obj,
+        lat=None,
+        lon_name="lon",
+        lat_name="lat",
+        method=None,
+        xarray=None,
+        wrap_lon=None,
+    ):
+        """
+        create a grid as mask of a set of regions for given lat/ lon grid
+
+        Parameters
+        ----------
+        lon_or_obj : object or array_like
+            Can either be a longitude array and then ``lat`` needs to be
+            given. Or an object where the longitude and latitude can be
+            retrived as: ``lon = lon_or_obj[lon_name]`` and
+            ``lat = lon_or_obj[lat_name]``
+        lat : array_like, optional
+            If 'lon_or_obj' is a longitude array, the latitude needs to be
+            specified here.
+        lon_name : str, optional
+            Name of longitude in 'lon_or_obj'. Default: 'lon'.
+        lat_name : str, optional
+            Name of latgitude in 'lon_or_obj'. Default: 'lat'
+        method : None | "rasterize" | "shapely" | "legacy"
+            Set method used to determine wether a gridpoint lies in a region.
+        xarray : None | bool, optional
+            Deprecated. If None or True returns an xarray DataArray, if False returns a
+            numpy ndarray. Default: None.
+        wrap_lon : None | bool | 180 | 360, optional
+            Whether to wrap the longitude around, should be inferred automatically.
+            If the regions and the provided longitude do not have the same
+            base (i.e. one is -180..180 and the other 0..360) one of them
+            must be wrapped. This can be done with wrap_lon.
+            If wrap_lon is None autodetects whether the longitude needs to be
+            wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
+            longitude data is wrapped to 360 if its minimum is smaller
+            than 0 and wrapped to 180 if its maximum is larger than 180.
+
+        Returns
+        -------
+        mask : ndarray or xarray DataArray
+
+        References
+        ----------
+        See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
+
+        """
+
+        if method == "legacy":
+            outlines = self.coords
+        else:
+            outlines = self.polygons
+
+        return _mask(
+            outlines=outlines,
+            regions_is_180=self.lon_180,
+            numbers=self.numbers,
+            lon_or_obj=lon_or_obj,
+            lat=lat,
+            lon_name=lon_name,
+            lat_name=lat_name,
+            method=method,
+            xarray=xarray,
+            wrap_lon=wrap_lon,
+        )
+
 
 # add the plotting methods
 Regions.plot = _plot
 Regions.plot_regions = _plot_regions
-# add the mask method
-Regions.mask = _mask
 
 
 class Regions_cls(Regions):
@@ -292,25 +386,29 @@ class Regions_cls(Regions):
 
         Example
         -------
-        name = 'Example'
-        numbers = [0, 1]
-        names = ['Unit Square1', 'Unit Square2']
-        abbrevs = ['uSq1', 'uSq2']
+        Unsing numpy style outlines::
 
-        outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
-        outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
-        outlines = [outl1, outl2]
+            name = 'Example'
+            numbers = [0, 1]
+            names = ['Unit Square1', 'Unit Square2']
+            abbrevs = ['uSq1', 'uSq2']
 
-        r = Regions_cls(name, numbers, names, abbrevs, outlines)
+            outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
+            outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
+            outlines = [outl1, outl2]
 
-        from shapely.geometry import Polygon
+            r = Regions_cls(name, numbers, names, abbrevs, outlines)
 
-        numbers = [1, 2]
-        names = {1:'Unit Square1', 2: 'Unit Square2'}
-        abbrevs = {1:'uSq1', 2:'uSq2'}
-        poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+        Using shapely Polygons:
 
-        r = Regions_cls(name, numbers, names, abbrevs, poly)
+            from shapely.geometry import Polygon
+
+            numbers = [1, 2]
+            names = {1:'Unit Square1', 2: 'Unit Square2'}
+            abbrevs = {1:'uSq1', 2:'uSq2'}
+            poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+
+            r = Regions_cls(name, numbers, names, abbrevs, poly)
         """
 
         msg = (
@@ -348,22 +446,6 @@ class Regions_cls(Regions):
 
 class _OneRegion(object):
     """a single Region, used as member of 'Regions'
-
-
-    Attributes
-    ----------
-    number : int
-        Number of this region.
-    name : string
-        Long name of this region.
-    abbrev : string
-        Abbreviation of this region.
-    polygon : Polygon or MultiPolygon
-        Coordinates/ outline of the region as shapely Polygon/ MultiPolygon.
-    coords : numpy array
-        Coordinates/ outline of the region as 2D numpy array.
-    centroid : 1x2 ndarray
-        Center of mass of this region. Position of the label on map plots.
     """
 
     def __init__(self, number, name, abbrev, outline, centroid=None):
@@ -386,13 +468,18 @@ class _OneRegion(object):
 
         Example
         -------
-        outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
-        r = _OneRegion(1, 'Unit Square', 'USq', outl)
 
-        from shapely.geometry import Polygon
+        ``_OneRegion`` can be created with numpy-style outlines::
 
-        poly = Polygon(outl)
-        r = _OneRegion(1, 'Unit Square', 'USq', outl, centroid=[0.5, 0.75])
+            outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
+            r = _OneRegion(1, 'Unit Square', 'USq', outl)
+
+        or by passing shapely Polygons::
+
+            from shapely.geometry import Polygon
+
+            poly = Polygon(outl)
+            r = _OneRegion(1, 'Unit Square', 'USq', poly, centroid=[0.5, 0.75])
         """
 
         super(_OneRegion, self).__init__()

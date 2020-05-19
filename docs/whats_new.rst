@@ -29,8 +29,38 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- New marine regions from natural earth added as :py:attr:`naturalearth.ocean_basins_50`
+  (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_).
+- Create regions from geopandas/ shapefiles :py:attr:`from_geopandas`
+  (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_).
+- Directly mask geopandas GeoDataFrame and GeoSeries :py:attr:`mask_geopandas` (:pull:`103`).
+- Split longitude if this leads to two equally-spaced parts. This can considerably speed up
+  creating a mask. See :issue:`127` for details.
+- Added test to ensure ``Polygons`` with z-coordinates work correctly (:issue:`36`).
+- Better repr for ``Regions`` (:issue:`108`).
+
 Bug Fixes
 ~~~~~~~~~
+
+- The natural earth shapefiles are now loaded with ``encoding="utf8"`` (:issue:`95`).
+- Explicitly check that the numbers are numeric and raise an informative error (:issue:`130`).
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Decouple ``_maybe_get_column`` from its usage for naturalearth - so it can be
+  used to read columns from geodataframes (:issue:`117`).
+- Switch to azure pipelines for testing (:pull:`110`).
+- Enable codecov on azure (:pull:`115`).
+- Install ``matplotlib-base`` for testing instead of ``matplotlib`` for tests,
+  seems a bit faster (:issue:`112`).
+- Combine the masking tutorials (xarray, numpy, and multidimensional coordinates)
+  into one tutorial (:issue:`120`).
+- Use ``sphinx.ext.napoleon`` which fixes the look of the API docs. Also some
+  small adjustments to the docs (:pull:`125`).
+- Set ``mpl.rcParams["savefig.bbox"] = "tight"`` in ``docs/defined_*.rst`` to avoid
+  spurious borders in the map plots (:issue:`112`).
+
 
 v0.5.0 (19.12.2019)
 -------------------
