@@ -83,8 +83,6 @@ def test_ar6_separate_pacific():
     _defined_region(regions, 58)
 
 
-
-
 def test_maybe_get_column():
     class lowercase(object):
         @property
