@@ -203,7 +203,7 @@ class ar6_cls(object):
 
         return self._separate_pacific
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return REPR
 
 
