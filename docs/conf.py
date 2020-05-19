@@ -70,7 +70,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"regionmask"
+project = "regionmask"
 copyright = "2016-%s, regionmask Developers" % datetime.datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
@@ -228,13 +228,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (
-        "index",
-        "regionmask.tex",
-        u"regionmask Documentation",
-        u"Mathias Hauser",
-        "manual",
-    )
+    ("index", "regionmask.tex", "regionmask Documentation", "Mathias Hauser", "manual",)
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -262,9 +256,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ("index", "regionmask", u"regionmask Documentation", [u"Mathias Hauser"], 1)
-]
+man_pages = [("index", "regionmask", "regionmask Documentation", ["Mathias Hauser"], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -279,8 +271,8 @@ texinfo_documents = [
     (
         "index",
         "regionmask",
-        u"regionmask Documentation",
-        u"Mathias Hauser",
+        "regionmask Documentation",
+        "Mathias Hauser",
         "regionmask",
         "One line description of project.",
         "Miscellaneous",
@@ -319,16 +311,18 @@ for nb in notebooks:
         f2 = os.path.getmtime(nb + ".rst")
 
         if f2 > f1:
+            print(f" --- skipping: {nb}")
             continue
     except FileNotFoundError:
         pass
 
     call(
         (
-            "jupyter nbconvert "
-            "--to rst "
-            "--template notebooks/tutorial_rst "
-            "--execute " + nb
+            "jupyter nbconvert"
+            " --to rst"
+            " --template notebooks/tutorial_rst"
+            " --ExecutePreprocessor.timeout=60"
+            " --execute " + nb
         ),
         shell=True,
     )
