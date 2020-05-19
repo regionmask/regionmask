@@ -319,16 +319,18 @@ for nb in notebooks:
         f2 = os.path.getmtime(nb + ".rst")
 
         if f2 > f1:
+            print(f" --- skipping: {nb}")
             continue
     except FileNotFoundError:
         pass
 
     call(
         (
-            "jupyter nbconvert "
-            "--to rst "
-            "--template notebooks/tutorial_rst "
-            "--execute " + nb
+            "jupyter nbconvert"
+            " --to rst"
+            " --template notebooks/tutorial_rst"
+            " --ExecutePreprocessor.timeout=60"
+            " --execute " + nb
         ),
         shell=True,
     )
