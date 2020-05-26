@@ -105,8 +105,8 @@ def from_geopandas(
         _check_duplicates(numbers, "numbers")
     else:
         numbers = geodataframe.index.values
-    # make sure numbers is a list
-    numbers = np.array(numbers)
+    # make sure integers is a list
+    numbers = np.array(numbers).astype("int")
 
     if names is not None:
         names = _maybe_get_column(geodataframe, names)
