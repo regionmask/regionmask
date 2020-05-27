@@ -13,7 +13,7 @@ MEOW:
     names: ECOREGION
     numbers: ECO_CODE_X
     abbrevs: _from_name
-  shpfilename: 'meow_ecos'
+  shpfilename: meow_ecos
 
 
 FEOW:
@@ -30,7 +30,7 @@ FEOW:
     numbers: ECO_ID
     abbrevs: _from_name
   preprocess: gdf.dropna()
-  shpfilename: 'FEOWv1_TNC'
+  shpfilename: FEOWv1_TNC
 
 
 TEOW:
@@ -46,12 +46,12 @@ TEOW:
     names: ECO_NAME
     numbers: ECO_ID_U
     abbrevs: _from_name
-  shpfilename: 'tnc_terr_ecoregions'
+  shpfilename: tnc_terr_ecoregions
 
 
 LME:
   keywords: [lme,LMEs,lmes,Large_Marine_Ecosystems]
-  long_name: Marine Ecoregions Of the World
+  long_name: Large Marine Ecosystems
   website: http://maps.tnc.org/gis_data.html
   download:
     url:
@@ -63,7 +63,7 @@ LME:
     names: LME_NAME
     numbers: LME_NUMBER
     abbrevs: _from_name
-  shpfilename: LMEs66
+  shpfilename: LME66/LMEs66
     
     
 Longhurst:
@@ -78,15 +78,15 @@ Longhurst:
     names: ProvDescr
     numbers:
     abbrevs: ProvCode
-  shpfilename: 'longhurst_v4_2010/Longhurst_world_v4_2010.shp'
+  shpfilename: longhurst_v4_2010/Longhurst_world_v4_2010
 
 
-ICES_ecoregions:
-  keywords: [ices, ICES]
-  long_name: ICES ecoregions
+ICES:
+  keywords: [ices, ICES Ecoregions]
+  long_name: ICES Ecoregions
   website:
   download:
-    url: 'http://gis.ices.dk/shapefiles/ICES_ecoregions.zip'
+    url: http://gis.ices.dk/shapefiles/ICES_ecoregions.zip
   from_geopandas_args:
     name: ICES
     names: Ecoregion
@@ -97,7 +97,7 @@ ICES_ecoregions:
 
 EEZ:
   keywords: [eez, economic zones]
-  long_name: 
+  long_name: Exclusive Economic Zones
   website:
   download:
     url:
@@ -107,12 +107,12 @@ EEZ:
     names: GEONAME
     numbers:
     abbrevs: _from_name
-  shpfilename: 'World_EEZ_v11_20191118/eez_v11.shp'
+  shpfilename: World_EEZ_v11_20191118/eez_v11
 
 
 FAO:
   keywords: [fao, fao_fishing]
-  long_name: FAO fishing
+  long_name: FAO fishing regions
   website:
   download:
     url:
@@ -123,4 +123,4 @@ FAO:
     names: NAME_EN
     numbers:
     abbrevs: NAME_EN
-  shpfilename: 'FAO_AREAS/FAO_AREAS.shp'
+  shpfilename: FAO_AREAS/FAO_AREAS

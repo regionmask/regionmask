@@ -70,6 +70,7 @@ Documentation
    defined_landmask
    defined_ocean_basins
    defined_scientific
+   predefined
 
 .. toctree::
    :maxdepth: 2

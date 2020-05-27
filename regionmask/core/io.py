@@ -1,5 +1,6 @@
 import io
 import os
+from shutil import copyfile
 
 import yaml
 from cartopy.io import Downloader
@@ -9,7 +10,12 @@ longdir_cache = os.path.expanduser(_default_cache_dir)
 if not os.path.exists(longdir_cache):
     os.mkdir(longdir_cache)
 
-fn_download_yaml = "regionmask/defined_regions/downloadable_regions.yaml"
+name_yamlfile = "downloadable_regions.yaml"
+location_yamlfile = f"regionmask/defined_regions/{name_yamlfile}"
+
+fn_download_yaml = f"{longdir_cache}/{name_yamlfile}"
+if not os.path.exists(fn_download_yaml):
+    copyfile(location_yamlfile, fn_download_yaml)
 with open(fn_download_yaml, "r") as f:
     metadata = yaml.safe_load(f)
     keywords_dict = {}

@@ -38,6 +38,7 @@ Enhancements
   creating a mask. See :issue:`127` for details.
 - Added test to ensure ``Polygons`` with z-coordinates work correctly (:issue:`36`).
 - Better repr for ``Regions`` (:issue:`108`).
+- Download predefined ``Regions`` from `yaml` file (:pull:`138` by `Aaron Spring <https://github.com/aaronspring>`_).
 
 Bug Fixes
 ~~~~~~~~~
