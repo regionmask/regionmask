@@ -360,7 +360,6 @@ class Regions(object):
         lon_name="lon",
         lat_name="lat",
         method=None,
-        xarray=None,
         wrap_lon=None,
     ):
         """
@@ -416,7 +415,6 @@ class Regions(object):
             lon_name=lon_name,
             lat_name=lat_name,
             method=method,
-            xarray=xarray,
             wrap_lon=wrap_lon,
         )
 

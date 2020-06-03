@@ -108,7 +108,6 @@ def _mask_3D(
     lon_name="lon",
     lat_name="lat",
     method=None,
-    xarray=None,
     wrap_lon=None,
 ):
 
