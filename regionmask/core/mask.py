@@ -140,7 +140,13 @@ def _mask_3D(
     mask_3D = list()
     for num in numbers:
         mask_3D.append(mask == num)
-    mask_3D = xr.concat(mask_3D, dim="region", compat="override", coords="minimal")
+        
+    from distutils.version import LooseVersion
+
+    # "override" is faster but was only introduced in version 0.13.0 of xarray
+    compat = "override" if LooseVersion(xr.__version__) >= "0.13.0" else "equals"
+
+    mask_3D = xr.concat(mask_3D, dim="region", compat=compat, coords="minimal")
 
     mask_3D = mask_3D.assign_coords(region=("region", numbers))
 
