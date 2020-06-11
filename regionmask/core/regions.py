@@ -374,16 +374,16 @@ class Regions(object):
             retrived as: ``lon = lon_or_obj[lon_name]`` and
             ``lat = lon_or_obj[lat_name]``
         lat : array_like, optional
-            If 'lon_or_obj' is a longitude array, the latitude needs to be
+            If ``lon_or_obj`` is a longitude array, the latitude needs to be
             specified here.
         drop : boolean, optional
             If True drops slices where all elements are False (i.e no gridpoints
-            is contained in a region). If False also returns all False slices.
+            are contained in a region). If False also returns all False slices.
             Default: False.
         lon_name : str, optional
-            Name of longitude in 'lon_or_obj'. Default: 'lon'.
+            Name of longitude in 'lon_or_obj'. Default: "lon".
         lat_name : str, optional
-            Name of latgitude in 'lon_or_obj'. Default: 'lat'
+            Name of latgitude in 'lon_or_obj'. Default: "lat"
         method : None | "rasterize" | "shapely", optional
             Set method used to determine wether a gridpoint lies in a region.
             If None (default) autoselects the method depending on the grid spacing.

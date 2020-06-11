@@ -147,7 +147,7 @@ def _prepare_gdf_for_mask(geodataframe, method, numbers):
     lon_max = geodataframe.bounds["maxx"].max()
     is_180 = _is_180(lon_min, lon_max)
 
-    polygons = geodataframe["geometry"].tolist()
+    polygons = geodataframe.geometry.tolist()
 
     if numbers is not None:
         numbers = geodataframe[numbers]
@@ -257,23 +257,24 @@ def mask_3D_geopandas(
         retrived as: ``lon = lon_or_obj[lon_name]`` and
         ``lat = lon_or_obj[lat_name]``
     lat : array_like, optional
-        If 'lon_or_obj' is a longitude array, the latitude needs to be
+        If ``lon_or_obj`` is a longitude array, the latitude needs to be
         specified here.
     drop : boolean, optional
         If True drops slices where all elements are False (i.e no gridpoints
-        is contained in a region). If False also returns all False slices.
+        are contained in a region). If False also returns all False slices.
         Default: False.
     lon_name : str, optional
-        Name of longitude in 'lon_or_obj'. Default: 'lon'.
+        Name of longitude in ``lon_or_obj``. Default: "lon".
     lat_name : str, optional
-        Name of latgitude in 'lon_or_obj'. Default: 'lat'
+        Name of latgitude in ``lon_or_obj``. Default: "lat"
     numbers : str, optional
         Name of the column to use for numbering the regions.
         This column must not have duplicates. If None (default),
         takes ``geodataframe.index.values``.
     method : None | "rasterize" | "shapely", optional
         Set method used to determine wether a gridpoint lies in a region.
-        Default: None.
+        Both methods should lead to the same result. If None (default)
+        automatically choosen depending on the grid spacing.
     wrap_lon : None | bool | 180 | 360, optional
         Whether to wrap the longitude around, should be inferred automatically.
         If the regions and the provided longitude do not have the same
