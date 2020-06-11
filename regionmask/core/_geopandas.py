@@ -245,7 +245,7 @@ def mask_3D_geopandas(
     wrap_lon=None,
 ):
     """
-    create a 3D boolean as mask of a set of regions for given lat/ lon grid
+    create a 3D boolean mask of a set of regions for the given lat/ lon grid
 
     Parameters
     ----------
