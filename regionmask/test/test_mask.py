@@ -423,12 +423,14 @@ def test_mask_3D(drop, method):
 def test_mask_3D_empty(method):
 
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
-        result = dummy_region.mask_3D([10], [10], drop=True, method=method)
+        result = dummy_region.mask_3D(
+            dummy_lon + 10, dummy_lat + 10, drop=True, method=method
+        )
 
     assert isinstance(result, xr.DataArray)
     assert result.shape == (0, 1, 1)
-    assert np.all(np.equal(result.lat.values, dummy_lat))
-    assert np.all(np.equal(result.lon.values, dummy_lon))
+    assert np.all(np.equal(result.lon.values, dummy_lon + 10))
+    assert np.all(np.equal(result.lat.values, dummy_lat + 10))
 
 
 @pytest.mark.parametrize("lon_name", ["lon", "longitude"])
