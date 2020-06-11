@@ -25,8 +25,8 @@ regionmask is a Python module that:
   `matplotlib <http://matplotlib.org/>`_ and
   `cartopy <http://scitools.org.uk/cartopy/>`_
 - can be used to create masks of the regions for arbitrary longitude
-  and latitude grids (:doc:`tutorial<notebooks/mask_2D>` and
-  :doc:`tutorial<notebooks/mask_3D>`).
+  and latitude grids (:doc:`2D integer masks<notebooks/mask_2D>` and
+  :doc:`3D boolean masks<notebooks/mask_3D>`).
 - arbitrary regions can be defined easily (:doc:`tutorial<notebooks/create_own_regions>`)
 
 .. note::
