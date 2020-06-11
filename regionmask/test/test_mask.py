@@ -426,7 +426,7 @@ def test_mask_3D_empty(method):
         result = dummy_region.mask_3D([10, 11], [10, 11], drop=True, method=method)
 
     assert isinstance(result, xr.DataArray)
-    assert result.shape == (0, 1, 1)
+    assert result.shape == (0, 2, 2)
     assert np.all(np.equal(result.lon.values, [10, 11]))
     assert np.all(np.equal(result.lat.values, [10, 11]))
 
