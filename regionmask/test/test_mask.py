@@ -402,7 +402,7 @@ def test_rasterize(a, b, fill):
 
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
-def test_mask_3D_(drop, method):
+def test_mask_3D(drop, method):
 
     expected = expected_mask_3D(drop)
     result = dummy_region.mask_3D(dummy_lon, dummy_lat, drop=drop, method=method,)
@@ -417,6 +417,17 @@ def test_mask_3D_(drop, method):
     assert np.all(np.equal(result.region.values, _dr.numbers))
     assert np.all(result.abbrevs.values == _dr.abbrevs)
     assert np.all(result.names.values == _dr.names)
+
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_3D_empty(method):
+
+    with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
+        result = dummy_region.mask_3D([10], [10], drop=True, method=method)
+
+    assert isinstance(result, xr.DataArray)
+    assert result.shape == (0, 1, 1)
+    assert np.all(np.equal(result.lat.values, dummy_lat))
+    assert np.all(np.equal(result.lon.values, dummy_lon))
 
 
 @pytest.mark.parametrize("lon_name", ["lon", "longitude"])
