@@ -38,7 +38,9 @@ def test_create_mask_contains():
     expected = expected_mask(fill=5)
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = create_mask_contains(dummy_lon, dummy_lat, dummy_outlines, numbers=[5, 6])
+    result = create_mask_contains(
+        dummy_lon, dummy_lat, dummy_outlines, numbers=[5, 6, 7]
+    )
     expected = expected_mask(a=5, b=6)
     assert np.allclose(result, expected, equal_nan=True)
 
@@ -61,15 +63,15 @@ def test_create_mask_contains_warns():
 def test_mask_func(func):
 
     # standard
-    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1])
+    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1, 2])
     expected = expected_mask()
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1], fill=5)
+    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1, 2], fill=5)
     expected = expected_mask(fill=5)
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[5, 6])
+    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[5, 6, 7])
     expected = expected_mask(a=5, b=6)
     assert np.allclose(result, expected, equal_nan=True)
 
