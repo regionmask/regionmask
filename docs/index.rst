@@ -27,7 +27,8 @@ regionmask is a Python module that:
 - can be used to create masks of the regions for arbitrary longitude
   and latitude grids (:doc:`2D integer masks<notebooks/mask_2D>` and
   :doc:`3D boolean masks<notebooks/mask_3D>`).
-- arbitrary regions can be defined easily (:doc:`tutorial<notebooks/create_own_regions>`)
+- Support for shapefiles is provided via geopandas (:doc:`tutorial<notebooks/geopandas>`).
+- arbitrary regions can be defined easily (:doc:`tutorial<notebooks/create_own_regions>`).
 
 .. note::
    From version 0.5 ``regionmask`` treats points on borders differently
