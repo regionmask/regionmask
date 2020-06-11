@@ -140,7 +140,7 @@ def _mask_3D(
     mask_3D = list()
     for num in numbers:
         mask_3D.append(mask == num)
-        
+
     from distutils.version import LooseVersion
 
     # "override" is faster but was only introduced in version 0.13.0 of xarray

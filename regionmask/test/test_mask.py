@@ -418,6 +418,7 @@ def test_mask_3D(drop, method):
     assert np.all(result.abbrevs.values == _dr.abbrevs)
     assert np.all(result.names.values == _dr.names)
 
+
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_3D_empty(method):
 
