@@ -33,10 +33,3 @@ def expected_mask_3D(drop):
     if drop:
         return np.array([a, b])
     return np.array([a, b, c])
-
-
-def expected_mask(a=0, b=1, fill=np.NaN, mask_3D=False, drop=False):
-
-    if mask_3D:
-        return expected_mask_3D(drop)
-    return expected_mask_2D(a, b, fill)
