@@ -311,6 +311,7 @@ class Regions(object):
             Name of latgitude in 'lon_or_obj'. Default: 'lat'
         method : None | "rasterize" | "shapely" | "legacy"
             Set method used to determine wether a gridpoint lies in a region.
+            If None (default) autoselects the method depending on the grid spacing.
         xarray : None | bool, optional
             Deprecated. If None or True returns an xarray DataArray, if False returns a
             numpy ndarray. Default: None.
@@ -385,7 +386,7 @@ class Regions(object):
             Name of latgitude in 'lon_or_obj'. Default: 'lat'
         method : None | "rasterize" | "shapely", optional
             Set method used to determine wether a gridpoint lies in a region.
-            Default: None.
+            If None (default) autoselects the method depending on the grid spacing.
         wrap_lon : None | bool | 180 | 360, optional
             Whether to wrap the longitude around, should be inferred automatically.
             If the regions and the provided longitude do not have the same
@@ -423,7 +424,7 @@ class Regions(object):
         names = self[numbers].names
 
         mask_3D = mask_3D.assign_coords(
-            abbrev=("region", abbrevs), name=("region", names)
+            abbrevs=("region", abbrevs), names=("region", names)
         )
 
         return mask_3D
