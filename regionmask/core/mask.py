@@ -127,6 +127,16 @@ def _mask_3D(
         numbers = np.unique(mask.values[~np.isnan(mask.values)])
         numbers = numbers.astype(np.int)
 
+    # if no regions are found return a 0 x lat x lon mask
+    if len(numbers) == 0:
+        mask = mask.expand_dims("region", axis=0).sel(region=[])
+        msg = (
+            "No gridpoint belongs to any region. Returning an empty mask"
+            " with shape {}".format(mask.shape)
+        )
+        warnings.warn(msg, UserWarning, stacklevel=3)
+        return mask
+
     mask_3D = list()
     for num in numbers:
         mask_3D.append(mask == num)
@@ -225,7 +235,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
 
     msg = (
         "The function `create_mask_contains` is deprecated and will be removed in a"
-        "  future version. Please use ``regionmask.Regions(coords).mask(lon, lat)``"
+        " future version. Please use ``regionmask.Regions(coords).mask(lon, lat)``"
         " instead."
     )
     warnings.warn(msg, FutureWarning, stacklevel=3)
