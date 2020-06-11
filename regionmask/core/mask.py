@@ -129,7 +129,7 @@ def _mask_3D(
 
     # if no regions are found return a 0 x lat x lon mask
     if len(numbers) == 0:
-        mask = mask.expand_dims("region", axis=0).sel(region=[])
+        mask = mask.expand_dims("region", axis=0).sel(region=slice(0, 0))
         msg = (
             "No gridpoint belongs to any region. Returning an empty mask"
             " with shape {}".format(mask.shape)
