@@ -29,10 +29,8 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
-- Directly create 3D boolean masks using :py:attr:`Regions.mask_3D` and :py:attr:`mask_3D_geopandas`.
-  This is convenient as the resulting mask can be used to directly calculate weighted
-  regional means (over all regions) using xarray v0.15.1 or later. Further, the mask
-  includes the region names and abbreviations as non-dimension coordinates 
+- Directly create 3D boolean masks using :py:attr:`Regions.mask_3D` and
+  :py:attr:`mask_3D_geopandas` - see the :doc:`tutorial on 3D masks<notebooks/mask_3D>`
   (:issue:`4`, :issue:`73`).
 - New marine regions from natural earth added as :py:attr:`natural_earth.ocean_basins_50`
   (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_).
