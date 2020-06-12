@@ -237,7 +237,7 @@ def mask_3D_geopandas(
     geodataframe,
     lon_or_obj,
     lat=None,
-    drop=False,
+    drop=True,
     lon_name="lon",
     lat_name="lat",
     numbers=None,
@@ -260,9 +260,8 @@ def mask_3D_geopandas(
         If ``lon_or_obj`` is a longitude array, the latitude needs to be
         specified here.
     drop : boolean, optional
-        If True drops slices where all elements are False (i.e no gridpoints
-        are contained in a region). If False also returns all False slices.
-        Default: False.
+        If True (default) drops slices where all elements are False (i.e no gridpoints
+        are contained in a region). If False returns one slice per region.
     lon_name : str, optional
         Name of longitude in ``lon_or_obj``. Default: "lon".
     lat_name : str, optional

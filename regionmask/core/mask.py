@@ -104,7 +104,7 @@ def _mask_3D(
     numbers,
     lon_or_obj,
     lat=None,
-    drop=False,
+    drop=True,
     lon_name="lon",
     lat_name="lat",
     method=None,
