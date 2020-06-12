@@ -42,7 +42,7 @@ def _plot(
     add_label=True,
     label="number",
     coastlines=True,
-    add_ocean=True,
+    add_ocean=False,
     line_kws=dict(),
     text_kws=dict(),
     resolution="110m",
@@ -69,7 +69,7 @@ def _plot(
         the long name of the regions, if 'short_name' uses
         abbreviations of the regions. Default 'number'.
     add_ocean : bool, optional
-        If true colors the ocean blue. Default: True.
+        If true colors the ocean blue. Default: False.
     line_kws : dict
         Arguments passed to plot.
     text_kws : dict

@@ -297,3 +297,35 @@ def test_plot_text_prop(plotfunc):
 
     bbox = texts[0].get_bbox_patch()
     assert bbox.get_edgecolor() == (0.85, 0.85, 0.85, 1.0)
+
+def test_plot_ocean():
+
+    plt.close("all")
+
+    # no ocean per default
+    ax = r1.plot(subsample=False, add_label=False, coastlines=False)
+    assert len(ax.artists) == 0
+    
+    plt.close("all")
+
+    ax = r1.plot(subsample=False, add_label=False, coastlines=False, add_ocean=False)
+    assert len(ax.artists) == 0
+    
+    ax = r1.plot(subsample=False, add_label=False, coastlines=False, add_ocean=True)
+    assert len(ax.artists) == 1
+    
+def test_plot_coastlines():
+
+    plt.close("all")
+
+    # add coastlines per default
+    ax = r1.plot(subsample=False, add_ocean=False, add_label=False)
+    assert len(ax.artists) == 1
+    
+    plt.close("all")
+
+    ax = r1.plot(subsample=False, add_ocean=False, add_label=False, coastlines=False)
+    assert len(ax.artists) == 0
+    
+    ax = r1.plot(subsample=False, add_ocean=False, add_label=False, coastlines=True)
+    assert len(ax.artists) == 1
