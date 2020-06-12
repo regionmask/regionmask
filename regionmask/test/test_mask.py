@@ -460,7 +460,7 @@ def test_mask_3D_obj(lon_name, lat_name, drop, method):
 def test_mask_3D_raises_legacy():
 
     with pytest.raises(ValueError, match="method 'legacy' not supported in 'mask_3D'"):
-        result = dummy_region.mask_3D(dummy_lon, dummy_lat, method="legacy")
+        dummy_region.mask_3D(dummy_lon, dummy_lat, method="legacy")
 
 
 # =============================================================================
