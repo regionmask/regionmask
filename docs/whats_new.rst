@@ -26,6 +26,9 @@ v0.6.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- :py:attr:`Regions.plot()` no longer colors the ocean per default. Use
+  :py:attr:`Regions.plot(add_ocean=True)` to restore the previous behavior (:issue:`58`).
+
 Enhancements
 ~~~~~~~~~~~~
 
