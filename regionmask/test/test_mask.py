@@ -457,6 +457,12 @@ def test_mask_3D_obj(lon_name, lat_name, drop, method):
     assert np.all(result.names.values == _dr.names)
 
 
+def test_mask_3D_raises_legacy():
+
+    with pytest.raises(ValueError, match="method 'legacy' not supported in 'mask_3D'"):
+        result = dummy_region.mask_3D(dummy_lon, dummy_lat, method="legacy")
+
+
 # =============================================================================
 # =============================================================================
 # =============================================================================
