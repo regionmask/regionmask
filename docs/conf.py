@@ -299,6 +299,7 @@ notebooks = (
     "notebooks/method",
     "notebooks/plotting",
     "notebooks/mask_2D",
+    "notebooks/mask_3D",
     "notebooks/geopandas",
     "notebooks/create_own_regions",
 )

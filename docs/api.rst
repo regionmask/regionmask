@@ -15,6 +15,7 @@ Top-level functions
 
    create_mask_contains
    mask_geopandas
+   mask_3D_geopandas
    from_geopandas
 
 
@@ -63,6 +64,7 @@ Creating a Mask
    :toctree: generated/
 
    Regions.mask
+   Regions.mask_3D
 
 
 Attributes

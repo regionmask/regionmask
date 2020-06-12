@@ -98,6 +98,61 @@ def _mask(
     return mask
 
 
+def _mask_3D(
+    outlines,
+    regions_is_180,
+    numbers,
+    lon_or_obj,
+    lat=None,
+    drop=True,
+    lon_name="lon",
+    lat_name="lat",
+    method=None,
+    wrap_lon=None,
+):
+
+    mask = _mask(
+        outlines=outlines,
+        regions_is_180=regions_is_180,
+        numbers=numbers,
+        lon_or_obj=lon_or_obj,
+        lat=lat,
+        lon_name=lon_name,
+        lat_name=lat_name,
+        method=method,
+        wrap_lon=wrap_lon,
+    )
+
+    if drop:
+        numbers = np.unique(mask.values[~np.isnan(mask.values)])
+        numbers = numbers.astype(np.int)
+
+    # if no regions are found return a 0 x lat x lon mask
+    if len(numbers) == 0:
+        mask = mask.expand_dims("region", axis=0).sel(region=slice(0, 0))
+        msg = (
+            "No gridpoint belongs to any region. Returning an empty mask"
+            " with shape {}".format(mask.shape)
+        )
+        warnings.warn(msg, UserWarning, stacklevel=3)
+        return mask
+
+    mask_3D = list()
+    for num in numbers:
+        mask_3D.append(mask == num)
+
+    from distutils.version import LooseVersion
+
+    # "override" is faster but was only introduced in version 0.13.0 of xarray
+    compat = "override" if LooseVersion(xr.__version__) >= "0.13.0" else "equals"
+
+    mask_3D = xr.concat(mask_3D, dim="region", compat=compat, coords="minimal")
+
+    mask_3D = mask_3D.assign_coords(region=("region", numbers))
+
+    return mask_3D
+
+
 def _determine_method(lon, lat):
     """ find method to be used -> prefers faster methods"""
 
@@ -186,7 +241,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
 
     msg = (
         "The function `create_mask_contains` is deprecated and will be removed in a"
-        "  future version. Please use ``regionmask.Regions(coords).mask(lon, lat)``"
+        " future version. Please use ``regionmask.Regions(coords).mask(lon, lat)``"
         " instead."
     )
     warnings.warn(msg, FutureWarning, stacklevel=3)

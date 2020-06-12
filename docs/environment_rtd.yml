@@ -23,3 +23,4 @@ dependencies:
     - nbconvert
     - jupyter
     - ipython
+    - pooch

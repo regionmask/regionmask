@@ -29,7 +29,10 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
-- New marine regions from natural earth added as :py:attr:`naturalearth.ocean_basins_50`
+- Directly create 3D boolean masks using :py:attr:`Regions.mask_3D` and
+  :py:attr:`mask_3D_geopandas` - see the :doc:`tutorial on 3D masks<notebooks/mask_3D>`
+  (:issue:`4`, :issue:`73`).
+- New marine regions from natural earth added as :py:attr:`natural_earth.ocean_basins_50`
   (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_).
 - Create regions from geopandas/ shapefiles :py:attr:`from_geopandas`
   (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_).
