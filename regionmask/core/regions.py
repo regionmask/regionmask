@@ -574,8 +574,11 @@ class _OneRegion(object):
             self._polygon = None
             outline = np.asarray(outline)
 
-            assert outline.ndim == 2, "Outline must be 2D"
-            assert outline.shape[1] == 2, "Outline must have Nx2 elements"
+            if outline.ndim != 2:
+                raise ValueError("Outline must be 2D")
+
+            if outline.shape[1] != 2:
+                raise ValueError("Outline must have Nx2 elements")
 
             self._coords = np.array(outline)
 
