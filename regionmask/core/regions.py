@@ -12,7 +12,7 @@ import six
 from shapely.geometry import MultiPolygon, Polygon
 
 from .formatting import _display
-from .mask import _mask, _mask_3D
+from .mask import _mask_2D, _mask_3D
 from .plot import _plot, _plot_regions
 from .utils import _is_180, _is_numeric, _maybe_to_dict, _sanitize_names_abbrevs
 
@@ -340,7 +340,7 @@ class Regions(object):
         else:
             outlines = self.polygons
 
-        return _mask(
+        return _mask_2D(
             outlines=outlines,
             regions_is_180=self.lon_180,
             numbers=self.numbers,

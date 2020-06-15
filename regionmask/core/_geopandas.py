@@ -1,7 +1,7 @@
 import numpy as np
 
 from ..defined_regions.natural_earth import _maybe_get_column
-from .mask import _mask, _mask_3D
+from .mask import _mask_2D, _mask_3D
 from .regions import Regions
 from .utils import _is_180
 
@@ -220,7 +220,7 @@ def mask_geopandas(
         geodataframe, method=method, numbers=numbers
     )
 
-    return _mask(
+    return _mask_2D(
         outlines=polygons,
         regions_is_180=is_180,
         numbers=numbers,
