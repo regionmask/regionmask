@@ -67,6 +67,7 @@ Internal Changes
 - Install ``matplotlib-base`` for testing instead of ``matplotlib`` for tests,
   seems a bit faster (:issue:`112`).
 - Replaced all ``assertion`` with ``if ...: ValueError`` outside of tests (:issue:`142`).
+- Raise consistent warnings on empty mask (:issue:`141`).
   
 Docs
 ~~~~

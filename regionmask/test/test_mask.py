@@ -397,6 +397,19 @@ def test_rasterize(a, b, fill):
     assert np.allclose(result, expected, equal_nan=True)
 
 
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_empty(method):
+
+    with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
+        result = dummy_region.mask([10, 11], [10, 11], method=method)
+
+    assert isinstance(result, xr.DataArray)
+    assert result.shape == (2, 2)
+    assert result.isnull().all()
+    assert np.all(np.equal(result.lon.values, [10, 11]))
+    assert np.all(np.equal(result.lat.values, [10, 11]))
+
+
 # =============================================================================
 # =============================================================================
 # test mask_3D: only basics (same algorithm as mask)
@@ -410,6 +423,7 @@ def test_mask_3D(drop, method):
     result = dummy_region.mask_3D(dummy_lon, dummy_lat, drop=drop, method=method)
 
     assert isinstance(result, xr.DataArray)
+    assert result.shape == expected.shape
     assert np.allclose(result, expected, equal_nan=True)
     assert np.all(np.equal(result.lat.values, dummy_lat))
     assert np.all(np.equal(result.lon.values, dummy_lon))
@@ -447,6 +461,8 @@ def test_mask_3D_obj(lon_name, lat_name, drop, method):
     )
 
     assert isinstance(result, xr.DataArray)
+
+    assert result.shape == expected.shape
     assert np.allclose(result, expected, equal_nan=True)
 
     assert np.all(np.equal(result[lat_name].values, dummy_lat))
