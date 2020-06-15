@@ -303,31 +303,90 @@ def test_plot_ocean():
 
     plt.close("all")
 
+    kwargs = dict(subsample=False, add_label=False, coastlines=False)
+
     # no ocean per default
-    ax = r1.plot(subsample=False, add_label=False, coastlines=False)
+    ax = r1.plot(**kwargs)
     assert len(ax.artists) == 0
 
     plt.close("all")
 
-    ax = r1.plot(subsample=False, add_label=False, coastlines=False, add_ocean=False)
+    ax = r1.plot(add_ocean=False, **kwargs)
     assert len(ax.artists) == 0
 
-    ax = r1.plot(subsample=False, add_label=False, coastlines=False, add_ocean=True)
+    plt.close("all")
+
+    # default settings
+    ax = r1.plot(add_ocean=True, **kwargs)
     assert len(ax.artists) == 1
+
+    art = ax.artists[0]
+    assert art.get_zorder() == 0.9
+
+    plt.close("all")
+
+    # user settings
+    ax = r1.plot(add_ocean=True, ocean_kws=dict(zorder=1), **kwargs)
+    assert len(ax.artists) == 1
+
+    art = ax.artists[0]
+    assert art.get_zorder() == 1
+
+
+def test_plot_land():
+
+    plt.close("all")
+
+    kwargs = dict(subsample=False, add_label=False, coastlines=False)
+
+    # no land per default
+    ax = r1.plot(**kwargs)
+    assert len(ax.artists) == 0
+
+    plt.close("all")
+
+    ax = r1.plot(add_land=False, **kwargs)
+    assert len(ax.artists) == 0
+
+    plt.close("all")
+
+    # default settings
+    ax = r1.plot(add_land=True, **kwargs)
+    assert len(ax.artists) == 1
+    art = ax.artists[0]
+    assert art.get_zorder() == 0.9
+
+    plt.close("all")
+
+    # user settings
+    ax = r1.plot(add_land=True, land_kws=dict(zorder=1), **kwargs)
+    assert len(ax.artists) == 1
+    art = ax.artists[0]
+    assert art.get_zorder() == 1
 
 
 def test_plot_coastlines():
-
     plt.close("all")
 
-    # add coastlines per default
-    ax = r1.plot(subsample=False, add_ocean=False, add_label=False)
+    kwargs = dict(subsample=False, add_label=False)
+
+    # coastlines are added per default
+    ax = r1.plot(**kwargs)
     assert len(ax.artists) == 1
-
     plt.close("all")
 
-    ax = r1.plot(subsample=False, add_ocean=False, add_label=False, coastlines=False)
+    ax = r1.plot(coastlines=False, **kwargs)
     assert len(ax.artists) == 0
+    plt.close("all")
 
-    ax = r1.plot(subsample=False, add_ocean=False, add_label=False, coastlines=True)
+    ax = r1.plot(coastlines=True, **kwargs)
     assert len(ax.artists) == 1
+    art = ax.artists[0]
+    assert art._kwargs == {"lw": 0.5, "edgecolor": "0.4", "facecolor": "none"}
+    plt.close("all")
+
+    ax = r1.plot(coastlines=True, coastline_kws=dict(), **kwargs)
+    assert len(ax.artists) == 1
+    art = ax.artists[0]
+    assert art._kwargs == {"edgecolor": "black", "facecolor": "none"}
+    plt.close("all")

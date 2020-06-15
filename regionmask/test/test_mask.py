@@ -405,7 +405,7 @@ def test_rasterize(a, b, fill):
 def test_mask_3D(drop, method):
 
     expected = expected_mask_3D(drop)
-    result = dummy_region.mask_3D(dummy_lon, dummy_lat, drop=drop, method=method,)
+    result = dummy_region.mask_3D(dummy_lon, dummy_lat, drop=drop, method=method)
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)

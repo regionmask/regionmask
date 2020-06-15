@@ -28,6 +28,9 @@ Breaking Changes
 
 - :py:attr:`Regions.plot()` no longer colors the ocean per default. Use
   :py:attr:`Regions.plot(add_ocean=True)` to restore the previous behavior (:issue:`58`).
+- Changed the default style of the coastlines in :py:attr:`Regions.plot()`. To restore
+  the previous behavior use :py:attr:`Regions.plot(coastline_kws=dict())` (:pull:`146`).
+
 
 Enhancements
 ~~~~~~~~~~~~
@@ -40,6 +43,9 @@ Enhancements
 - Create regions from geopandas/ shapefiles :py:attr:`from_geopandas`
   (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_).
 - Directly mask geopandas GeoDataFrame and GeoSeries :py:attr:`mask_geopandas` (:pull:`103`).
+- :py:attr:`Regions.plot` can now fill land areas with ``add_land``. Further, there is more
+  control over the appearance over the land and ocean features as well as the coastlines
+  using the ``coastline_kws``, ``ocean_kws``, and ``land_kws`` arguments (:issue:`140`).
 - Split longitude if this leads to two equally-spaced parts. This can considerably speed up
   creating a mask. See :issue:`127` for details.
 - Added test to ensure ``Polygons`` with z-coordinates work correctly (:issue:`36`).
