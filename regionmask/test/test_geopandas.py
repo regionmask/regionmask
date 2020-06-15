@@ -236,6 +236,20 @@ def test_mask_geopandas_numbers(geodataframe_clean, method):
     assert np.all(np.equal(result.lon.values, dummy_lon))
 
 
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_geopandas_warns_empty(geodataframe_clean, method):
+
+    with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
+        result = mask_geopandas(
+            geodataframe_clean, [10, 11], [10, 11], method=method, numbers="numbers"
+        )
+
+    assert isinstance(result, xr.DataArray)
+    assert result.isnull().all()
+    assert np.all(np.equal(result.lat.values, [10, 11]))
+    assert np.all(np.equal(result.lon.values, [10, 11]))
+
+
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_3D_geopandas_numbers(geodataframe_clean, drop, method):
@@ -259,13 +273,15 @@ def test_mask_3D_geopandas_numbers(geodataframe_clean, drop, method):
     assert np.all(np.equal(result.region.values, numbers))
 
 
-def test_mask_geopandas_warns_empty(geodataframe_clean):
+@pytest.mark.parametrize("drop", [True, False])
+def test_mask_geopandas_warns_empty(geodataframe_clean, drop):
 
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
-        result = mask_3D_geopandas(geodataframe_clean, [10], [10], drop=True)
+        result = mask_3D_geopandas(geodataframe_clean, [10], [10], drop=drop)
 
     assert isinstance(result, xr.DataArray)
-    assert result.shape == (0, 1, 1)
+    shape = (0, 1, 1) if drop else (3, 1, 1)
+    assert result.shape == shape
     assert np.all(np.equal(result.lat.values, [10]))
     assert np.all(np.equal(result.lon.values, [10]))
 
