@@ -24,8 +24,8 @@ def _sanitize_names_abbrevs(numbers, values, default):
     elif values is None:
         values = _create_dict_of_numbered_string(numbers, default)
     else:
-
-        assert len(numbers) == len(values)
+        if not len(numbers) == len(values):
+            raise ValueError("`numbers` and `values` do not have the same lenght.")
 
         values = _maybe_to_dict(numbers, values)
 

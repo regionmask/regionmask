@@ -311,10 +311,11 @@ def _parse_input(lon, lat, coords, fill, numbers):
     if numbers is None:
         numbers = range(n_coords)
     else:
-        assert len(numbers) == n_coords
+        if len(numbers) != n_coords:
+            raise ValueError("`numbers` and `coords` must have the same length")
 
-    msg = "The fill value should not be one of the region numbers."
-    assert fill not in numbers, msg
+    if fill in numbers:
+        raise ValueError("The fill value should not be one of the region numbers.")
 
     return lon, lat, numbers
 
