@@ -274,7 +274,7 @@ def test_mask_3D_geopandas_numbers(geodataframe_clean, drop, method):
 
 
 @pytest.mark.parametrize("drop", [True, False])
-def test_mask_geopandas_warns_empty(geodataframe_clean, drop):
+def test_mask_3D_geopandas_warns_empty(geodataframe_clean, drop):
 
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
         result = mask_3D_geopandas(geodataframe_clean, [10], [10], drop=drop)
