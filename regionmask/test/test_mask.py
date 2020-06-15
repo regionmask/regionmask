@@ -45,10 +45,10 @@ def test_create_mask_contains():
     expected = expected_mask_2D(a=5, b=6)
     assert np.allclose(result, expected, equal_nan=True)
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         create_mask_contains(dummy_lon, dummy_lat, dummy_outlines, fill=0)
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         create_mask_contains(dummy_lon, dummy_lat, dummy_outlines, numbers=[5])
 
 
@@ -79,10 +79,12 @@ def test_mask_func(func):
 
 def test_mask_shapely_wrong_number_fill():
 
-    with pytest.raises(AssertionError):
-        _mask_shapely(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1], fill=0)
+    with pytest.raises(ValueError, match="The fill value should not"):
+        _mask_shapely(
+            dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1, 2], fill=0
+        )
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError, match="`numbers` and `coords` must have"):
         _mask_shapely(dummy_lon, dummy_lat, dummy_outlines, numbers=[5])
 
 
@@ -91,7 +93,7 @@ def test_mask_shapely_wrong_number_fill():
 def test_mask_rasterize_wrong_number_fill(numbers, fill):
     # _mask_rasterize does not raise on wrong fill numbers or on missing numbers
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         _mask_rasterize(
             dummy_lon, dummy_lat, dummy_outlines_poly, numbers=numbers, fill=fill
         )
