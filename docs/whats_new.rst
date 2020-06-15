@@ -77,6 +77,7 @@ Docs
   small adjustments to the docs (:pull:`125`).
 - Set ``mpl.rcParams["savefig.bbox"] = "tight"`` in ``docs/defined_*.rst`` to avoid
   spurious borders in the map plots (:issue:`112`).
+- Use a context manager for the plotting tests (:issue:`145`).
 
 
 v0.5.0 (19.12.2019)
