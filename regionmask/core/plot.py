@@ -43,10 +43,14 @@ def _plot(
     label="number",
     coastlines=True,
     add_ocean=False,
-    line_kws=dict(),
-    text_kws=dict(),
+    line_kws=None,
+    text_kws=None,
     resolution="110m",
     subsample=None,
+    add_land=False,
+    coastline_kws=None,
+    ocean_kws=None,
+    land_kws=None,
 ):
     """
     plot map with with region outlines
@@ -69,10 +73,10 @@ def _plot(
         the long name of the regions, if 'short_name' uses
         abbreviations of the regions. Default 'number'.
     add_ocean : bool, optional
-        If true colors the ocean blue. Default: False.
-    line_kws : dict
+        If true adds the ocean feature. See ocean_kws. Default: False.
+    line_kws : dict, optional
         Arguments passed to plot.
-    text_kws : dict
+    text_kws : dict, optional
         Arguments passed to the labels (ax.text).
     resolution : '110m' | '50m' | '10m'
         Specify the resolution of the coastline and the ocean dataset.
@@ -83,6 +87,17 @@ def _plot(
         If None, infers the subsampling -> if the input is given as
         array subsamples if it is given as (Multi)Polygons does not
         subsample.
+    add_land : bool, optional
+        If true adds the land feature. See land_kws. Default: False.
+    coastline_kws : dict, optional
+        Arguments passed to ``ax.coastlines()``. Per default uses ``color="0.4"``
+        and ``lw=0.5``.
+    ocean_kws : dict, optional
+        Arguments passed to ``ax.add_feature(OCEAN)``. Per default uses the cartopy
+        ocean color and ``zorder=0.9``.
+    land_kws : dict, optional
+        Arguments passed to ``ax.add_feature(LAND)``. Per default uses the cartopy
+        land color and ``zorder=0.9``.
 
     Returns
     -------
@@ -91,10 +106,13 @@ def _plot(
     Note
     ----
     plot internally calls :py:func:`Regions.plot_regions`.
+
     """
     import matplotlib.pyplot as plt
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
+
+    NEF = cfeature.NaturalEarthFeature
 
     if proj is None:
         proj = ccrs.PlateCarree()
@@ -102,20 +120,27 @@ def _plot(
     if ax is None:
         ax = plt.axes(projection=proj)
 
-    if add_ocean:
-        NEF = cfeature.NaturalEarthFeature
-        OCEAN = NEF(
-            "physical",
-            "ocean",
-            resolution,
-            edgecolor="face",
-            facecolor=cfeature.COLORS["water"],
-        )
+    if ocean_kws is None:
+        ocean_kws = dict(color=cfeature.COLORS["water"], zorder=0.9)
 
-        ax.add_feature(OCEAN)
+    if land_kws is None:
+        land_kws = dict(color=cfeature.COLORS["land"], zorder=0.9)
+
+    if coastline_kws is None:
+        coastline_kws = dict(color="0.4", lw=0.5)
+
+    if add_ocean:
+        OCEAN = NEF("physical", "ocean", resolution)
+
+        ax.add_feature(OCEAN, **ocean_kws)
+
+    if add_land:
+        LAND = NEF("physical", "land", resolution)
+
+        ax.add_feature(LAND, **land_kws)
 
     if coastlines:
-        ax.coastlines(resolution=resolution)
+        ax.coastlines(resolution=resolution, **coastline_kws)
 
     self.plot_regions(
         ax=ax,
@@ -136,8 +161,8 @@ def _plot_regions(
     regions="all",
     add_label=True,
     label="number",
-    line_kws=dict(),
-    text_kws=dict(),
+    line_kws=None,
+    text_kws=None,
     subsample=None,
 ):
     """
@@ -159,9 +184,9 @@ def _plot_regions(
         abbreviations of the regions. Default 'number'.
     add_ocean : bool, optional
         If true colors the ocean blue. Default: True.
-    line_kws : dict
+    line_kws : dict, optional
         Arguments passed to plot.
-    text_kws : dict
+    text_kws : dict, optional
         Arguments passed to the labels (ax.text).
     resolution : '110m' | '50m' | '10m'
         Specify the resolution of the coastline and the ocean dataset.
@@ -201,6 +226,12 @@ def _plot_regions(
 
     if subsample is None:
         subsample = not self._is_polygon
+
+    if line_kws is None:
+        line_kws = dict()
+
+    if text_kws is None:
+        text_kws = dict()
 
     close = not self._is_polygon
 
