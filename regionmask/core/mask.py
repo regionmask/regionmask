@@ -93,6 +93,7 @@ def _mask(
 
     return mask
 
+
 def _mask_2D(
     outlines,
     regions_is_180,
@@ -183,8 +184,6 @@ def _mask_3D(
     if np.all(isnan):
         msg = "No gridpoint belongs to any region. Returning an all-False mask."
         warnings.warn(msg, UserWarning, stacklevel=3)
-
-
 
     return mask_3D
 

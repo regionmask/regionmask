@@ -396,6 +396,7 @@ def test_rasterize(a, b, fill):
 
     assert np.allclose(result, expected, equal_nan=True)
 
+
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_empty(method):
 
@@ -407,6 +408,7 @@ def test_mask_empty(method):
     assert result.isnull().all()
     assert np.all(np.equal(result.lon.values, [10, 11]))
     assert np.all(np.equal(result.lat.values, [10, 11]))
+
 
 # =============================================================================
 # =============================================================================
