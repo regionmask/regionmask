@@ -51,6 +51,7 @@ outl_multipoly = np.concatenate((outl1_closed, [[np.nan, np.nan]], outl2_closed)
 
 # =============================================================================
 
+
 @contextlib.contextmanager
 def figure_context(*args, **kwargs):
     fig = plt.figure(*args, **kwargs)
