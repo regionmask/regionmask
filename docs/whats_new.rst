@@ -60,6 +60,11 @@ Internal Changes
 - Enable codecov on azure (:pull:`115`).
 - Install ``matplotlib-base`` for testing instead of ``matplotlib`` for tests,
   seems a bit faster (:issue:`112`).
+- Replaced all ``assertion`` with ``ValueError`` outside of tests (:issue:`142`).
+  
+Docs
+~~~~
+
 - Combine the masking tutorials (xarray, numpy, and multidimensional coordinates)
   into one tutorial (:issue:`120`).
 - Use ``sphinx.ext.napoleon`` which fixes the look of the API docs. Also some
