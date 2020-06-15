@@ -60,7 +60,7 @@ Internal Changes
 - Enable codecov on azure (:pull:`115`).
 - Install ``matplotlib-base`` for testing instead of ``matplotlib`` for tests,
   seems a bit faster (:issue:`112`).
-- Replaced all ``assertion`` with ``ValueError`` outside of tests (:issue:`142`).
+- Replaced all ``assertion`` with ``if ...: ValueError`` outside of tests (:issue:`142`).
   
 Docs
 ~~~~
