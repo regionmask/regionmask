@@ -71,6 +71,7 @@ def figure_context(*args, **kwargs):
 
 
 def test__subsample():
+
     result = _subsample([[0, 1], [1, 0]])
     expected = np.linspace([0, 1], [1, 0], endpoint=False)
     expected = np.vstack((expected, [1, 0]))
