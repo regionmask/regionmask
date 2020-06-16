@@ -263,7 +263,7 @@ class Regions(object):
         Parameters
         ----------
         max_rows : int, optional
-            Maximum number of rows to display in the console. Note that this add_geometries
+            Maximum number of rows to display in the console. Note that this does
             not affect the displayed metadata.
         max_width : int, optional
             Width to wrap a line in characters. If none uses console width.
