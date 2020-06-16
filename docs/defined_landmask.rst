@@ -41,10 +41,7 @@ Landmask
 
     land = regionmask.defined_regions.natural_earth.land_110
 
-    f, ax = plt.subplots(1, 1, subplot_kw=dict(projection=ccrs.PlateCarree()))
-
-    # use add_geometries because land.plot does not add the polygon interiors
-    ax.add_geometries(land.polygons, ccrs.PlateCarree(), fc="none", ec="0.1")
+    land.plot()
 
     @savefig plotting_landmask.png width=100%
     plt.tight_layout()

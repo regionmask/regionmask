@@ -3,35 +3,71 @@ import numpy as np
 # =============================================================================
 
 
-def _draw_poly(ax, outl, trans, subsample=False, close=True, **kwargs):
+def _flatten_polygons(polygons):
+
+    from shapely.geometry import MultiPolygon
+
+    polys = []
+    for p in polygons:
+        if isinstance(p, MultiPolygon):
+            polys += list(p)
+        else:
+            polys += [p]
+
+    return polys
+
+
+def _polygons_coords(polygons):
+
+    coords = []
+    for p in polygons:
+        coords += [np.asarray(p.exterior)[:, :2]] + [
+            np.asarray(i)[:, :2] for i in p.interiors
+        ]
+
+    return coords
+
+
+def _draw_poly(ax, polygons, subsample=False, **kwargs):
     """
     draw the outline of the regions
 
     """
 
+    from matplotlib.collections import LineCollection
+
+    polygons = _flatten_polygons(polygons)
+    coords = _polygons_coords(polygons)
+
     if subsample:
-        lons, lats = _subsample(outl)
-    else:
-        # make sure the outline is closed
-        if close and not np.allclose(outl[0, :], outl[-1, :]):
-            outl = np.vstack([outl, outl[0, :]])
+        coords = [_subsample(coord) for coord in coords]
 
-        lons, lats = outl[:, 0], outl[:, 1]
+    color = kwargs.pop("color", "0.1")
 
-    color = kwargs.pop("color", "0.05")
+    lc = LineCollection(coords, color=color, **kwargs)
+    ax.add_collection(lc)
+    ax.autoscale_view()
 
-    ax.plot(lons, lats, color=color, transform=trans, **kwargs)
+    # from matplotlib.path import Path
+    # import matplotlib.patches as patches
+    # paths = [Path(coord) for coord in coords]
+    # patchs = [patches.PathPatch(path, facecolor='none', **kwargs) for path in paths]
+    # [ax.add_patch(patch) for patch in patchs]
+    # ax.autoscale_view()
 
 
-def _subsample(outl):
-    lons = np.array([])
-    lats = np.array([])
-    for i in range(len(outl)):
-        # make sure we get a nice plot for projections with "bent" lines
-        lons = np.hstack((lons, np.linspace(outl[i - 1][0], outl[i][0])))
-        lats = np.hstack((lats, np.linspace(outl[i - 1][1], outl[i][1])))
+def _subsample(outl, num=50):
+    # assumes outl is closed - i.e outl[:-1] == outl[0]
+    # TODO: use the following once requiring numpy > 0.16 (I think)
+    #     return np.linspace(outl[:-1], outl[1:]).reshape(-1, 2)
 
-    return lons, lats
+    out = list()
+    for beg, end in zip(outl[:-1], outl[1:]):
+        out.append(np.linspace(beg, end, num=num, endpoint=False))
+
+    # add end point to close the coords
+    out.append(outl[-1])
+    return np.vstack(out)
 
 
 def _plot(
@@ -233,12 +269,9 @@ def _plot_regions(
     if text_kws is None:
         text_kws = dict()
 
-    close = not self._is_polygon
-
     # draw the outlines
-    for i in regions:
-        coords = self[i].coords
-        _draw_poly(ax, coords, trans, subsample, close, **line_kws)
+    polygons = [self[i].polygon for i in regions]
+    _draw_poly(ax, polygons, subsample=subsample, transform=trans, **line_kws)
 
     if add_label:
 

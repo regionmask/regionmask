@@ -13,7 +13,7 @@ import pytest
 from shapely.geometry import MultiPolygon, Polygon
 
 from regionmask import Regions
-from regionmask.core.plot import _subsample
+from regionmask.core.plot import _flatten_polygons, _polygons_coords, _subsample
 
 # =============================================================================
 
@@ -28,6 +28,7 @@ outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
 outl2 = ((0, 1), (0, 2), (1, 2.0), (1, 1))
 outlines = [outl1, outl2]
 
+# polygons are automatically closed
 outl1_closed = outl1 + outl1[:1]
 outl2_closed = outl2 + outl2[:1]
 
@@ -44,10 +45,14 @@ poly = {1: poly1, 2: poly2}
 
 r2 = Regions(name=name, numbers=numbers, names=names, abbrevs=abbrevs, outlines=poly)
 
-multipoly = [MultiPolygon([poly1, poly2])]
-r3 = Regions(multipoly)
-# polygons are automatically closed
-outl_multipoly = np.concatenate((outl1_closed, [[np.nan, np.nan]], outl2_closed))
+multipoly = MultiPolygon([poly1, poly2])
+r3 = Regions([multipoly])
+
+# create a polygon with a hole
+interior1_closed = ((0.2, 0.2), (0.2, 0.45), (0.45, 0.45), (0.45, 0.2), (0.2, 0.2))
+interior2_closed = ((0.55, 0.55), (0.55, 0.8), (0.8, 0.8), (0.8, 0.55), (0.55, 0.55))
+poly1_interior1 = Polygon(outl1, [interior1_closed])
+poly1_interior2 = Polygon(outl1, [interior1_closed, interior2_closed])
 
 # =============================================================================
 
@@ -66,9 +71,71 @@ def figure_context(*args, **kwargs):
 
 
 def test__subsample():
-    lon, lat = _subsample([[0, 1], [1, 0]])
-    res = np.concatenate((np.linspace(1, 0), np.linspace(0, 1)))
-    assert np.allclose(lon, res)
+
+    result = _subsample([[0, 1], [1, 0]])
+    expected = np.linspace([0, 1], [1, 0], endpoint=False)
+    expected = np.vstack((expected, [1, 0]))
+
+    assert np.allclose(expected, result)
+
+    result = _subsample(outl1_closed, num=2)
+
+    expected = [
+        [0, 0],
+        [0, 0.5],
+        [0, 1],
+        [0.5, 1],
+        [1, 1.0],
+        [1, 0.5],
+        [1, 0],
+        [0.5, 0],
+        [0, 0],
+    ]
+
+    assert np.allclose(expected, result)
+
+
+def test_flatten_polygons():
+
+    result = _flatten_polygons([poly1])
+    assert len(result) == 1
+    assert result[0].equals(poly1)
+
+    result = _flatten_polygons([poly1, poly2])
+    assert len(result) == 2
+    assert result[0].equals(poly1)
+    assert result[1].equals(poly2)
+
+    result = _flatten_polygons([multipoly])
+    assert len(result) == 2
+    assert result[0].equals(poly1)
+    assert result[1].equals(poly2)
+
+    result = _flatten_polygons([poly1, multipoly, poly2])
+    assert len(result) == 4
+    assert result[0].equals(poly1)
+    assert result[1].equals(poly1)
+    assert result[2].equals(poly2)
+    assert result[3].equals(poly2)
+
+
+def test_polygons_coords():
+
+    result = _polygons_coords([poly1, poly2])
+    assert len(result) == 2
+    assert np.allclose(outl1_closed, result[0])
+    assert np.allclose(outl2_closed, result[1])
+
+    result = _polygons_coords([poly1_interior1])
+    assert len(result) == 2
+    assert np.allclose(outl1_closed, result[0])
+    assert np.allclose(interior1_closed, result[1])
+
+    result = _polygons_coords([poly1_interior2])
+    assert len(result) == 3
+    assert np.allclose(outl1_closed, result[0])
+    assert np.allclose(interior1_closed, result[1])
+    assert np.allclose(interior2_closed, result[2])
 
 
 # =============================================================================
@@ -120,12 +187,11 @@ def test_plot_lines(plotfunc):
     with figure_context():
         ax = func(subsample=False)
 
-        lines = ax.lines
+        lines = ax.collections[0].get_segments()
 
         assert len(lines) == 2
-
-        assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
-        assert np.allclose(ax.lines[1].get_xydata(), outl2_closed)
+        assert np.allclose(lines[0], outl1_closed)
+        assert np.allclose(lines[1], outl2_closed)
 
 
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
@@ -138,11 +204,10 @@ def test_plot_lines_multipoly(plotfunc):
     with figure_context():
         ax = func(subsample=False)
 
-        lines = ax.lines
-
-        assert len(lines) == 1
-
-        assert np.allclose(ax.lines[0].get_xydata(), outl_multipoly, equal_nan=True)
+        lines = ax.collections[0].get_segments()
+        assert len(lines) == 2
+        assert np.allclose(lines[0], outl1_closed)
+        assert np.allclose(lines[1], outl2_closed)
 
 
 # -----------------------------------------------------------------------------
@@ -155,38 +220,38 @@ def test_plot_lines_selection(plotfunc):
 
     with figure_context():
         ax = func(subsample=False, regions=[0, 1])
-        lines = ax.lines
+        lines = ax.collections[0].get_segments()
         assert len(lines) == 2
-        assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
-        assert np.allclose(ax.lines[1].get_xydata(), outl2_closed)
+        assert np.allclose(lines[0], outl1_closed)
+        assert np.allclose(lines[1], outl2_closed)
 
     # select a single number
     with figure_context():
         ax = func(subsample=False, regions=0)
-        lines = ax.lines
+        lines = ax.collections[0].get_segments()
         assert len(lines) == 1
-        assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
+        assert np.allclose(lines[0], outl1_closed)
 
     # select by number
     with figure_context():
         ax = func(subsample=False, regions=[0])
-        lines = ax.lines
+        lines = ax.collections[0].get_segments()
         assert len(lines) == 1
-        assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
+        assert np.allclose(lines[0], outl1_closed)
 
     # select by long_name
     with figure_context():
         ax = func(subsample=False, regions=["Unit Square1"])
-        lines = ax.lines
+        lines = ax.collections[0].get_segments()
         assert len(lines) == 1
-        assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
+        assert np.allclose(lines[0], outl1_closed)
 
     # select by abbreviation
     with figure_context():
         ax = func(subsample=False, regions=["uSq1"])
-        lines = ax.lines
+        lines = ax.collections[0].get_segments()
         assert len(lines) == 1
-        assert np.allclose(ax.lines[0].get_xydata(), outl1_closed)
+        assert np.allclose(lines[0], outl1_closed)
 
 
 # -----------------------------------------------------------------------------
@@ -199,10 +264,10 @@ def test_plot_lines_subsample(plotfunc):
 
     with figure_context():
         ax = func(subsample=True)
-        lines = ax.lines
+        lines = ax.collections[0].get_paths()
 
         assert len(lines) == 2
-        assert np.allclose(ax.lines[0].get_xydata().shape, (200, 2))
+        assert np.allclose(lines[0].vertices.shape, (201, 2))
 
 
 # -----------------------------------------------------------------------------
@@ -216,10 +281,10 @@ def test_plot_lines_from_poly(plotfunc):
     # subsample is False if polygon is given
     with figure_context():
         ax = func()
-        lines = ax.lines
+        lines = ax.collections[0].get_segments()
 
         assert len(lines) == 2
-        assert np.allclose(ax.lines[0].get_xydata(), r2.coords[0])
+        assert np.allclose(lines[0], r2.coords[0])
 
 
 # -----------------------------------------------------------------------------
@@ -233,10 +298,10 @@ def test_plot_line_prop(plotfunc):
     with figure_context():
         ax = func(subsample=False, line_kws=dict(lw=2, color="g"))
 
-        lines = ax.lines
+        collection = ax.collections[0]
 
-        assert lines[0].get_lw() == 2
-        assert lines[0].get_color() == "g"
+        assert collection.get_linewidth() == 2
+        np.testing.assert_equal(collection.get_color(), mpl.colors.to_rgba_array("g"))
 
 
 # -----------------------------------------------------------------------------
