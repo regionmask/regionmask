@@ -75,8 +75,6 @@ def test__subsample():
     expected = np.linspace([0, 1], [1, 0], endpoint=False)
     expected = np.vstack((expected, [1, 0]))
 
-    # raise ValueError(result)
-
     assert np.allclose(expected, result)
 
     result = _subsample(outl1_closed, num=2)
