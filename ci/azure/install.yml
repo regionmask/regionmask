@@ -7,7 +7,7 @@ steps:
 
 - bash: |
     conda update -y conda
-    conda env create -n regionmask-tests --file ${{ parameters.env_file }}
+    conda env create -n regionmask-tests --strict-channel-priority --file ${{ parameters.env_file }}
   displayName: Install conda dependencies
 
 # - bash: |
