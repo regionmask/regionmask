@@ -270,6 +270,26 @@ def test_plot_lines_subsample(plotfunc):
         assert np.allclose(lines[0].vertices.shape, (201, 2))
 
 
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("n, expected", [(9, (9 - 1) * 50 + 1), (10, 10)])
+def test_plot_lines_maybe_subsample(plotfunc, n, expected):
+    #  only subset non-polygons if they have less than 10 elements GH153
+    # should potentially be superseeded by GH109
+
+    # create closed coordinates with n points
+    coords = np.linspace(interior1_closed[0], interior1_closed[1], num=n - 4)
+    coords = np.vstack((coords, interior1_closed[1:]))
+    r = Regions([coords])
+
+    func = getattr(r, plotfunc)
+    with figure_context():
+        ax = func(subsample=True)
+        lines = ax.collections[0].get_paths()
+
+        assert len(lines) == 1
+        assert np.allclose(lines[0].vertices.shape, (expected, 2))
+
+
 # -----------------------------------------------------------------------------
 
 
