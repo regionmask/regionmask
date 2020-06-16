@@ -59,6 +59,8 @@ Bug Fixes
 
 - The natural earth shapefiles are now loaded with ``encoding="utf8"`` (:issue:`95`).
 - Explicitly check that the numbers are numeric and raise an informative error (:issue:`130`).
+- Do not subset coords with more than 10 vertices when plotting regions as this 
+  can be slow (:issue:`153`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
