@@ -40,7 +40,7 @@ def _draw_poly(ax, polygons, subsample=False, **kwargs):
     coords = _polygons_coords(polygons)
 
     if subsample:
-        coords = [_subsample(coord) for coord in coords]
+        coords = [_subsample(coord) if len(coord) < 10 else coord for coord in coords]
 
     color = kwargs.pop("color", "0.1")
 
