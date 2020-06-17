@@ -10,8 +10,8 @@ jobs:
 - job: Linux
   strategy:
     matrix:
-      # py36-min-all-deps:
-      #   conda_env: py36-min-all-deps
+      py36-min-all-deps:
+       conda_env: py36-min-all-deps
       py27:
         conda_env: py27
       py36:
@@ -64,13 +64,12 @@ jobs:
       isort -rc --check .
     displayName: isort formatting checks
 
-# - job: MinimumVersionsPolicy
-#   pool:
-#     vmImage: 'ubuntu-16.04'
-#   steps:
-#   - template: ci/azure/add-conda-to-path.yml
-#   - bash: |
-#       conda install -y pyyaml
-#       python ci/min_deps_check.py ci/requirements/py36-bare-minimum.yml
-#       python ci/min_deps_check.py ci/requirements/py36-min-all-deps.yml
-#     displayName: minimum versions policy
+- job: MinimumVersionsPolicy
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - template: ci/azure/add-conda-to-path.yml
+  - bash: |
+      conda install -y pyyaml
+      python ci/min_deps_check.py ci/requirements/py36-min-all-deps.yml
+    displayName: minimum versions policy
