@@ -5,6 +5,7 @@ import matplotlib as mpl  # isort:skip
 mpl.use("Agg")
 
 import contextlib
+from distutils.version import LooseVersion
 
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
@@ -70,11 +71,10 @@ def figure_context(*args, **kwargs):
 # =============================================================================
 
 
-def test__subsample():
+def test_subsample():
 
     result = _subsample([[0, 1], [1, 0]])
-    expected = np.linspace([0, 1], [1, 0], endpoint=False)
-    expected = np.vstack((expected, [1, 0]))
+    expected = np.vstack((np.arange(0, 1.01, 0.02), np.arange(1, -0.01, -0.02))).T
 
     assert np.allclose(expected, result)
 
@@ -270,6 +270,9 @@ def test_plot_lines_subsample(plotfunc):
         assert np.allclose(lines[0].vertices.shape, (201, 2))
 
 
+@pytest.mark.skipif(
+    LooseVersion(np.__version__) < "1.16", reason="requires numpy 1.16 or higher"
+)
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 @pytest.mark.parametrize("n, expected", [(9, (9 - 1) * 50 + 1), (10, 10)])
 def test_plot_lines_maybe_subsample(plotfunc, n, expected):

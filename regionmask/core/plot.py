@@ -58,16 +58,21 @@ def _draw_poly(ax, polygons, subsample=False, **kwargs):
 
 def _subsample(outl, num=50):
     # assumes outl is closed - i.e outl[:-1] == outl[0]
-    # TODO: use the following once requiring numpy > 0.16 (I think)
-    #     return np.linspace(outl[:-1], outl[1:]).reshape(-1, 2)
+    # TODO: use the following once requiring numpy > 0.16
+    #   out.append(np.linspace(beg, end, num=num, endpoint=False))
+    #   out.append(outl[-1])
+    #   return np.vstack(out)
 
-    out = list()
+    lon, lat = [], []
     for beg, end in zip(outl[:-1], outl[1:]):
-        out.append(np.linspace(beg, end, num=num, endpoint=False))
+        lon.append(np.linspace(beg[0], end[0], num=num, endpoint=False))
+        lat.append(np.linspace(beg[1], end[1], num=num, endpoint=False))
 
     # add end point to close the coords
-    out.append(outl[-1])
-    return np.vstack(out)
+    lon.append(outl[-1][0])
+    lat.append(outl[-1][1])
+
+    return np.stack((np.hstack(lon), np.hstack(lat))).T
 
 
 def _plot(
