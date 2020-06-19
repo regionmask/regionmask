@@ -26,14 +26,29 @@ v0.6.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- :py:attr:`Regions.plot()` no longer colors the ocean per default. Use
+  :py:attr:`Regions.plot(add_ocean=True)` to restore the previous behavior (:issue:`58`).
+- Changed the default style of the coastlines in :py:attr:`Regions.plot()`. To restore
+  the previous behavior use :py:attr:`Regions.plot(coastline_kws=dict())` (:pull:`146`).
+
+
 Enhancements
 ~~~~~~~~~~~~
 
-- New marine regions from natural earth added as :py:attr:`naturalearth.ocean_basins_50`
+- Directly create 3D boolean masks using :py:attr:`Regions.mask_3D` and
+  :py:attr:`mask_3D_geopandas` - see the :doc:`tutorial on 3D masks<notebooks/mask_3D>`
+  (:issue:`4`, :issue:`73`).
+- New marine regions from natural earth added as :py:attr:`natural_earth.ocean_basins_50`
   (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_).
 - Create regions from geopandas/ shapefiles :py:attr:`from_geopandas`
   (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_).
 - Directly mask geopandas GeoDataFrame and GeoSeries :py:attr:`mask_geopandas` (:pull:`103`).
+- :py:attr:`Regions.plot` and :py:attr:`Regions.plot_regions` now also displays region interiors.
+  All lines are now added at once using a ``LineCollection`` which is faster than
+  a loop and ``plt.plot`` (:issue:`56` and :issue:`107`).
+- :py:attr:`Regions.plot` can now fill land areas with ``add_land``. Further, there is more
+  control over the appearance over the land and ocean features as well as the coastlines
+  using the ``coastline_kws``, ``ocean_kws``, and ``land_kws`` arguments (:issue:`140`).
 - Split longitude if this leads to two equally-spaced parts. This can considerably speed up
   creating a mask. See :issue:`127` for details.
 - Added test to ensure ``Polygons`` with z-coordinates work correctly (:issue:`36`).
@@ -44,6 +59,8 @@ Bug Fixes
 
 - The natural earth shapefiles are now loaded with ``encoding="utf8"`` (:issue:`95`).
 - Explicitly check that the numbers are numeric and raise an informative error (:issue:`130`).
+- Do not subset coords with more than 10 vertices when plotting regions as this 
+  can be slow (:issue:`153`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -54,12 +71,19 @@ Internal Changes
 - Enable codecov on azure (:pull:`115`).
 - Install ``matplotlib-base`` for testing instead of ``matplotlib`` for tests,
   seems a bit faster (:issue:`112`).
+- Replaced all ``assertion`` with ``if ...: ValueError`` outside of tests (:issue:`142`).
+- Raise consistent warnings on empty mask (:issue:`141`).
+  
+Docs
+~~~~
+
 - Combine the masking tutorials (xarray, numpy, and multidimensional coordinates)
   into one tutorial (:issue:`120`).
 - Use ``sphinx.ext.napoleon`` which fixes the look of the API docs. Also some
   small adjustments to the docs (:pull:`125`).
 - Set ``mpl.rcParams["savefig.bbox"] = "tight"`` in ``docs/defined_*.rst`` to avoid
   spurious borders in the map plots (:issue:`112`).
+- Use a context manager for the plotting tests (:issue:`145`).
 
 
 v0.5.0 (19.12.2019)

@@ -3,35 +3,76 @@ import numpy as np
 # =============================================================================
 
 
-def _draw_poly(ax, outl, trans, subsample=False, close=True, **kwargs):
+def _flatten_polygons(polygons):
+
+    from shapely.geometry import MultiPolygon
+
+    polys = []
+    for p in polygons:
+        if isinstance(p, MultiPolygon):
+            polys += list(p)
+        else:
+            polys += [p]
+
+    return polys
+
+
+def _polygons_coords(polygons):
+
+    coords = []
+    for p in polygons:
+        coords += [np.asarray(p.exterior)[:, :2]] + [
+            np.asarray(i)[:, :2] for i in p.interiors
+        ]
+
+    return coords
+
+
+def _draw_poly(ax, polygons, subsample=False, **kwargs):
     """
     draw the outline of the regions
 
     """
 
+    from matplotlib.collections import LineCollection
+
+    polygons = _flatten_polygons(polygons)
+    coords = _polygons_coords(polygons)
+
     if subsample:
-        lons, lats = _subsample(outl)
-    else:
-        # make sure the outline is closed
-        if close and not np.allclose(outl[0, :], outl[-1, :]):
-            outl = np.vstack([outl, outl[0, :]])
+        coords = [_subsample(coord) if len(coord) < 10 else coord for coord in coords]
 
-        lons, lats = outl[:, 0], outl[:, 1]
+    color = kwargs.pop("color", "0.1")
 
-    color = kwargs.pop("color", "0.05")
+    lc = LineCollection(coords, color=color, **kwargs)
+    ax.add_collection(lc)
+    ax.autoscale_view()
 
-    ax.plot(lons, lats, color=color, transform=trans, **kwargs)
+    # from matplotlib.path import Path
+    # import matplotlib.patches as patches
+    # paths = [Path(coord) for coord in coords]
+    # patchs = [patches.PathPatch(path, facecolor='none', **kwargs) for path in paths]
+    # [ax.add_patch(patch) for patch in patchs]
+    # ax.autoscale_view()
 
 
-def _subsample(outl):
-    lons = np.array([])
-    lats = np.array([])
-    for i in range(len(outl)):
-        # make sure we get a nice plot for projections with "bent" lines
-        lons = np.hstack((lons, np.linspace(outl[i - 1][0], outl[i][0])))
-        lats = np.hstack((lats, np.linspace(outl[i - 1][1], outl[i][1])))
+def _subsample(outl, num=50):
+    # assumes outl is closed - i.e outl[:-1] == outl[0]
+    # TODO: use the following once requiring numpy > 0.16
+    #   out.append(np.linspace(beg, end, num=num, endpoint=False))
+    #   out.append(outl[-1])
+    #   return np.vstack(out)
 
-    return lons, lats
+    lon, lat = [], []
+    for beg, end in zip(outl[:-1], outl[1:]):
+        lon.append(np.linspace(beg[0], end[0], num=num, endpoint=False))
+        lat.append(np.linspace(beg[1], end[1], num=num, endpoint=False))
+
+    # add end point to close the coords
+    lon.append(outl[-1][0])
+    lat.append(outl[-1][1])
+
+    return np.stack((np.hstack(lon), np.hstack(lat))).T
 
 
 def _plot(
@@ -42,11 +83,15 @@ def _plot(
     add_label=True,
     label="number",
     coastlines=True,
-    add_ocean=True,
-    line_kws=dict(),
-    text_kws=dict(),
+    add_ocean=False,
+    line_kws=None,
+    text_kws=None,
     resolution="110m",
     subsample=None,
+    add_land=False,
+    coastline_kws=None,
+    ocean_kws=None,
+    land_kws=None,
 ):
     """
     plot map with with region outlines
@@ -69,10 +114,10 @@ def _plot(
         the long name of the regions, if 'short_name' uses
         abbreviations of the regions. Default 'number'.
     add_ocean : bool, optional
-        If true colors the ocean blue. Default: True.
-    line_kws : dict
+        If true adds the ocean feature. See ocean_kws. Default: False.
+    line_kws : dict, optional
         Arguments passed to plot.
-    text_kws : dict
+    text_kws : dict, optional
         Arguments passed to the labels (ax.text).
     resolution : '110m' | '50m' | '10m'
         Specify the resolution of the coastline and the ocean dataset.
@@ -83,6 +128,17 @@ def _plot(
         If None, infers the subsampling -> if the input is given as
         array subsamples if it is given as (Multi)Polygons does not
         subsample.
+    add_land : bool, optional
+        If true adds the land feature. See land_kws. Default: False.
+    coastline_kws : dict, optional
+        Arguments passed to ``ax.coastlines()``. Per default uses ``color="0.4"``
+        and ``lw=0.5``.
+    ocean_kws : dict, optional
+        Arguments passed to ``ax.add_feature(OCEAN)``. Per default uses the cartopy
+        ocean color and ``zorder=0.9``.
+    land_kws : dict, optional
+        Arguments passed to ``ax.add_feature(LAND)``. Per default uses the cartopy
+        land color and ``zorder=0.9``.
 
     Returns
     -------
@@ -91,10 +147,13 @@ def _plot(
     Note
     ----
     plot internally calls :py:func:`Regions.plot_regions`.
+
     """
     import matplotlib.pyplot as plt
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
+
+    NEF = cfeature.NaturalEarthFeature
 
     if proj is None:
         proj = ccrs.PlateCarree()
@@ -102,20 +161,27 @@ def _plot(
     if ax is None:
         ax = plt.axes(projection=proj)
 
-    if add_ocean:
-        NEF = cfeature.NaturalEarthFeature
-        OCEAN = NEF(
-            "physical",
-            "ocean",
-            resolution,
-            edgecolor="face",
-            facecolor=cfeature.COLORS["water"],
-        )
+    if ocean_kws is None:
+        ocean_kws = dict(color=cfeature.COLORS["water"], zorder=0.9)
 
-        ax.add_feature(OCEAN)
+    if land_kws is None:
+        land_kws = dict(color=cfeature.COLORS["land"], zorder=0.9)
+
+    if coastline_kws is None:
+        coastline_kws = dict(color="0.4", lw=0.5)
+
+    if add_ocean:
+        OCEAN = NEF("physical", "ocean", resolution)
+
+        ax.add_feature(OCEAN, **ocean_kws)
+
+    if add_land:
+        LAND = NEF("physical", "land", resolution)
+
+        ax.add_feature(LAND, **land_kws)
 
     if coastlines:
-        ax.coastlines(resolution=resolution)
+        ax.coastlines(resolution=resolution, **coastline_kws)
 
     self.plot_regions(
         ax=ax,
@@ -136,8 +202,8 @@ def _plot_regions(
     regions="all",
     add_label=True,
     label="number",
-    line_kws=dict(),
-    text_kws=dict(),
+    line_kws=None,
+    text_kws=None,
     subsample=None,
 ):
     """
@@ -159,9 +225,9 @@ def _plot_regions(
         abbreviations of the regions. Default 'number'.
     add_ocean : bool, optional
         If true colors the ocean blue. Default: True.
-    line_kws : dict
+    line_kws : dict, optional
         Arguments passed to plot.
-    text_kws : dict
+    text_kws : dict, optional
         Arguments passed to the labels (ax.text).
     resolution : '110m' | '50m' | '10m'
         Specify the resolution of the coastline and the ocean dataset.
@@ -202,12 +268,15 @@ def _plot_regions(
     if subsample is None:
         subsample = not self._is_polygon
 
-    close = not self._is_polygon
+    if line_kws is None:
+        line_kws = dict()
+
+    if text_kws is None:
+        text_kws = dict()
 
     # draw the outlines
-    for i in regions:
-        coords = self[i].coords
-        _draw_poly(ax, coords, trans, subsample, close, **line_kws)
+    polygons = [self[i].polygon for i in regions]
+    _draw_poly(ax, polygons, subsample=subsample, transform=trans, **line_kws)
 
     if add_label:
 

@@ -67,6 +67,12 @@ def test_sanitize_names_abbrevs(numbers, values, default, expected):
     assert result == expected
 
 
+def test_sanitize_names_abbrevs_unequal_length():
+
+    with pytest.raises(ValueError, match="not have the same length"):
+        _sanitize_names_abbrevs([0, 1], ["A"], "default")
+
+
 def test_is_180():
 
     assert _is_180(-180, 180)
