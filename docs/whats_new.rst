@@ -53,6 +53,14 @@ Enhancements
   creating a mask. See :issue:`127` for details.
 - Added test to ensure ``Polygons`` with z-coordinates work correctly (:issue:`36`).
 - Better repr for ``Regions`` (:issue:`108`).
+- Towards enabling the download of region definitions using `pooch <https://www.fatiando.org/pooch/>`_
+  (:pull:`61`).
+
+New regions
+~~~~~~~~~~~
+
+- Added IPCC climate reference regions (AR6 regions) described in Maialen et al.,
+  2000 (:pull:`61`).
 
 Bug Fixes
 ~~~~~~~~~
