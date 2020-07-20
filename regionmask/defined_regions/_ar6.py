@@ -1,5 +1,5 @@
-from ._ressources import read_remote_shapefile
 from ..core._geopandas import from_geopandas
+from ._ressources import read_remote_shapefile
 
 REPR = """
 Regions defined for the sixt IPCC assessment report

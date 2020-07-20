@@ -1,5 +1,5 @@
-import pooch
 import geopandas as gp
+import pooch
 
 REMOTE_RESSOURCE = pooch.create(
     # Use the default cache folder for the OS

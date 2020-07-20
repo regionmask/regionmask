@@ -1,8 +1,8 @@
-from ._ressources import read_remote_shapefile
-from ..core._geopandas import from_geopandas, _enumerate_duplicates
-
-from shapely import geometry
 import geopandas as gp
+from shapely import geometry
+
+from ..core._geopandas import _enumerate_duplicates, from_geopandas
+from ._ressources import read_remote_shapefile
 
 REPR = """
 pre-revision version of 'Regions defined for the sixt IPCC assessment report'
@@ -152,7 +152,7 @@ class ar6_pre_revisions_cls(object):
             _df_combined = _combine_to_multipolygon(_df_combined, "V3", "SPO", "SPO*")
             _df_combined = _combine_to_multipolygon(_df_combined, "V3", "EPO", "EPO*")
             _df_combined = _combine_to_multipolygon(_df_combined, "V3", "NPO", "NPO*")
-            
+
             # make sure the index goes from 0 to n - 1
             _df_combined = _df_combined.reset_index().drop("index", axis=1)
 
