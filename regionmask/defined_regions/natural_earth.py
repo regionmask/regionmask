@@ -68,8 +68,8 @@ def _obtain_ne(
         If False, uses the coords as is, else combines them all to a shapely
         MultiPolygon (used to combine all land Polygons). Default: False.
     """
-    from cartopy.io import shapereader
     import geopandas
+    from cartopy.io import shapereader
 
     # maybe download natural_earth feature and return filename
     shpfilename = shapereader.natural_earth(resolution, category, name)
