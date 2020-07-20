@@ -8,7 +8,6 @@ regions = [
     defined_regions.ar6.all,
     defined_regions.ar6.land,
     defined_regions.ar6.ocean,
-    defined_regions.ar6.separate_pacific,
     defined_regions.giorgi,
     defined_regions.srex,
     defined_regions.natural_earth.countries_110,
