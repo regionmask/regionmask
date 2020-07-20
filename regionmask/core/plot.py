@@ -149,9 +149,9 @@ def _plot(
     plot internally calls :py:func:`Regions.plot_regions`.
 
     """
-    import matplotlib.pyplot as plt
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
+    import matplotlib.pyplot as plt
 
     NEF = cfeature.NaturalEarthFeature
 
@@ -245,8 +245,8 @@ def _plot_regions(
 
     """
 
-    import matplotlib.pyplot as plt
     import cartopy.crs as ccrs
+    import matplotlib.pyplot as plt
     from cartopy.mpl import geoaxes
 
     if ax is None:
