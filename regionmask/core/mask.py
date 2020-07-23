@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import warnings
 
 import numpy as np
@@ -74,6 +76,9 @@ def _mask(
         mask = _mask_rasterize_split(lon, lat, outlines, numbers=numbers)
     elif method == "shapely":
         mask = _mask_shapely(lon, lat, outlines, numbers=numbers)
+
+    # we need to treat the points at -180°E/0°E and -90°N
+    mask = _mask_edgepoints_shapely(mask, lon, lat, outlines, numbers)
 
     if xarray is None:
         xarray = True
@@ -312,6 +317,51 @@ def _mask_contains(lon, lat, coords, numbers, fill=np.NaN):
             out[sel] = numbers[i]
 
     return out.reshape(shape)
+
+
+def _mask_edgepoints_shapely(mask, lon, lat, polygons, numbers, fill=np.NaN):
+
+    import shapely.vectorized as shp_vect
+
+    # not sure if this is really necessary
+    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
+
+    LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill)
+
+    mask = mask.flatten()
+    mask_unassigned = np.isnan(mask)
+
+    # find points at -180°E/0°E
+    if lon.min() < 0:
+        LON_180W_or_0E = np.isclose(LON, -180.0) & mask_unassigned
+    else:
+        LON_180W_or_0E = np.isclose(LON, 0.0) & mask_unassigned
+
+    # find points at -90°N
+    LAT_90S = np.isclose(LAT, -90) & mask_unassigned
+
+    borderpoints = LON_180W_or_0E | LAT_90S
+
+    # return if there are no unassigned gridpoints at -180°E/0°E and -90°N
+    if not borderpoints.any():
+        return mask.reshape(shape)
+
+    # add a tiny offset to get a consistent edge behaviour
+    LON = LON[borderpoints] - 1 * 10 ** -8
+    LAT = LAT[borderpoints] - 1 * 10 ** -10
+
+    # wrap points LON_180W_or_0E: -180°E -> 180°E and 0°E -> 360°E
+    LON[LON_180W_or_0E[borderpoints]] += 360
+    # shift points at -90°N to -89.99...°N
+    LAT[LAT_90S[borderpoints]] = -90 + 1 * 10 ** -10
+
+    # "mask[borderpoints][sel] = number" does not work, need to use np.where
+    idx = np.where(borderpoints)[0]
+    for i, polygon in enumerate(polygons):
+        sel = shp_vect.contains(polygon, LON, LAT)
+        mask[idx[sel]] = numbers[i]
+
+    return mask.reshape(shape)
 
 
 def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN):
