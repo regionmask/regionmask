@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import numpy as np
 import pytest
 import xarray as xr
@@ -697,3 +699,35 @@ def test_determine_method(lon, m_lon, lat, m_lat):
     expected = METHODS[max((m_lon, m_lat))]
 
     assert _determine_method(lon, lat) == expected
+
+
+# =============================================================================
+# =============================================================================
+# =============================================================================
+
+# ensure a global region incudes all gridpoints - also the ones at
+# 0°E/ -180°E and -90°N (#GH159)
+
+outline_GLOB_180 = np.array(
+    [[-180.0, 90.0], [-180.0, -90.0], [180.0, -90.0], [180.0, 90.0]]
+)
+outline_GLOB_360 = outline_GLOB_180 + [180, 0]
+
+r_GLOB_180 = Regions([outline_GLOB_180])
+r_GLOB_360 = Regions([outline_GLOB_360])
+
+lon180 = np.arange(-180, 180, 10)
+lon360 = np.arange(-180, 180, 10)
+
+lat = np.arange(90, -91, -10)
+
+
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+@pytest.mark.parametrize("regions", [r_GLOB_180, r_GLOB_360])
+@pytest.mark.parametrize("lon", [lon180, lon360])
+def test_mask_whole_grid(method, regions, lon):
+
+    mask = regions.mask(lon, lat, method=method)
+
+    assert (mask == 0).all()

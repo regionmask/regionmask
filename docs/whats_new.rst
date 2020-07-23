@@ -30,7 +30,8 @@ Breaking Changes
   :py:attr:`Regions.plot(add_ocean=True)` to restore the previous behavior (:issue:`58`).
 - Changed the default style of the coastlines in :py:attr:`Regions.plot()`. To restore
   the previous behavior use :py:attr:`Regions.plot(coastline_kws=dict())` (:pull:`146`).
-
+- Points at -180°E (or 0°E) and -90°N are now treated separately; such that a global mask includes
+  all gridpoints - see :doc:`methods<notebooks/method>` for details (:issue:`159`).
 
 Enhancements
 ~~~~~~~~~~~~
