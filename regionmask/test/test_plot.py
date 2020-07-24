@@ -13,7 +13,8 @@ import numpy as np
 import pytest
 from shapely.geometry import MultiPolygon, Polygon
 
-from regionmask import Regions
+import regionmask
+from regionmask import Regions, plot_3D_mask
 from regionmask.core.plot import _flatten_polygons, _polygons_coords, _subsample
 
 # =============================================================================
@@ -486,3 +487,31 @@ def test_plot_coastlines():
         assert len(ax.artists) == 1
         art = ax.artists[0]
         assert art._kwargs == {"edgecolor": "black", "facecolor": "none"}
+
+
+def test_plot_3D_mask_wrong_input():
+
+    lon = np.arange(-180, 180, 2)
+    lat = np.arange(90, -91, -2)
+    srex = regionmask.defined_regions.srex
+
+    mask_2D = srex.mask(lon, lat)
+    mask_3D = srex.mask_3D(lon, lat)
+
+    with pytest.raises(ValueError, match="expected a xarray.DataArray"):
+        plot_3D_mask(None)
+
+    with pytest.raises(ValueError, match="``mask_3D`` must have 3 dimensions"):
+        plot_3D_mask(mask_2D)
+
+    with pytest.raises(ValueError, match="must contain the dimension 'region'"):
+        plot_3D_mask(mask_2D.expand_dims("foo"))
+
+    expected = np.ma.masked_invalid(mask_2D.values).flatten()
+    with figure_context():
+        h = plot_3D_mask(mask_3D, zorder=3)
+
+        assert np.ma.allequal(expected, h.get_array())
+
+        # ensure kwargs are passed through
+        assert h.get_zorder() == 3
