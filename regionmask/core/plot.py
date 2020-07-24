@@ -315,7 +315,7 @@ def plot_3D_mask(mask_3D, **kwargs):
 
     Returns
     -------
-        mesh : `matplotlib.collections.QuadMesh`
+    mesh : ``matplotlib.collections.QuadMesh``
 
     """
 
