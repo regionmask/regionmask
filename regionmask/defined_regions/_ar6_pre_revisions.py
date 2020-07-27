@@ -1,15 +1,16 @@
-import os
-
 import geopandas as gp
-import pkg_resources
 from shapely import geometry
 
-from ..core.regions import Regions
-
-DATA_PATH = pkg_resources.resource_filename("regionmask", "defined_regions")
+from ..core._geopandas import _enumerate_duplicates, from_geopandas
+from ._ressources import read_remote_shapefile
 
 REPR = """
-Regions defined for the sixt IPCC assessment report
+pre-revision version of 'Regions defined for the sixt IPCC assessment report'
+
+These are the regions as originally submitted by Iturbide et al., 2020. During
+the revisions regions were added and existing regions were adapted. The originally
+submitted regions are provided here for completeness. Use the revised regions
+i.e. ``regionmask.defined_regions.ar6``.
 
 Attributes
 ----------
@@ -23,7 +24,7 @@ ocean : Regions
     Ocean regions only, regions split along the date line
     are combined (see below).
 separate_pacific : Regions
-    Original definitions of the regions, no combination of the pacific
+    Original definitions of the regions, no combination of the Pacific
     regions.
 
 Combined Regions
@@ -32,15 +33,13 @@ SPO and SPO*; EPO and EPO*; NPO and NPO*
 
 Note
 ----
-The region numbers for all, land, and ocean are consistent. The
-region numbers for all and separate_pacific are not.
+The region numbers for ``all``, ``land``, and ``ocean`` are consistent. The
+region numbers for ``separate_pacific`` and all others are not.
 
 """
 
 
-def _combine_to_multipolygon(df, *names):
-
-    column = "V3"
+def _combine_to_multipolygon(df, column, *names):
 
     all_poly = [df[df[column] == name].geometry.values[0] for name in names]
 
@@ -52,11 +51,6 @@ def _combine_to_multipolygon(df, *names):
         df = df.loc[df[column] != name]
 
     return df
-
-
-filename = os.path.join(
-    DATA_PATH, "data", "AR6_WGI_referenceRegions", "AR6_WGI_referenceRegions.shp"
-)
 
 
 land = [
@@ -122,11 +116,11 @@ ocean = [
 ]
 
 
-class ar6_cls(object):
+class ar6_pre_revisions_cls(object):
     """docstring for ar6"""
 
     def __init__(self):
-        super(ar6_cls, self).__init__()
+        super(ar6_pre_revisions_cls, self).__init__()
 
         self.__df = None
         self.__df_combined = None
@@ -136,11 +130,16 @@ class ar6_cls(object):
         self._ocean = None
         self._separate_pacific = None
 
+        self._name = "pre-revision version of 'IPCC AR6 WGI Reference Regions'"
+        self._source = "Iturbide et al., 2020 (Earth Syst. Sci. Data)"
+
     @property
     def _df(self):
 
         if self.__df is None:
-            self.__df = gp.read_file(filename)
+            self.__df = read_remote_shapefile(
+                "CMIP6_referenceRegions_pre_revisions.zip"
+            )
 
         return self.__df
 
@@ -150,9 +149,12 @@ class ar6_cls(object):
         if self.__df_combined is None:
             _df_combined = self._df.copy()
 
-            _df_combined = _combine_to_multipolygon(_df_combined, "SPO", "SPO*")
-            _df_combined = _combine_to_multipolygon(_df_combined, "EPO", "EPO*")
-            _df_combined = _combine_to_multipolygon(_df_combined, "NPO", "NPO*")
+            _df_combined = _combine_to_multipolygon(_df_combined, "V3", "SPO", "SPO*")
+            _df_combined = _combine_to_multipolygon(_df_combined, "V3", "EPO", "EPO*")
+            _df_combined = _combine_to_multipolygon(_df_combined, "V3", "NPO", "NPO*")
+
+            # make sure the index goes from 0 to n - 1
+            _df_combined = _df_combined.reset_index().drop("index", axis=1)
 
             self.__df_combined = _df_combined
 
@@ -161,22 +163,22 @@ class ar6_cls(object):
     @property
     def all(self):
         if self._all is None:
-            r = Regions(
-                self._df_combined.geometry,
-                names=self._df_combined.V2,
-                abbrevs=self._df_combined.V3,
-                name="IPCC AR6 WGI Reference Regions (combined Pacific regions)",
+
+            self._all = from_geopandas(
+                self._df_combined,
+                names="V2",
+                abbrevs="V3",
+                name=self._name,
+                source=self._source,
             )
-            self._all = r
+
         return self._all
 
     @property
     def land(self):
         if self._land is None:
             r = self.all[land]
-            r.name = (
-                "IPCC AR6 WGI Reference Regions (combined Pacific regions, land only)"
-            )
+            r.name = self._name + " (land only)"
             self._land = r
         return self._land
 
@@ -184,27 +186,29 @@ class ar6_cls(object):
     def ocean(self):
         if self._ocean is None:
             r = self.all[ocean]
-            r.name = (
-                "IPCC AR6 WGI Reference Regions (combined Pacific regions, ocean only)"
-            )
+            r.name = self._name + " (ocean only)"
             self._ocean = r
         return self._ocean
 
     @property
     def separate_pacific(self):
         if self._separate_pacific is None:
-            r = Regions(
-                self._df.geometry,
-                names=self._df.V2,
-                abbrevs=self._df.V3,
-                name="IPCC AR6 WGI Reference Regions",
+            # need to fix the duplicates
+            df = self._df.copy()
+            df["V2"] = _enumerate_duplicates(df["V2"])
+
+            self._separate_pacific = from_geopandas(
+                df,
+                names="V2",
+                abbrevs="V3",
+                name=self._name + "(separate Pacific regions)",
+                source=self._source,
             )
-            self._separate_pacific = r
 
         return self._separate_pacific
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return REPR
 
 
-ar6 = ar6_cls()
+_ar6_pre_revisions = ar6_pre_revisions_cls()

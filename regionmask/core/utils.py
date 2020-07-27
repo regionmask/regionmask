@@ -24,8 +24,8 @@ def _sanitize_names_abbrevs(numbers, values, default):
     elif values is None:
         values = _create_dict_of_numbered_string(numbers, default)
     else:
-
-        assert len(numbers) == len(values)
+        if not len(numbers) == len(values):
+            raise ValueError("`numbers` and `values` do not have the same length.")
 
         values = _maybe_to_dict(numbers, values)
 
@@ -154,18 +154,51 @@ def create_lon_lat_dataarray_from_bounds(
     return ds
 
 
-def equally_spaced(lon, lat):
+def _is_numeric(numbers):
 
-    lat = np.asarray(lat)
-    lon = np.asarray(lon)
+    numbers = np.asarray(numbers)
+    return np.issubdtype(numbers.dtype, np.number)
 
-    if lat.ndim > 1 or lon.ndim > 1:
+
+def equally_spaced(*args):
+
+    args = [np.asarray(arg) for arg in args]
+
+    if any(arg.ndim > 1 for arg in args):
         return False
 
-    if lat.size < 2 or lon.size < 2:
+    if any(arg.size < 2 for arg in args):
+        return False
+
+    d_args = (np.diff(arg) for arg in args)
+
+    return all(np.allclose(d_arg[0], d_arg) for d_arg in d_args)
+
+
+def _equally_spaced_on_split_lon(lon):
+
+    lon = np.asarray(lon)
+
+    if lon.ndim > 1 or lon.size < 2:
         return False
 
     d_lon = np.diff(lon)
-    d_lat = np.diff(lat)
+    d_lon_not_isclose = ~np.isclose(d_lon[0], d_lon)
 
-    return np.allclose(d_lat[0], d_lat) and np.allclose(d_lon[0], d_lon)
+    # there can only be one breakpoint
+    return (d_lon_not_isclose.sum() == 1) and not d_lon_not_isclose[-1]
+
+
+def _find_splitpoint(lon):
+
+    lon = np.asarray(lon)
+    d_lon = np.diff(lon)
+
+    d_lon_not_isclose = ~np.isclose(d_lon[0], d_lon)
+
+    split_point = np.argwhere(d_lon_not_isclose)
+
+    if len(split_point) != 1:
+        raise ValueError("more or less than one split point found")
+
+    return split_point.squeeze() + 1

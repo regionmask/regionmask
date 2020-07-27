@@ -14,6 +14,9 @@ Top-level functions
    :toctree: generated/
 
    create_mask_contains
+   mask_geopandas
+   mask_3D_geopandas
+   from_geopandas
 
 
 Regions
@@ -61,6 +64,7 @@ Creating a Mask
    :toctree: generated/
 
    Regions.mask
+   Regions.mask_3D
 
 
 Attributes
@@ -116,4 +120,3 @@ Private Functions
    core.utils._wrapAngle180
    core.utils._wrapAngle
    core.utils._is_180
-

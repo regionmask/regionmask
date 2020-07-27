@@ -1,12 +1,22 @@
-import numpy as np
 import warnings
+
+import numpy as np
 import xarray as xr
 
-from .utils import _wrapAngle, _is_180, equally_spaced
+from .utils import (
+    _equally_spaced_on_split_lon,
+    _find_splitpoint,
+    _is_180,
+    _is_numeric,
+    _wrapAngle,
+    equally_spaced,
+)
 
 
 def _mask(
-    self,
+    outlines,
+    regions_is_180,
+    numbers,
     lon_or_obj,
     lat=None,
     lon_name="lon",
@@ -16,104 +26,54 @@ def _mask(
     wrap_lon=None,
 ):
     """
-    create a grid as mask of a set of regions for given lat/ lon grid
-
-    Parameters
-    ----------
-    lon_or_obj : array_like or object
-        Can either be (1) a longitude array and then lat needs to be
-        given. Or an object where the longitude and latitude can be
-        retrived as:
-        lon = lon_or_obj[lon_name]
-        lat = lon_or_obj[lat_name]
-    lat : array_like, (optional)
-        If 'lon_or_obj' is a longitude array, the latitude needs to be
-        specified here.
-    lon_name, optional
-        Name of longitude in 'lon_or_obj'. Default: 'lon'.
-    lat_name, optional
-        Name of latgitude in 'lon_or_obj'. Default: 'lat'
-    method : None | "rasterize" | "shapely" | "legacy"
-        Set method used to determine wether a gridpoint lies in a region.
-    xarray : None | bool, optional
-        Deprecated. If None or True returns an xarray DataArray, if False returns a
-        numpy ndarray. Default: None.
-    wrap_lon : None | bool | 180 | 360, optional
-        If the regions and the provided longitude do not have the same
-        base (i.e. one is -180..180 and the other 0..360) one of them
-        must be wrapped. This can be done with wrap_lon.
-        If wrap_lon is None autodetects whether the longitude needs to be
-        wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
-        longitude data is wrapped to 360 if its minimum is smaller
-        than 0 and wrapped to 180 if its maximum is larger than 180.
-    Returns
-    -------
-    mask : ndarray or xarray DataSet
-
-    Method - rasterize
-    ------------------
-    "rasterize" uses `rasterio.features.rasterize`. This method offers a 50 to 100
-    speedup compared to "legacy". It only works for equally spaced lon and lat grids.
-
-    Method - legacy
-    ---------------
-    Uses the following:
-    >>> from matplotlib.path import Path
-    >>> bbPath = Path(((0, 0), (0, 1), (1, 1.), (1, 0)))
-    >>> bbPath.contains_point((0.5, 0.5))
-
-    This method is slower than the others and its edge behaviour is inconsistent
-    (see https://github.com/matplotlib/matplotlib/issues/9704).
-
+    internal function to create a mask
     """
+
+    if not _is_numeric(numbers):
+        raise ValueError("'numbers' must be numeric")
 
     lat_orig = lat
 
     lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
 
-    lon = np.array(lon)
-    lat = np.array(lat)
+    lon = np.asarray(lon)
+    lat = np.asarray(lat)
 
     # automatically detect whether wrapping is necessary
     if wrap_lon is None:
-        regions_is_180 = self.lon_180
         grid_is_180 = _is_180(lon.min(), lon.max())
 
         wrap_lon = not regions_is_180 == grid_is_180
 
+    lon_orig = lon.copy()
     if wrap_lon:
-        lon_old = lon.copy()
         lon = _wrapAngle(lon, wrap_lon)
 
+    if method not in (None, "rasterize", "shapely", "legacy"):
+        msg = "Method must be None or one of 'rasterize', 'shapely', or 'legacy'."
+        raise ValueError(msg)
+
     if method is None:
-        method = "rasterize" if equally_spaced(lon, lat) else "shapely"
+        method = _determine_method(lon, lat)
     elif method == "rasterize":
-        if not equally_spaced(lon, lat):
-            raise ValueError(
-                "`lat` and `lon` must be equally spaced to use" "`method='rasterize'`"
-            )
+        method = _determine_method(lon, lat)
+        if "rasterize" not in method:
+            msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
+            raise ValueError(msg)
     elif method == "legacy":
         msg = "The method 'legacy' will be removed in a future version."
         warnings.warn(msg, FutureWarning, stacklevel=3)
 
     if method == "legacy":
-        func = _mask_contains
-        data = self.coords
+        mask = _mask_contains(lon, lat, outlines, numbers=numbers)
     elif method == "rasterize":
-        func = _mask_rasterize
-        data = self.polygons
+        mask = _mask_rasterize(lon, lat, outlines, numbers=numbers)
+    elif method == "rasterize_flip":
+        mask = _mask_rasterize_flip(lon, lat, outlines, numbers=numbers)
+    elif method == "rasterize_split":
+        mask = _mask_rasterize_split(lon, lat, outlines, numbers=numbers)
     elif method == "shapely":
-        func = _mask_shapely
-        data = self.polygons
-    else:
-        msg = "Only methods 'rasterize', 'shapely', and 'legacy' are implemented"
-        raise NotImplementedError(msg)
-
-    mask = func(lon, lat, data, numbers=self.numbers)
-
-    if np.all(np.isnan(mask)):
-        msg = "All elements of mask are NaN. Try to set 'wrap_lon=True'."
-        print(msg)
+        mask = _mask_shapely(lon, lat, outlines, numbers=numbers)
 
     if xarray is None:
         xarray = True
@@ -125,16 +85,126 @@ def _mask(
         warnings.warn(msg, FutureWarning, stacklevel=3)
 
     if xarray:
-        # wrap the angle back
-        if wrap_lon:
-            lon = lon_old
 
         if lon.ndim == 1:
-            mask = _create_xarray(mask, lon, lat, lon_name, lat_name)
+            mask = _create_xarray(mask, lon_orig, lat, lon_name, lat_name)
         else:
             mask = _create_xarray_2D(mask, lon_or_obj, lat_orig, lon_name, lat_name)
 
     return mask
+
+
+def _mask_2D(
+    outlines,
+    regions_is_180,
+    numbers,
+    lon_or_obj,
+    lat=None,
+    lon_name="lon",
+    lat_name="lat",
+    method=None,
+    xarray=None,
+    wrap_lon=None,
+):
+
+    mask = _mask(
+        outlines=outlines,
+        regions_is_180=regions_is_180,
+        numbers=numbers,
+        lon_or_obj=lon_or_obj,
+        lat=lat,
+        lon_name=lon_name,
+        lat_name=lat_name,
+        method=method,
+        xarray=xarray,
+        wrap_lon=wrap_lon,
+    )
+
+    if np.all(np.isnan(mask)):
+        msg = "No gridpoint belongs to any region. Returning an all-NaN mask."
+        warnings.warn(msg, UserWarning, stacklevel=3)
+
+    return mask
+
+
+def _mask_3D(
+    outlines,
+    regions_is_180,
+    numbers,
+    lon_or_obj,
+    lat=None,
+    drop=True,
+    lon_name="lon",
+    lat_name="lat",
+    method=None,
+    wrap_lon=None,
+):
+
+    mask = _mask(
+        outlines=outlines,
+        regions_is_180=regions_is_180,
+        numbers=numbers,
+        lon_or_obj=lon_or_obj,
+        lat=lat,
+        lon_name=lon_name,
+        lat_name=lat_name,
+        method=method,
+        wrap_lon=wrap_lon,
+    )
+
+    isnan = np.isnan(mask.values)
+
+    if drop:
+        numbers = np.unique(mask.values[~isnan])
+        numbers = numbers.astype(np.int)
+
+    # if no regions are found return a 0 x lat x lon mask
+    if len(numbers) == 0:
+        mask = mask.expand_dims("region", axis=0).sel(region=slice(0, 0))
+        msg = (
+            "No gridpoint belongs to any region. Returning an empty mask"
+            " with shape {}".format(mask.shape)
+        )
+        warnings.warn(msg, UserWarning, stacklevel=3)
+        return mask
+
+    mask_3D = list()
+    for num in numbers:
+        mask_3D.append(mask == num)
+
+    from distutils.version import LooseVersion
+
+    # "override" is faster but was only introduced in version 0.13.0 of xarray
+    compat = "override" if LooseVersion(xr.__version__) >= "0.13.0" else "equals"
+
+    mask_3D = xr.concat(mask_3D, dim="region", compat=compat, coords="minimal")
+
+    mask_3D = mask_3D.assign_coords(region=("region", numbers))
+
+    if np.all(isnan):
+        msg = "No gridpoint belongs to any region. Returning an all-False mask."
+        warnings.warn(msg, UserWarning, stacklevel=3)
+
+    return mask_3D
+
+
+def _determine_method(lon, lat):
+    """ find method to be used -> prefers faster methods"""
+
+    if equally_spaced(lon, lat):
+        return "rasterize"
+
+    if _equally_spaced_on_split_lon(lon) and equally_spaced(lat):
+
+        split_point = _find_splitpoint(lon)
+        flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
+
+        if equally_spaced(flipped_lon):
+            return "rasterize_flip"
+        else:
+            return "rasterize_split"
+
+    return "shapely"
 
 
 def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
@@ -206,7 +276,7 @@ def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
 
     msg = (
         "The function `create_mask_contains` is deprecated and will be removed in a"
-        "  future version. Please use ``regionmask.Regions(coords).mask(lon, lat)``"
+        " future version. Please use ``regionmask.Regions(coords).mask(lon, lat)``"
         " instead."
     )
     warnings.warn(msg, FutureWarning, stacklevel=3)
@@ -276,10 +346,11 @@ def _parse_input(lon, lat, coords, fill, numbers):
     if numbers is None:
         numbers = range(n_coords)
     else:
-        assert len(numbers) == n_coords
+        if len(numbers) != n_coords:
+            raise ValueError("`numbers` and `coords` must have the same length")
 
-    msg = "The fill value should not be one of the region numbers."
-    assert fill not in numbers, msg
+    if fill in numbers:
+        raise ValueError("The fill value should not be one of the region numbers.")
 
     return lon, lat, numbers
 
@@ -316,6 +387,28 @@ def _transform_from_latlon(lon, lat):
     trans = Affine.translation(lon[0] - d_lon / 2, lat[0] - d_lat / 2)
     scale = Affine.scale(d_lon, d_lat)
     return trans * scale
+
+
+def _mask_rasterize_flip(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+
+    split_point = _find_splitpoint(lon)
+    flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
+
+    mask = _mask_rasterize(flipped_lon, lat, polygons, numbers=numbers)
+
+    # revert the mask
+    return np.hstack((mask[:, split_point:], mask[:, :split_point]))
+
+
+def _mask_rasterize_split(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+
+    split_point = _find_splitpoint(lon)
+    lon_l, lon_r = lon[:split_point], lon[split_point:]
+
+    mask_l = _mask_rasterize(lon_l, lat, polygons, numbers=numbers)
+    mask_r = _mask_rasterize(lon_r, lat, polygons, numbers=numbers)
+
+    return np.hstack((mask_l, mask_r))
 
 
 def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):

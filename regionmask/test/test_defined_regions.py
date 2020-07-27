@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from pytest import raises
 
 from regionmask import Regions, defined_regions
@@ -48,23 +50,51 @@ def test_land_110():
     _defined_region(regions, 1)
 
 
+def test_ocean_basins_50():
+    regions = defined_regions.natural_earth.ocean_basins_50
+    _defined_region(regions, 119)
+
+
+def test_natural_earth_loaded_as_utf8():
+    # GH 95
+    regions = defined_regions.natural_earth.ocean_basins_50
+    r = regions[90]
+
+    assert r.name == u"Río de la Plata"
+
+
 def test_ar6():
     regions = defined_regions.ar6.all
-    _defined_region(regions, 55)
+    _defined_region(regions, 58)
 
 
 def test_ar6_land():
     regions = defined_regions.ar6.land
-    _defined_region(regions, 43)
+    _defined_region(regions, 46)
 
 
 def test_ar6_ocean():
     regions = defined_regions.ar6.ocean
+    _defined_region(regions, 14)
+
+
+def test_ar6_pre_revisions():
+    regions = defined_regions._ar6_pre_revisions.all
+    _defined_region(regions, 55)
+
+
+def test_ar6_pre_revisions_land():
+    regions = defined_regions._ar6_pre_revisions.land
+    _defined_region(regions, 43)
+
+
+def test_ar6_pre_revisions_ocean():
+    regions = defined_regions._ar6_pre_revisions.ocean
     _defined_region(regions, 12)
 
 
-def test_ar6_separate_pacific():
-    regions = defined_regions.ar6.separate_pacific
+def test_ar6_pre_revisions_separate_pacific():
+    regions = defined_regions._ar6_pre_revisions.separate_pacific
     _defined_region(regions, 58)
 
 
@@ -83,5 +113,5 @@ def test_maybe_get_column():
     assert _maybe_get_column(uppercase(), "name") == 2
     assert _maybe_get_column(uppercase(), "NAME") == 2
 
-    with raises(KeyError):
-        _maybe_get_column(lowercase, "nam")
+    with raises(KeyError, match="not on the geopandas dataframe"):
+        _maybe_get_column(lowercase, "not_a_column")

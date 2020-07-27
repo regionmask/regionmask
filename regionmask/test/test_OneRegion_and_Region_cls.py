@@ -114,10 +114,10 @@ def test_wrong_region_outlines(cls):
 
     outl = (((0, 0), (0, 1)), ((1, 1.0), (1, 0)))
 
-    with pytest.raises(AssertionError, match="Outline must be 2D"):
+    with pytest.raises(ValueError, match="Outline must be 2D"):
         cls(1, "Unit Square", "USq", outl)
 
     outl = ((0, 0, 0), (0, 1, 1), (1, 1, 1), (1, 0, 0))
 
-    with pytest.raises(AssertionError, match="Outline must have Nx2 elements"):
+    with pytest.raises(ValueError, match="Outline must have Nx2 elements"):
         cls(1, "Unit Square", "USq", outl)

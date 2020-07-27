@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 # get version
 with open("regionmask/version.py") as f:
@@ -21,7 +21,5 @@ setup(
     extras_require={"docs": ["numpydoc", "jupyter", "nbconvert"]},
     long_description="See https://github.com/mathause/regionmask",
     include_package_data=True,
-    package_data={
-        "regionmask": ["defined_regions/data/*"]
-    },
+    package_data={"regionmask": ["defined_regions/data/*"]},
 )

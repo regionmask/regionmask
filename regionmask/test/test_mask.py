@@ -6,57 +6,50 @@ from shapely.geometry import Polygon
 
 from regionmask import Regions, create_mask_contains
 from regionmask.core.mask import (
+    _determine_method,
     _mask_rasterize,
     _mask_rasterize_no_offset,
     _mask_shapely,
     _transform_from_latlon,
 )
-from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
+from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
+
+from .utils import (
+    dummy_lat,
+    dummy_lon,
+    dummy_outlines,
+    dummy_outlines_poly,
+    dummy_region,
+    expected_mask_2D,
+    expected_mask_3D,
+)
 
 # =============================================================================
-
-
-outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
-outl2 = ((0, 1), (0, 2), (1, 2.0), (1, 1))
-outlines = [outl1, outl2]
-
-r1 = Regions(outlines)
-
-outlines_poly = r1.polygons
-
-lon = [0.5, 1.5]
-lat = [0.5, 1.5]
-
-# in this example the result looks:
-# | a fill |
-# | b fill |
-
-
-def expected_mask(a=0, b=1, fill=np.NaN):
-    return np.array([[a, fill], [b, fill]])
 
 
 @pytest.mark.filterwarnings("ignore:The function `create_mask_contains` is deprecated")
 def test_create_mask_contains():
 
     # standard
-    result = create_mask_contains(lon, lat, outlines)
-    expected = expected_mask()
+    result = create_mask_contains(dummy_lon, dummy_lat, dummy_outlines)
+    expected = expected_mask_2D()
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = create_mask_contains(lon, lat, outlines, fill=5)
-    expected = expected_mask(fill=5)
+    result = create_mask_contains(dummy_lon, dummy_lat, dummy_outlines, fill=5)
+    expected = expected_mask_2D(fill=5)
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = create_mask_contains(lon, lat, outlines, numbers=[5, 6])
-    expected = expected_mask(a=5, b=6)
+    result = create_mask_contains(
+        dummy_lon, dummy_lat, dummy_outlines, numbers=[5, 6, 7]
+    )
+    expected = expected_mask_2D(a=5, b=6)
     assert np.allclose(result, expected, equal_nan=True)
 
-    with pytest.raises(AssertionError):
-        create_mask_contains(lon, lat, outlines, fill=0)
+    with pytest.raises(ValueError):
+        create_mask_contains(dummy_lon, dummy_lat, dummy_outlines, fill=0)
 
-    with pytest.raises(AssertionError):
-        create_mask_contains(lon, lat, outlines, numbers=[5])
+    with pytest.raises(ValueError):
+        create_mask_contains(dummy_lon, dummy_lat, dummy_outlines, numbers=[5])
 
 
 def test_create_mask_contains_warns():
@@ -64,41 +57,46 @@ def test_create_mask_contains_warns():
     with pytest.warns(
         FutureWarning, match="The function `create_mask_contains` is deprecated"
     ):
-        create_mask_contains(lon, lat, outlines)
+        create_mask_contains(dummy_lon, dummy_lat, dummy_outlines)
 
 
 @pytest.mark.parametrize("func", [_mask_rasterize, _mask_shapely])
 def test_mask_func(func):
 
     # standard
-    result = func(lon, lat, outlines_poly, numbers=[0, 1])
-    expected = expected_mask()
+    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1, 2])
+    expected = expected_mask_2D()
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = func(lon, lat, outlines_poly, numbers=[0, 1], fill=5)
-    expected = expected_mask(fill=5)
+    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1, 2], fill=5)
+    expected = expected_mask_2D(fill=5)
     assert np.allclose(result, expected, equal_nan=True)
 
-    result = func(lon, lat, outlines_poly, numbers=[5, 6])
-    expected = expected_mask(a=5, b=6)
+    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[5, 6, 7])
+    expected = expected_mask_2D(a=5, b=6)
     assert np.allclose(result, expected, equal_nan=True)
 
 
 def test_mask_shapely_wrong_number_fill():
 
-    with pytest.raises(AssertionError):
-        _mask_shapely(lon, lat, outlines_poly, numbers=[0, 1], fill=0)
+    with pytest.raises(ValueError, match="The fill value should not"):
+        _mask_shapely(
+            dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1, 2], fill=0
+        )
 
-    with pytest.raises(AssertionError):
-        _mask_shapely(lon, lat, outlines, numbers=[5])
+    with pytest.raises(ValueError, match="`numbers` and `coords` must have"):
+        _mask_shapely(dummy_lon, dummy_lat, dummy_outlines, numbers=[5])
 
 
 @pytest.mark.xfail(reason="Not implemented")
-@pytest.mark.parametrize("numbers, fill", [[[0, 1], [0]], [[0], [np.NaN]]])
+@pytest.mark.parametrize("numbers, fill", [[[0, 1], 0], [[0], np.NaN]])
 def test_mask_rasterize_wrong_number_fill(numbers, fill):
+    # _mask_rasterize does not raise on wrong fill numbers or on missing numbers
 
-    with pytest.raises(AssertionError):
-        _mask_rasterize(lon, lat, outlines_poly, numbers=numbers, fill=fill)
+    with pytest.raises(ValueError):
+        _mask_rasterize(
+            dummy_lon, dummy_lat, dummy_outlines_poly, numbers=numbers, fill=fill
+        )
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
@@ -106,8 +104,8 @@ def test_mask_rasterize_wrong_number_fill(numbers, fill):
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask(method):
 
-    expected = expected_mask()
-    result = r1.mask(lon, lat, method=method, xarray=False)
+    expected = expected_mask_2D()
+    result = dummy_region.mask(dummy_lon, dummy_lat, method=method, xarray=False)
     assert np.allclose(result, expected, equal_nan=True)
 
 
@@ -116,13 +114,36 @@ def test_mask(method):
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask_xarray(method):
 
-    expected = expected_mask()
-    result = r1.mask(lon, lat, method=method, xarray=True)
+    expected = expected_mask_2D()
+    result = dummy_region.mask(dummy_lon, dummy_lat, method=method, xarray=True)
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat.values, lat))
-    assert np.all(np.equal(result.lon.values, lon))
+    assert np.all(np.equal(result.lat.values, dummy_lat))
+    assert np.all(np.equal(result.lon.values, dummy_lon))
+
+
+@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
+@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
+@pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
+def test_mask_poly_z_value(method):
+
+    if method == "legacy":
+        pytest.xfail("legacy does not support z-coordinates")
+
+    outl1 = Polygon(((0, 0, 1), (0, 1, 1), (1, 1.0, 1), (1, 0, 1)))
+    outl2 = Polygon(((0, 1, 1), (0, 2, 1), (1, 2.0, 1), (1, 1, 1)))
+    outlines = [outl1, outl2]
+
+    r_z = Regions(outlines)
+
+    expected = expected_mask_2D()
+    result = r_z.mask(dummy_lon, dummy_lat, method=method, xarray=True)
+
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+    assert np.all(np.equal(result.lat.values, dummy_lat))
+    assert np.all(np.equal(result.lon.values, dummy_lon))
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
@@ -130,24 +151,24 @@ def test_mask_xarray(method):
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask_xarray_name(method):
 
-    msk = r1.mask(lon, lat, method=method, xarray=True)
+    msk = dummy_region.mask(dummy_lon, dummy_lat, method=method, xarray=True)
 
     assert msk.name == "region"
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
+@pytest.mark.parametrize("lon_name", ["lon", "longitude"])
+@pytest.mark.parametrize("lat_name", ["lat", "latitude"])
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
-def test_mask_obj(method):
+def test_mask_obj(lon_name, lat_name, method):
 
-    expected = expected_mask()
+    expected = expected_mask_2D()
 
-    obj = dict(lon=lon, lat=lat)
-    result = r1.mask(obj, method=method, xarray=False)
-    assert np.allclose(result, expected, equal_nan=True)
-
-    obj = dict(longitude=lon, latitude=lat)
-    result = r1.mask(obj, lon_name="longitude", lat_name="latitude", xarray=False)
+    obj = {lon_name: dummy_lon, lat_name: dummy_lat}
+    result = dummy_region.mask(
+        obj, method=method, lon_name=lon_name, lat_name=lat_name, xarray=False
+    )
 
     assert np.allclose(result, expected, equal_nan=True)
 
@@ -178,7 +199,7 @@ def test_mask_wrap(method):
     result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=180)
     assert np.all(np.isnan(result))
 
-    expected = expected_mask()
+    expected = expected_mask_2D()
 
     # determine the wrap automatically
     result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=True)
@@ -194,7 +215,7 @@ def test_mask_wrap(method):
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask_autowrap(method):
 
-    expected = expected_mask()
+    expected = expected_mask_2D()
 
     # create a test case where the outlines and the lon coordinates
     # are different - or the same - should work either way
@@ -202,7 +223,7 @@ def test_mask_autowrap(method):
     # 1. -180..180 regions and -180..180 lon
     lon = [0.5, 1.5]
     lat = [0.5, 1.5]
-    result = r1.mask(lon, lat, method=method, xarray=False)
+    result = dummy_region.mask(lon, lat, method=method, xarray=False)
     assert np.allclose(result, expected, equal_nan=True)
 
     # 2. -180..180 regions and 0..360 lon
@@ -248,10 +269,10 @@ def test_mask_autowrap(method):
 
 def test_mask_wrong_method():
 
-    msg = "Only methods 'rasterize', 'shapely', and 'legacy' are implemented"
-    with pytest.raises(NotImplementedError, match=msg):
+    msg = "Method must be None or one of 'rasterize', 'shapely', or 'legacy'."
+    with pytest.raises(ValueError, match=msg):
 
-        r1.mask(lon, lat, method="method")
+        dummy_region.mask(dummy_lon, dummy_lat, method="method")
 
 
 # ======================================================================
@@ -263,8 +284,8 @@ lat_2D = [[0.5, 0.5], [1.5, 1.5]]
 
 @pytest.mark.filterwarnings("ignore:The function `create_mask_contains` is deprecated")
 def test_create_mask_function_2D():
-    result = create_mask_contains(lon_2D, lat_2D, outlines)
-    expected = expected_mask()
+    result = create_mask_contains(lon_2D, lat_2D, dummy_outlines)
+    expected = expected_mask_2D()
     assert np.allclose(result, expected, equal_nan=True)
 
 
@@ -273,8 +294,8 @@ def test_create_mask_function_2D():
 @pytest.mark.parametrize("method", ["legacy", "shapely"])
 def test_mask_2D(method):
 
-    expected = expected_mask()
-    result = r1.mask(lon_2D, lat_2D, method=method, xarray=False)
+    expected = expected_mask_2D()
+    result = dummy_region.mask(lon_2D, lat_2D, method=method, xarray=False)
     assert np.allclose(result, expected, equal_nan=True)
 
 
@@ -283,8 +304,8 @@ def test_mask_2D(method):
 @pytest.mark.parametrize("method", ["legacy", "shapely"])
 def test_mask_xarray_out_2D(method):
 
-    expected = expected_mask()
-    result = r1.mask(lon_2D, lat_2D, method=method, xarray=True)
+    expected = expected_mask_2D()
+    result = dummy_region.mask(lon_2D, lat_2D, method=method, xarray=True)
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
@@ -303,7 +324,7 @@ def test_mask_xarray_out_2D(method):
 def test_mask_rasterize_irregular(lon, lat, xarray):
 
     with pytest.raises(ValueError, match="`lat` and `lon` must be equally spaced"):
-        r1.mask(lon, lat, method="rasterize", xarray=xarray)
+        dummy_region.mask(lon, lat, method="rasterize", xarray=xarray)
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
@@ -322,8 +343,10 @@ def test_mask_xarray_in_out_2D(method):
 
     data = xr.DataArray(d, coords=coords, dims=("lat_1D", "lon_1D"))
 
-    expected = expected_mask()
-    result = r1.mask(data, lon_name="lon_2D", lat_name="lat_2D", method=method)
+    expected = expected_mask_2D()
+    result = dummy_region.mask(
+        data, lon_name="lon_2D", lat_name="lat_2D", method=method
+    )
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
@@ -338,7 +361,7 @@ def test_mask_xarray_in_out_2D(method):
 def test_xarray_keyword_deprection_warning(xarray):
 
     with pytest.warns(FutureWarning, match="Passing the `xarray` keyword"):
-        r1.mask(lon, lat, xarray=xarray)
+        dummy_region.mask(dummy_lon, dummy_lat, xarray=xarray)
 
 
 @pytest.mark.parametrize("lon_start", [0, 1, -5])
@@ -365,11 +388,97 @@ def test_transform_from_latlon(lon_start, dlon, lat_start, dlat):
 @pytest.mark.parametrize("fill", [np.NaN, 3])
 def test_rasterize(a, b, fill):
 
-    expected = expected_mask(a=a, b=b, fill=fill)
+    expected = expected_mask_2D(a=a, b=b, fill=fill)
 
-    result = _mask_rasterize(lon, lat, outlines_poly, numbers=[a, b], fill=fill)
+    result = _mask_rasterize(
+        dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[a, b], fill=fill
+    )
 
     assert np.allclose(result, expected, equal_nan=True)
+
+
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_empty(method):
+
+    with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
+        result = dummy_region.mask([10, 11], [10, 11], method=method)
+
+    assert isinstance(result, xr.DataArray)
+    assert result.shape == (2, 2)
+    assert result.isnull().all()
+    assert np.all(np.equal(result.lon.values, [10, 11]))
+    assert np.all(np.equal(result.lat.values, [10, 11]))
+
+
+# =============================================================================
+# =============================================================================
+# test mask_3D: only basics (same algorithm as mask)
+
+
+@pytest.mark.parametrize("drop", [True, False])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_3D(drop, method):
+
+    expected = expected_mask_3D(drop)
+    result = dummy_region.mask_3D(dummy_lon, dummy_lat, drop=drop, method=method)
+
+    assert isinstance(result, xr.DataArray)
+    assert result.shape == expected.shape
+    assert np.allclose(result, expected, equal_nan=True)
+    assert np.all(np.equal(result.lat.values, dummy_lat))
+    assert np.all(np.equal(result.lon.values, dummy_lon))
+
+    _dr = dummy_region[[0, 1]] if drop else dummy_region
+
+    assert np.all(np.equal(result.region.values, _dr.numbers))
+    assert np.all(result.abbrevs.values == _dr.abbrevs)
+    assert np.all(result.names.values == _dr.names)
+
+
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_3D_empty(method):
+
+    with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
+        result = dummy_region.mask_3D([10, 11], [10, 11], drop=True, method=method)
+
+    assert isinstance(result, xr.DataArray)
+    assert result.shape == (0, 2, 2)
+    assert np.all(np.equal(result.lon.values, [10, 11]))
+    assert np.all(np.equal(result.lat.values, [10, 11]))
+
+
+@pytest.mark.parametrize("lon_name", ["lon", "longitude"])
+@pytest.mark.parametrize("lat_name", ["lat", "latitude"])
+@pytest.mark.parametrize("drop", [True, False])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_3D_obj(lon_name, lat_name, drop, method):
+
+    expected = expected_mask_3D(drop)
+
+    obj = {lon_name: dummy_lon, lat_name: dummy_lat}
+    result = dummy_region.mask_3D(
+        obj, method=method, drop=drop, lon_name=lon_name, lat_name=lat_name
+    )
+
+    assert isinstance(result, xr.DataArray)
+
+    assert result.shape == expected.shape
+    assert np.allclose(result, expected, equal_nan=True)
+
+    assert np.all(np.equal(result[lat_name].values, dummy_lat))
+    assert np.all(np.equal(result[lon_name].values, dummy_lon))
+
+    _dr = dummy_region[[0, 1]] if drop else dummy_region
+
+    assert np.all(np.equal(result.region.values, _dr.numbers))
+    assert np.all(result.abbrevs.values == _dr.abbrevs)
+    assert np.all(result.names.values == _dr.names)
+
+
+def test_mask_3D_raises_legacy():
+
+    with pytest.raises(ValueError, match="method 'legacy' not supported in 'mask_3D'"):
+        dummy_region.mask_3D(dummy_lon, dummy_lat, method="legacy")
 
 
 # =============================================================================
@@ -530,3 +639,61 @@ def test_deg45_rasterize_offset_equal(regions):
     result_offset = _mask_rasterize(lon, lat, polygons, numbers=[0])
 
     assert np.allclose(result_no_offset, result_offset, equal_nan=True)
+
+
+# =============================================================================
+
+# the whole globe -> can be re-arranged (_mask_rasterize_flip)
+ds_GLOB_360 = create_lon_lat_dataarray_from_bounds(*(0, 360, 2) + (75, 13, -2))
+# not all lon -> must be masked twice (_mask_rasterize_split)
+ds_GLOB_360_part = create_lon_lat_dataarray_from_bounds(*(0, 300, 2) + (75, 13, -2))
+
+
+@pytest.mark.parametrize("ds_360", [ds_GLOB_360, ds_GLOB_360_part])
+@pytest.mark.parametrize("regions_180", [r_US_180_ccw, r_US_180_cw])
+def test_rasterize_on_split_lon(ds_360, regions_180):
+    # https://github.com/mathause/regionmask/issues/127
+
+    # using regions_180 and ds_360 lon must be wrapped, making it
+    # NOT equally_spaced
+    result = regions_180.mask(ds_360, method="rasterize")
+
+    expected = expected_mask_edge(ds_360, is_360=True)
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+    assert np.all(np.equal(result.lat, expected.lat))
+    assert np.all(np.equal(result.lon, expected.lon))
+
+    expected_shapely = regions_180.mask(ds_360, method="shapely")
+    xr.testing.assert_equal(result, expected_shapely)
+
+
+METHODS = {0: "rasterize", 1: "rasterize_flip", 2: "rasterize_split", 3: "shapely"}
+
+equal = np.arange(0.5, 360)
+grid_2D = np.arange(10).reshape(2, 5)
+un_equal = [0, 1, 2, 4, 5, 6.1]
+close_to_equal = equal + np.random.randn(*equal.shape) * 10 ** -6
+
+
+@pytest.mark.parametrize(
+    "lon, m_lon",
+    [
+        (equal, 0),
+        (close_to_equal, 0),
+        (_wrapAngle(equal), 1),
+        (_wrapAngle(equal)[:-1], 2),
+        ([1], 3),
+        (grid_2D, 3),
+        (un_equal, 3),
+    ],
+)
+@pytest.mark.parametrize(
+    "lat, m_lat",
+    [(equal, 0), (close_to_equal, 0), ([1], 3), (grid_2D, 3), (un_equal, 3)],
+)
+def test_determine_method(lon, m_lon, lat, m_lat):
+
+    expected = METHODS[max((m_lon, m_lat))]
+
+    assert _determine_method(lon, lat) == expected

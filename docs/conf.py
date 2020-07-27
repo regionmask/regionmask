@@ -12,12 +12,11 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys  # NOQA
+import datetime
 import os
-
-# get version
-# with open("../regionmask/version.py") as f:
-#     __version__ = f.read().strip()
+import sys  # NOQA
+import warnings
+from subprocess import call
 
 import regionmask
 
@@ -39,7 +38,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.extlinks",
     "sphinx.ext.mathjax",
-    # 'nbsphinx',
+    "sphinx.ext.napoleon",
     "numpydoc",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
@@ -52,9 +51,11 @@ extlinks = {
 
 autosummary_generate = True
 
+apoleon_use_param = True
+napoleon_use_rtype = False
+
 numpydoc_class_members_toctree = True
 numpydoc_show_class_members = False
-
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -69,8 +70,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"regionmask"
-copyright = u"2016, Mathias Hauser"
+project = "regionmask"
+copyright = "2016-%s, regionmask Developers" % datetime.datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -227,13 +228,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (
-        "index",
-        "regionmask.tex",
-        u"regionmask Documentation",
-        u"Mathias Hauser",
-        "manual",
-    )
+    ("index", "regionmask.tex", "regionmask Documentation", "Mathias Hauser", "manual",)
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -261,9 +256,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ("index", "regionmask", u"regionmask Documentation", [u"Mathias Hauser"], 1)
-]
+man_pages = [("index", "regionmask", "regionmask Documentation", ["Mathias Hauser"], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -278,8 +271,8 @@ texinfo_documents = [
     (
         "index",
         "regionmask",
-        u"regionmask Documentation",
-        u"Mathias Hauser",
+        "regionmask Documentation",
+        "Mathias Hauser",
         "regionmask",
         "One line description of project.",
         "Miscellaneous",
@@ -298,20 +291,16 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
 
-
 # disable warnings
-import warnings
-
 warnings.filterwarnings("ignore")
 
-from subprocess import call
 
 notebooks = (
     "notebooks/method",
     "notebooks/plotting",
-    "notebooks/mask_numpy",
-    "notebooks/mask_xarray",
-    "notebooks/mask_multidim",
+    "notebooks/mask_2D",
+    "notebooks/mask_3D",
+    "notebooks/geopandas",
     "notebooks/create_own_regions",
 )
 
@@ -323,16 +312,18 @@ for nb in notebooks:
         f2 = os.path.getmtime(nb + ".rst")
 
         if f2 > f1:
+            print(f" --- skipping: {nb}")
             continue
     except FileNotFoundError:
         pass
 
     call(
         (
-            "jupyter nbconvert "
-            "--to rst "
-            "--template notebooks/tutorial_rst "
-            "--execute " + nb
+            "jupyter nbconvert"
+            " --to rst"
+            " --template notebooks/tutorial_rst"
+            " --ExecutePreprocessor.timeout=60"
+            " --execute " + nb
         ),
         shell=True,
     )

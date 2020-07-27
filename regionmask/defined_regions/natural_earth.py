@@ -12,15 +12,11 @@ def _maybe_get_column(df, colname):
         # try lower and upper, github #25
         if hasattr(df, colname):
             return getattr(df, colname)
-        elif hasattr(df, colname.upper()):
-            return getattr(df, colname.upper())
+        elif hasattr(df, colname.swapcase()):
+            return getattr(df, colname.swapcase())
         else:
-            msg = (
-                "'{}' (and '{}') not on the geopandas dataframe. "
-                "The naming convention of NaturalEarthData may have "
-                "changed. Please raise an issue."
-            )
-            raise KeyError(msg.format(colname, colname.upper()))
+            msg = "'{}' (and '{}') not on the geopandas dataframe."
+            raise KeyError(msg.format(colname, colname.swapcase()))
 
     else:
         return colname
@@ -39,50 +35,47 @@ def _obtain_ne(
     combine_coords=False,
 ):
     """
-    create Regions_cls from natural_earth data
+    create Regions object from naturalearth data
 
     http://www.naturalearthdata.com
 
     Parameters
     ----------
-    resolution : string
-        Resolution of the dataset ('10m', '50m' or '110m').
-    category : string
-        Natural earth categories ('cultural', 'physical').
+    resolution : "10m" | "50m" | "110m"
+        Resolution of the dataset.
+    category : "cultural" | "physical"
+        Natural earth categories.
     name : string
         Name of natural earth dataset.
     title : string
-        Displayed text in Regions_cls.
-    names : string or list
-        Names of the single regions (Region_cls). If string, obtains
-        them from the geopandas DataFrame, else uses the provided list.
-    abbrevs : string or list
-        Abbreviations of the single regions (Region_cls). If string
-        obtains them from the geopandas DataFrame, else uses the
-        provided list.
-    numbers : string or list
-        Numbers of the single regions (Region_cls). If string obtains
-        them from the geopandas DataFrame, else uses the provided list.
-    coords : string or list
-        Coordinates of the single regions (Region_cls). If string
-        obtains them from the geopandas DataFrame, else uses the
-        provided list.
-    query : None or string
-        If given, the geopandas DataFrame is subset with
-        df.query(query). Optional, default None.
-    combine_coords : bool
-        If False, uses the coords as is, else combines them all to a
-        shapely MultiPolygon (used to combine all land Polygons).
-        Optional, default False.
+        Displayed text in Regions.
+    names : string or list, optional
+        Names of the single regions. If string, obtains them from the geopandas
+        DataFrame, else uses the provided list. Default: "name".
+    abbrevs : string or list, optional
+        Abbreviations of the single regions. If string obtains them from the
+        geopandas DataFrame, else uses the provided list. Default: "postal".
+    numbers : string or list, optional
+        Numbers of the single regions. If string obtains them from the geopandas
+        DataFrame, else uses the provided list. Default: "index".
+    coords : string or list, optional
+        Coordinates of the single regions. If string obtains them from the
+        geopandas DataFrame, else uses the provided list. Default: "geometry".
+    query : None or string, optional
+        If given, the geopandas DataFrame is subset with df.query(query).
+        Default: None.
+    combine_coords : bool, optional
+        If False, uses the coords as is, else combines them all to a shapely
+        MultiPolygon (used to combine all land Polygons). Default: False.
     """
-    from cartopy.io import shapereader
     import geopandas
+    from cartopy.io import shapereader
 
     # maybe download natural_earth feature and return filename
     shpfilename = shapereader.natural_earth(resolution, category, name)
 
     # read the file with geopandas
-    df = geopandas.read_file(shpfilename)
+    df = geopandas.read_file(shpfilename, encoding="utf8")
 
     # subset the whole dataset if necessary
     if query is not None:
@@ -133,6 +126,8 @@ class natural_earth_cls(object):
         self._us_states_10 = None
 
         self._land_110 = None
+
+        self._ocean_basins_50 = None
 
     def __repr__(self):
         return "Combines Region Definitions from 'http://www.naturalearthdata.com'."
@@ -212,6 +207,49 @@ class natural_earth_cls(object):
 
             self._land_110 = _obtain_ne(**opt)
         return self._land_110
+
+    @property
+    def ocean_basins_50(self):
+        if self._ocean_basins_50 is None:
+
+            opt = dict(
+                resolution="50m",
+                category="physical",
+                name="geography_marine_polys",
+                title="Natural Earth: ocean basins 50m",
+                names="name",
+                abbrevs="name",
+            )
+
+            regs = _obtain_ne(**opt)
+
+            # NOTE: naturalearth includes duplicate names
+
+            # raise an error if naturalearth changes the name
+            msg = (
+                "naturalearth renamed this region, please raise an issue in regionmask"
+            )
+
+            # rename the "Mediterranean Sea" region
+            assert regs[14].name == "Mediterranean Sea", msg
+            regs[14].name = "Mediterranean Sea Eastern Basin"
+            regs[14].abbrev = "Mediterranean Sea Eastern Basin"
+
+            assert regs[30].name == "Mediterranean Sea", msg
+            regs[30].name = "Mediterranean Sea Western Basin"
+            regs[30].abbrev = "Mediterranean Sea Western Basin"
+
+            # rename the "Ross Sea" region
+            assert regs[26].name == "Ross Sea", msg
+            regs[26].name = "Ross Sea Eastern Basin"
+            regs[26].abbrev = "Ross Sea Eastern Basin"
+
+            assert regs[29].name == "Ross Sea", msg
+            regs[29].name = "Ross Sea Western Basin"
+            regs[29].abbrev = "Ross Sea Western Basin"
+
+            self._ocean_basins_50 = regs
+        return self._ocean_basins_50
 
 
 natural_earth = natural_earth_cls()
