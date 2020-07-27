@@ -13,10 +13,11 @@ Top-level functions
 .. autosummary::
    :toctree: generated/
 
-   create_mask_contains
    mask_geopandas
    mask_3D_geopandas
    from_geopandas
+   plot_3D_mask
+   create_mask_contains
 
 
 Regions

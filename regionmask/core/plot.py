@@ -300,3 +300,42 @@ def _plot_regions(
             )
 
     return ax
+
+
+def plot_3D_mask(mask_3D, **kwargs):
+    """flatten and plot 3D masks
+
+    Parameters
+    ----------
+    mask_3D : xr.DataArray
+        3D mask to flatten and plot. Should be the result of
+        `Regions.mask_3D(...)`.
+    **kwargs : keyword arguments
+        Keyword arguments passed to xr.plot.pcolormesh.
+
+    Returns
+    -------
+    mesh : ``matplotlib.collections.QuadMesh``
+
+    """
+
+    import xarray as xr
+
+    if not isinstance(mask_3D, xr.DataArray):
+        raise ValueError("expected a xarray.DataArray")
+
+    if not mask_3D.ndim == 3:
+        raise ValueError(
+            "``mask_3D`` must have 3 dimensions, found {}".format(mask_3D.ndim)
+        )
+
+    if "region" not in mask_3D.coords:
+        raise ValueError("``mask_3D`` must contain the dimension 'region'")
+
+    # flatten the mask
+    mask_2D = (mask_3D * mask_3D.region).sum("region")
+
+    # mask all gridpoints not belonging to any region
+    mask_2D = mask_2D.where(mask_3D.any("region"))
+
+    return mask_2D.plot.pcolormesh(**kwargs)

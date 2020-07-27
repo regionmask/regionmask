@@ -30,7 +30,8 @@ Breaking Changes
   :py:attr:`Regions.plot(add_ocean=True)` to restore the previous behavior (:issue:`58`).
 - Changed the default style of the coastlines in :py:attr:`Regions.plot()`. To restore
   the previous behavior use :py:attr:`Regions.plot(coastline_kws=dict())` (:pull:`146`).
-
+- Points at -180°E (or 0°E) and -90°N are now treated separately; such that a global mask includes
+  all gridpoints - see :doc:`methods<notebooks/method>` for details (:issue:`159`).
 
 Enhancements
 ~~~~~~~~~~~~
@@ -43,6 +44,7 @@ Enhancements
 - Create regions from geopandas/ shapefiles :py:attr:`from_geopandas`
   (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_).
 - Directly mask geopandas GeoDataFrame and GeoSeries :py:attr:`mask_geopandas` (:pull:`103`).
+- Added a convenience function to plot flattened 3D masks: :py:func:`plot_3D_mask` (:issue:`161`).
 - :py:attr:`Regions.plot` and :py:attr:`Regions.plot_regions` now also displays region interiors.
   All lines are now added at once using a ``LineCollection`` which is faster than
   a loop and ``plt.plot`` (:issue:`56` and :issue:`107`).
