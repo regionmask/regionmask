@@ -58,7 +58,7 @@ In addition the regions are also divided into "land" (``ar6.land``) and ocean
 
   The regions have changed in the review process. Please update your scripts. The
   final region definitions are available at ``regionmask.defined_regions.ar6``.
-  For completeness, the submitted region definitions  are available at 
+  For completeness, the submitted region definitions are available at
   ``regionmask.defined_regions._ar6_pre_revisions``.
   
 
