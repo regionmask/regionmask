@@ -20,6 +20,4 @@ setup(
     install_requires=open("requirements.txt").read().split(),
     extras_require={"docs": ["numpydoc", "jupyter", "nbconvert"]},
     long_description="See https://github.com/mathause/regionmask",
-    include_package_data=True,
-    package_data={"regionmask": ["defined_regions/data/*"]},
 )
