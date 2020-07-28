@@ -5,7 +5,7 @@ from ..core._geopandas import _enumerate_duplicates, from_geopandas
 from ._ressources import read_remote_shapefile
 
 REPR = """
-pre-revision version of 'Regions defined for the sixt IPCC assessment report'
+pre-revision version of 'AR6 reference regions - Iturbide et al., 2020'
 
 These are the regions as originally submitted by Iturbide et al., 2020. During
 the revisions regions were added and existing regions were adapted. The originally
@@ -130,7 +130,7 @@ class ar6_pre_revisions_cls(object):
         self._ocean = None
         self._separate_pacific = None
 
-        self._name = "pre-revision version of 'IPCC AR6 WGI Reference Regions'"
+        self._name = "pre-revision version of 'AR6 reference regions'"
         self._source = "Iturbide et al., 2020 (Earth Syst. Sci. Data)"
 
     @property

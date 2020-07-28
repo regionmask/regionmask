@@ -2,7 +2,7 @@ from ..core._geopandas import from_geopandas
 from ._ressources import read_remote_shapefile
 
 REPR = """
-Regions defined for the sixt IPCC assessment report
+AR6 reference regions - Iturbide et al., 2020
 
 Attributes
 ----------
@@ -28,7 +28,7 @@ class ar6_cls(object):
         self._land = None
         self._ocean = None
 
-        self._name = "IPCC AR6 WGI Reference Regions"
+        self._name = "AR6 reference regions"
         self._source = "Iturbide et al., 2020 (Earth Syst. Sci. Data)"
 
     @property

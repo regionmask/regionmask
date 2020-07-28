@@ -6,7 +6,7 @@ The following regions, used in the scientific literature, are already defined:
 
 * Giorgi Regions (from Giorgi and Franciso, 2000)
 * SREX Regions (Special Report on Managing the Risks of Extreme Events and Disasters to Advance Climate Change Adaptation (SREX) from Seneviratne et al., 2012)
-* AR6 Regions (from the WGI IPCC 6th assessment report; Iturbide et al., 2020; ESSD)
+* AR6 Regions (Iturbide et al., 2020; ESSD)
 
 .. ipython:: python
     :suppress:
@@ -50,9 +50,9 @@ AR6 Regions
 ===========
 
 There are 58 AR6 regions. The regions cover the land and ocean (``ar6.all``).
-In addition the regions are also divided into "land" (``ar6.land``) and ocean
+In addition the regions are also divided into land (``ar6.land``) and ocean
 (``ar6.ocean``) categories. The numbering is kept consistent between the categories.
-    
+Note that some regions are in the land and in the ocean categories (e.g. the Mediterranean).
 
 .. warning::
 

@@ -61,7 +61,7 @@ Enhancements
 New regions
 ~~~~~~~~~~~
 
-- Added IPCC climate reference regions (AR6 regions) described in Maialen et al.,
+- Added the AR6 reference regions described in Iturbide et al.,
   2000 (`<https://essd.copernicus.org/preprints/essd-2019-258/>`_; :pull:`61`).
 
 Bug Fixes
