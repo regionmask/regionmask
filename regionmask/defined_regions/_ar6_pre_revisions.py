@@ -138,7 +138,7 @@ class ar6_pre_revisions_cls(object):
 
         if self.__df is None:
             self.__df = read_remote_shapefile(
-                "CMIP6_referenceRegions_pre_revisions.zip"
+                "reference_regions_pre_revisions.zip"
             )
 
         return self.__df

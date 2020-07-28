@@ -35,7 +35,7 @@ class ar6_cls(object):
     def _df(self):
 
         if self.__df is None:
-            self.__df = read_remote_shapefile("CMIP6_referenceRegions.zip")
+            self.__df = read_remote_shapefile("reference_regions.zip")
 
         return self.__df
 
