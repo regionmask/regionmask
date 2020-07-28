@@ -177,6 +177,7 @@ def test_mask_obj(lon_name, lat_name, method):
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
 @pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
+@pytest.mark.filterwarnings("ignore:No gridpoint belongs to any region.")
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask_wrap(method):
 
@@ -197,7 +198,7 @@ def test_mask_wrap(method):
     result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=False)
     assert np.all(np.isnan(result))
 
-    # this is the wron wrapping
+    # this is the wrong wrapping
     result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=180)
     assert np.all(np.isnan(result))
 
