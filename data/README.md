@@ -6,8 +6,8 @@ This folder contains additional data for regionmask. They are downloaded on dema
 
 As described in [Iturbide et al., 2020](https://doi.org/10.5194/essd-2019-258). Please cite the paper when using the regions.
 
-* CMIP6_referenceRegions.zip (`regiomask.defined_regions.ar6`)
-* CMIP6_referenceRegions_pre_revisions.zip (`regiomask.defined_regions._ar6_pre_revisions` also referred to as SOD-regions)
+* reference_regions.zip (`regiomask.defined_regions.ar6`)
+* reference_regions_pre_revisions.zip (`regiomask.defined_regions._ar6_pre_revisions` also referred to as SOD-regions)
 
 These are made available under the [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/) license. See [licences/AR6_REGIONS_LICENSE](../licences/AR6_REGIONS_LICENSE).
 

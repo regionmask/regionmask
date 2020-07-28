@@ -55,6 +55,14 @@ Enhancements
   creating a mask. See :issue:`127` for details.
 - Added test to ensure ``Polygons`` with z-coordinates work correctly (:issue:`36`).
 - Better repr for ``Regions`` (:issue:`108`).
+- Towards enabling the download of region definitions using `pooch <https://www.fatiando.org/pooch/>`_
+  (:pull:`61`).
+
+New regions
+~~~~~~~~~~~
+
+- Added the AR6 reference regions described in Iturbide et al.,
+  2000 (`<https://essd.copernicus.org/preprints/essd-2019-258/>`_; :pull:`61`).
 
 Bug Fixes
 ~~~~~~~~~

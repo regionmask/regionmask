@@ -9,6 +9,7 @@ dependencies:
   - numpy
   - matplotlib-base
   - netcdf4
+  - pooch
   - cftime
   - rasterio
   - pytest
