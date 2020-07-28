@@ -137,9 +137,7 @@ class ar6_pre_revisions_cls(object):
     def _df(self):
 
         if self.__df is None:
-            self.__df = read_remote_shapefile(
-                "reference_regions_pre_revisions.zip"
-            )
+            self.__df = read_remote_shapefile("reference_regions_pre_revisions.zip")
 
         return self.__df
 
