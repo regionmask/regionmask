@@ -22,25 +22,27 @@ v0.6.0 (unreleased)
 
   - `Python 3 Statement <http://www.python3statement.org/>`__
 
+Version 0.6.0 offers better support for shapefiles (via `geopandas 
+<https://geopandas.readthedocs.io>`__) and can directly create 3D boolean masks
+which play nicely with xarray's ``weighted.mean(...)`` function. It also includes
+a number of optimizations and bug fixes.
+
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Points at *exactly* -180°E (or 0°E) and -90°N are now treated separately; such that a global
+  mask includes all gridpoints - see :doc:`methods<notebooks/method>` for details (:issue:`159`).
 - :py:attr:`Regions.plot()` no longer colors the ocean per default. Use
   :py:attr:`Regions.plot(add_ocean=True)` to restore the previous behavior (:issue:`58`).
 - Changed the default style of the coastlines in :py:attr:`Regions.plot()`. To restore
   the previous behavior use :py:attr:`Regions.plot(coastline_kws=dict())` (:pull:`146`).
-- Points at -180°E (or 0°E) and -90°N are now treated separately; such that a global mask includes
-  all gridpoints - see :doc:`methods<notebooks/method>` for details (:issue:`159`).
 
 Enhancements
 ~~~~~~~~~~~~
 
-- Directly create 3D boolean masks using :py:attr:`Regions.mask_3D` and
-  :py:attr:`mask_3D_geopandas` - see the :doc:`tutorial on 3D masks<notebooks/mask_3D>`
-  (:issue:`4`, :issue:`73`).
-- New marine regions from natural earth added as :py:attr:`natural_earth.ocean_basins_50`
-  (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_).
+- Create 3D boolean masks using :py:attr:`Regions.mask_3D` and :py:attr:`mask_3D_geopandas`
+  - see the :doc:`tutorial on 3D masks<notebooks/mask_3D>` (:issue:`4`, :issue:`73`).
 - Create regions from geopandas/ shapefiles :py:attr:`from_geopandas`
   (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_).
 - Directly mask geopandas GeoDataFrame and GeoSeries :py:attr:`mask_geopandas` (:pull:`103`).
@@ -54,15 +56,17 @@ Enhancements
 - Split longitude if this leads to two equally-spaced parts. This can considerably speed up
   creating a mask. See :issue:`127` for details.
 - Added test to ensure ``Polygons`` with z-coordinates work correctly (:issue:`36`).
-- Better repr for ``Regions`` (:issue:`108`).
+- Better repr for :py:class:`Regions` (:issue:`108`).
 - Towards enabling the download of region definitions using `pooch <https://www.fatiando.org/pooch/>`_
   (:pull:`61`).
 
 New regions
 ~~~~~~~~~~~
 
-- Added the AR6 reference regions described in Iturbide et al.,
-  2000 (`<https://essd.copernicus.org/preprints/essd-2019-258/>`_; :pull:`61`).
+- Added the AR6 reference regions described in `Iturbide et al., (2000) 
+  <https://essd.copernicus.org/preprints/essd-2019-258/>`_ (:pull:`61`).
+- New marine regions from natural earth added as :py:attr:`natural_earth.ocean_basins_50`
+  (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_).
 
 Bug Fixes
 ~~~~~~~~~
@@ -83,26 +87,26 @@ Internal Changes
   seems a bit faster (:issue:`112`).
 - Replaced all ``assertion`` with ``if ...: ValueError`` outside of tests (:issue:`142`).
 - Raise consistent warnings on empty mask (:issue:`141`).
+- Use a context manager for the plotting tests (:issue:`145`).
   
 Docs
 ~~~~
 
 - Combine the masking tutorials (xarray, numpy, and multidimensional coordinates)
-  into one tutorial (:issue:`120`).
+  into one (:issue:`120`).
 - Use ``sphinx.ext.napoleon`` which fixes the look of the API docs. Also some
   small adjustments to the docs (:pull:`125`).
 - Set ``mpl.rcParams["savefig.bbox"] = "tight"`` in ``docs/defined_*.rst`` to avoid
   spurious borders in the map plots (:issue:`112`).
-- Use a context manager for the plotting tests (:issue:`145`).
 
 
 v0.5.0 (19.12.2019)
 -------------------
 
-Version v0.5.0 offers a better performance, a consistent point-on-border behavior,
+Version 0.5.0 offers a better performance, a consistent point-on-border behavior,
 and also unmasks region interiors (holes). It also introduces a number of
 deprecations. Please check the notebook on :doc:`methods<notebooks/method>` and
-What's New.
+the details below.
 
 
 Breaking Changes
