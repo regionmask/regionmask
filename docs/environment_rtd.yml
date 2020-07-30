@@ -8,7 +8,7 @@ dependencies:
   - cartopy=0.17.0
   - pip
   - pip:
-    - matplotlib
+    - matplotlib==3.2.1
     - mock
     - sphinx==2.1.2
     - sphinx_rtd_theme==0.4.3
