@@ -11,7 +11,7 @@ What's New
 .. _whats-new.0.6.0:
 
 
-v0.6.0 (unreleased)
+v0.6.0 (30.07.2020)
 -------------------
 
 .. warning::
