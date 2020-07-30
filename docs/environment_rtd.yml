@@ -18,7 +18,7 @@ dependencies:
     - cftime
     - netcdf4
     - geopandas
-    - xarray
+    - xarray==0.15.1
     - numpydoc
     - nbconvert
     - jupyter
