@@ -22,7 +22,7 @@ class ar6_cls(object):
     def __init__(self):
         super(ar6_cls, self).__init__()
 
-        self.__df = None
+        self._df = None
 
         self._all = None
         self._land = None
@@ -32,12 +32,12 @@ class ar6_cls(object):
         self._source = "Iturbide et al., 2020 (Earth Syst. Sci. Data)"
 
     @property
-    def _df(self):
+    def df(self):
 
-        if self.__df is None:
-            self.__df = read_remote_shapefile("reference_regions.zip")
+        if self._df is None:
+            self._df = read_remote_shapefile("IPCC-WGI-reference-regions-v4.zip")
 
-        return self.__df
+        return self._df
 
     @property
     def all(self):
