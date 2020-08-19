@@ -75,7 +75,7 @@ def test_ar6_land():
 
 def test_ar6_ocean():
     regions = defined_regions.ar6.ocean
-    _defined_region(regions, 14)
+    _defined_region(regions, 15)
 
 
 def test_ar6_pre_revisions():
