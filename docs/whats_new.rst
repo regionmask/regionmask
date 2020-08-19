@@ -8,28 +8,13 @@ What's New
 
     import regionmask
 
-.. _whats-new.0.7.0:
+.. _whats-new.0.6.1:
 
-v0.7.0 (unreleased)
+v0.6.1 (19.08.2020)
 -------------------
 
-Breaking Changes
-~~~~~~~~~~~~~~~~
-
-Enhancements
-~~~~~~~~~~~~
-
-New regions
-~~~~~~~~~~~
-
-Bug Fixes
-~~~~~~~~~
-
-Internal Changes
-~~~~~~~~~~~~~~~~
-
-Docs
-~~~~
+There were some last updates to the AR6 regions (``regionmask.defined_regions.ar6``).
+If you use the AR6 regions please update the package. There were no functional changes.
 
 v0.6.0 (30.07.2020)
 -------------------
@@ -118,7 +103,6 @@ Docs
   small adjustments to the docs (:pull:`125`).
 - Set ``mpl.rcParams["savefig.bbox"] = "tight"`` in ``docs/defined_*.rst`` to avoid
   spurious borders in the map plots (:issue:`112`).
-
 
 v0.5.0 (19.12.2019)
 -------------------
