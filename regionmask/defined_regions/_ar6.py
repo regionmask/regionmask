@@ -43,7 +43,7 @@ class ar6_cls(object):
     def all(self):
         if self._all is None:
             self._all = from_geopandas(
-                self._df,
+                self.df,
                 names="Name",
                 abbrevs="Acronym",
                 name=self._name,
@@ -56,10 +56,10 @@ class ar6_cls(object):
     def land(self):
         if self._land is None:
 
-            land = self._df.Type.str.contains("Land")
+            land = self.df.Type.str.contains("Land")
 
             self._land = from_geopandas(
-                self._df.loc[land],
+                self.df.loc[land],
                 names="Name",
                 abbrevs="Acronym",
                 name=self._name + " (land only)",
@@ -72,10 +72,10 @@ class ar6_cls(object):
     def ocean(self):
         if self._ocean is None:
 
-            ocean = self._df.Type.str.contains("Ocean")
+            ocean = self.df.Type.str.contains("Ocean")
 
             self._ocean = from_geopandas(
-                self._df.loc[ocean],
+                self.df.loc[ocean],
                 names="Name",
                 abbrevs="Acronym",
                 name=self._name + " (ocean only)",
