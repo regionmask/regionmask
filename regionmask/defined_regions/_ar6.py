@@ -22,7 +22,7 @@ class ar6_cls(object):
     def __init__(self):
         super(ar6_cls, self).__init__()
 
-        self.__df = None
+        self._df = None
 
         self._all = None
         self._land = None
@@ -32,18 +32,18 @@ class ar6_cls(object):
         self._source = "Iturbide et al., 2020 (Earth Syst. Sci. Data)"
 
     @property
-    def _df(self):
+    def df(self):
 
-        if self.__df is None:
-            self.__df = read_remote_shapefile("reference_regions.zip")
+        if self._df is None:
+            self._df = read_remote_shapefile("IPCC-WGI-reference-regions-v4.zip")
 
-        return self.__df
+        return self._df
 
     @property
     def all(self):
         if self._all is None:
             self._all = from_geopandas(
-                self._df,
+                self.df,
                 names="Name",
                 abbrevs="Acronym",
                 name=self._name,
@@ -56,10 +56,10 @@ class ar6_cls(object):
     def land(self):
         if self._land is None:
 
-            land = self._df.Type.str.contains("Land")
+            land = self.df.Type.str.contains("Land")
 
             self._land = from_geopandas(
-                self._df.loc[land],
+                self.df.loc[land],
                 names="Name",
                 abbrevs="Acronym",
                 name=self._name + " (land only)",
@@ -72,10 +72,10 @@ class ar6_cls(object):
     def ocean(self):
         if self._ocean is None:
 
-            ocean = self._df.Type.str.contains("Ocean")
+            ocean = self.df.Type.str.contains("Ocean")
 
             self._ocean = from_geopandas(
-                self._df.loc[ocean],
+                self.df.loc[ocean],
                 names="Name",
                 abbrevs="Acronym",
                 name=self._name + " (ocean only)",
