@@ -19,6 +19,7 @@ setup(
     url="https://github.com/mathause/regionmask",
     install_requires=open("requirements.txt").read().split(),
     extras_require={"docs": ["numpydoc", "jupyter", "nbconvert"]},
+    long_description_content_type="text/x-rst",
     long_description="See https://regionmask.readthedocs.io",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
