@@ -283,12 +283,13 @@ def _plot_regions(
         va = text_kws.pop("va", "center")
         ha = text_kws.pop("ha", "center")
         col = text_kws.pop("backgroundcolor", "0.85")
+        clip_on = text_kws.pop("clip_on", True)
 
         for i in regions:
             r = self[i]
             txt = str(getattr(r, label))
 
-            ax.text(
+            t = ax.text(
                 r.centroid[0],
                 r.centroid[1],
                 txt,
@@ -296,8 +297,11 @@ def _plot_regions(
                 va=va,
                 ha=ha,
                 backgroundcolor=col,
+                clip_on=clip_on,
                 **text_kws
             )
+
+            t.clipbox = ax.bbox
 
     return ax
 

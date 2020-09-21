@@ -405,6 +405,32 @@ def test_plot_text_prop(plotfunc):
         assert bbox.get_edgecolor() == (0.85, 0.85, 0.85, 1.0)
 
 
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_text_clip(plotfunc):
+    # test fix for #157
+
+    func = getattr(r1, plotfunc)
+
+    with figure_context():
+
+        ax = func(subsample=False, add_label=True)
+
+        texts = ax.texts
+
+        for text in texts:
+            assert text.get_clip_on() is True
+            assert text.get_clip_box() == ax.bbox
+
+    with figure_context():
+
+        ax = func(subsample=False, add_label=True, text_kws=dict(clip_on=False))
+
+        texts = ax.texts
+
+        for text in texts:
+            assert text.get_clip_on() is False
+
+
 def test_plot_ocean():
 
     kwargs = dict(subsample=False, add_label=False, coastlines=False)
