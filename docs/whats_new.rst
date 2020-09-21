@@ -31,6 +31,7 @@ Internal Changes
 Docs
 ~~~~
 - Unified the docstrings of all ``mask`` functions (:issue:`173`).
+- Mentioned how to calculate regional medians (:issue:`170`).
 
 v0.6.1 (19.08.2020)
 -------------------
