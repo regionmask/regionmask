@@ -14,6 +14,81 @@ from .utils import (
     equally_spaced,
 )
 
+_MASK_DOCSTRING_TEMPLATE = """\
+create a {nd} {dtype} mask of a set of regions for the given lat/ lon grid
+
+Parameters
+----------
+{gp_doc}lon_or_obj : object or array_like
+    Can either be a longitude array and then ``lat`` needs to be
+    given. Or an object where the longitude and latitude can be
+    retrived as: ``lon = lon_or_obj[lon_name]`` and
+    ``lat = lon_or_obj[lat_name]``
+lat : array_like, optional
+    If ``lon_or_obj`` is a longitude array, the latitude needs to be
+    specified here.
+{drop_doc}lon_name : str, optional
+    Name of longitude in ``lon_or_obj``. Default: "lon".
+lat_name : str, optional
+    Name of latgitude in ``lon_or_obj``. Default: "lat"
+{numbers_doc}method : "rasterize" | "shapely", optional
+    Method used to determine whether a gridpoint lies in a region.
+    Both methods should lead to the same result. If None (default)
+    autoselects the method depending on the grid spacing.
+wrap_lon : bool | 180 | 360, optional
+    Whether to wrap the longitude around, inferred automatically.
+    If the regions and the provided longitude do not have the same
+    base (i.e. one is -180..180 and the other 0..360) one of them
+    must be wrapped. This can be achieved with wrap_lon.
+    If wrap_lon is None autodetects whether the longitude needs to be
+    wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
+    longitude data is wrapped to 360 if its minimum is smaller
+    than 0 and wrapped to 180 if its maximum is larger than 180.
+
+Returns
+-------
+mask_{nd} : {dtype} xarray.DataArray
+
+References
+----------
+See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
+"""
+
+_GP_DOCSTRING = """\
+geodataframe : GeoDataFrame or GeoSeries
+    Object providing the region definitions (outlines).
+"""
+
+_NUMBERS_DOCSTRING = """\
+numbers : str, optional
+    Name of the column to use for numbering the regions.
+    This column must not have duplicates. If None (default),
+    takes ``geodataframe.index.values``.
+"""
+
+
+_DROP_DOCSTRING = """\
+drop : boolean, optional
+    If True (default) drops slices where all elements are False (i.e no
+    gridpoints are contained in a region). If False returns one slice per
+    region.
+"""
+
+
+def _inject_mask_docstring(is_3D, gp_method):
+
+    dtype = "float" if is_3D else "boolean"
+    nd = "3D" if is_3D else "2D"
+    drop_doc = _DROP_DOCSTRING if is_3D else ""
+    numbers_doc = _NUMBERS_DOCSTRING if gp_method else ""
+    gp_doc = _GP_DOCSTRING if gp_method else ""
+
+    mask_docstring = _MASK_DOCSTRING_TEMPLATE.format(
+        dtype=dtype, nd=nd, drop_doc=drop_doc, numbers_doc=numbers_doc, gp_doc=gp_doc
+    )
+
+    return mask_docstring
+
 
 def _mask(
     outlines,
