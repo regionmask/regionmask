@@ -9,6 +9,7 @@ from shapely.geometry import Polygon
 from regionmask import Regions, create_mask_contains
 from regionmask.core.mask import (
     _determine_method,
+    _inject_mask_docstring,
     _mask_rasterize,
     _mask_rasterize_no_offset,
     _mask_shapely,
@@ -732,3 +733,60 @@ def test_mask_whole_grid(method, regions, lon):
     mask = regions.mask(lon, lat, method=method)
 
     assert (mask == 0).all()
+
+
+def test_inject_mask_docstring():
+
+    result = _inject_mask_docstring(True, True)
+
+    expected = """\
+create a 3D float mask of a set of regions for the given lat/ lon grid
+
+Parameters
+----------
+geodataframe : GeoDataFrame or GeoSeries
+    Object providing the region definitions (outlines).
+lon_or_obj : object or array_like
+    Can either be a longitude array and then ``lat`` needs to be
+    given. Or an object where the longitude and latitude can be
+    retrived as: ``lon = lon_or_obj[lon_name]`` and
+    ``lat = lon_or_obj[lat_name]``
+lat : array_like, optional
+    If ``lon_or_obj`` is a longitude array, the latitude needs to be
+    specified here.
+drop : boolean, optional
+    If True (default) drops slices where all elements are False (i.e no
+    gridpoints are contained in a region). If False returns one slice per
+    region.
+lon_name : str, optional
+    Name of longitude in ``lon_or_obj``. Default: "lon".
+lat_name : str, optional
+    Name of latgitude in ``lon_or_obj``. Default: "lat"
+numbers : str, optional
+    Name of the column to use for numbering the regions.
+    This column must not have duplicates. If None (default),
+    takes ``geodataframe.index.values``.
+method : "rasterize" | "shapely", optional
+    Method used to determine whether a gridpoint lies in a region.
+    Both methods should lead to the same result. If None (default)
+    autoselects the method depending on the grid spacing.
+wrap_lon : bool | 180 | 360, optional
+    Whether to wrap the longitude around, inferred automatically.
+    If the regions and the provided longitude do not have the same
+    base (i.e. one is -180..180 and the other 0..360) one of them
+    must be wrapped. This can be achieved with wrap_lon.
+    If wrap_lon is None autodetects whether the longitude needs to be
+    wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
+    longitude data is wrapped to 360 if its minimum is smaller
+    than 0 and wrapped to 180 if its maximum is larger than 180.
+
+Returns
+-------
+mask_3D : float xarray.DataArray
+
+References
+----------
+See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
+"""
+
+    assert result == expected

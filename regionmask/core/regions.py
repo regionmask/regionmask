@@ -12,7 +12,7 @@ import six
 from shapely.geometry import MultiPolygon, Polygon
 
 from .formatting import _display
-from .mask import _mask_2D, _mask_3D
+from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .plot import _plot, _plot_regions
 from .utils import _is_180, _is_numeric, _maybe_to_dict, _sanitize_names_abbrevs
 
@@ -292,48 +292,6 @@ class Regions(object):
         xarray=None,
         wrap_lon=None,
     ):
-        """
-        create a grid as mask of a set of regions for given lat/ lon grid
-
-        Parameters
-        ----------
-        lon_or_obj : object or array_like
-            Can either be a longitude array and then ``lat`` needs to be
-            given. Or an object where the longitude and latitude can be
-            retrived as: ``lon = lon_or_obj[lon_name]`` and
-            ``lat = lon_or_obj[lat_name]``
-        lat : array_like, optional
-            If 'lon_or_obj' is a longitude array, the latitude needs to be
-            specified here.
-        lon_name : str, optional
-            Name of longitude in 'lon_or_obj'. Default: 'lon'.
-        lat_name : str, optional
-            Name of latgitude in 'lon_or_obj'. Default: 'lat'
-        method : None | "rasterize" | "shapely" | "legacy"
-            Set method used to determine wether a gridpoint lies in a region.
-            If None (default) autoselects the method depending on the grid spacing.
-        xarray : None | bool, optional
-            Deprecated. If None or True returns an xarray DataArray, if False returns a
-            numpy ndarray. Default: None.
-        wrap_lon : None | bool | 180 | 360, optional
-            Whether to wrap the longitude around, should be inferred automatically.
-            If the regions and the provided longitude do not have the same
-            base (i.e. one is -180..180 and the other 0..360) one of them
-            must be wrapped. This can be done with wrap_lon.
-            If wrap_lon is None autodetects whether the longitude needs to be
-            wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
-            longitude data is wrapped to 360 if its minimum is smaller
-            than 0 and wrapped to 180 if its maximum is larger than 180.
-
-        Returns
-        -------
-        mask : ndarray or xarray DataArray
-
-        References
-        ----------
-        See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
-
-        """
 
         if method == "legacy":
             outlines = self.coords
@@ -352,6 +310,8 @@ class Regions(object):
             xarray=xarray,
             wrap_lon=wrap_lon,
         )
+
+    mask.__doc__ = _inject_mask_docstring(is_3D=False, gp_method=False)
 
     def mask_3D(
         self,
@@ -428,6 +388,8 @@ class Regions(object):
         )
 
         return mask_3D
+
+    mask_3D.__doc__ = _inject_mask_docstring(is_3D=True, gp_method=False)
 
 
 # add the plotting methods
