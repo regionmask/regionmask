@@ -230,8 +230,7 @@ class Regions(object):
 
     @property
     def bounds_global(self):
-        """global bounds over all regions (min_lon, min_lat, max_lon, max_lat)
-        """
+        """global bounds over all regions (min_lon, min_lat, max_lon, max_lat)"""
 
         bounds = self.bounds
 
@@ -244,8 +243,7 @@ class Regions(object):
 
     @property
     def lon_180(self):
-        """if the regions extend from -180 to 180
-        """
+        """if the regions extend from -180 to 180"""
         lon_min = self.bounds_global[0]
         lon_max = self.bounds_global[2]
 
@@ -253,8 +251,7 @@ class Regions(object):
 
     @property
     def lon_360(self):
-        """if the regions extend from 0 to 360
-        """
+        """if the regions extend from 0 to 360"""
         return not self.lon_180
 
     def _display(self, max_rows=10, max_width=None, max_colwidth=50):
@@ -484,8 +481,7 @@ class Regions_cls(Regions):
 
 
 class _OneRegion(object):
-    """a single Region, used as member of 'Regions'
-    """
+    """a single Region, used as member of 'Regions'"""
 
     def __init__(self, number, name, abbrev, outline, centroid=None):
         """

@@ -55,8 +55,8 @@ def _wrapAngle180(lon):
 def _wrapAngle(lon, wrap_lon=True):
     """wrap the angle to the other base
 
-        If lon is from -180 to 180 wraps them to 0..360
-        If lon is from 0 to 360 wraps them to -180..180
+    If lon is from -180 to 180 wraps them to 0..360
+    If lon is from 0 to 360 wraps them to -180..180
     """
 
     if np.isscalar(lon):
@@ -108,27 +108,27 @@ def _is_180(lon_min, lon_max):
 def create_lon_lat_dataarray_from_bounds(
     lon_start, lon_stop, lon_step, lat_start, lat_stop, lat_step
 ):
-    """ example xarray Dataset
+    """example xarray Dataset
 
-        Parameters
-        ==========
-        lon_start : number
-            Start of lon bounds. The bounds includes this value.
-        lon_stop : number
-            End of lon bounds. The bounds does not include this value.
-        lon_step : number
-            Spacing between values.
-        lat_start : number
-            Start of lat bounds. The bounds includes this value.
-        lat_stop : number
-            End of lat bounds. The bounds does not include this value.
-        lat_step : number
-            Spacing between values.
+    Parameters
+    ==========
+    lon_start : number
+        Start of lon bounds. The bounds includes this value.
+    lon_stop : number
+        End of lon bounds. The bounds does not include this value.
+    lon_step : number
+        Spacing between values.
+    lat_start : number
+        Start of lat bounds. The bounds includes this value.
+    lat_stop : number
+        End of lat bounds. The bounds does not include this value.
+    lat_step : number
+        Spacing between values.
 
-        Returns
-        =======
-        ds : xarray Dataarray
-            Example dataset including, lon, lat, lon_bnds, lat_bnds.
+    Returns
+    =======
+    ds : xarray Dataarray
+        Example dataset including, lon, lat, lon_bnds, lat_bnds.
 
     """
 
