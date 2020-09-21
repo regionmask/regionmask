@@ -84,7 +84,7 @@ def _inject_mask_docstring(is_3D, gp_method):
     gp_doc = _GP_DOCSTRING if gp_method else ""
 
     mask_docstring = _MASK_DOCSTRING_TEMPLATE.format(
-        dtype=dtype, nd=nd, drop_doc=drop_doc, numbers_doc=numbers_doc, gp_doc=gp_doc,
+        dtype=dtype, nd=nd, drop_doc=drop_doc, numbers_doc=numbers_doc, gp_doc=gp_doc
     )
 
     return mask_docstring
