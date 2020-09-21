@@ -24,6 +24,8 @@ New regions
 
 Bug Fixes
 ~~~~~~~~~
+- Text labels outside of the map area should now be correctly clipped in most cases
+  (:issue:`157`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
