@@ -286,7 +286,6 @@ class Regions(object):
         lon_name="lon",
         lat_name="lat",
         method=None,
-        xarray=None,
         wrap_lon=None,
     ):
 
@@ -304,7 +303,6 @@ class Regions(object):
             lon_name=lon_name,
             lat_name=lat_name,
             method=method,
-            xarray=xarray,
             wrap_lon=wrap_lon,
         )
 
@@ -320,45 +318,6 @@ class Regions(object):
         method=None,
         wrap_lon=None,
     ):
-        """
-        create a 3D boolean mask of a set of regions for the given lat/ lon grid
-
-        Parameters
-        ----------
-        lon_or_obj : object or array_like
-            Can either be a longitude array and then ``lat`` needs to be
-            given. Or an object where the longitude and latitude can be
-            retrived as: ``lon = lon_or_obj[lon_name]`` and
-            ``lat = lon_or_obj[lat_name]``
-        lat : array_like, optional
-            If ``lon_or_obj`` is a longitude array, the latitude needs to be
-            specified here.
-        drop : boolean, optional
-            If True (default) drops slices where all elements are False (i.e no
-            gridpoints are contained in a region). If False returns one slice per
-            region.
-        lon_name : str, optional
-            Name of longitude in 'lon_or_obj'. Default: "lon".
-        lat_name : str, optional
-            Name of latgitude in 'lon_or_obj'. Default: "lat"
-        method : None | "rasterize" | "shapely", optional
-            Set method used to determine wether a gridpoint lies in a region.
-            If None (default) autoselects the method depending on the grid spacing.
-        wrap_lon : None | bool | 180 | 360, optional
-            Whether to wrap the longitude around, should be inferred automatically.
-            If the regions and the provided longitude do not have the same
-            base (i.e. one is -180..180 and the other 0..360) one of them
-            must be wrapped. This can be done with wrap_lon.
-            If wrap_lon is None autodetects whether the longitude needs to be
-            wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
-            longitude data is wrapped to 360 if its minimum is smaller
-            than 0 and wrapped to 180 if its maximum is larger than 180.
-
-        Returns
-        -------
-        mask_3D : boolean xarray.DataArray
-
-        """
 
         if method == "legacy":
             raise ValueError("method 'legacy' not supported in 'mask_3D'")
