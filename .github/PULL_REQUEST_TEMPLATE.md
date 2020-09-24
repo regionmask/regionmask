@@ -2,5 +2,5 @@
 
  - [ ] Closes #xxx
  - [ ] Tests added
- - [ ] Passes `isort -rc . && black . && flake8`
+ - [ ] Passes `isort . && black . && flake8`
  - [ ] Fully documented, including `whats-new.rst`
