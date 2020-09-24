@@ -6,7 +6,7 @@ import xarray as xr
 from affine import Affine
 from shapely.geometry import Polygon
 
-from regionmask import Regions, create_mask_contains
+from regionmask import Regions
 from regionmask.core.mask import (
     _determine_method,
     _inject_mask_docstring,
@@ -28,39 +28,6 @@ from .utils import (
 )
 
 # =============================================================================
-
-
-@pytest.mark.filterwarnings("ignore:The function `create_mask_contains` is deprecated")
-def test_create_mask_contains():
-
-    # standard
-    result = create_mask_contains(dummy_lon, dummy_lat, dummy_outlines)
-    expected = expected_mask_2D()
-    assert np.allclose(result, expected, equal_nan=True)
-
-    result = create_mask_contains(dummy_lon, dummy_lat, dummy_outlines, fill=5)
-    expected = expected_mask_2D(fill=5)
-    assert np.allclose(result, expected, equal_nan=True)
-
-    result = create_mask_contains(
-        dummy_lon, dummy_lat, dummy_outlines, numbers=[5, 6, 7]
-    )
-    expected = expected_mask_2D(a=5, b=6)
-    assert np.allclose(result, expected, equal_nan=True)
-
-    with pytest.raises(ValueError):
-        create_mask_contains(dummy_lon, dummy_lat, dummy_outlines, fill=0)
-
-    with pytest.raises(ValueError):
-        create_mask_contains(dummy_lon, dummy_lat, dummy_outlines, numbers=[5])
-
-
-def test_create_mask_contains_warns():
-
-    with pytest.warns(
-        FutureWarning, match="The function `create_mask_contains` is deprecated"
-    ):
-        create_mask_contains(dummy_lon, dummy_lat, dummy_outlines)
 
 
 @pytest.mark.parametrize("func", [_mask_rasterize, _mask_shapely])
@@ -277,13 +244,6 @@ def test_mask_wrong_method():
 # test 2D array
 lon_2D = [[0.5, 1.5], [0.5, 1.5]]
 lat_2D = [[0.5, 0.5], [1.5, 1.5]]
-
-
-@pytest.mark.filterwarnings("ignore:The function `create_mask_contains` is deprecated")
-def test_create_mask_function_2D():
-    result = create_mask_contains(lon_2D, lat_2D, dummy_outlines)
-    expected = expected_mask_2D()
-    assert np.allclose(result, expected, equal_nan=True)
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
