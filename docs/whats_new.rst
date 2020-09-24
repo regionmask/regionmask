@@ -15,6 +15,8 @@ v0.7.0 (unreleased)
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
+- Removed the ``xarray`` keyword to all ``mask`` functions. This was deprecated in
+  version 0.5.0. To obtain a numpy mask use ``mask.values`` (:issue:`179`).
 
 Enhancements
 ~~~~~~~~~~~~

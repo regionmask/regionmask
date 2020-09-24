@@ -99,7 +99,6 @@ def _mask(
     lon_name="lon",
     lat_name="lat",
     method=None,
-    xarray=None,
     wrap_lon=None,
 ):
     """
@@ -155,21 +154,11 @@ def _mask(
     # we need to treat the points at -180°E/0°E and -90°N
     mask = _mask_edgepoints_shapely(mask, lon, lat, outlines, numbers)
 
-    if xarray is None:
-        xarray = True
+    # create an xr.DataArray
+    if lon.ndim == 1:
+        mask = _create_xarray(mask, lon_orig, lat, lon_name, lat_name)
     else:
-        msg = (
-            "Passing the `xarray` keyword is deprecated. Future versions of regionmask will"
-            " always return an xarray Dataset. Use `mask.values` to obtain a numpy grid."
-        )
-        warnings.warn(msg, FutureWarning, stacklevel=3)
-
-    if xarray:
-
-        if lon.ndim == 1:
-            mask = _create_xarray(mask, lon_orig, lat, lon_name, lat_name)
-        else:
-            mask = _create_xarray_2D(mask, lon_or_obj, lat_orig, lon_name, lat_name)
+        mask = _create_xarray_2D(mask, lon_or_obj, lat_orig, lon_name, lat_name)
 
     return mask
 
@@ -183,7 +172,6 @@ def _mask_2D(
     lon_name="lon",
     lat_name="lat",
     method=None,
-    xarray=None,
     wrap_lon=None,
 ):
 
@@ -196,7 +184,6 @@ def _mask_2D(
         lon_name=lon_name,
         lat_name=lat_name,
         method=method,
-        xarray=xarray,
         wrap_lon=wrap_lon,
     )
 

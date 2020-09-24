@@ -103,22 +103,20 @@ def test_mask_rasterize_wrong_number_fill(numbers, fill):
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask(method):
 
     expected = expected_mask_2D()
-    result = dummy_region.mask(dummy_lon, dummy_lat, method=method, xarray=False)
+    result = dummy_region.mask(dummy_lon, dummy_lat, method=method).values
     assert np.allclose(result, expected, equal_nan=True)
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask_xarray(method):
 
     expected = expected_mask_2D()
-    result = dummy_region.mask(dummy_lon, dummy_lat, method=method, xarray=True)
+    result = dummy_region.mask(dummy_lon, dummy_lat, method=method)
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
@@ -127,7 +125,6 @@ def test_mask_xarray(method):
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask_poly_z_value(method):
 
@@ -141,7 +138,7 @@ def test_mask_poly_z_value(method):
     r_z = Regions(outlines)
 
     expected = expected_mask_2D()
-    result = r_z.mask(dummy_lon, dummy_lat, method=method, xarray=True)
+    result = r_z.mask(dummy_lon, dummy_lat, method=method)
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
@@ -150,17 +147,15 @@ def test_mask_poly_z_value(method):
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask_xarray_name(method):
 
-    msk = dummy_region.mask(dummy_lon, dummy_lat, method=method, xarray=True)
+    msk = dummy_region.mask(dummy_lon, dummy_lat, method=method)
 
     assert msk.name == "region"
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("lon_name", ["lon", "longitude"])
 @pytest.mark.parametrize("lat_name", ["lat", "latitude"])
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
@@ -170,14 +165,13 @@ def test_mask_obj(lon_name, lat_name, method):
 
     obj = {lon_name: dummy_lon, lat_name: dummy_lat}
     result = dummy_region.mask(
-        obj, method=method, lon_name=lon_name, lat_name=lat_name, xarray=False
-    )
+        obj, method=method, lon_name=lon_name, lat_name=lat_name
+    ).values
 
     assert np.allclose(result, expected, equal_nan=True)
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.filterwarnings("ignore:No gridpoint belongs to any region.")
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask_wrap(method):
@@ -196,26 +190,25 @@ def test_mask_wrap(method):
     lon = [-1.5, -0.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=False)
+    result = r.mask(lon, lat, method=method, wrap_lon=False).values
     assert np.all(np.isnan(result))
 
     # this is the wrong wrapping
-    result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=180)
+    result = r.mask(lon, lat, method=method, wrap_lon=180).values
     assert np.all(np.isnan(result))
 
     expected = expected_mask_2D()
 
     # determine the wrap automatically
-    result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=True)
+    result = r.mask(lon, lat, method=method, wrap_lon=True).values
     assert np.allclose(result, expected, equal_nan=True)
 
     # determine the wrap by hand
-    result = r.mask(lon, lat, method=method, xarray=False, wrap_lon=360)
+    result = r.mask(lon, lat, method=method, wrap_lon=360).values
     assert np.allclose(result, expected, equal_nan=True)
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
 def test_mask_autowrap(method):
 
@@ -227,7 +220,7 @@ def test_mask_autowrap(method):
     # 1. -180..180 regions and -180..180 lon
     lon = [0.5, 1.5]
     lat = [0.5, 1.5]
-    result = dummy_region.mask(lon, lat, method=method, xarray=False)
+    result = dummy_region.mask(lon, lat, method=method).values
     assert np.allclose(result, expected, equal_nan=True)
 
     # 2. -180..180 regions and 0..360 lon
@@ -242,7 +235,7 @@ def test_mask_autowrap(method):
     lon = [358.5, 359.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, method=method, xarray=False)
+    result = r.mask(lon, lat, method=method).values
     assert np.allclose(result, expected, equal_nan=True)
 
     # 3. 0..360 regions and -180..180 lon
@@ -258,7 +251,7 @@ def test_mask_autowrap(method):
     lon = [-1.5, -0.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, method=method, xarray=False)
+    result = r.mask(lon, lat, method=method).values
     assert np.allclose(result, expected, equal_nan=True)
 
     # 3. 0..360 regions and 0..360 lon
@@ -267,7 +260,7 @@ def test_mask_autowrap(method):
     lon = [0.5, 359.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, method=method, xarray=False)
+    result = r.mask(lon, lat, method=method).values
     assert np.allclose(result, expected, equal_nan=True)
 
 
@@ -294,22 +287,11 @@ def test_create_mask_function_2D():
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("method", ["legacy", "shapely"])
 def test_mask_2D(method):
 
     expected = expected_mask_2D()
-    result = dummy_region.mask(lon_2D, lat_2D, method=method, xarray=False)
-    assert np.allclose(result, expected, equal_nan=True)
-
-
-@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
-@pytest.mark.parametrize("method", ["legacy", "shapely"])
-def test_mask_xarray_out_2D(method):
-
-    expected = expected_mask_2D()
-    result = dummy_region.mask(lon_2D, lat_2D, method=method, xarray=True)
+    result = dummy_region.mask(lon_2D, lat_2D, method=method)
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
@@ -321,14 +303,12 @@ def test_mask_xarray_out_2D(method):
     assert np.all(np.equal(result.lon_idx.values, [0, 1]))
 
 
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("lon", [lon_2D, [0, 1, 3], 0])
 @pytest.mark.parametrize("lat", [lat_2D, [0, 1, 3], 0])
-@pytest.mark.parametrize("xarray", [None, True, False])
-def test_mask_rasterize_irregular(lon, lat, xarray):
+def test_mask_rasterize_irregular(lon, lat):
 
     with pytest.raises(ValueError, match="`lat` and `lon` must be equally spaced"):
-        dummy_region.mask(lon, lat, method="rasterize", xarray=xarray)
+        dummy_region.mask(lon, lat, method="rasterize")
 
 
 @pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
@@ -359,13 +339,6 @@ def test_mask_xarray_in_out_2D(method):
 
     assert np.all(np.equal(result.lat_1D.values, [1, 2]))
     assert np.all(np.equal(result.lon_1D.values, [1, 2]))
-
-
-@pytest.mark.parametrize("xarray", [True, False])
-def test_xarray_keyword_deprection_warning(xarray):
-
-    with pytest.warns(FutureWarning, match="Passing the `xarray` keyword"):
-        dummy_region.mask(dummy_lon, dummy_lat, xarray=xarray)
 
 
 @pytest.mark.parametrize("lon_start", [0, 1, -5])
@@ -563,7 +536,6 @@ def expected_mask_interior_and_edge(ds, is_360, number=0, fill=np.NaN):
     return expected
 
 
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 @pytest.mark.parametrize(
     "regions", [r_US_180_ccw, r_US_180_cw, r_US_360_ccw, r_US_360_cw]
@@ -572,7 +544,7 @@ def expected_mask_interior_and_edge(ds, is_360, number=0, fill=np.NaN):
 def test_mask_edge(method, regions, ds_US, is_360):
 
     expected = expected_mask_edge(ds_US, is_360)
-    result = regions.mask(ds_US, method=method, xarray=True)
+    result = regions.mask(ds_US, method=method)
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
@@ -580,7 +552,6 @@ def test_mask_edge(method, regions, ds_US, is_360):
     assert np.all(np.equal(result.lon, ds_US.lon))
 
 
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 @pytest.mark.parametrize(
     "regions",
@@ -590,7 +561,7 @@ def test_mask_edge(method, regions, ds_US, is_360):
 def test_mask_interior_and_edge(method, regions, ds_US, is_360):
 
     expected = expected_mask_interior_and_edge(ds_US, is_360)
-    result = regions.mask(ds_US, method=method, xarray=True)
+    result = regions.mask(ds_US, method=method)
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
@@ -724,7 +695,6 @@ lon360 = np.arange(-180, 180, 10)
 lat = np.arange(90, -91, -10)
 
 
-@pytest.mark.filterwarnings("ignore:Passing the `xarray` keyword")
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 @pytest.mark.parametrize("regions", [r_GLOB_180, r_GLOB_360])
 @pytest.mark.parametrize("lon", [lon180, lon360])
