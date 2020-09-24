@@ -322,37 +322,6 @@ def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
     return mask
 
 
-def create_mask_contains(lon, lat, coords, fill=np.NaN, numbers=None):
-    """
-    create the mask of a list of regions, given the lat and lon coords
-
-    Parameters
-    ----------
-    lon : ndarray
-        Numpy array containing the midpoints of the longitude.
-    lat : ndarray
-        Numpy array containing the midpoints of the latitude.
-    coords : list of nx2 arays
-        List of the coordinates outlining the regions
-    fill : float, optional
-        Fill value for  for Default: np.NaN.
-    numbers : list of int, optional
-        If not given 0:n_coords - 1 is used.
-
-    """
-
-    msg = (
-        "The function `create_mask_contains` is deprecated and will be removed in a"
-        " future version. Please use ``regionmask.Regions(coords).mask(lon, lat)``"
-        " instead."
-    )
-    warnings.warn(msg, FutureWarning, stacklevel=3)
-
-    lon, lat, numbers = _parse_input(lon, lat, coords, fill, numbers)
-
-    return _mask_contains(lon, lat, coords, numbers, fill=fill)
-
-
 def _mask_contains(lon, lat, coords, numbers, fill=np.NaN):
 
     import matplotlib.path as mplPath

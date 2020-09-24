@@ -17,6 +17,8 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 - Removed the ``xarray`` keyword to all ``mask`` functions. This was deprecated in
   version 0.5.0. To obtain a numpy mask use ``mask.values`` (:issue:`179`).
+- Removed the deprecated ``create_mask_contains`` function (in v0.5.0). Use 
+  ``regionmask.Regions(coords).mask(lon, lat)`` instead (:pull:`181`).
 
 Enhancements
 ~~~~~~~~~~~~

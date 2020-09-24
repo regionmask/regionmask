@@ -17,7 +17,6 @@ Top-level functions
    mask_3D_geopandas
    from_geopandas
    plot_3D_mask
-   create_mask_contains
 
 
 Regions
