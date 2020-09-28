@@ -212,7 +212,7 @@ def test_plot_lines(plotfunc):
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_lines_multipoly(plotfunc):
     """regression of 47: because multipolygons were concatenated
-       they did not look closed"""
+    they did not look closed"""
 
     maybe_requires_cartopy(plotfunc)
 
@@ -299,7 +299,7 @@ def test_plot_lines_subsample(plotfunc):
 @pytest.mark.parametrize("n, expected", [(9, (9 - 1) * 50 + 1), (10, 10)])
 def test_plot_lines_maybe_subsample(plotfunc, n, expected):
     """only subset non-polygons if they have less than 10 elements GH153
-       should eventually be superseeded by GH109"""
+    should eventually be superseeded by GH109"""
     maybe_requires_cartopy(plotfunc)
 
     # create closed coordinates with n points
