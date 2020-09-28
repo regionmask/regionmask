@@ -294,13 +294,6 @@ def test_mask_geopandas_wrong_input(func):
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
-def test_mask_geopandas_raises_legacy(geodataframe_clean, func):
-
-    with pytest.raises(ValueError, match="method 'legacy' not supported"):
-        func(geodataframe_clean, dummy_lon, dummy_lat, method="legacy")
-
-
-@pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_mask_geopandas_wrong_numbers(geodataframe_clean, func):
 
     with pytest.raises(KeyError):

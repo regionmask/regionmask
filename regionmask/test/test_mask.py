@@ -69,8 +69,7 @@ def test_mask_rasterize_wrong_number_fill(numbers, fill):
         )
 
 
-@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask(method):
 
     expected = expected_mask_2D()
@@ -78,8 +77,7 @@ def test_mask(method):
     assert np.allclose(result, expected, equal_nan=True)
 
 
-@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_xarray(method):
 
     expected = expected_mask_2D()
@@ -91,12 +89,8 @@ def test_mask_xarray(method):
     assert np.all(np.equal(result.lon.values, dummy_lon))
 
 
-@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_poly_z_value(method):
-
-    if method == "legacy":
-        pytest.xfail("legacy does not support z-coordinates")
 
     outl1 = Polygon(((0, 0, 1), (0, 1, 1), (1, 1.0, 1), (1, 0, 1)))
     outl2 = Polygon(((0, 1, 1), (0, 2, 1), (1, 2.0, 1), (1, 1, 1)))
@@ -113,8 +107,7 @@ def test_mask_poly_z_value(method):
     assert np.all(np.equal(result.lon.values, dummy_lon))
 
 
-@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_xarray_name(method):
 
     msk = dummy_region.mask(dummy_lon, dummy_lat, method=method)
@@ -122,10 +115,9 @@ def test_mask_xarray_name(method):
     assert msk.name == "region"
 
 
-@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
 @pytest.mark.parametrize("lon_name", ["lon", "longitude"])
 @pytest.mark.parametrize("lat_name", ["lat", "latitude"])
-@pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_obj(lon_name, lat_name, method):
 
     expected = expected_mask_2D()
@@ -138,9 +130,8 @@ def test_mask_obj(lon_name, lat_name, method):
     assert np.allclose(result, expected, equal_nan=True)
 
 
-@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
 @pytest.mark.filterwarnings("ignore:No gridpoint belongs to any region.")
-@pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_wrap(method):
 
     # create a test case where the outlines and the lon coordinates
@@ -175,8 +166,7 @@ def test_mask_wrap(method):
     assert np.allclose(result, expected, equal_nan=True)
 
 
-@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.parametrize("method", ["rasterize", "legacy", "shapely"])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_autowrap(method):
 
     expected = expected_mask_2D()
@@ -233,7 +223,7 @@ def test_mask_autowrap(method):
 
 def test_mask_wrong_method():
 
-    msg = "Method must be None or one of 'rasterize', 'shapely', or 'legacy'."
+    msg = "Method must be None or one of 'rasterize' and 'shapely'."
     with pytest.raises(ValueError, match=msg):
 
         dummy_region.mask(dummy_lon, dummy_lat, method="method")
@@ -246,12 +236,10 @@ lon_2D = [[0.5, 1.5], [0.5, 1.5]]
 lat_2D = [[0.5, 0.5], [1.5, 1.5]]
 
 
-@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.parametrize("method", ["legacy", "shapely"])
-def test_mask_2D(method):
+def test_mask_2D():
 
     expected = expected_mask_2D()
-    result = dummy_region.mask(lon_2D, lat_2D, method=method)
+    result = dummy_region.mask(lon_2D, lat_2D, method="shapely")
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
@@ -271,9 +259,7 @@ def test_mask_rasterize_irregular(lon, lat):
         dummy_region.mask(lon, lat, method="rasterize")
 
 
-@pytest.mark.filterwarnings("ignore:The method 'legacy' will be removed")
-@pytest.mark.parametrize("method", ["legacy", "shapely"])
-def test_mask_xarray_in_out_2D(method):
+def test_mask_xarray_in_out_2D():
     # create xarray DataArray with 2D dims
 
     coords = {
@@ -289,7 +275,7 @@ def test_mask_xarray_in_out_2D(method):
 
     expected = expected_mask_2D()
     result = dummy_region.mask(
-        data, lon_name="lon_2D", lat_name="lat_2D", method=method
+        data, lon_name="lon_2D", lat_name="lat_2D", method="shapely"
     )
 
     assert isinstance(result, xr.DataArray)
@@ -334,11 +320,10 @@ def test_rasterize(a, b, fill):
     assert np.allclose(result, expected, equal_nan=True)
 
 
-@pytest.mark.parametrize("method", ["rasterize", "shapely"])
-def test_mask_empty(method):
+def test_mask_empty():
 
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
-        result = dummy_region.mask([10, 11], [10, 11], method=method)
+        result = dummy_region.mask([10, 11], [10, 11], method="shapely")
 
     assert isinstance(result, xr.DataArray)
     assert result.shape == (2, 2)
@@ -410,12 +395,6 @@ def test_mask_3D_obj(lon_name, lat_name, drop, method):
     assert np.all(np.equal(result.region.values, _dr.numbers))
     assert np.all(result.abbrevs.values == _dr.abbrevs)
     assert np.all(result.names.values == _dr.names)
-
-
-def test_mask_3D_raises_legacy():
-
-    with pytest.raises(ValueError, match="method 'legacy' not supported in 'mask_3D'"):
-        dummy_region.mask_3D(dummy_lon, dummy_lat, method="legacy")
 
 
 # =============================================================================
