@@ -4,7 +4,7 @@ from distutils.version import LooseVersion
 try:
     import matplotlib as mpl  # isort:skip
 
-    # mpl.use("Agg")
+    mpl.use("Agg")  # remove after dropping py27 support
     import cartopy.crs as ccrs
     import matplotlib.pyplot as plt
 except ImportError:
