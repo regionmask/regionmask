@@ -5,7 +5,6 @@
 # Date:
 
 import copy
-import warnings
 
 import numpy as np
 import six
@@ -353,89 +352,6 @@ Regions.plot = _plot
 Regions.plot_regions = _plot_regions
 
 
-class Regions_cls(Regions):
-    def __init__(
-        self, name, numbers, names, abbrevs, outlines, centroids=None, source=""
-    ):
-        """
-        Parameters
-        ----------
-        name : string
-            Name of the collection of regions.
-        numbers : list of int
-            List of numerical indices for every region.
-        names : dict of string
-            Long name of each region. Must be accessible as names[number].
-        abbrevs : dict of string
-            List of abbreviations of each region. Must be accessible as
-            abbrevs[number].
-        outlines : List of Nx2 float array of vertices, Polygon, MultiPolygon
-            List of coordinates/ outline of the region as shapely
-            Polygon/ MultiPolygon or list. Must be accessible as
-            outlines[number].
-        centroids : list of 1x2 iterable, optional.
-            Center of mass of the regions. If not provided is calculated
-            as (Multi)Polygon.centroid. Position of the label on map plots.
-        source : string, optional
-            Source of the region definitions. Default: ''.
-
-        Example
-        -------
-        Unsing numpy style outlines::
-
-            name = 'Example'
-            numbers = [0, 1]
-            names = ['Unit Square1', 'Unit Square2']
-            abbrevs = ['uSq1', 'uSq2']
-
-            outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
-            outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
-            outlines = [outl1, outl2]
-
-            r = Regions_cls(name, numbers, names, abbrevs, outlines)
-
-        Using shapely Polygons:
-
-            from shapely.geometry import Polygon
-
-            numbers = [1, 2]
-            names = {1:'Unit Square1', 2: 'Unit Square2'}
-            abbrevs = {1:'uSq1', 2:'uSq2'}
-            poly = {1: Polygon(outl1), 2: Polygon(outl2)}
-
-            r = Regions_cls(name, numbers, names, abbrevs, poly)
-        """
-
-        msg = (
-            "Using 'Regions_cls' is deprecated, please use 'Regions' instead."
-            " Please note that the call signature is different."
-        )
-        warnings.warn(msg, FutureWarning, stacklevel=3)
-
-        super(Regions_cls, self).__init__(
-            outlines=outlines,
-            numbers=numbers,
-            names=names,
-            abbrevs=abbrevs,
-            name=name,
-            source=source,
-        )
-
-        if centroids is not None:
-            msg = (
-                "Specifying 'centroids' is deprecated and the keyword will be "
-                "removed in the next version."
-            )
-            warnings.warn(msg, FutureWarning, stacklevel=3)
-
-            numbers = self.numbers
-
-            centroids = _maybe_to_dict(numbers, centroids)
-
-            for number in numbers:
-                self[number].centroid = centroids[number]
-
-
 # =============================================================================
 
 
@@ -560,12 +476,3 @@ class _OneRegion(object):
         if self._bounds is None:
             self._bounds = self.polygon.bounds
         return self._bounds
-
-
-class Region_cls(_OneRegion):
-    def __init__(self, number, name, abbrev, outline, centroid=None):
-
-        msg = "Using 'Region_cls' is deprecated, please use '_OneRegion' instead."
-        warnings.warn(msg, FutureWarning, stacklevel=3)
-
-        super(Region_cls, self).__init__(number, name, abbrev, outline, centroid)
