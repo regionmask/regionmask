@@ -125,8 +125,8 @@ def _mask(
     if wrap_lon:
         lon = _wrapAngle(lon, wrap_lon)
 
-    if method not in (None, "rasterize", "shapely", "legacy"):
-        msg = "Method must be None or one of 'rasterize', 'shapely', or 'legacy'."
+    if method not in (None, "rasterize", "shapely"):
+        msg = "Method must be None or one of 'rasterize' and 'shapely'."
         raise ValueError(msg)
 
     if method is None:
@@ -136,13 +136,8 @@ def _mask(
         if "rasterize" not in method:
             msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
             raise ValueError(msg)
-    elif method == "legacy":
-        msg = "The method 'legacy' will be removed in a future version."
-        warnings.warn(msg, FutureWarning, stacklevel=3)
 
-    if method == "legacy":
-        mask = _mask_contains(lon, lat, outlines, numbers=numbers)
-    elif method == "rasterize":
+    if method == "rasterize":
         mask = _mask_rasterize(lon, lat, outlines, numbers=numbers)
     elif method == "rasterize_flip":
         mask = _mask_rasterize_flip(lon, lat, outlines, numbers=numbers)
@@ -320,34 +315,6 @@ def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
     mask = xr.DataArray(mask, coords=coords, dims=dim1D_names)
 
     return mask
-
-
-def _mask_contains(lon, lat, coords, numbers, fill=np.NaN):
-
-    import matplotlib.path as mplPath
-
-    LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill)
-
-    # get all combinations if lat lon points
-    lonlat = list(zip(LON, LAT))
-
-    # loop through all polygons
-    for i in range(len(coords)):
-        cs = np.array(coords[i])
-
-        isnan = np.isnan(cs[:, 0])
-
-        if np.any(isnan):
-            cs = np.split(cs, np.nonzero(isnan)[0])
-        else:
-            cs = [cs]
-
-        for c in cs:
-            bbPath = mplPath.Path(c)
-            sel = bbPath.contains_points(lonlat)
-            out[sel] = numbers[i]
-
-    return out.reshape(shape)
 
 
 def _mask_edgepoints_shapely(mask, lon, lat, polygons, numbers, fill=np.NaN):

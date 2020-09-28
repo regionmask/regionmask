@@ -288,13 +288,8 @@ class Regions(object):
         wrap_lon=None,
     ):
 
-        if method == "legacy":
-            outlines = self.coords
-        else:
-            outlines = self.polygons
-
         return _mask_2D(
-            outlines=outlines,
+            outlines=self.polygons,
             regions_is_180=self.lon_180,
             numbers=self.numbers,
             lon_or_obj=lon_or_obj,
@@ -317,9 +312,6 @@ class Regions(object):
         method=None,
         wrap_lon=None,
     ):
-
-        if method == "legacy":
-            raise ValueError("method 'legacy' not supported in 'mask_3D'")
 
         mask_3D = _mask_3D(
             outlines=self.polygons,

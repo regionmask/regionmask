@@ -140,9 +140,6 @@ def _prepare_gdf_for_mask(geodataframe, method, numbers):
     if not isinstance(geodataframe, (GeoDataFrame, GeoSeries)):
         raise TypeError("input must be a geopandas 'GeoDataFrame' or 'GeoSeries'")
 
-    if method == "legacy":
-        raise ValueError("method 'legacy' not supported in 'mask_geopandas'")
-
     lon_min = geodataframe.bounds["minx"].min()
     lon_max = geodataframe.bounds["maxx"].max()
     is_180 = _is_180(lon_min, lon_max)
