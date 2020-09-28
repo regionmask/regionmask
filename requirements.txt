@@ -1,9 +1,7 @@
 numpy
-matplotlib
 shapely
 six
 rasterio
-cartopy
 geopandas
 affine
 xarray

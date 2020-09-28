@@ -39,6 +39,7 @@ Bug Fixes
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
+- ``matpoltlib`` and ``cartopy`` are now optional dependencies (:issue:`169`).
 
 Docs
 ~~~~

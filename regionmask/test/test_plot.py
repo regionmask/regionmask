@@ -1,14 +1,14 @@
-# import mpl and change the backend before other mpl imports
-import matplotlib as mpl  # isort:skip
-
-# Order of imports is important here: using Agg for non-display environments
-mpl.use("Agg")
-
 import contextlib
 from distutils.version import LooseVersion
 
-import cartopy.crs as ccrs
-import matplotlib.pyplot as plt
+try:
+    import matplotlib as mpl  # isort:skip
+    mpl.use("Agg")
+    import cartopy.crs as ccrs
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
+
 import numpy as np
 import pytest
 from shapely.geometry import MultiPolygon, Polygon
@@ -16,6 +16,8 @@ from shapely.geometry import MultiPolygon, Polygon
 import regionmask
 from regionmask import Regions, plot_3D_mask
 from regionmask.core.plot import _flatten_polygons, _polygons_coords, _subsample
+
+from . import requires_cartopy, requires_matplotlib
 
 # =============================================================================
 
@@ -67,6 +69,12 @@ def figure_context(*args, **kwargs):
         yield fig
     finally:
         plt.close(fig)
+
+
+def maybe_requires_cartopy(plotfunc):
+
+    if plotfunc == "plot":
+        requires_cartopy()
 
 
 # =============================================================================
@@ -142,6 +150,7 @@ def test_polygons_coords():
 # =============================================================================
 
 
+@requires_cartopy
 @pytest.mark.filterwarnings("ignore:numpy.dtype size changed")
 @pytest.mark.filterwarnings("ignore:numpy.ufunc size changed")
 def test_plot_projection():
@@ -163,6 +172,7 @@ def test_plot_projection():
         assert isinstance(ax.projection, ccrs.Mollweide)
 
 
+@requires_cartopy
 def test_plot_regions_projection():
 
     # if none is given -> no projection
@@ -180,8 +190,10 @@ def test_plot_regions_projection():
 # -----------------------------------------------------------------------------
 
 
+@requires_matplotlib
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_lines(plotfunc):
+    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -195,10 +207,13 @@ def test_plot_lines(plotfunc):
         assert np.allclose(lines[1], outl2_closed)
 
 
+@requires_matplotlib
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_lines_multipoly(plotfunc):
-    # regression of 47: because multipolygons were concatenated
-    # they did not look closed
+    """regression of 47: because multipolygons were concatenated
+       they did not look closed"""
+
+    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r3, plotfunc)
 
@@ -214,8 +229,10 @@ def test_plot_lines_multipoly(plotfunc):
 # -----------------------------------------------------------------------------
 
 
+@requires_matplotlib
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_lines_selection(plotfunc):
+    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -258,8 +275,10 @@ def test_plot_lines_selection(plotfunc):
 # -----------------------------------------------------------------------------
 
 
+@requires_matplotlib
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_lines_subsample(plotfunc):
+    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -271,14 +290,16 @@ def test_plot_lines_subsample(plotfunc):
         assert np.allclose(lines[0].vertices.shape, (201, 2))
 
 
+@requires_matplotlib
 @pytest.mark.skipif(
     LooseVersion(np.__version__) < "1.16", reason="requires numpy 1.16 or higher"
 )
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 @pytest.mark.parametrize("n, expected", [(9, (9 - 1) * 50 + 1), (10, 10)])
 def test_plot_lines_maybe_subsample(plotfunc, n, expected):
-    #  only subset non-polygons if they have less than 10 elements GH153
-    # should potentially be superseeded by GH109
+    """only subset non-polygons if they have less than 10 elements GH153
+       should eventually be superseeded by GH109"""
+    maybe_requires_cartopy(plotfunc)
 
     # create closed coordinates with n points
     coords = np.linspace(interior1_closed[0], interior1_closed[1], num=n - 4)
@@ -297,8 +318,10 @@ def test_plot_lines_maybe_subsample(plotfunc, n, expected):
 # -----------------------------------------------------------------------------
 
 
+@requires_matplotlib
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_lines_from_poly(plotfunc):
+    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r2, plotfunc)
 
@@ -314,8 +337,10 @@ def test_plot_lines_from_poly(plotfunc):
 # -----------------------------------------------------------------------------
 
 
+@requires_matplotlib
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_line_prop(plotfunc):
+    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -331,8 +356,10 @@ def test_plot_line_prop(plotfunc):
 # -----------------------------------------------------------------------------
 
 
+@requires_matplotlib
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_label_defaults(plotfunc):
+    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -342,8 +369,10 @@ def test_plot_label_defaults(plotfunc):
         assert len(texts) == 2
 
 
+@requires_matplotlib
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_label(plotfunc):
+    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -385,8 +414,10 @@ def test_plot_label(plotfunc):
         assert texts[1].get_text() == "Unit Square2"
 
 
+@requires_matplotlib
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_text_prop(plotfunc):
+    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -405,9 +436,11 @@ def test_plot_text_prop(plotfunc):
         assert bbox.get_edgecolor() == (0.85, 0.85, 0.85, 1.0)
 
 
+@requires_matplotlib
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_text_clip(plotfunc):
-    # test fix for #157
+    """test fix for #157"""
+    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -431,6 +464,7 @@ def test_plot_text_clip(plotfunc):
             assert text.get_clip_on() is False
 
 
+@requires_cartopy
 def test_plot_ocean():
 
     kwargs = dict(subsample=False, add_label=False, coastlines=False)
@@ -461,6 +495,7 @@ def test_plot_ocean():
         assert art.get_zorder() == 1
 
 
+@requires_cartopy
 def test_plot_land():
 
     kwargs = dict(subsample=False, add_label=False, coastlines=False)
@@ -489,6 +524,7 @@ def test_plot_land():
         assert art.get_zorder() == 1
 
 
+@requires_cartopy
 def test_plot_coastlines():
 
     kwargs = dict(subsample=False, add_label=False)
@@ -515,6 +551,7 @@ def test_plot_coastlines():
         assert art._kwargs == {"edgecolor": "black", "facecolor": "none"}
 
 
+@requires_matplotlib
 def test_plot_3D_mask_wrong_input():
 
     lon = np.arange(-180, 180, 2)
