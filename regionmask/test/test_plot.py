@@ -386,6 +386,32 @@ def test_plot_label(plotfunc):
 
 
 @pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_label_multipolygon(plotfunc):
+
+    func = getattr(r3, plotfunc)
+
+    with pytest.raises(
+        ValueError, match="'label_multipolygon' must be one of 'all' and 'largest'"
+    ):
+        func(label_multipolygon=None)
+
+    with figure_context():
+        ax = func(subsample=False, add_label=True, label_multipolygon="all")
+        texts = ax.texts
+
+        assert len(texts) == 2
+        assert texts[0].get_text() == "0"
+        assert texts[1].get_text() == "0"
+
+    with figure_context():
+        ax = func(subsample=False, add_label=True, label_multipolygon="largest")
+        texts = ax.texts
+
+        assert len(texts) == 1
+        assert texts[0].get_text() == "0"
+
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
 def test_plot_text_prop(plotfunc):
 
     func = getattr(r1, plotfunc)
