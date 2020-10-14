@@ -18,7 +18,7 @@ Breaking Changes
 
 Deprecations
 ~~~~~~~~~~~~
-- Removed the ``Regions_cls`` and ``Region_cls`` (deprecated in v0.5.0). Use 
+- Removed ``Regions_cls`` and ``Region_cls`` (deprecated in v0.5.0). Use 
   :py:class:`Regions` instead (:pull:`182`).
 - Removed the ``create_mask_contains`` function (deprecated in v0.5.0). Use 
 ``regionmask.Regions(coords).mask(lon, lat)`` instead (:pull:`181`).
@@ -28,6 +28,9 @@ Deprecations
 
 Enhancements
 ~~~~~~~~~~~~
+- :py:attr:`Regions.plot()` and :py:attr:`Regions.plot_regions()` now take the
+  ``label_multipolygon`` keyword to add text labels to all Polygons of
+  MultiPolygons (:issue:`185`).
 
 New regions
 ~~~~~~~~~~~

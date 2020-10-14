@@ -75,7 +75,9 @@ All
     
     text_kws = dict(color="#67000d", fontsize=7, bbox=dict(pad=0.2, color="w"))
     
-    regionmask.defined_regions.ar6.all.plot(text_kws=text_kws);
+    regionmask.defined_regions.ar6.all.plot(
+        text_kws=text_kws, label_multipolygon="all"
+    );
 
     @savefig plotting_ar6_all.png width=100%
     plt.tight_layout()
@@ -104,7 +106,9 @@ Ocean
 
 .. ipython:: python
 
-    regionmask.defined_regions.ar6.ocean.plot(text_kws=text_kws, add_land=True);
+    regionmask.defined_regions.ar6.ocean.plot(
+        text_kws=text_kws, add_land=True, label_multipolygon="all"
+    )
 
     @savefig plotting_ar6_ocean.png width=100%
     plt.tight_layout()
