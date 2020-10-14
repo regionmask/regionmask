@@ -92,6 +92,7 @@ def _plot(
     coastline_kws=None,
     ocean_kws=None,
     land_kws=None,
+    label_multipolygon="largest",
 ):
     """
     plot map with with region outlines
@@ -139,6 +140,10 @@ def _plot(
     land_kws : dict, optional
         Arguments passed to ``ax.add_feature(LAND)``. Per default uses the cartopy
         land color and ``zorder=0.9``.
+    label_multipolygon : 'largest' | 'all', optional
+        If 'largest' only adds a text label for the largest Polygon of a
+        MultiPolygon. If 'all' adds text labels to all of them. Default:
+        'largest'.
 
     Returns
     -------
@@ -154,6 +159,9 @@ def _plot(
     import matplotlib.pyplot as plt
 
     NEF = cfeature.NaturalEarthFeature
+
+    if label_multipolygon not in ["all", "largest"]:
+        raise ValueError("'label_multipolygon' must be one of 'all' and 'largest'")
 
     if proj is None:
         proj = ccrs.PlateCarree()
@@ -191,6 +199,7 @@ def _plot(
         line_kws=line_kws,
         text_kws=text_kws,
         subsample=subsample,
+        label_multipolygon=label_multipolygon,
     )
 
     return ax
@@ -205,6 +214,7 @@ def _plot_regions(
     line_kws=None,
     text_kws=None,
     subsample=None,
+    label_multipolygon="largest",
 ):
     """
     plot map with with srex regions
@@ -238,6 +248,10 @@ def _plot_regions(
         If None, infers the subsampling -> if the input is given as
         array subsamples if it is given as (Multi)Polygons does not
         subsample.
+    label_multipolygon : 'largest' | 'all', optional
+        If 'largest' only adds a text label for the largest Polygon of a
+        MultiPolygon. If 'all' adds text labels to all of them. Default:
+        'largest'.
 
     Returns
     -------
@@ -248,6 +262,9 @@ def _plot_regions(
     import cartopy.crs as ccrs
     import matplotlib.pyplot as plt
     from cartopy.mpl import geoaxes
+
+    if label_multipolygon not in ["all", "largest"]:
+        raise ValueError("'label_multipolygon' must be one of 'all' and 'largest'")
 
     if ax is None:
         ax = plt.gca()
@@ -289,19 +306,26 @@ def _plot_regions(
             r = self[i]
             txt = str(getattr(r, label))
 
-            t = ax.text(
-                r.centroid[0],
-                r.centroid[1],
-                txt,
-                transform=trans,
-                va=va,
-                ha=ha,
-                backgroundcolor=col,
-                clip_on=clip_on,
-                **text_kws
-            )
+            if label_multipolygon == "all":
+                polys = _flatten_polygons([r.polygon])
+                xy = [p.centroid.coords[0] for p in polys]
+            elif label_multipolygon == "largest":
+                xy = [r.centroid]
 
-            t.clipbox = ax.bbox
+            for x, y in xy:
+                t = ax.text(
+                    x,
+                    y,
+                    txt,
+                    transform=trans,
+                    va=va,
+                    ha=ha,
+                    backgroundcolor=col,
+                    clip_on=clip_on,
+                    **text_kws
+                )
+
+                t.clipbox = ax.bbox
 
     return ax
 
