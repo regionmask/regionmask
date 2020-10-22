@@ -18,6 +18,7 @@ Breaking Changes
 
 Deprecations
 ~~~~~~~~~~~~
+
 - Removed ``Regions_cls`` and ``Region_cls`` (deprecated in v0.5.0). Use 
   :py:class:`Regions` instead (:pull:`182`).
 - Removed the ``create_mask_contains`` function (deprecated in v0.5.0). Use 
@@ -28,6 +29,7 @@ Deprecations
 
 Enhancements
 ~~~~~~~~~~~~
+
 - :py:attr:`Regions.plot()` and :py:attr:`Regions.plot_regions()` now take the
   ``label_multipolygon`` keyword to add text labels to all Polygons of
   MultiPolygons (:issue:`185`).
@@ -37,18 +39,23 @@ New regions
 
 Bug Fixes
 ~~~~~~~~~
+
 - Text labels outside of the map area should now be correctly clipped in most cases
   (:issue:`157`).
 
-Internal Changes
-~~~~~~~~~~~~~~~~
-- Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now 
-  ``template-file``).
-
 Docs
 ~~~~
+
 - Unified the docstrings of all ``mask`` functions (:issue:`173`).
 - Mentioned how to calculate regional medians (:issue:`170`).
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now 
+  ``template-file``).
+- scipy is no loger automatically installed along cartopy. Add it to the
+  requirements (:issue:`189`).
 
 v0.6.1 (19.08.2020)
 -------------------
