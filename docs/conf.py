@@ -321,7 +321,7 @@ for nb in notebooks:
         (
             "jupyter nbconvert"
             " --to rst"
-            " --template notebooks/tutorial_rst"
+            " --template-file notebooks/tutorial_rst.tpl"
             " --ExecutePreprocessor.timeout=60"
             " --execute " + nb
         ),

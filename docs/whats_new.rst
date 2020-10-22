@@ -42,6 +42,8 @@ Bug Fixes
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
+- Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now 
+  ``template-file``).
 
 Docs
 ~~~~
