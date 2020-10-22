@@ -4,6 +4,7 @@ shapely
 six
 rasterio
 cartopy
+scipy
 geopandas
 affine
 xarray
