@@ -12,8 +12,6 @@ jobs:
     matrix:
       py36-min-all-deps:
        conda_env: py36-min-all-deps
-      py27:
-        conda_env: py27
       py36:
         conda_env: py36
       py37:

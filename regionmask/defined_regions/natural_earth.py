@@ -1,5 +1,4 @@
 import numpy as np
-import six
 
 from ..core.regions import Regions
 
@@ -7,7 +6,7 @@ from ..core.regions import Regions
 def _maybe_get_column(df, colname):
     """return column of the df or not"""
 
-    if isinstance(colname, six.string_types):
+    if isinstance(colname, str):
         # getattr also works for index (df['index'] does not)
         # try lower and upper, github #25
         if hasattr(df, colname):
@@ -107,7 +106,7 @@ def _obtain_ne(
 # =============================================================================
 
 
-class natural_earth_cls(object):
+class natural_earth_cls:
     """
     class combining all natural_earth features/ geometries
 
@@ -117,7 +116,6 @@ class natural_earth_cls(object):
     """
 
     def __init__(self):
-        super(natural_earth_cls, self).__init__()
 
         self._countries_110 = None
         self._countries_50 = None

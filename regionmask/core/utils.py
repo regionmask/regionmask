@@ -1,5 +1,4 @@
 import numpy as np
-import six
 import xarray as xr
 
 
@@ -19,7 +18,7 @@ def _create_dict_of_numbered_string(numbers, string):
 
 def _sanitize_names_abbrevs(numbers, values, default):
 
-    if isinstance(values, six.string_types):
+    if isinstance(values, str):
         values = _create_dict_of_numbered_string(numbers, values)
     elif values is None:
         values = _create_dict_of_numbered_string(numbers, default)

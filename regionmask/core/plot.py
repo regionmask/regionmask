@@ -368,9 +368,7 @@ def plot_3D_mask(mask_3D, **kwargs):
         raise ValueError("expected a xarray.DataArray")
 
     if not mask_3D.ndim == 3:
-        raise ValueError(
-            "``mask_3D`` must have 3 dimensions, found {}".format(mask_3D.ndim)
-        )
+        raise ValueError(f"``mask_3D`` must have 3 dimensions, found {mask_3D.ndim}")
 
     if "region" not in mask_3D.coords:
         raise ValueError("``mask_3D`` must contain the dimension 'region'")

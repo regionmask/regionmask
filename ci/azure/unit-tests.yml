@@ -2,19 +2,10 @@ steps:
 
 - template: install.yml
 
-# need to import without -OO for python27 as pooch has non-ascii characters
-
 - bash: |
     source activate regionmask-tests
     python -OO -c "import regionmask"
   displayName: Import regionmask
-  condition: ne(variables['CONDA_ENV'], 'py27')
-
-- bash: |
-    source activate regionmask-tests
-    python -c "import regionmask"
-  displayName: Import regionmask (py27)
-  condition: eq(variables['CONDA_ENV'], 'py27')
   
 # Work around for allowed test failures:
 # https://github.com/microsoft/azure-pipelines-tasks/issues/9302

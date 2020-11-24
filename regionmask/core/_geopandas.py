@@ -24,15 +24,13 @@ def _check_duplicates(data, name):
     """
     if data.duplicated().any():
         duplicates = data[data.duplicated(keep=False)]
-        raise ValueError(
-            "{} cannot contain duplicate values, found {}".format(name, duplicates)
-        )
+        raise ValueError(f"{name} cannot contain duplicate values, found {duplicates}")
     return True
 
 
 def _check_missing(data, name):
     if data.isnull().any():
-        raise ValueError("{} cannot contain missing values".format(name))
+        raise ValueError(f"{name} cannot contain missing values")
 
 
 def _enumerate_duplicates(series, keep=False):

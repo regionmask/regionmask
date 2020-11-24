@@ -15,6 +15,7 @@ v0.7.0 (unreleased)
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
+- Removed support for Python 2. This is the first version of regionmask that is Python 3 only!
 
 Deprecations
 ~~~~~~~~~~~~

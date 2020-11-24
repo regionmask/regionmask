@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from pytest import raises
 
 from regionmask import Regions, defined_regions
@@ -60,7 +58,7 @@ def test_natural_earth_loaded_as_utf8():
     regions = defined_regions.natural_earth.ocean_basins_50
     r = regions[90]
 
-    assert r.name == u"Río de la Plata"
+    assert r.name == "Río de la Plata"
 
 
 def test_ar6():
@@ -99,12 +97,12 @@ def test_ar6_pre_revisions_separate_pacific():
 
 
 def test_maybe_get_column():
-    class lowercase(object):
+    class lowercase:
         @property
         def name(self):
             return 1
 
-    class uppercase(object):
+    class uppercase:
         @property
         def NAME(self):
             return 2

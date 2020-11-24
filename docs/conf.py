@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # regionmask documentation build configuration file, created by
 # sphinx-quickstart on Wed Jul 20 14:36:54 2016.
