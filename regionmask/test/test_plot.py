@@ -15,7 +15,12 @@ from shapely.geometry import MultiPolygon, Polygon
 
 import regionmask
 from regionmask import Regions, plot_3D_mask
-from regionmask.core.plot import _flatten_polygons, _polygons_coords, _subsample
+from regionmask.core.plot import (
+    _check_unused_kws,
+    _flatten_polygons,
+    _polygons_coords,
+    _subsample,
+)
 
 # =============================================================================
 
@@ -567,3 +572,65 @@ def test_plot_3D_mask_wrong_input():
 
         # ensure kwargs are passed through
         assert h.get_zorder() == 3
+
+
+def test_check_unused_kws():
+
+    # ensure no warning is raised
+    with pytest.warns(None) as record:
+        _check_unused_kws(True, None, "feature_name", "kws_name")
+    assert not record
+
+    with pytest.warns(None) as record:
+        _check_unused_kws(True, {}, "feature_name", "kws_name")
+    assert not record
+
+    with pytest.warns(None) as record:
+        _check_unused_kws(False, None, "feature_name", "kws_name")
+    assert not record
+
+    with pytest.warns(
+        RuntimeWarning, match="'kws_name' are passed but 'feature_name' is False"
+    ):
+        _check_unused_kws(False, {}, "feature_name", "kws_name")
+
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_no_warning_default(plotfunc):
+
+    func = getattr(r1, plotfunc)
+
+    # ensure no warning is raised on default
+    with pytest.warns(None) as record:
+        func()
+    assert not record
+
+
+@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+def test_plot_unused_text_kws(plotfunc):
+
+    func = getattr(r1, plotfunc)
+
+    with figure_context():
+        with pytest.warns(
+            RuntimeWarning, match="'text_kws' are passed but 'add_label' is False"
+        ):
+            func(add_label=False, text_kws={})
+
+
+@pytest.mark.parametrize(
+    "feature_name, kws_name",
+    [
+        ["coastlines", "coastline_kws"],
+        ["add_ocean", "ocean_kws"],
+        ["add_land", "land_kws"],
+    ],
+)
+def test_plot_unused_kws(feature_name, kws_name):
+
+    with figure_context():
+        with pytest.warns(
+            RuntimeWarning,
+            match=f"'{kws_name}' are passed but '{feature_name}' is False",
+        ):
+            r1.plot(**{feature_name: False, kws_name: {}})

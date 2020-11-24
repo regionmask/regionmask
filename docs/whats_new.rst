@@ -34,6 +34,8 @@ Enhancements
 - :py:attr:`Regions.plot()` and :py:attr:`Regions.plot_regions()` now take the
   ``label_multipolygon`` keyword to add text labels to all Polygons of
   MultiPolygons (:issue:`185`).
+- :py:attr:`Regions.plot()` and :py:attr:`Regions.plot_regions()` now warn on unused arguments,
+  e.g. ``plot(add_land=False, land_kws=dict(color="g"))`` (:issue:`192`).
 
 New regions
 ~~~~~~~~~~~
