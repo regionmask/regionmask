@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # Author: Mathias Hauser
 # Date:
@@ -7,7 +6,6 @@
 import copy
 
 import numpy as np
-import six
 from shapely.geometry import MultiPolygon, Polygon
 
 from .formatting import _display
@@ -16,7 +14,7 @@ from .plot import _plot, _plot_regions
 from .utils import _is_180, _is_numeric, _maybe_to_dict, _sanitize_names_abbrevs
 
 
-class Regions(object):
+class Regions:
     """
     class for plotting regions and creating region masks
     """
@@ -80,8 +78,6 @@ class Regions(object):
             r = Regions(outlines)
 
         """
-
-        super(Regions, self).__init__()
 
         if numbers is None:
             numbers = range(len(outlines))
@@ -152,7 +148,7 @@ class Regions(object):
         """
 
         # a single key
-        if isinstance(key, (int, np.integer, six.string_types)):
+        if isinstance(key, (int, np.integer, str)):
             key = self.region_ids[key]
         # a list of keys
         else:
@@ -347,7 +343,7 @@ Regions.plot_regions = _plot_regions
 # =============================================================================
 
 
-class _OneRegion(object):
+class _OneRegion:
     """a single Region, used as member of 'Regions'"""
 
     def __init__(self, number, name, abbrev, outline, centroid=None):
@@ -383,8 +379,6 @@ class _OneRegion(object):
             poly = Polygon(outl)
             r = _OneRegion(1, 'Unit Square', 'USq', poly, centroid=[0.5, 0.75])
         """
-
-        super(_OneRegion, self).__init__()
 
         self.number = number
         self.name = name

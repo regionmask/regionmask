@@ -1,7 +1,6 @@
 numpy
 matplotlib
 shapely
-six
 rasterio
 cartopy
 scipy

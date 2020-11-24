@@ -16,11 +16,10 @@ ocean : Regions
 """
 
 
-class ar6_cls(object):
+class ar6_cls:
     """docstring for ar6"""
 
     def __init__(self):
-        super(ar6_cls, self).__init__()
 
         self._df = None
 
