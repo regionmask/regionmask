@@ -1,7 +1,6 @@
 """String formatting routines for __repr__."""
 
 import geopandas as gp
-import six
 from pandas.io.formats import console
 
 
@@ -24,7 +23,7 @@ def maybe_truncate(obj, maxlen=500):
 
     # copied from xarray
 
-    s = six.text_type(obj)
+    s = str(obj)
     if len(s) > maxlen:
         s = s[: (maxlen - 3)] + "..."
     return s

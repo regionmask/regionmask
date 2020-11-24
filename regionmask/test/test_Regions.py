@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-import six
 from shapely.geometry import MultiPolygon, Polygon
 
 from regionmask import Regions, _OneRegion
@@ -210,12 +209,12 @@ def test_optional_arguments(numbers, names, abbrevs, name):
 
     if names is None:
         names = _create_expected_str_list(numbers, "Region")
-    elif isinstance(names, six.string_types):
+    elif isinstance(names, str):
         names = _create_expected_str_list(numbers, names)
 
     if abbrevs is None:
         abbrevs = _create_expected_str_list(numbers, "r")
-    elif isinstance(abbrevs, six.string_types):
+    elif isinstance(abbrevs, str):
         abbrevs = _create_expected_str_list(numbers, abbrevs)
 
     expected_centroids = [[0.5, 0.5], [0.5, 1.5]]
