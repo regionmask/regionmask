@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 
 # =============================================================================
@@ -73,6 +75,13 @@ def _subsample(outl, num=50):
     lat.append(outl[-1][1])
 
     return np.stack((np.hstack(lon), np.hstack(lat))).T
+
+
+def _check_unused_kws(add, kws, feature_name, kws_name):
+    if (kws is not None) and (not add):
+        warnings.warn(
+            f"'{kws_name}' are passed but '{feature_name}' is False.", RuntimeWarning
+        )
 
 
 def _plot(
@@ -162,6 +171,10 @@ def _plot(
 
     if label_multipolygon not in ["all", "largest"]:
         raise ValueError("'label_multipolygon' must be one of 'all' and 'largest'")
+
+    _check_unused_kws(coastlines, coastline_kws, "coastlines", "coastline_kws")
+    _check_unused_kws(add_ocean, ocean_kws, "add_ocean", "ocean_kws")
+    _check_unused_kws(add_land, land_kws, "add_land", "land_kws")
 
     if proj is None:
         proj = ccrs.PlateCarree()
@@ -266,6 +279,8 @@ def _plot_regions(
     if label_multipolygon not in ["all", "largest"]:
         raise ValueError("'label_multipolygon' must be one of 'all' and 'largest'")
 
+    _check_unused_kws(add_label, text_kws, "add_label", "text_kws")
+
     if ax is None:
         ax = plt.gca()
 
@@ -322,7 +337,7 @@ def _plot_regions(
                     ha=ha,
                     backgroundcolor=col,
                     clip_on=clip_on,
-                    **text_kws
+                    **text_kws,
                 )
 
                 t.clipbox = ax.bbox
