@@ -90,7 +90,18 @@ def _obtain_ne(
     if combine_coords:
         from shapely import geometry
 
-        coords = [geometry.MultiPolygon([p for p in coords])]
+        # in 10m resolution, land partly uses multipolygons internally already,
+        # so need to untangle this here to create a single multipolygon
+        _coords = []
+        for p in coords:
+            if isinstance(p, geometry.polygon.Polygon):
+                _coords.append(p)
+            elif isinstance(p, geometry.multipolygon.MultiPolygon):
+                _coords += list(p)
+            else:
+                raise TypeError('Expected either Polygon or MultiPolygon')
+
+        coords = [geometry.MultiPolygon(_coords)]
 
     # make sure numbers is a list
     numbers = np.array(numbers)
@@ -124,6 +135,8 @@ class natural_earth_cls:
         self._us_states_10 = None
 
         self._land_110 = None
+        self._land_50 = None
+        self._land_10 = None
 
         self._ocean_basins_50 = None
 
@@ -205,6 +218,42 @@ class natural_earth_cls:
 
             self._land_110 = _obtain_ne(**opt)
         return self._land_110
+
+    @property
+    def land_50(self):
+        if self._land_50 is None:
+
+            opt = dict(
+                resolution="50m",
+                category="physical",
+                name="land",
+                title="Natural Earth: landmask 50m",
+                names=["land"],
+                abbrevs=["lnd"],
+                numbers=[0],
+                combine_coords=True,
+            )
+
+            self._land_50 = _obtain_ne(**opt)
+        return self._land_50
+
+    @property
+    def land_10(self):
+        if self._land_10 is None:
+
+            opt = dict(
+                resolution="10m",
+                category="physical",
+                name="land",
+                title="Natural Earth: landmask 10m",
+                names=["land"],
+                abbrevs=["lnd"],
+                numbers=[0],
+                combine_coords=True,
+            )
+
+            self._land_10 = _obtain_ne(**opt)
+        return self._land_10
 
     @property
     def ocean_basins_50(self):
