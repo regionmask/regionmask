@@ -7,7 +7,7 @@ def _importorskip(modname):
     try:
         importlib.import_module(modname)
         has = True
-    except ImportError: # pragma: no cover
+    except ImportError:  # pragma: no cover
         has = False
     func = pytest.mark.skipif(not has, reason=f"requires {modname}")
     return has, func
