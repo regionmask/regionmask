@@ -112,18 +112,14 @@ def test_from_geopandas_default(geodataframe_clean):
 @pytest.mark.parametrize("arg", ["names", "abbrevs", "numbers"])
 def test_from_geopandas_missing_error(geodataframe_missing, arg):
 
-    with pytest.raises(
-        ValueError, match="{} cannot contain missing values".format(arg)
-    ):
+    with pytest.raises(ValueError, match=f"{arg} cannot contain missing values"):
         from_geopandas(geodataframe_missing, **{arg: arg})
 
 
 @pytest.mark.parametrize("arg", ["names", "abbrevs", "numbers"])
 def test_from_geopandas_duplicates_error(geodataframe_duplicates, arg):
 
-    with pytest.raises(
-        ValueError, match="{} cannot contain duplicate values".format(arg)
-    ):
+    with pytest.raises(ValueError, match=f"{arg} cannot contain duplicate values"):
         from_geopandas(geodataframe_duplicates, **{arg: arg})
 
 

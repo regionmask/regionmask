@@ -1,6 +1,5 @@
 numpy
 shapely
-six
 rasterio
 geopandas
 affine

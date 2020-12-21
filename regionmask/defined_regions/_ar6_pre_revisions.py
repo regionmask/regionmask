@@ -116,11 +116,10 @@ ocean = [
 ]
 
 
-class ar6_pre_revisions_cls(object):
+class ar6_pre_revisions_cls:
     """docstring for ar6"""
 
     def __init__(self):
-        super(ar6_pre_revisions_cls, self).__init__()
 
         self.__df = None
         self.__df_combined = None

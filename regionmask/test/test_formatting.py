@@ -1,18 +1,16 @@
-# -*- coding: utf-8 -*-
-
 from regionmask.core import formatting
 from regionmask.defined_regions import srex
 
 
 def test_pretty_print():
     assert formatting.pretty_print("abcdefghij", 8) == "abcde..."
-    assert formatting.pretty_print(u"ß", 1) == u"ß"
+    assert formatting.pretty_print("ß", 1) == "ß"
     assert formatting.pretty_print("x", 3) == "x  "
     assert formatting.pretty_print("x", 3, False) == "  x"
 
 
 def test_maybe_truncate():
-    assert formatting.maybe_truncate(u"ß", 10) == u"ß"
+    assert formatting.maybe_truncate("ß", 10) == "ß"
     assert formatting.maybe_truncate("abcdefghij", 8) == "abcde..."
 
 
