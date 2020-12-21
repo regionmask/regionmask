@@ -1,7 +1,9 @@
-from pytest import raises
+import pytest
 
 from regionmask import Regions, defined_regions
 from regionmask.defined_regions import _maybe_get_column
+
+from . import has_cartopy, requires_cartopy
 
 
 def _defined_region(regions, n_regions):
@@ -23,36 +25,43 @@ def test_srex():
     _defined_region(regions, 26)
 
 
+@requires_cartopy
 def test_countries_110():
     regions = defined_regions.natural_earth.countries_110
     _defined_region(regions, 177)
 
 
+@requires_cartopy
 def test_countries_50():
     regions = defined_regions.natural_earth.countries_50
     _defined_region(regions, 241)
 
 
+@requires_cartopy
 def test_us_states_50():
     regions = defined_regions.natural_earth.us_states_50
     _defined_region(regions, 51)
 
 
+@requires_cartopy
 def test_us_states_10():
     regions = defined_regions.natural_earth.us_states_10
     _defined_region(regions, 51)
 
 
+@requires_cartopy
 def test_land_110():
     regions = defined_regions.natural_earth.land_110
     _defined_region(regions, 1)
 
 
+@requires_cartopy
 def test_ocean_basins_50():
     regions = defined_regions.natural_earth.ocean_basins_50
     _defined_region(regions, 119)
 
 
+@requires_cartopy
 def test_natural_earth_loaded_as_utf8():
     # GH 95
     regions = defined_regions.natural_earth.ocean_basins_50
@@ -111,5 +120,12 @@ def test_maybe_get_column():
     assert _maybe_get_column(uppercase(), "name") == 2
     assert _maybe_get_column(uppercase(), "NAME") == 2
 
-    with raises(KeyError, match="not on the geopandas dataframe"):
+    with pytest.raises(KeyError, match="not on the geopandas dataframe"):
         _maybe_get_column(lowercase, "not_a_column")
+
+
+@pytest.mark.skipif(has_cartopy, reason="should run if cartopy is _not_ installed")
+def test_natural_earth_raises_without_cartopy():
+
+    with pytest.raises(ImportError, match="cartopy is required"):
+        defined_regions.natural_earth.countries_110

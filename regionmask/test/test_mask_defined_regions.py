@@ -4,19 +4,29 @@ import pytest
 from regionmask import defined_regions
 from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
 
-regions = [
-    defined_regions.ar6.all,
-    defined_regions.ar6.land,
-    defined_regions.ar6.ocean,
-    defined_regions.giorgi,
-    defined_regions.srex,
-    defined_regions.natural_earth.countries_110,
-    defined_regions.natural_earth.countries_50,
-    defined_regions.natural_earth.us_states_50,
-    defined_regions.natural_earth.us_states_10,
-    defined_regions.natural_earth.land_110,
-    defined_regions.natural_earth.ocean_basins_50,
-]
+from . import has_cartopy
+
+
+def regions():
+    regions = [
+        defined_regions.ar6.all,
+        defined_regions.ar6.land,
+        defined_regions.ar6.ocean,
+        defined_regions.giorgi,
+        defined_regions.srex,
+    ]
+
+    if has_cartopy:
+        regions += [
+            defined_regions.natural_earth.countries_110,
+            defined_regions.natural_earth.countries_50,
+            defined_regions.natural_earth.us_states_50,
+            defined_regions.natural_earth.us_states_10,
+            defined_regions.natural_earth.land_110,
+            defined_regions.natural_earth.ocean_basins_50,
+        ]
+
+    return regions
 
 
 # =============================================================================
@@ -30,7 +40,7 @@ ds_glob_360_2 = create_lon_lat_dataarray_from_bounds(*(0, 361, 2) + (90, -91, -2
 ds_glob_360_2_part = create_lon_lat_dataarray_from_bounds(*(0, 220, 2) + (90, -91, -2))
 
 
-@pytest.mark.parametrize("region", regions)
+@pytest.mark.parametrize("region", regions())
 @pytest.mark.parametrize(
     "ds", [ds_glob_1, ds_glob_2, ds_glob_360_2, ds_glob_360_2_part]
 )
