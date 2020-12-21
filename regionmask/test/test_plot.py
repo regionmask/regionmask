@@ -7,7 +7,7 @@ try:
     mpl.use("Agg")  # remove after dropping py27 support
     import cartopy.crs as ccrs
     import matplotlib.pyplot as plt
-except ImportError:
+except ImportError: # pragma: no cover
     pass
 
 import numpy as np
@@ -218,7 +218,6 @@ def test_plot_lines(plotfunc):
 def test_plot_lines_multipoly(plotfunc):
     """regression of 47: because multipolygons were concatenated
     they did not look closed"""
-
     maybe_requires_cartopy(plotfunc)
 
     func = getattr(r3, plotfunc)
