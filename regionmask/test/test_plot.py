@@ -2,12 +2,14 @@ import contextlib
 from distutils.version import LooseVersion
 
 try:
-    import matplotlib as mpl  # isort:skip
-
-    mpl.use("Agg")  # remove after dropping py27 support
     import cartopy.crs as ccrs
+except ImportError:  # pragma: no cover
+    pass
+
+try:
+    import matplotlib as mpl
     import matplotlib.pyplot as plt
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     pass
 
 import numpy as np
@@ -77,10 +79,10 @@ def figure_context(*args, **kwargs):
         plt.close(fig)
 
 
-def maybe_requires_cartopy(plotfunc):
-
-    if plotfunc == "plot":
-        requires_cartopy()
+PLOTFUNCS = [
+    pytest.param("plot", marks=requires_cartopy),
+    "plot_regions",
+]
 
 
 # =============================================================================
@@ -197,9 +199,8 @@ def test_plot_regions_projection():
 
 
 @requires_matplotlib
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines(plotfunc):
-    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -214,11 +215,10 @@ def test_plot_lines(plotfunc):
 
 
 @requires_matplotlib
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_multipoly(plotfunc):
     """regression of 47: because multipolygons were concatenated
     they did not look closed"""
-    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r3, plotfunc)
 
@@ -235,9 +235,8 @@ def test_plot_lines_multipoly(plotfunc):
 
 
 @requires_matplotlib
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_selection(plotfunc):
-    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -281,9 +280,8 @@ def test_plot_lines_selection(plotfunc):
 
 
 @requires_matplotlib
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_subsample(plotfunc):
-    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -299,12 +297,11 @@ def test_plot_lines_subsample(plotfunc):
 @pytest.mark.skipif(
     LooseVersion(np.__version__) < "1.16", reason="requires numpy 1.16 or higher"
 )
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 @pytest.mark.parametrize("n, expected", [(9, (9 - 1) * 50 + 1), (10, 10)])
 def test_plot_lines_maybe_subsample(plotfunc, n, expected):
     """only subset non-polygons if they have less than 10 elements GH153
     should eventually be superseeded by GH109"""
-    maybe_requires_cartopy(plotfunc)
 
     # create closed coordinates with n points
     coords = np.linspace(interior1_closed[0], interior1_closed[1], num=n - 4)
@@ -324,9 +321,8 @@ def test_plot_lines_maybe_subsample(plotfunc, n, expected):
 
 
 @requires_matplotlib
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_from_poly(plotfunc):
-    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r2, plotfunc)
 
@@ -343,9 +339,8 @@ def test_plot_lines_from_poly(plotfunc):
 
 
 @requires_matplotlib
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_line_prop(plotfunc):
-    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -362,9 +357,8 @@ def test_plot_line_prop(plotfunc):
 
 
 @requires_matplotlib
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_label_defaults(plotfunc):
-    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -375,9 +369,8 @@ def test_plot_label_defaults(plotfunc):
 
 
 @requires_matplotlib
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_label(plotfunc):
-    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -420,7 +413,7 @@ def test_plot_label(plotfunc):
 
 
 @requires_matplotlib
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_label_multipolygon(plotfunc):
 
     func = getattr(r3, plotfunc)
@@ -446,9 +439,9 @@ def test_plot_label_multipolygon(plotfunc):
         assert texts[0].get_text() == "0"
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_text_prop(plotfunc):
-    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -468,10 +461,9 @@ def test_plot_text_prop(plotfunc):
 
 
 @requires_matplotlib
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_text_clip(plotfunc):
     """test fix for #157"""
-    maybe_requires_cartopy(plotfunc)
 
     func = getattr(r1, plotfunc)
 
@@ -495,6 +487,7 @@ def test_plot_text_clip(plotfunc):
             assert text.get_clip_on() is False
 
 
+@requires_matplotlib
 @requires_cartopy
 def test_plot_ocean():
 
@@ -526,6 +519,7 @@ def test_plot_ocean():
         assert art.get_zorder() == 1
 
 
+@requires_matplotlib
 @requires_cartopy
 def test_plot_land():
 
@@ -555,6 +549,7 @@ def test_plot_land():
         assert art.get_zorder() == 1
 
 
+@requires_matplotlib
 @requires_cartopy
 def test_plot_coastlines():
 
@@ -611,6 +606,8 @@ def test_plot_3D_mask_wrong_input():
         assert h.get_zorder() == 3
 
 
+@requires_matplotlib
+@requires_cartopy
 def test_check_unused_kws():
 
     # ensure no warning is raised
@@ -632,7 +629,8 @@ def test_check_unused_kws():
         _check_unused_kws(False, {}, "feature_name", "kws_name")
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_no_warning_default(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -643,7 +641,8 @@ def test_plot_no_warning_default(plotfunc):
     assert not record
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_unused_text_kws(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -655,6 +654,8 @@ def test_plot_unused_text_kws(plotfunc):
             func(add_label=False, text_kws={})
 
 
+@requires_matplotlib
+@requires_cartopy
 @pytest.mark.parametrize(
     "feature_name, kws_name",
     [
