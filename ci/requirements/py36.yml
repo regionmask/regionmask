@@ -1,10 +1,10 @@
 name: regionmask-tests
 channels:
   - conda-forge
+  - nodefaults
 dependencies:
   - python=3.6
   - cartopy
-  - scipy # optional dependency of cartopy (requred for plotting)
   - geopandas
   - xarray
   - numpy

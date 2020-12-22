@@ -60,8 +60,9 @@ Internal Changes
 
 - Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now 
   ``template-file``).
-- scipy is no loger automatically installed along cartopy. Add it to the
-  requirements (:issue:`189`).
+- Update the CI: use mamba for faster installation, merge code coverage from all runs,
+  don't check the coverage of the tests (:pull:`197`).
+
 
 v0.6.1 (19.08.2020)
 -------------------

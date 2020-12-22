@@ -22,7 +22,6 @@ steps:
     curl https://codecov.io/bash > codecov.sh
     bash codecov.sh -t 32cfbc8b-8d1a-4540-8bc3-f6a1a695c554
   displayName: Upload coverage to codecov.io
-  condition: eq(variables['CONDA_ENV'], 'py37')
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()

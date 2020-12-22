@@ -6,9 +6,8 @@ steps:
 - template: add-conda-to-path.yml
 
 - bash: |
-    conda update -y conda
-    conda config --set channel_priority strict
-    conda env create -n regionmask-tests --file ${{ parameters.env_file }}
+    conda install -y mamba -c conda-forge
+    mamba env create -n regionmask-tests --file ${{ parameters.env_file }}
   displayName: Install conda dependencies
 
 # - bash: |
