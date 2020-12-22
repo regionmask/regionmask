@@ -272,9 +272,15 @@ def _plot_regions(
 
     """
 
-    import cartopy.crs as ccrs
     import matplotlib.pyplot as plt
-    from cartopy.mpl import geoaxes
+
+    try:
+        import cartopy.crs as ccrs
+        from cartopy.mpl import geoaxes
+
+        has_cartopy = True
+    except ImportError:
+        has_cartopy = False
 
     if label_multipolygon not in ["all", "largest"]:
         raise ValueError("'label_multipolygon' must be one of 'all' and 'largest'")
@@ -284,7 +290,7 @@ def _plot_regions(
     if ax is None:
         ax = plt.gca()
 
-    if isinstance(ax, geoaxes.GeoAxes):
+    if has_cartopy and isinstance(ax, geoaxes.GeoAxes):
         trans = ccrs.PlateCarree()
     else:
         trans = ax.transData

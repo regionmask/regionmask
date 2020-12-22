@@ -1,0 +1,13 @@
+name: regionmask-tests
+channels:
+  - conda-forge
+dependencies:
+  - python=3.6
+  - geopandas
+  - xarray
+  - numpy
+  - pooch
+  - rasterio
+  - pytest
+  - pytest-cov
+  - pytest-env
