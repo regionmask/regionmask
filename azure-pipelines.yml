@@ -70,6 +70,6 @@ jobs:
   steps:
   - template: ci/azure/add-conda-to-path.yml
   - bash: |
-      mamba install -y pyyaml
+      conda install -y pyyaml
       python ci/min_deps_check.py ci/requirements/py36-min-all-deps.yml
     displayName: minimum versions policy
