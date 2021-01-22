@@ -13,6 +13,10 @@ What's New
 v0.6.2 (unreleased)
 -------------------
 
+This is a minor bugfix release that corrects a problem occurring only in python 2.7 which
+could lead to wrong coordinates of 3D masks derived with :py:attr:`Regions.mask_3D` and
+:py:attr:`mask_3D_geopandas`.
+
 Bug Fixes
 ~~~~~~~~~
 
@@ -33,9 +37,9 @@ v0.6.0 (30.07.2020)
 
 .. warning::
 
-  This is the last release of regionmask that will support Python 2.7. Future releases
-  will be Python 3 only, but older versions of regionmask will always be available
-  for Python 2.7 users. For the more details, see:
+  Version 0.6 is the last release of regionmask that will support Python 2.7. Future
+  releases will be Python 3 only, but older versions of regionmask will always be
+  available for Python 2.7 users. For the more details, see:
 
   - `Python 3 Statement <http://www.python3statement.org/>`__
 
