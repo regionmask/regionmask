@@ -128,7 +128,6 @@ class Regions(object):
             return self.regions[key]
         else:
             # subsample the regions
-            regions = {k: self.regions[k] for k in key}
             regions = OrderedDict()
             for k in key:
                 regions[k] = self.regions[k]
