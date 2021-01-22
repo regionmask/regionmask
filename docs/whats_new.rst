@@ -8,7 +8,13 @@ What's New
 
     import regionmask
 
-.. _whats-new.0.6.1:
+.. _whats-new.0.7.0:
+
+v0.6.2 (unreleased)
+-------------------
+
+Bug Fixes
+~~~~~~~~~
 
 v0.6.1 (19.08.2020)
 -------------------
@@ -27,7 +33,7 @@ v0.6.0 (30.07.2020)
 
   - `Python 3 Statement <http://www.python3statement.org/>`__
 
-Version 0.6.0 offers better support for shapefiles (via `geopandas 
+Version 0.6.0 offers better support for shapefiles (via `geopandas
 <https://geopandas.readthedocs.io>`__) and can directly create 3D boolean masks
 which play nicely with xarray's ``weighted.mean(...)`` function. It also includes
 a number of optimizations and bug fixes.
@@ -68,7 +74,7 @@ Enhancements
 New regions
 ~~~~~~~~~~~
 
-- Added the AR6 reference regions described in `Iturbide et al., (2000) 
+- Added the AR6 reference regions described in `Iturbide et al., (2000)
   <https://essd.copernicus.org/preprints/essd-2019-258/>`_ (:pull:`61`).
 - New marine regions from natural earth added as :py:attr:`natural_earth.ocean_basins_50`
   (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_).
@@ -78,7 +84,7 @@ Bug Fixes
 
 - The natural earth shapefiles are now loaded with ``encoding="utf8"`` (:issue:`95`).
 - Explicitly check that the numbers are numeric and raise an informative error (:issue:`130`).
-- Do not subset coords with more than 10 vertices when plotting regions as this 
+- Do not subset coords with more than 10 vertices when plotting regions as this
   can be slow (:issue:`153`).
 
 Internal Changes
@@ -93,7 +99,7 @@ Internal Changes
 - Replaced all ``assertion`` with ``if ...: ValueError`` outside of tests (:issue:`142`).
 - Raise consistent warnings on empty mask (:issue:`141`).
 - Use a context manager for the plotting tests (:issue:`145`).
-  
+
 Docs
 ~~~~
 
