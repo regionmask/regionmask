@@ -16,6 +16,12 @@ v0.6.2 (unreleased)
 Bug Fixes
 ~~~~~~~~~
 
+- Make sure ``Regions`` is sorted by the number of the individual regions. This was
+  previously not always the case. Either when creating regions with unsorted numbers
+  in python 3.6 and higher (e.g. ``Regions([poly2, poly1], [2, 1])``) or when indexing
+  regions in python 2.7 (e.g. ``regionmask.defined_regions.ar6.land[[30, 31, 32]]`` sorts
+  the regions as 32, 30, 31). This can lead to problems for ```mask_3D`` (:issue:`200`).
+
 v0.6.1 (19.08.2020)
 -------------------
 

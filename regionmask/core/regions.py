@@ -6,6 +6,7 @@
 
 import copy
 import warnings
+from collections import OrderedDict
 
 import numpy as np
 import six
@@ -95,9 +96,9 @@ class Regions(object):
         names = _sanitize_names_abbrevs(numbers, names, "Region")
         abbrevs = _sanitize_names_abbrevs(numbers, abbrevs, "r")
 
-        regions = dict()
+        regions = OrderedDict()
 
-        for n in numbers:
+        for n in sorted(numbers):
             regions[n] = _OneRegion(n, names[n], abbrevs[n], outlines[n])
 
         self.regions = regions
@@ -127,7 +128,9 @@ class Regions(object):
             return self.regions[key]
         else:
             # subsample the regions
-            regions = {k: self.regions[k] for k in key}
+            regions = OrderedDict()
+            for k in key:
+                regions[k] = self.regions[k]
             new_self = copy.copy(self)  # shallow copy
             new_self.regions = regions
             return new_self
