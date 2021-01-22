@@ -23,9 +23,9 @@ Breaking Changes
 Deprecations
 ~~~~~~~~~~~~
 
-- Removed ``Regions_cls`` and ``Region_cls`` (deprecated in v0.5.0). Use 
+- Removed ``Regions_cls`` and ``Region_cls`` (deprecated in v0.5.0). Use
   :py:class:`Regions` instead (:pull:`182`).
-- Removed the ``create_mask_contains`` function (deprecated in v0.5.0). Use 
+- Removed the ``create_mask_contains`` function (deprecated in v0.5.0). Use
   ``regionmask.Regions(coords).mask(lon, lat)`` instead (:pull:`181`).
 - Removed the ``xarray`` keyword to all ``mask`` functions. This was deprecated in
   version 0.5.0. To obtain a numpy mask use ``mask.values`` (:issue:`179`).
@@ -58,11 +58,27 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now 
+- Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now
   ``template-file``).
 - Update the CI: use mamba for faster installation, merge code coverage from all runs,
   don't check the coverage of the tests (:pull:`197`).
 
+v0.6.2 (19.01.2021)
+-------------------
+
+This is a minor bugfix release that corrects a problem occurring only in python 2.7 which
+could lead to wrong coordinates of 3D masks derived with :py:attr:`Regions.mask_3D` and
+:py:attr:`mask_3D_geopandas`.
+
+Bug Fixes
+~~~~~~~~~
+
+- Make sure ``Regions`` is sorted by the number of the individual regions. This was
+  previously not always the case. Either when creating regions with unsorted numbers
+  in python 3.6 and higher (e.g. ``Regions([poly2, poly1], [2, 1])``) or when indexing
+  regions in python 2.7 (e.g. ``regionmask.defined_regions.ar6.land[[30, 31, 32]]`` sorts
+  the regions as 32, 30, 31). This can lead to problems for :py:attr:`Regions.mask_3D` and
+  :py:attr:`mask_3D_geopandas` (:issue:`200`).
 
 v0.6.1 (19.08.2020)
 -------------------

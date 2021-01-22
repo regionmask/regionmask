@@ -265,3 +265,35 @@ def test_error_on_non_numeric(numbers):
 
     with pytest.raises(ValueError, match="'numbers' must be numeric"):
         Regions(poly, numbers)
+
+
+def test_regions_sorted():
+
+    numbers = [3, 1, 2]
+    outl = [poly1, poly1, poly2]
+    names = ["R3", "R1", "R2"]
+    abbrevs = ["r3", "r1", "r2"]
+
+    r = Regions(outl, numbers, names, abbrevs)
+
+    assert r.numbers == [1, 2, 3]
+    assert r.names == sorted(names)
+    assert r.abbrevs == sorted(abbrevs)
+
+    assert r.polygons[0].equals(poly1)
+    assert r.polygons[1].equals(poly2)
+    assert r.polygons[2].equals(poly1)
+
+
+@pytest.mark.parametrize("numbers", [[1, 3, 4, 9, 10], [10, 9, 4, 3, 1]])
+def test_getitem_sorted(numbers):
+
+    r = Regions([outl1] * 20)[numbers]
+
+    numbers_expected = sorted(numbers)
+    abbrevs_expected = ["r{}".format(n) for n in numbers_expected]
+    names_expected = ["Region{}".format(n) for n in numbers_expected]
+
+    assert r.numbers == numbers_expected
+    assert r.abbrevs == abbrevs_expected
+    assert r.names == names_expected
