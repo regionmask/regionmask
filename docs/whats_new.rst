@@ -10,7 +10,7 @@ What's New
 
 .. _whats-new.0.6.2:
 
-v0.6.2 (unreleased)
+v0.6.2 (19.01.2021)
 -------------------
 
 This is a minor bugfix release that corrects a problem occurring only in python 2.7 which
@@ -24,7 +24,8 @@ Bug Fixes
   previously not always the case. Either when creating regions with unsorted numbers
   in python 3.6 and higher (e.g. ``Regions([poly2, poly1], [2, 1])``) or when indexing
   regions in python 2.7 (e.g. ``regionmask.defined_regions.ar6.land[[30, 31, 32]]`` sorts
-  the regions as 32, 30, 31). This can lead to problems for ```mask_3D`` (:issue:`200`).
+  the regions as 32, 30, 31). This can lead to problems for :py:attr:`Regions.mask_3D` and
+  :py:attr:`mask_3D_geopandas` (:issue:`200`).
 
 v0.6.1 (19.08.2020)
 -------------------
