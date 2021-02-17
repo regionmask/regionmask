@@ -1,0 +1,72 @@
+#################
+intake_regionmask
+#################
+
+Regions from geopandas shapefiles can be also pre-defined in a yaml file, which can be
+easily shared. This relies on intake_geopandas and accepts regionmask_kwargs, which are
+passed to regionmask.from_geopandas. If use_fsspec=True and simplecache:: in url, the
+shapefile is cached locally.
+
+.. ipython:: python
+    :suppress:
+
+    # Use defaults so we don't get gridlines in generated docs
+    import matplotlib as mpl
+    mpl.rcdefaults()
+    mpl.use('Agg')
+
+    # cut border when saving (for maps)
+    mpl.rcParams["savefig.bbox"] = "tight"
+
+The following imports are necessary for the examples.
+
+.. ipython:: python
+
+    import intake_geopandas
+    import intake
+    cat = intake.open_catalog('https://raw.githubusercontent.com/aaronspring/remote_climate_data/master/master.yaml')
+    region = cat.regionmask.Countries.read()
+    print(region)
+
+Build your own catalog
+======================
+
+Let's explore the Marine Ecoregions Of the World (MEOW) data set, which is a
+biogeographic classification of the world's coasts and shelves.
+
+.. ipython:: python
+
+    %%writefile test_cat.yml
+    plugins:
+      source:
+        - module: intake_geopandas
+      sources:
+        MEOW:
+          description: MEOW for regionmask and cache
+        driver: intake_geopandas.regionmask.RegionmaskSource
+        args:
+          urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
+          use_fsspec: true  # optional for caching
+          storage_options:  # optional for caching
+            simplecache:
+              same_names: true
+              cache_storage: cache
+          regionmask_kwargs:
+            names: ECOREGION
+            abbrevs: _from_name
+            source: http://maps.tnc.org
+            numbers: ECO_CODE_X
+            name: MEOW
+
+.. ipython:: python
+
+    cat = intake.open_catalog('test_cat.yml')
+    region = cat.MEOW.read()
+    print(region)
+    region.plot()
+
+    @savefig plotting_MEOW.png width=100%
+    plt.tight_layout()
+
+    import os
+    assert os.path.exists('cache/MEOW-TNC.zip')
