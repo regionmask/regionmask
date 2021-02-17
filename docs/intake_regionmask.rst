@@ -18,15 +18,24 @@ shapefile is cached locally.
     # cut border when saving (for maps)
     mpl.rcParams["savefig.bbox"] = "tight"
 
-The following imports are necessary for the examples.
+You may need to install intake_geopandas, which combines geopandas and intake, see
+https://intake.readthedocs.io/en/latest/.
 
 .. ipython:: python
 
-    import intake_geopandas
+    import intake_geopandas  # pip install intake_geopandas
     import intake
+    # open a pre-defined remote or local catalog yaml file
     cat = intake.open_catalog('https://raw.githubusercontent.com/aaronspring/remote_climate_data/master/master.yaml')
-    region = cat.regionmask.Countries.read()
+    # access data from remote source
+    region = cat.regionmask.MEOW.read()
     print(region)
+
+    region.plot()
+
+    @savefig plotting_MEOW.png width=100%
+    plt.tight_layout()
+
 
 Build your own catalog
 ======================
@@ -63,10 +72,12 @@ biogeographic classification of the world's coasts and shelves.
     cat = intake.open_catalog('test_cat.yml')
     region = cat.MEOW.read()
     print(region)
-    region.plot()
 
-    @savefig plotting_MEOW.png width=100%
-    plt.tight_layout()
+
+Because simplecache:: was added to the urlpath and use_fsspec=True, the zip file was
+downloaded to the folder specified in cache_storage. The file access is now locally.
+
+.. ipython:: python
 
     import os
     assert os.path.exists('cache/MEOW-TNC.zip')
