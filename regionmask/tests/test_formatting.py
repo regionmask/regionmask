@@ -1,3 +1,5 @@
+import pytest
+
 from regionmask.core import formatting
 from regionmask.defined_regions import srex
 
@@ -16,6 +18,8 @@ def test_maybe_truncate():
 
 def test_repr_srex():
 
+    pytest.importorskip("pandas", minversion="1.2")
+
     result = srex.__repr__()
 
     expected = """<regionmask.Regions>
@@ -23,17 +27,17 @@ Name:     SREX
 Source:   Seneviratne et al., 2012 (https://www.ipcc.ch/site/assets/uploads/2...
 
 Regions:
-  1  ALA        Alaska/N.W. Canada
-  2  CGI      Canada/Greenl./Icel.
-  3  WNA          W. North America
-  4  CNA          C. North America
-  5  ENA          E. North America
-..   ...                       ...
- 22  EAS                   E. Asia
- 23  SAS                   S. Asia
- 24  SEA                 S.E. Asia
- 25  NAU              N. Australia
- 26  SAU  S. Australia/New Zealand
+ 1 ALA       Alaska/N.W. Canada
+ 2 CGI     Canada/Greenl./Icel.
+ 3 WNA         W. North America
+ 4 CNA         C. North America
+ 5 ENA         E. North America
+..  ..                      ...
+22 EAS                  E. Asia
+23 SAS                  S. Asia
+24 SEA                S.E. Asia
+25 NAU             N. Australia
+26 SAU S. Australia/New Zealand
 
 [26 regions]"""
 

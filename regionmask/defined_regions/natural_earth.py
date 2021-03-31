@@ -68,7 +68,12 @@ def _obtain_ne(
         MultiPolygon (used to combine all land Polygons). Default: False.
     """
     import geopandas
-    from cartopy.io import shapereader
+
+    try:
+        from cartopy.io import shapereader
+    except ImportError as e:
+        msg = "cartopy is required to download/ access NaturalEarth data"
+        raise ImportError(msg) from e
 
     # maybe download natural_earth feature and return filename
     shpfilename = shapereader.natural_earth(resolution, category, name)

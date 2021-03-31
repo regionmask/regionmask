@@ -1,14 +1,17 @@
-# import mpl and change the backend before other mpl imports
-import matplotlib as mpl  # isort:skip
-
-# Order of imports is important here: using Agg for non-display environments
-mpl.use("Agg")
-
 import contextlib
 from distutils.version import LooseVersion
 
-import cartopy.crs as ccrs
-import matplotlib.pyplot as plt
+try:
+    import cartopy.crs as ccrs
+except ImportError:  # pragma: no cover
+    pass
+
+try:
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+except ImportError:  # pragma: no cover
+    pass
+
 import numpy as np
 import pytest
 from shapely.geometry import MultiPolygon, Polygon
@@ -21,6 +24,8 @@ from regionmask.core.plot import (
     _polygons_coords,
     _subsample,
 )
+
+from . import requires_cartopy, requires_matplotlib
 
 # =============================================================================
 
@@ -72,6 +77,12 @@ def figure_context(*args, **kwargs):
         yield fig
     finally:
         plt.close(fig)
+
+
+PLOTFUNCS = [
+    pytest.param("plot", marks=requires_cartopy),
+    "plot_regions",
+]
 
 
 # =============================================================================
@@ -147,6 +158,7 @@ def test_polygons_coords():
 # =============================================================================
 
 
+@requires_cartopy
 @pytest.mark.filterwarnings("ignore:numpy.dtype size changed")
 @pytest.mark.filterwarnings("ignore:numpy.ufunc size changed")
 def test_plot_projection():
@@ -168,6 +180,7 @@ def test_plot_projection():
         assert isinstance(ax.projection, ccrs.Mollweide)
 
 
+@requires_cartopy
 def test_plot_regions_projection():
 
     # if none is given -> no projection
@@ -185,7 +198,8 @@ def test_plot_regions_projection():
 # -----------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -200,10 +214,11 @@ def test_plot_lines(plotfunc):
         assert np.allclose(lines[1], outl2_closed)
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_multipoly(plotfunc):
-    # regression of 47: because multipolygons were concatenated
-    # they did not look closed
+    """regression of 47: because multipolygons were concatenated
+    they did not look closed"""
 
     func = getattr(r3, plotfunc)
 
@@ -219,7 +234,8 @@ def test_plot_lines_multipoly(plotfunc):
 # -----------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_selection(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -263,7 +279,8 @@ def test_plot_lines_selection(plotfunc):
 # -----------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_subsample(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -276,14 +293,15 @@ def test_plot_lines_subsample(plotfunc):
         assert np.allclose(lines[0].vertices.shape, (201, 2))
 
 
+@requires_matplotlib
 @pytest.mark.skipif(
     LooseVersion(np.__version__) < "1.16", reason="requires numpy 1.16 or higher"
 )
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 @pytest.mark.parametrize("n, expected", [(9, (9 - 1) * 50 + 1), (10, 10)])
 def test_plot_lines_maybe_subsample(plotfunc, n, expected):
-    #  only subset non-polygons if they have less than 10 elements GH153
-    # should potentially be superseeded by GH109
+    """only subset non-polygons if they have less than 10 elements GH153
+    should eventually be superseeded by GH109"""
 
     # create closed coordinates with n points
     coords = np.linspace(interior1_closed[0], interior1_closed[1], num=n - 4)
@@ -302,7 +320,8 @@ def test_plot_lines_maybe_subsample(plotfunc, n, expected):
 # -----------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_from_poly(plotfunc):
 
     func = getattr(r2, plotfunc)
@@ -319,7 +338,8 @@ def test_plot_lines_from_poly(plotfunc):
 # -----------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_line_prop(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -336,7 +356,8 @@ def test_plot_line_prop(plotfunc):
 # -----------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_label_defaults(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -347,7 +368,8 @@ def test_plot_label_defaults(plotfunc):
         assert len(texts) == 2
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_label(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -390,7 +412,8 @@ def test_plot_label(plotfunc):
         assert texts[1].get_text() == "Unit Square2"
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_label_multipolygon(plotfunc):
 
     func = getattr(r3, plotfunc)
@@ -416,7 +439,8 @@ def test_plot_label_multipolygon(plotfunc):
         assert texts[0].get_text() == "0"
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_text_prop(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -436,9 +460,10 @@ def test_plot_text_prop(plotfunc):
         assert bbox.get_edgecolor() == (0.85, 0.85, 0.85, 1.0)
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_text_clip(plotfunc):
-    # test fix for #157
+    """test fix for #157"""
 
     func = getattr(r1, plotfunc)
 
@@ -462,6 +487,8 @@ def test_plot_text_clip(plotfunc):
             assert text.get_clip_on() is False
 
 
+@requires_matplotlib
+@requires_cartopy
 def test_plot_ocean():
 
     kwargs = dict(subsample=False, add_label=False, coastlines=False)
@@ -492,6 +519,8 @@ def test_plot_ocean():
         assert art.get_zorder() == 1
 
 
+@requires_matplotlib
+@requires_cartopy
 def test_plot_land():
 
     kwargs = dict(subsample=False, add_label=False, coastlines=False)
@@ -520,6 +549,8 @@ def test_plot_land():
         assert art.get_zorder() == 1
 
 
+@requires_matplotlib
+@requires_cartopy
 def test_plot_coastlines():
 
     kwargs = dict(subsample=False, add_label=False)
@@ -546,6 +577,7 @@ def test_plot_coastlines():
         assert art._kwargs == {"edgecolor": "black", "facecolor": "none"}
 
 
+@requires_matplotlib
 def test_plot_3D_mask_wrong_input():
 
     lon = np.arange(-180, 180, 2)
@@ -574,6 +606,8 @@ def test_plot_3D_mask_wrong_input():
         assert h.get_zorder() == 3
 
 
+@requires_matplotlib
+@requires_cartopy
 def test_check_unused_kws():
 
     # ensure no warning is raised
@@ -595,7 +629,8 @@ def test_check_unused_kws():
         _check_unused_kws(False, {}, "feature_name", "kws_name")
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_no_warning_default(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -606,7 +641,8 @@ def test_plot_no_warning_default(plotfunc):
     assert not record
 
 
-@pytest.mark.parametrize("plotfunc", ["plot", "plot_regions"])
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_unused_text_kws(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -618,6 +654,8 @@ def test_plot_unused_text_kws(plotfunc):
             func(add_label=False, text_kws={})
 
 
+@requires_matplotlib
+@requires_cartopy
 @pytest.mark.parametrize(
     "feature_name, kws_name",
     [

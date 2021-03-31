@@ -4,6 +4,7 @@
 # Date:
 
 import copy
+from collections import OrderedDict
 
 import numpy as np
 from shapely.geometry import MultiPolygon, Polygon
@@ -90,9 +91,9 @@ class Regions:
         names = _sanitize_names_abbrevs(numbers, names, "Region")
         abbrevs = _sanitize_names_abbrevs(numbers, abbrevs, "r")
 
-        regions = dict()
+        regions = OrderedDict()
 
-        for n in numbers:
+        for n in sorted(numbers):
             regions[n] = _OneRegion(n, names[n], abbrevs[n], outlines[n])
 
         self.regions = regions
@@ -122,7 +123,9 @@ class Regions:
             return self.regions[key]
         else:
             # subsample the regions
-            regions = {k: self.regions[k] for k in key}
+            regions = OrderedDict()
+            for k in key:
+                regions[k] = self.regions[k]
             new_self = copy.copy(self)  # shallow copy
             new_self.regions = regions
             return new_self
