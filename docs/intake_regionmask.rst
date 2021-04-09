@@ -49,9 +49,9 @@ biogeographic classification of the world's coasts and shelves.
     plugins:
       source:
         - module: intake_geopandas
-      sources:
-        MEOW:
-          description: MEOW for regionmask and cache
+    sources:
+      MEOW:
+        description: MEOW for regionmask and cache
         driver: intake_geopandas.regionmask.RegionmaskSource
         args:
           urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
