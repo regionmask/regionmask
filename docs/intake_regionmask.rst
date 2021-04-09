@@ -47,29 +47,31 @@ biogeographic classification of the world's coasts and shelves.
 To create a catalog we use the syntax described in
 `intake <https://intake.readthedocs.io/en/latest/catalog.html#yaml-format>`_.
 
-.. ipython:: python
+.. ipython::
 
-    %%writefile test_cat.yml
-    plugins:
-      source:
-        - module: intake_geopandas
-    sources:
-      MEOW:
-        description: MEOW for regionmask and cache
-        driver: intake_geopandas.regionmask.RegionmaskSource
-        args:
-          urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
-          use_fsspec: true  # optional for caching
-          storage_options:  # optional for caching
-            simplecache:
-              same_names: true
-              cache_storage: cache
-          regionmask_kwargs:
-            names: ECOREGION
-            abbrevs: _from_name
-            source: http://maps.tnc.org
-            numbers: ECO_CODE_X
-            name: MEOW
+    with open('test_cat.yml', 'w') as f:
+        f.write('''
+plugins:
+  source:
+    - module: intake_geopandas
+sources:
+  MEOW:
+    description: MEOW for regionmask and cache
+    driver: intake_geopandas.regionmask.RegionmaskSource
+    args:
+      urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
+      use_fsspec: true  # optional for caching
+      storage_options:  # optional for caching
+        simplecache:
+          same_names: true
+          cache_storage: cache
+      regionmask_kwargs:
+        names: ECOREGION
+        abbrevs: _from_name
+        source: http://maps.tnc.org
+        numbers: ECO_CODE_X
+        name: MEOW
+''')
 
 .. ipython:: python
 
