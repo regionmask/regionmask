@@ -23,7 +23,7 @@ https://intake.readthedocs.io/en/latest/.
 
 .. ipython:: python
 
-    import intake_geopandas  # pip install intake_geopandas
+    import intake_geopandas
     import intake
     # open a pre-defined remote or local catalog yaml file
     cat = intake.open_catalog('https://raw.githubusercontent.com/aaronspring/remote_climate_data/master/master.yaml')
