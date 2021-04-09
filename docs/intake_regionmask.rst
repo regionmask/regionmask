@@ -4,8 +4,8 @@ intake_regionmask
 
 Regions from geopandas shapefiles can be also pre-defined in a yaml file, which can be
 easily shared. This relies on intake_geopandas and accepts regionmask_kwargs, which are
-passed to regionmask.from_geopandas. If use_fsspec=True and simplecache:: in url, the
-shapefile is cached locally.
+passed to regionmask.from_geopandas. If you set ``use_fsspec=True`` and use ``simplecache::``
+in the url, the shapefile is cached locally.
 
 .. ipython:: python
     :suppress:
