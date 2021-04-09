@@ -18,6 +18,7 @@ dependencies:
     - cftime
     - netcdf4
     - geopandas
+    - intake==0.6.1
     - intake_geopandas>=0.2.4
     - aiohttp
     - requests
