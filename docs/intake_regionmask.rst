@@ -32,7 +32,7 @@ https://intake.readthedocs.io/en/latest/.
     region = cat.regionmask.MEOW.read()
     print(region)
 
-    region.plot()
+    region.plot(add_label=False)
 
     @savefig plotting_MEOW.png width=100%
     plt.tight_layout()
