@@ -18,7 +18,7 @@ in the url, the shapefile is cached locally.
     # cut border when saving (for maps)
     mpl.rcParams["savefig.bbox"] = "tight"
 
-You may need to install intake_geopandas, which combines geopandas and intake, see
+You need to install intake_geopandas, which combines geopandas and intake, see
 https://intake.readthedocs.io/en/latest/.
 
 .. ipython:: python
