@@ -61,6 +61,7 @@ Documentation
    notebooks/mask_3D
    notebooks/geopandas
    notebooks/create_own_regions
+   intake_regionmask
 
 .. toctree::
    :maxdepth: 2
@@ -70,7 +71,6 @@ Documentation
    defined_landmask
    defined_ocean_basins
    defined_scientific
-   intake_regionmask
 
 .. toctree::
    :maxdepth: 2

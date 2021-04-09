@@ -1,11 +1,12 @@
-#################
-intake_regionmask
-#################
+############################
+Using regionmask with intake
+############################
 
 Regions from geopandas shapefiles can be also pre-defined in a yaml file, which can be
-easily shared. This relies on intake_geopandas and accepts regionmask_kwargs, which are
-passed to regionmask.from_geopandas. If you set ``use_fsspec=True`` and use ``simplecache::``
-in the url, the shapefile is cached locally.
+easily shared. This relies on ``intake_geopandas`` and accepts ``regionmask_kwargs``,
+which are passed to ``regionmask.from_geopandas``.
+If you set ``use_fsspec=True`` and use ``simplecache::`` in the url, the shapefile is
+cached locally.
 
 .. ipython:: python
     :suppress:
@@ -43,6 +44,8 @@ Build your own catalog
 
 Let's explore the Marine Ecoregions Of the World (MEOW) data set, which is a
 biogeographic classification of the world's coasts and shelves.
+To create a catalog we use the syntax described in
+`intake <https://intake.readthedocs.io/en/latest/catalog.html#yaml-format>`_.
 
 .. ipython:: python
 

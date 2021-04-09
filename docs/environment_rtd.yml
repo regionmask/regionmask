@@ -19,6 +19,9 @@ dependencies:
     - netcdf4
     - geopandas
     - intake_geopandas>=0.2.4
+    - aiohttp
+    - requests
+    - msgpack
     - xarray==0.15.1
     - numpydoc
     - nbconvert
