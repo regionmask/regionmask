@@ -75,7 +75,7 @@ biogeographic classification of the world's coasts and shelves.
     print(region)
 
 
-Because simplecache:: was added to the urlpath and use_fsspec=True, the zip file was
+Because ``simplecache::`` was added to the urlpath and ``use_fsspec=True``, the zip file was
 downloaded to the folder specified in cache_storage. The file access is now locally.
 
 .. ipython:: python
