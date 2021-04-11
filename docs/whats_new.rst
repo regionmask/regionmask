@@ -54,6 +54,8 @@ Docs
 
 - Unified the docstrings of all ``mask`` functions (:issue:`173`).
 - Mentioned how to calculate regional medians (:issue:`170`).
+- Mentioned how to open regions specified in a yaml file using intake and fsspec.
+ (:issue:`93`, :pull:`205` by `Aaron Spring <https://github.com/aaronspring>`_).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
