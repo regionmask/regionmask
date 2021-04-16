@@ -27,14 +27,14 @@ https://intake.readthedocs.io/en/latest/.
     import intake_geopandas
     import intake
     # open a pre-defined remote or local catalog yaml file
-    url = 'https://raw.githubusercontent.com/mathause/regionmask/master/data/regions_remote_catalog.yaml'
+    url = 'https://raw.githubusercontent.com/aaronspring/regionmask/AS_intake_docu/data/regions_remote_catalog.yaml'
     cat = intake.open_catalog(url)
     # access data from remote source
     meow_regions = cat.regionmask.MEOW.read()
-    print(region)
+    print(meow_regions)
 
     @savefig plotting_MEOW.png width=100%
-    region.plot(add_label=False)
+    meow_regions.plot(add_label=False)
 
 
 Build your own catalog
