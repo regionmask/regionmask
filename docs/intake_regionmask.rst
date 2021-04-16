@@ -27,7 +27,7 @@ https://intake.readthedocs.io/en/latest/.
     import intake_geopandas
     import intake
     # open a pre-defined remote or local catalog yaml file
-    url = 'https://raw.githubusercontent.com/aaronspring/regionmask/AS_intake_docu/data/regions_remote_catalog.yaml'
+    url = 'https://raw.githubusercontent.com/mathause/regionmask/master/data/regions_remote_catalog.yaml'
     cat = intake.open_catalog(url)
     # access data from remote source
     meow_regions = cat.MEOW.read()
@@ -36,6 +36,8 @@ https://intake.readthedocs.io/en/latest/.
     @savefig plotting_MEOW.png width=100%
     meow_regions.plot(add_label=False)
 
+
+Find more such pre-defined regions in `remote_climate_data <https://github.com/aaronspring/remote_climate_data/blob/master/catalogs/regionmask.yaml>`_.
 
 Build your own catalog
 ======================
