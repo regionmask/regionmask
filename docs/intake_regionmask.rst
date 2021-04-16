@@ -27,7 +27,7 @@ https://intake.readthedocs.io/en/latest/.
     import intake_geopandas
     import intake
     # open a pre-defined remote or local catalog yaml file
-    url = 'https://raw.githubusercontent.com/aaronspring/remote_climate_data/master/master.yaml'
+    url = 'https://raw.githubusercontent.com/mathause/regionmask/master/data/regions_remote_catalog.yaml'
     cat = intake.open_catalog(url)
     # access data from remote source
     meow_regions = cat.regionmask.MEOW.read()
@@ -40,14 +40,14 @@ https://intake.readthedocs.io/en/latest/.
 Build your own catalog
 ======================
 
-Let's explore the Marine Ecoregions Of the World (MEOW) data set, which is a
-biogeographic classification of the world's coasts and shelves.
 To create a catalog we use the syntax described in
 `intake <https://intake.readthedocs.io/en/latest/catalog.html#yaml-format>`_.
+Let's explore the Marine Ecoregions Of the World (MEOW) data set, which is a
+biogeographic classification of the world's coasts and shelves.
 
 .. ipython:: python
 
-    with open('test_cat.yml', 'w') as f:
+    with open('regions_my_local_catalog.yml', 'w') as f:
         f.write("""
     plugins:
       source:
@@ -73,7 +73,7 @@ To create a catalog we use the syntax described in
 
 .. ipython:: python
 
-    cat = intake.open_catalog('test_cat.yml')
+    cat = intake.open_catalog('regions_my_local_catalog.yml')
     region = cat.MEOW.read()
     print(region)
 
