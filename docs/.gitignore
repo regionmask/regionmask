@@ -4,4 +4,4 @@ _build
 generated/
 _static/notebooks/*.rst
 cache/
-regions_local_catalog.yml
+regions_my_local_catalog.yml

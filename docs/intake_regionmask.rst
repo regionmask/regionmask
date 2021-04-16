@@ -30,7 +30,7 @@ https://intake.readthedocs.io/en/latest/.
     url = 'https://raw.githubusercontent.com/aaronspring/regionmask/AS_intake_docu/data/regions_remote_catalog.yaml'
     cat = intake.open_catalog(url)
     # access data from remote source
-    meow_regions = cat.regionmask.MEOW.read()
+    meow_regions = cat.MEOW.read()
     print(meow_regions)
 
     @savefig plotting_MEOW.png width=100%
