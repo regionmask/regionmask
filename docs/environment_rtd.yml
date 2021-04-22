@@ -6,6 +6,8 @@ channels:
 dependencies:
   - python=3.7
   - cartopy=0.17.0
+  - intake
+  - fsspec==0.8.7
   - pip
   - pip:
     - matplotlib==3.2.1
@@ -18,6 +20,10 @@ dependencies:
     - cftime
     - netcdf4
     - geopandas
+    - intake_geopandas>=0.2.4
+    - aiohttp
+    - requests
+    - msgpack
     - xarray==0.15.1
     - numpydoc
     - nbconvert
