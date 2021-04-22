@@ -43,7 +43,7 @@ Enhancements
 New regions
 ~~~~~~~~~~~
 - Added :py:attr:`natural_earth.land_10` and :py:attr:`natural_earth.land_50` regions from
-  natural earth (:pull:`195`) by `Martin van Driel <https://github.com/martinvandriel>`_).
+  natural earth (:pull:`195`) by `Martin van Driel <https://github.com/martinvandriel>`_.
 
 
 Bug Fixes
