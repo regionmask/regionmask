@@ -56,6 +56,18 @@ def test_land_110():
 
 
 @requires_cartopy
+def test_land_50():
+    regions = defined_regions.natural_earth.land_110
+    _defined_region(regions, 1)
+
+
+@requires_cartopy
+def test_land_10():
+    regions = defined_regions.natural_earth.land_110
+    _defined_region(regions, 1)
+
+
+@requires_cartopy
 def test_ocean_basins_50():
     regions = defined_regions.natural_earth.ocean_basins_50
     _defined_region(regions, 119)

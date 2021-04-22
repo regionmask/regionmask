@@ -23,6 +23,8 @@ def regions():
             defined_regions.natural_earth.us_states_50,
             defined_regions.natural_earth.us_states_10,
             defined_regions.natural_earth.land_110,
+            defined_regions.natural_earth.land_50,
+            defined_regions.natural_earth.land_10,
             defined_regions.natural_earth.ocean_basins_50,
         ]
 
