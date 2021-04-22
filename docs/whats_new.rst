@@ -62,6 +62,8 @@ Internal Changes
   ``template-file``).
 - Update the CI: use mamba for faster installation, merge code coverage from all runs,
   don't check the coverage of the tests (:pull:`197`).
+- Move ``_flatten_polygons`` to ``utils`` and raise an error when something else than
+  a ``Polygon`` or ``MultiPolygon`` is passed (:pull:`197`).
 
 v0.6.2 (19.01.2021)
 -------------------

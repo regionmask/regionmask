@@ -14,7 +14,7 @@ except ImportError:  # pragma: no cover
 
 import numpy as np
 import pytest
-from shapely.geometry import MultiPolygon, Polygon
+from shapely.geometry import MultiPolygon, Point, Polygon
 
 import regionmask
 from regionmask import Regions, plot_3D_mask
@@ -66,6 +66,8 @@ interior2_closed = ((0.55, 0.55), (0.55, 0.8), (0.8, 0.8), (0.8, 0.55), (0.55, 0
 poly1_interior1 = Polygon(outl1, [interior1_closed])
 poly1_interior2 = Polygon(outl1, [interior1_closed, interior2_closed])
 
+point = Point(1, 2)
+
 # =============================================================================
 
 
@@ -113,6 +115,7 @@ def test_subsample():
 
 
 def test_flatten_polygons():
+    # TODO: move to test_utils.py
 
     result = _flatten_polygons([poly1])
     assert len(result) == 1
@@ -134,6 +137,16 @@ def test_flatten_polygons():
     assert result[1].equals(poly1)
     assert result[2].equals(poly2)
     assert result[3].equals(poly2)
+
+    with pytest.raises(ValueError, match="'error' must be one of 'raise' and 'skip'"):
+        _flatten_polygons([poly1, point], error="foo")
+
+    with pytest.raises(TypeError, match="Expected 'Polygon' or 'MultiPolygon'"):
+        _flatten_polygons([poly1, point])
+
+    result = _flatten_polygons([poly1, point], error="skip")
+    assert len(result) == 1
+    assert result[0].equals(poly1)
 
 
 def test_polygons_coords():

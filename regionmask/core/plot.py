@@ -2,21 +2,7 @@ import warnings
 
 import numpy as np
 
-# =============================================================================
-
-
-def _flatten_polygons(polygons):
-
-    from shapely.geometry import MultiPolygon
-
-    polys = []
-    for p in polygons:
-        if isinstance(p, MultiPolygon):
-            polys += list(p)
-        else:
-            polys += [p]
-
-    return polys
+from .utils import _flatten_polygons
 
 
 def _polygons_coords(polygons):
