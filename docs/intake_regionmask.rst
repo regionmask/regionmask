@@ -2,7 +2,7 @@
 Using regionmask with intake
 ############################
 
-Regions from geopandas shapefiles can be also pre-defined in a yaml file, which can be
+Regions from geopandas shapefiles can be pre-defined in a yaml file, which can be
 easily shared. This relies on ``intake_geopandas`` and accepts ``regionmask_kwargs``,
 which are passed to ``regionmask.from_geopandas``.
 If you set ``use_fsspec=True`` and use ``simplecache::`` in the url, the shapefile is
@@ -76,12 +76,12 @@ biogeographic classification of the world's coasts and shelves.
 .. ipython:: python
 
     cat = intake.open_catalog('regions_my_local_catalog.yml')
-    region = cat.MEOW.read()
-    print(region)
+    meow_regions = cat.MEOW.read()
+    print(meow_regions)
 
 
 Because ``simplecache::`` was added to the urlpath and ``use_fsspec=True``, the zip file was
-downloaded to the folder specified in cache_storage. The file access is now locally.
+downloaded to the folder specified in cache_storage. The file access is now local.
 
 .. ipython:: python
 
