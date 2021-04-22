@@ -1,6 +1,8 @@
 import numpy as np
+from shapely.geometry import MultiPolygon
 
 from ..core.regions import Regions
+from ..core.utils import _flatten_polygons
 
 
 def _maybe_get_column(df, colname):
@@ -93,20 +95,8 @@ def _obtain_ne(
 
     # create one MultiPolygon of all Polygons (used for land)
     if combine_coords:
-        from shapely import geometry
-
-        # in 10m resolution, land partly uses multipolygons internally already,
-        # so need to untangle this here to create a single multipolygon
-        _coords = []
-        for p in coords:
-            if isinstance(p, geometry.polygon.Polygon):
-                _coords.append(p)
-            elif isinstance(p, geometry.multipolygon.MultiPolygon):
-                _coords += list(p)
-            else:
-                raise TypeError('Expected either Polygon or MultiPolygon')
-
-        coords = [geometry.MultiPolygon(_coords)]
+        coords = _flatten_polygons(coords)
+        coords = [MultiPolygon(coords)]
 
     # make sure numbers is a list
     numbers = np.array(numbers)
