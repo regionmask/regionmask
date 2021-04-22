@@ -5,9 +5,11 @@ Landmask (NaturalEarth)
 The outline of the landmask is obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
 It is automatically downloaded on-the-fly (but only once) with cartopy and opened with geopandas.
-The following landmask is currently available:
+The following landmasks are currently available:
 
 * Land 1:110m
+* Land 1:50m
+* Land 1:10m
 
 .. note::
    If available, it is better to use the landmask of the used data set.
@@ -45,4 +47,3 @@ Landmask
 
     @savefig plotting_landmask.png width=100%
     plt.tight_layout()
-
