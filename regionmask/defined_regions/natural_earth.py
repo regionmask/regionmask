@@ -1,6 +1,8 @@
 import numpy as np
+from shapely.geometry import MultiPolygon
 
 from ..core.regions import Regions
+from ..core.utils import _flatten_polygons
 
 
 def _maybe_get_column(df, colname):
@@ -93,9 +95,8 @@ def _obtain_ne(
 
     # create one MultiPolygon of all Polygons (used for land)
     if combine_coords:
-        from shapely import geometry
-
-        coords = [geometry.MultiPolygon([p for p in coords])]
+        coords = _flatten_polygons(coords)
+        coords = [MultiPolygon(coords)]
 
     # make sure numbers is a list
     numbers = np.array(numbers)
@@ -129,6 +130,8 @@ class natural_earth_cls:
         self._us_states_10 = None
 
         self._land_110 = None
+        self._land_50 = None
+        self._land_10 = None
 
         self._ocean_basins_50 = None
 
@@ -210,6 +213,42 @@ class natural_earth_cls:
 
             self._land_110 = _obtain_ne(**opt)
         return self._land_110
+
+    @property
+    def land_50(self):
+        if self._land_50 is None:
+
+            opt = dict(
+                resolution="50m",
+                category="physical",
+                name="land",
+                title="Natural Earth: landmask 50m",
+                names=["land"],
+                abbrevs=["lnd"],
+                numbers=[0],
+                combine_coords=True,
+            )
+
+            self._land_50 = _obtain_ne(**opt)
+        return self._land_50
+
+    @property
+    def land_10(self):
+        if self._land_10 is None:
+
+            opt = dict(
+                resolution="10m",
+                category="physical",
+                name="land",
+                title="Natural Earth: landmask 10m",
+                names=["land"],
+                abbrevs=["lnd"],
+                numbers=[0],
+                combine_coords=True,
+            )
+
+            self._land_10 = _obtain_ne(**opt)
+        return self._land_10
 
     @property
     def ocean_basins_50(self):
