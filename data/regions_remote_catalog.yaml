@@ -1,0 +1,41 @@
+plugins:
+  source:
+    - module: intake_geopandas
+
+sources:
+  Countries:
+    description: Natural Earth Data Admin 0 Countries
+    metadata:
+      url: https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/
+    driver: intake_geopandas.regionmask.RegionmaskSource
+    args:
+      urlpath: simplecache::https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries.zip
+      use_fsspec: true
+      storage_options:
+        simplecache:
+          same_names: true
+      regionmask_kwargs:
+        names: NAME_EN
+        abbrevs: _from_name
+
+  MEOW:
+    description: >-
+      The Marine Ecoregions Of the World (MEOW) data set is a biogeographic
+      classification of the worlds coasts and shelves. The ecoregions nest within the
+      broader biogeographic tiers of Realms and Provinces.
+    metadata:
+      url:
+        http://maps.tnc.org/gis_data.html
+        http://maps.tnc.org/files/metadata/MEOW.xml
+    driver: intake_geopandas.regionmask.RegionmaskSource
+    args:
+      urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
+      use_fsspec: true
+      storage_options:
+        simplecache:
+          same_names: true
+    regionmask_kwargs:
+      name: MEOW
+      names: ECOREGION
+      numbers: ECO_CODE_X
+      abbrevs: construct
