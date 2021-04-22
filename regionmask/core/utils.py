@@ -2,6 +2,27 @@ import numpy as np
 import xarray as xr
 
 
+def _flatten_polygons(polygons, error="raise"):
+
+    from shapely.geometry import MultiPolygon, Polygon
+
+    if error not in ["raise", "skip"]:
+        raise ValueError("'error' must be one of 'raise' and 'skip'")
+
+    polys = []
+    for p in polygons:
+        if isinstance(p, MultiPolygon):
+            polys += list(p)
+        elif isinstance(p, Polygon):
+            polys += [p]
+        else:
+            if error == "raise":
+                msg = f"Expected 'Polygon' or 'MultiPolygon', found {type(p)}"
+                raise TypeError(msg)
+
+    return polys
+
+
 def _maybe_to_dict(keys, values):
     """convert iterable to dict if necessary"""
 

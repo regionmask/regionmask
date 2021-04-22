@@ -61,6 +61,7 @@ Documentation
    notebooks/mask_3D
    notebooks/geopandas
    notebooks/create_own_regions
+   intake_regionmask
 
 .. toctree::
    :maxdepth: 2

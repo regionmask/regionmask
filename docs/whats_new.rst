@@ -54,6 +54,8 @@ Docs
 
 - Unified the docstrings of all ``mask`` functions (:issue:`173`).
 - Mentioned how to calculate regional medians (:issue:`170`).
+- Mentioned how to open regions specified in a yaml file using intake and fsspec
+  (:issue:`93`, :pull:`205`). By `Aaron Spring <https://github.com/aaronspring>`_.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -62,6 +64,8 @@ Internal Changes
   ``template-file``).
 - Update the CI: use mamba for faster installation, merge code coverage from all runs,
   don't check the coverage of the tests (:pull:`197`).
+- Move ``_flatten_polygons`` to ``utils`` and raise an error when something else than
+  a ``Polygon`` or ``MultiPolygon`` is passed (:pull:`211`).
 
 v0.6.2 (19.01.2021)
 -------------------
