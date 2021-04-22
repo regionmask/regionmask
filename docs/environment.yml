@@ -20,7 +20,9 @@ dependencies:
   - sphinx_rtd_theme=0.4.3
   - pillow=6.1.0
   - rasterio=1.0.25
-    # - pip:
+  - pip
+  - pip:
+      - intake_geopandas>=0.2.4
   #   - netcdf4
   #   - geopandas
   #   - xarray=0.13

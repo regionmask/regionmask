@@ -3,4 +3,5 @@ _build
 !logo/logo.png
 generated/
 _static/notebooks/*.rst
-
+cache/
+regions_my_local_catalog.yml
