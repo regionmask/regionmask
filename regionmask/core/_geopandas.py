@@ -135,8 +135,17 @@ def _prepare_gdf_for_mask(geodataframe, method, numbers):
 
     from geopandas import GeoDataFrame, GeoSeries
 
-    if not isinstance(geodataframe, (GeoDataFrame, GeoSeries)):
+    if not isinstance(geodataframe, (GeoDataFrame, GeoSeries, list)):
         raise TypeError("input must be a geopandas 'GeoDataFrame' or 'GeoSeries'")
+
+    if type(geodataframe)==list:
+        mylist=[]
+        for i in geodataframe:
+            mylist.append(i.geometry.iloc[0])
+        from shapely.ops import unary_union
+        geodataframe=GeoSeries(unary_union(mylist),crs=geodataframe[0].crs)
+    else:
+        pass
 
     lon_min = geodataframe.bounds["minx"].min()
     lon_max = geodataframe.bounds["maxx"].max()
