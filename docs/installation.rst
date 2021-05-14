@@ -34,13 +34,13 @@ on the conda-forge channel.
     conda install -c conda-forge regionmask cartopy
 
 All required dependencies can be installed with pip. You can thus install regionmask
-regionmask directly with pip:
+regionmask directly:
 
 .. code-block:: bash
 
    pip install regionmask
 
-Note, however, that cartopy can be very difficult to install with pip. 
+Note, however, that the optional dependency cartopy can be very difficult to install with pip. 
 
 Testing
 -------
