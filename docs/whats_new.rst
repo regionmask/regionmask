@@ -69,6 +69,7 @@ Internal Changes
   don't check the coverage of the tests (:pull:`197`).
 - Move ``_flatten_polygons`` to ``utils`` and raise an error when something else than
   a ``Polygon`` or ``MultiPolygon`` is passed (:pull:`211`).
+- Update ``ci/min_deps_check.py`` to the newest version on xarray (:pull:`218`).
 - Add a test environment for python 3.9 (:issue:`215`).
 
 v0.6.2 (19.01.2021)
