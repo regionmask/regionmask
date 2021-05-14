@@ -249,7 +249,7 @@ def _mask_3D(
 
 
 def _determine_method(lon, lat):
-    """ find method to be used -> prefers faster methods"""
+    """find method to be used -> prefers faster methods"""
 
     if equally_spaced(lon, lat):
         return "rasterize"
