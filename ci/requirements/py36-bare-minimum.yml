@@ -5,10 +5,11 @@ channels:
 dependencies:
   - python=3.6
   - geopandas
-  - xarray
   - numpy
   - pooch
   - rasterio
+  - xarray
+# for testing
   - pytest
   - pytest-cov
   - pytest-env

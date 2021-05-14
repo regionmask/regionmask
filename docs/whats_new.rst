@@ -71,6 +71,8 @@ Internal Changes
   a ``Polygon`` or ``MultiPolygon`` is passed (:pull:`211`).
 - Update ``ci/min_deps_check.py`` to the newest version on xarray (:pull:`218`).
 - Add a test environment for python 3.9 (:issue:`215`).
+- Enforce minimum versions in `requirements.txt` and clean up required dependencies
+  (:issue:`199` and :pull:`219`).
 
 v0.6.2 (19.01.2021)
 -------------------

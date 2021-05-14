@@ -6,14 +6,16 @@ dependencies:
   - python=3.9
   - cartopy
   - geopandas
-  - xarray
-  - numpy
   - matplotlib-base
-  - netcdf4
+  - numpy
   - pooch
-  - cftime
   - rasterio
+  - xarray
+# for testing
   - pytest
   - pytest-cov
   - pytest-env
+# for linting
+  - black
+  - flake8
   - isort
