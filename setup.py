@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from setuptools import find_packages, setup
 
 # get version
@@ -17,7 +15,7 @@ setup(
     author_email="mathias.hauser@env.ethz.com",
     packages=find_packages(),
     url="https://github.com/mathause/regionmask",
-    install_requires=open("requirements.txt").read().split(),
+    install_requires=open("requirements.txt").read().strip().split("\n"),
     extras_require={"docs": ["numpydoc", "jupyter", "nbconvert"]},
     long_description_content_type="text/x-rst",
     long_description="See https://regionmask.readthedocs.io",
