@@ -34,27 +34,7 @@ jobs:
   steps:
   - template: ci/azure/unit-tests.yml
 
-- job: LintFlake8
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - task: UsePythonVersion@0
-  - bash: python -m pip install flake8
-    displayName: Install flake8
-  - bash: flake8
-    displayName: flake8 lint checks
-
-- job: FormattingBlack
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - task: UsePythonVersion@0
-  - bash: python -m pip install black
-    displayName: Install black
-  - bash: black --check .
-    displayName: black formatting check
-
-- job: linting (isort, black, flake8)
+- job: linting
   variables:
     conda_env: py39
   pool:
