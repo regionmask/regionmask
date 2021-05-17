@@ -1,6 +1,6 @@
 geopandas >= 0.6
-numpy >= 1.15
+numpy >= 1.17
 pooch >= 1.0
 rasterio >= 1.0
 shapely >= 1.6
-xarray >= 0.13
+xarray >= 0.15

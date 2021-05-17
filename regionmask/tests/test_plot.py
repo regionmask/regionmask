@@ -1,5 +1,4 @@
 import contextlib
-from distutils.version import LooseVersion
 
 try:
     import cartopy.crs as ccrs
@@ -307,9 +306,6 @@ def test_plot_lines_subsample(plotfunc):
 
 
 @requires_matplotlib
-@pytest.mark.skipif(
-    LooseVersion(np.__version__) < "1.16", reason="requires numpy 1.16 or higher"
-)
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 @pytest.mark.parametrize("n, expected", [(9, (9 - 1) * 50 + 1), (10, 10)])
 def test_plot_lines_maybe_subsample(plotfunc, n, expected):
