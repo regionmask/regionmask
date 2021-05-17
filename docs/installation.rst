@@ -4,13 +4,13 @@ Installation
 Required dependencies
 ---------------------
 
-- Python (3,6, or later)
+- Python (3.6 or later)
 - `geopandas <http://geopandas.org/>`__ (0.6 or later)
-- `numpy <http://www.numpy.org/>`__ (1.15 or later)
+- `numpy <http://www.numpy.org/>`__ (1.17 or later)
 - `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.0 or later)
 - `rasterio <https://rasterio.readthedocs.io/>`__ (1.0 or later)
 - `shapely <http://toblerity.org/shapely/>`__ (1.6 or later)
-- `xarray <http://xarray.pydata.org/>`__ (0.13 or later)
+- `xarray <http://xarray.pydata.org/>`__ (0.15 or later)
 
 Optional dependencies
 ---------------------
@@ -40,7 +40,7 @@ regionmask directly:
 
    pip install regionmask
 
-Note, however, that the optional dependency cartopy can be very difficult to install with pip. 
+Note, however, that the optional dependency cartopy can be very difficult to install with pip.
 
 Testing
 -------

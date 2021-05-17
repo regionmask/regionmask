@@ -17,6 +17,16 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 - Removed support for Python 2. This is the first version of regionmask that is Python 3 only!
 
+- The minimum versions of some dependencies were changed (:pull:`220`):
+
+  ============ ===== =====
+  Package      Old   New
+  ============ ===== =====
+  numpy        1.15  1.17
+  xarray       0.13  0.15
+  ============ ===== =====
+
+
 - matpoltlib and cartopy are now optional dependencies. Note that cartopy is also
   required to download and access the natural earth shapefiles (:issue:`169`).
 
