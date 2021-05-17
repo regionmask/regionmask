@@ -221,7 +221,7 @@ def test_mask_autowrap(method):
 
 def test_mask_wrong_method():
 
-    msg = "Method must be None or one of 'rasterize' and 'shapely'."
+    msg = "Method must be None or one of 'rasterize', 'shapely', 'weights_default' or 'weights_rot_pole'."
     with pytest.raises(ValueError, match=msg):
 
         dummy_region.mask(dummy_lon, dummy_lat, method="method")

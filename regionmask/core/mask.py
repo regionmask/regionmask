@@ -123,7 +123,7 @@ def _mask(
     if wrap_lon:
         lon = _wrapAngle(lon, wrap_lon)
     if method not in (None, "rasterize", "shapely", "legacy", "weights_default","weights_rot_pole"):
-        msg = "Method must be None or one of 'rasterize', 'shapely', or 'legacy'. Or newest 'weights_default' or 'weights_rot_pole' by Pablo"
+        msg = "Method must be None or one of 'rasterize', 'shapely', 'weights_default' or 'weights_rot_pole'."
         raise ValueError(msg)
 
     if method is None:
@@ -385,8 +385,6 @@ def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN):
 
     return out.reshape(shape)
 
-############################# EDITED BY PABLO: DOWN ###############################
-
 def _Rotated_Pole(lon, lat, polygons, numbers, fill=np.NaN):
     import geopandas as gpd
     projection=input("Enter rotated pole projection in the form: +proj=ob_tran +o_proj=longlat +o_lon_p=... +o_lat_p=... +lon_0=... +to_meter=... +ellps=...: ")
@@ -423,7 +421,7 @@ def _mask_weights(lon, lat,shapefile_region):
             grid_cells.append(Polygon([[x0, y0],[x1,y0],[x1,y1], [x0, y1],[x0,y0]]))
 
     #selecting the geometry from the given shapefile
-    polygons_to = shapefile_region#.geometry.iloc[0]
+    polygons_to = shapefile_region
 
     #Calculating the areal weights as intersection between shapefile and grided polygon
     areas=[]
@@ -443,7 +441,6 @@ def _mask_weights(lon, lat,shapefile_region):
 
     out=poly_pol.T/(sum(sum(poly_pol.T)))
     return out
-############################# EDITED BY PABLO: UP ###############################
 
 def _parse_input(lon, lat, coords, fill, numbers):
 
