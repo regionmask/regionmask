@@ -46,7 +46,8 @@ def _draw_poly(ax, polygons, subsample=False, **kwargs):
 
 def _subsample(outl, num=50):
     # assumes outl is closed - i.e outl[:-1] == outl[0]
-    out = np.linspace(outl[:-1], outl[1:], num=num, endpoint=False, axis=1).reshape(-1, 2)
+    out = np.linspace(outl[:-1], outl[1:], num=num, endpoint=False, axis=1)
+    out = out.reshape(-1, 2)
     return np.vstack([out, outl[-1]])
 
 
