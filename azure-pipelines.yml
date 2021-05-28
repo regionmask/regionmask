@@ -44,9 +44,15 @@ jobs:
   - bash: |
       source activate regionmask-tests
       isort --check .
+    displayName: isort
+  - bash: |
+      source activate regionmask-tests
       black --check .
+    displayName: black
+  - bash: |
+      source activate regionmask-tests
       flake8 .
-    displayName: linting (isort, black, flake8)
+    displayName: flake8
 
 - job: MinimumVersionsPolicy
   pool:
