@@ -43,16 +43,19 @@ jobs:
   - template: ci/azure/install.yml
   - bash: |
       source activate regionmask-tests
+    displayName: activate_env
+  - bash: |
       isort --check .
     displayName: isort
+    continueOnError: true
   - bash: |
-      source activate regionmask-tests
       black --check .
     displayName: black
+    continueOnError: true
   - bash: |
-      source activate regionmask-tests
       flake8 .
     displayName: flake8
+    continueOnError: true
 
 - job: MinimumVersionsPolicy
   pool:
