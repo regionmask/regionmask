@@ -13,7 +13,7 @@ build:
     image: stable
 
 conda:
-    environment: docs/environment_rtd.yml
+    environment: ci/requirements/docs.yml
 python:
     version: 3.7
     install:

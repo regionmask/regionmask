@@ -1,0 +1,40 @@
+name: regionmask-docs
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - python=3.7
+# regionmask dependencies
+  # https://github.com/SciTools/cartopy/pull/1646
+  - cartopy=0.17
+  - geopandas
+  # related to the cartopy issue
+  - matplotlib-base==3.2
+  - numpy
+  - pooch
+  - rasterio
+  - xarray
+# depencies for the examples
+  - cftime
+  - netcdf4
+# for regionmask intake example
+  - aiohttp
+  - fsspec==0.8.7
+  - intake
+  - requests
+# dependencies to build the docu
+  # https://github.com/readthedocs/sphinx_rtd_theme/issues/1115
+  - docutils==0.16
+  - jupyter
+  - nbconvert
+  - numpydoc
+  - pillow
+  - pip
+  - sphinx_rtd_theme==0.4.3
+  - sphinx==2.1.2
+# for regionmask intake example
+  - pip:
+    - intake_geopandas>=0.2.4
+    - msgpack
