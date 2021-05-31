@@ -50,7 +50,7 @@ extlinks = {
 
 autosummary_generate = True
 
-apoleon_use_param = True
+napoleon_use_param = False
 napoleon_use_rtype = False
 
 numpydoc_class_members_toctree = True
