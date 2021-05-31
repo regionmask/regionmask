@@ -7,13 +7,15 @@ channels:
 dependencies:
   - python=3.7
 # regionmask dependencies
-  - cartopy=0.17.0
+  # https://github.com/SciTools/cartopy/pull/1646
+  - cartopy=0.17
   - geopandas
-  - matplotlib-base==3.2.1
+  # related to the cartopy issue
+  - matplotlib-base==3.2
   - numpy
   - pooch
   - rasterio
-  - xarray==0.15.1
+  - xarray
 # depencies for the examples
   - cftime
   - netcdf4
@@ -23,6 +25,8 @@ dependencies:
   - intake
   - requests
 # dependencies to build the docu
+  # https://github.com/readthedocs/sphinx_rtd_theme/issues/1115
+  - docutils==0.16
   - jupyter
   - nbconvert
   - numpydoc
