@@ -51,7 +51,7 @@ To install the development version (master), do:
 
 .. code-block:: bash
 
-   pip install git+https://github.com/mathause/regionmask
+   pip install git+https://github.com/regionmask/regionmask
 
 
 .. _conda: http://conda.io/

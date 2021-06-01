@@ -14,7 +14,7 @@ setup(
     author="mathause",
     author_email="mathias.hauser@env.ethz.com",
     packages=find_packages(),
-    url="https://github.com/mathause/regionmask",
+    url="https://github.com/regionmask/regionmask",
     install_requires=open("requirements.txt").read().strip().split("\n"),
     extras_require={"docs": ["numpydoc", "jupyter", "nbconvert"]},
     long_description_content_type="text/x-rst",

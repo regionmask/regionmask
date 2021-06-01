@@ -531,7 +531,7 @@ r_45_def_cw = Regions([outline_45_deg[::-1]])
 
 @pytest.mark.parametrize("regions", [r_45_def_ccw, r_45_def_cw])
 def test_deg45_rasterize_shapely_equal(regions):
-    # https://github.com/mathause/regionmask/issues/80
+    # https://github.com/regionmask/regionmask/issues/80
 
     shapely = regions.mask(ds_for_45_deg, method="shapely")
     rasterize = regions.mask(ds_for_45_deg, method="rasterize")
@@ -541,7 +541,7 @@ def test_deg45_rasterize_shapely_equal(regions):
 
 @pytest.mark.parametrize("regions", [r_45_def_ccw, r_45_def_cw])
 def test_deg45_rasterize_offset_equal(regions):
-    # https://github.com/mathause/regionmask/issues/80
+    # https://github.com/regionmask/regionmask/issues/80
 
     polygons = regions.polygons
     lon = ds_for_45_deg.lon
@@ -564,7 +564,7 @@ ds_GLOB_360_part = create_lon_lat_dataarray_from_bounds(*(0, 300, 2) + (75, 13, 
 @pytest.mark.parametrize("ds_360", [ds_GLOB_360, ds_GLOB_360_part])
 @pytest.mark.parametrize("regions_180", [r_US_180_ccw, r_US_180_cw])
 def test_rasterize_on_split_lon(ds_360, regions_180):
-    # https://github.com/mathause/regionmask/issues/127
+    # https://github.com/regionmask/regionmask/issues/127
 
     # using regions_180 and ds_360 lon must be wrapped, making it
     # NOT equally_spaced
