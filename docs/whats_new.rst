@@ -26,6 +26,9 @@ Breaking Changes
   xarray       0.13  0.15
   ============ ===== =====
 
+- Moved regionmask to its own organisation on github. It can now be found under
+  `regionmask/regionmask <http://github.com/regionmask/regionmask>`__ (:issue:`204` and
+  :pull:`224`).
 
 - matpoltlib and cartopy are now optional dependencies. Note that cartopy is also
   required to download and access the natural earth shapefiles (:issue:`169`).
