@@ -214,7 +214,7 @@ def test_mask_3D_geopandas(geodataframe_clean, drop, lon_lat, method):
     assert np.all(np.equal(result.lat.values, dummy_lat))
     assert np.all(np.equal(result.lon.values, dummy_lon))
 
-    numbers = [0, 1] if drop else [0, 1, 2]
+    numbers = [0, 1, 2] if drop else [0, 1, 2]
     assert np.all(np.equal(result.region.values, numbers))
 
 
@@ -224,7 +224,7 @@ def test_mask_geopandas_numbers(geodataframe_clean, method):
     result = mask_geopandas(
         geodataframe_clean, dummy_lon, dummy_lat, method=method, numbers="numbers"
     )
-    expected = expected_mask_2D(1, 2)
+    expected = expected_mask_2D(1, 2, 3)
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
@@ -265,7 +265,7 @@ def test_mask_3D_geopandas_numbers(geodataframe_clean, drop, method):
     assert np.all(np.equal(result.lat.values, dummy_lat))
     assert np.all(np.equal(result.lon.values, dummy_lon))
 
-    numbers = geodataframe_clean.numbers[:2] if drop else geodataframe_clean.numbers
+    numbers = geodataframe_clean.numbers[:] if drop else geodataframe_clean.numbers
     assert np.all(np.equal(result.region.values, numbers))
 
 
