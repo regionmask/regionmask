@@ -98,10 +98,6 @@ def _mask(
     lat_name="lat",
     method=None,
     wrap_lon=None,
-    central_rotated_longitude=None, 
-    pole_latitude=None, 
-    pole_longitude=None, 
-    globe=None,
 ):
     """
     internal function to create a mask
@@ -150,10 +146,8 @@ def _mask(
     elif method == "weights_default":
         mask = _Default(lon, lat, outlines, numbers=numbers)
     elif method == "weights_rot_pole":
-        mask = _Rotated_Pole(lon, lat, outlines, numbers=numbers, central_rotated_longitude = central_rotated_longitude, pole_latitude= pole_latitude, pole_longitude= pole_longitude, globe= globe) 
+        mask = _Rotated_Pole(lon, lat, outlines, numbers=numbers) 
     elif method == "weights_irregular":
-        msg = "Method is under construction."
-        warnings.warn(msg, UserWarning, stacklevel=3)
         mask = _Irregular(lon, lat, outlines, numbers=numbers) 
         
     # we need to treat the points at -180°E/0°E and -90°N
@@ -178,10 +172,6 @@ def _mask_2D(
     lat_name="lat",
     method=None,
     wrap_lon=None,
-    central_rotated_longitude =None, 
-    pole_latitude=None, 
-    pole_longitude=None, 
-    globe=None,
 ):
 
     mask = _mask(
@@ -194,10 +184,6 @@ def _mask_2D(
         lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
-        central_rotated_longitude = central_rotated_longitude, 
-        pole_latitude= pole_latitude, 
-        pole_longitude= pole_longitude, 
-        globe= globe,
     )
 
     if np.all(np.isnan(mask)):
@@ -401,7 +387,7 @@ def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN):
 
     return out.reshape(shape)
 
-def _Rotated_Pole(lon, lat, polygons, numbers, fill=np.NaN, central_rotated_longitude =0., pole_latitude=90, pole_longitude=0, globe='WGS84'):
+def _Rotated_Pole(lon, lat, polygons, numbers, fill=np.NaN):
     """
     Projects shapefile in the rotated pole projection of the given lat/lon- grid and creates a weighted mask.
 
@@ -427,16 +413,12 @@ def _Rotated_Pole(lon, lat, polygons, numbers, fill=np.NaN, central_rotated_long
     _mask_weights : Function for computation of the weighted mask.
 
     """
-
     import geopandas as gpd
-    #projection=input("Enter rotated pole projection in the form: +proj=ob_tran +o_proj=longlat +o_lon_p=... +o_lat_p=... +lon_0=... +to_meter=... +ellps=...: ")
+    projection=input("Enter rotated pole projection in the form: +proj=ob_tran +o_proj=longlat +o_lon_p=... +o_lat_p=... +lon_0=... +to_meter=... +ellps=...: ")
     lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
     crs="EPSG:4326"
-    shapefile_region =gpd.GeoDataFrame(polygons,columns=['geometry'],crs=crs)    
-
-    projection ="+proj=ob_tran +o_proj=longlat +o_lon_p={} +o_lat_p={} +lon_0={} +to_meter={} +ellps={}".format(central_rotated_longitude,pole_latitude, 180.+pole_longitude, math.radians(1), globe )
+    shapefile_region =gpd.GeoDataFrame(polygons,columns=['geometry'],crs=crs)
     proj_shp_region=shapefile_region.to_crs(projection)
-
     return _mask_weights(lon, lat, proj_shp_region.geometry.tolist()[0])
 
 def _Default(lon, lat, polygons, numbers, fill=np.NaN):
@@ -454,68 +436,55 @@ def _Default(lon, lat, polygons, numbers, fill=np.NaN):
     _mask_weights : Function for computation of the weighted mask.
 
     """
-
     lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
     shapefile_region=polygons[0]
     return _mask_weights(lon, lat, shapefile_region)
+#################################################################################
 
 def _Irregular(lon, lat, polygons, numbers, fill=np.NaN):
-    """
-    Creates a weighted mask for an irregular grid with lon(x,y), lat(x,y).
-
-    """
     #lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
+    
     shapefile_region=polygons[0]
     return _mask_weights_irregular(lon, lat, shapefile_region)
 
 
 def _mask_weights_irregular(lon, lat,shapefile_region):
-    
     from shapely.geometry import Polygon
 
     #Creating grid as polygons to intersect with shapefile
     Y,X=np.shape(lon)
 
-    grid_cells_coords = []
+    grid_cells = []
     for i in range(X-2):
         for j in range(Y-2):
-            x11=float(ds1.lon[j,i])     # + (float(ds1.lon[j,i+1])-float(ds1.lon[j,i]))/2.
-            x12=float(ds1.lon[j,i+1])   # + (float(ds1.lon[j,i+1+1])-float(ds1.lon[j,i+1]))/2.
-            x21=float(ds1.lon[j+1,i])   # + (float(ds1.lon[j+1,i+1])-float(ds1.lon[j+1,i]))/2.
-            x22=float(ds1.lon[j+1,i+1]) # + (float(ds1.lon[j+1,i+1+1])-float(ds1.lon[j+1,i+1]))/2.
+            x11=float(ds1.lon[j,i]) + (float(ds1.lon[j,i+1])-float(ds1.lon[j,i]))/2.
+            x12=float(ds1.lon[j,i+1]) + (float(ds1.lon[j,i+1+1])-float(ds1.lon[j,i+1]))/2.
+            x21=float(ds1.lon[j+1,i]) + (float(ds1.lon[j+1,i+1])-float(ds1.lon[j+1,i]))/2.
+            x22=float(ds1.lon[j+1,i+1]) + (float(ds1.lon[j+1,i+1+1])-float(ds1.lon[j+1,i+1]))/2.
 
-            y11=float(ds1.lat[j,i])     # + (float(ds1.lat[j+1,i])-float(ds1.lat[j,i]))/2.
-            y12=float(ds1.lat[j,i+1])   # + (float(ds1.lat[j+1,i+1])-float(ds1.lat[j,i+1]))/2.
-            y21=float(ds1.lat[j+1,i])   # + (float(ds1.lat[j+1+1,i])-float(ds1.lat[j+1,i]))/2.
-            y22=float(ds1.lat[j+1,i+1]) # + (float(ds1.lat[j+1+1,i+1])-float(ds1.lat[j+1,i+1]))/2.
+            y11=float(ds1.lat[j,i]) + (float(ds1.lat[j+1,i])-float(ds1.lat[j,i]))/2.
+            y12=float(ds1.lat[j,i+1]) + (float(ds1.lat[j+1,i+1])-float(ds1.lat[j,i+1]))/2.
+            y21=float(ds1.lat[j+1,i]) + (float(ds1.lat[j+1+1,i])-float(ds1.lat[j+1,i]))/2.
+            y22=float(ds1.lat[j+1,i+1]) + (float(ds1.lat[j+1+1,i+1])-float(ds1.lat[j+1,i+1]))/2.
 
-            grid_cells4.append(Polygon([[x11, y11],[x12,y12],[x22,y22], [x21, y21],[x11,y11]]))
 
-    grid_cells_polys = []
-    for i in range(len(grid_cells4)-int(np.sqrt(len(grid_cells4)))-1):
-        if (i+1) % (int(np.sqrt(len(grid_cells4)))) == 0:
-            continue
-        x11,y11=grid_cells4[i+0].centroid.coords[0]
-        x12,y12=grid_cells4[i+1].centroid.coords[0]
-        x21,y21=grid_cells4[i+int(np.sqrt(len(grid_cells4)))].centroid.coords[0]
-        x22,y22=grid_cells4[i+int(np.sqrt(len(grid_cells4)))+1].centroid.coords[0]
-        grid_cells5.append(Polygon([[x11, y11],[x12,y12],[x22,y22], [x21, y21],[x11,y11]]))
+            grid_cells.append(Polygon([[x11, y11],[x12,y12],[x22,y22], [x21, y21],[x11,y11]]))
 
     #selecting the geometry from the given shapefile
     polygons_to = shapefile_region
 
     #Calculating the areal weights as intersection between shapefile and grided polygon
     areas=[]
-    for r in grid_cells_polys:
+    for r in grid_cells:
         intersect = polygons_to.intersection(r)
         areas.append(intersect.area)
     poly_area=areas
 
     #Truning result in 2D array with right dimensions
     
-    pol=np.reshape(poly_area, (X-2, Y-2))
+    pol=np.reshape(poly_area, (len(lon)-2, len(lat)-2))
 
-    poly=np.zeros((X, Y))
+    poly=np.zeros((len(lon), len(lat)))
     poly[1:-1,1:-1]=pol
     
     poly_pol=np.nan_to_num(poly)
@@ -523,13 +492,12 @@ def _mask_weights_irregular(lon, lat,shapefile_region):
     out=poly_pol.T/(sum(sum(poly_pol.T)))
     return out
 
+#################################################################################
+
 
 def _mask_weights(lon, lat,shapefile_region):
-    """
-    Returns an array with the weighted areal mask.  
-
-    """
     from shapely.geometry import Polygon
+
     #Creating grid as polygons to intersect with shapefile
     grid_cells = []
     for i in range(len(lon)-2):

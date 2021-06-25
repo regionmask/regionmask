@@ -172,10 +172,6 @@ def mask_geopandas(
     numbers=None,
     method=None,
     wrap_lon=None,
-    central_rotated_longitude =None, 
-    pole_latitude=None, 
-    pole_longitude=None, 
-    globe=None,
 ):
 
     polygons, is_180, numbers = _prepare_gdf_for_mask(
@@ -192,10 +188,6 @@ def mask_geopandas(
         lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
-        central_rotated_longitude = central_rotated_longitude, 
-        pole_latitude= pole_latitude, 
-        pole_longitude= pole_longitude, 
-        globe= globe,
     )
 
 

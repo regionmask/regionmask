@@ -187,12 +187,18 @@ def test_construct_abbrevs():
 
 
 @pytest.mark.parametrize("lon_lat", [(dummy_lon, dummy_lat), (dummy_ll_dict, None)])
-@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+@pytest.mark.parametrize("method", ["rasterize", "shapely", "weights_default"])
 def test_mask_geopandas(geodataframe_clean, lon_lat, method):
 
-    lon, lat = lon_lat
-    result = mask_geopandas(geodataframe_clean, lon, lat, method=method)
-    expected = expected_mask_2D()
+    if method=="weights_default":
+        lon,lat= [-0.5,0.5, 1.5,2.5,3.5], [-0.5,0.5, 1.5,2.5,3.5]
+        poly_list=[geodataframe_clean()[geodataframe_clean()["names"]=="Unit Square1"],geodataframe_clean()[geodataframe_clean()["names"]=="Unit Square2"],geodataframe_clean()[geodataframe_clean()["names"]=="Unit Square3"]]
+        result = mask_geopandas(poly_list, lon, lat, method=method)
+        expected = expected_mask_weights()
+    else:
+        lon, lat = lon_lat
+        result = mask_geopandas(geodataframe_clean, lon, lat, method=method)
+        expected = expected_mask_2D()
 
     assert isinstance(result, xr.DataArray)
     assert np.allclose(result, expected, equal_nan=True)
