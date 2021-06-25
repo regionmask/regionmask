@@ -178,7 +178,7 @@ def _mask_2D(
     lat_name="lat",
     method=None,
     wrap_lon=None,
-    central_rotated_longitude =None, 
+    central_rotated_longitude=None, 
     pole_latitude=None, 
     pole_longitude=None, 
     globe=None,
@@ -194,7 +194,7 @@ def _mask_2D(
         lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
-        central_rotated_longitude = central_rotated_longitude, 
+        central_rotated_longitude= central_rotated_longitude, 
         pole_latitude= pole_latitude, 
         pole_longitude= pole_longitude, 
         globe= globe,
@@ -401,7 +401,7 @@ def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN):
 
     return out.reshape(shape)
 
-def _Rotated_Pole(lon, lat, polygons, numbers, fill=np.NaN, central_rotated_longitude =0., pole_latitude=90, pole_longitude=0, globe='WGS84'):
+def _Rotated_Pole(lon, lat, polygons, numbers, central_rotated_longitude , pole_latitude, pole_longitude, globe,fill=np.NaN):
     """
     Projects shapefile in the rotated pole projection of the given lat/lon- grid and creates a weighted mask.
 
@@ -434,7 +434,7 @@ def _Rotated_Pole(lon, lat, polygons, numbers, fill=np.NaN, central_rotated_long
     crs="EPSG:4326"
     shapefile_region =gpd.GeoDataFrame(polygons,columns=['geometry'],crs=crs)    
 
-    projection ="+proj=ob_tran +o_proj=longlat +o_lon_p={} +o_lat_p={} +lon_0={} +to_meter={} +ellps={}".format(central_rotated_longitude,pole_latitude, 180.+pole_longitude, math.radians(1), globe )
+    projection ="+proj=ob_tran +o_proj=longlat +o_lon_p={} +o_lat_p={} +lon_0={} +to_meter={} +ellps={}".format(central_rotated_longitude,pole_latitude, 180.+ pole_longitude, 0.017453292519943295, globe )
     proj_shp_region=shapefile_region.to_crs(projection)
 
     return _mask_weights(lon, lat, proj_shp_region.geometry.tolist()[0])
