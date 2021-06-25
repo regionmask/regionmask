@@ -20,11 +20,13 @@ jobs:
         conda_env: py37
       py38:
         conda_env: py38
-      # py38-upstream-dev:
-      #   conda_env: py38
+      py39:
+        conda_env: py39
+      # py39-upstream-dev:
+      #   conda_env: py39
       #   upstream_dev: true
-      # py38-flaky:
-      #   conda_env: py38
+      # py39-flaky:
+      #   conda_env: py39
       #   pytest_extra_flags: --run-flaky --run-network-tests
       #   allow_failure: true
   pool:
@@ -32,29 +34,9 @@ jobs:
   steps:
   - template: ci/azure/unit-tests.yml
 
-- job: LintFlake8
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - task: UsePythonVersion@0
-  - bash: python -m pip install flake8
-    displayName: Install flake8
-  - bash: flake8
-    displayName: flake8 lint checks
-
-- job: FormattingBlack
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - task: UsePythonVersion@0
-  - bash: python -m pip install black
-    displayName: Install black
-  - bash: black --check .
-    displayName: black formatting check
-
-- job: isort
+- job: linting
   variables:
-    conda_env: py38
+    conda_env: py39
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
@@ -62,7 +44,18 @@ jobs:
   - bash: |
       source activate regionmask-tests
       isort --check .
-    displayName: isort formatting checks
+    displayName: isort
+    condition: always()
+  - bash: |
+      source activate regionmask-tests
+      black --check .
+    displayName: black
+    condition: always()
+  - bash: |
+      source activate regionmask-tests
+      flake8 .
+    displayName: flake8
+    condition: always()
 
 - job: MinimumVersionsPolicy
   pool:
@@ -70,6 +63,6 @@ jobs:
   steps:
   - template: ci/azure/add-conda-to-path.yml
   - bash: |
-      conda install -y pyyaml
+      conda install -y pyyaml python-dateutil
       python ci/min_deps_check.py ci/requirements/py36-min-all-deps.yml
     displayName: minimum versions policy

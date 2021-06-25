@@ -27,7 +27,7 @@ https://intake.readthedocs.io/en/latest/.
     import intake_geopandas
     import intake
     # open a pre-defined remote or local catalog yaml file
-    url = 'https://raw.githubusercontent.com/mathause/regionmask/master/data/regions_remote_catalog.yaml'
+    url = 'https://raw.githubusercontent.com/regionmask/regionmask/master/data/regions_remote_catalog.yaml'
     cat = intake.open_catalog(url)
     # access data from remote source
     meow_regions = cat.MEOW.read()

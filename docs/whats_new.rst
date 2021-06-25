@@ -17,6 +17,19 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 - Removed support for Python 2. This is the first version of regionmask that is Python 3 only!
 
+- The minimum versions of some dependencies were changed (:pull:`220`):
+
+  ============ ===== =====
+  Package      Old   New
+  ============ ===== =====
+  numpy        1.15  1.17
+  xarray       0.13  0.15
+  ============ ===== =====
+
+- Moved regionmask to its own organisation on github. It can now be found under
+  `regionmask/regionmask <http://github.com/regionmask/regionmask>`__ (:issue:`204` and
+  :pull:`224`).
+
 - matpoltlib and cartopy are now optional dependencies. Note that cartopy is also
   required to download and access the natural earth shapefiles (:issue:`169`).
 
@@ -69,6 +82,10 @@ Internal Changes
   don't check the coverage of the tests (:pull:`197`).
 - Move ``_flatten_polygons`` to ``utils`` and raise an error when something else than
   a ``Polygon`` or ``MultiPolygon`` is passed (:pull:`211`).
+- Update ``ci/min_deps_check.py`` to the newest version on xarray (:pull:`218`).
+- Add a test environment for python 3.9 (:issue:`215`).
+- Enforce minimum versions in `requirements.txt` and clean up required dependencies
+  (:issue:`199` and :pull:`219`).
 
 v0.6.2 (19.01.2021)
 -------------------

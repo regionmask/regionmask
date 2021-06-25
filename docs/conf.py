@@ -44,13 +44,13 @@ extensions = [
 ]
 
 extlinks = {
-    "issue": ("https://github.com/mathause/regionmask/issues/%s", "GH"),
-    "pull": ("https://github.com/mathause/regionmask/pull/%s", "PR"),
+    "issue": ("https://github.com/regionmask/regionmask/issues/%s", "GH"),
+    "pull": ("https://github.com/regionmask/regionmask/pull/%s", "PR"),
 }
 
 autosummary_generate = True
 
-apoleon_use_param = True
+napoleon_use_param = False
 napoleon_use_rtype = False
 
 numpydoc_class_members_toctree = True
@@ -124,19 +124,16 @@ pygments_style = "sphinx"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-# Readthedocs.
-on_rtd = os.environ.get("READTHEDOCS", None) == "True"
-if not on_rtd:
-    import sphinx_rtd_theme
-
-    html_theme = "sphinx_rtd_theme"
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 # html_theme_options = {}
+
+# does not work on rdt
+# html_theme_options = {'logo_only': True}
+
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -150,12 +147,12 @@ if not on_rtd:
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = None
+# html_logo = "logo/logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-# html_favicon = None
+html_favicon = "logo/favicon.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -211,46 +208,6 @@ if not on_rtd:
 # Output file base name for HTML help builder.
 htmlhelp_basename = "regionmaskdoc"
 
-
-# -- Options for LaTeX output ---------------------------------------------
-
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    # 'papersize': 'letterpaper',
-    # The font size ('10pt', '11pt' or '12pt').
-    # 'pointsize': '10pt',
-    # Additional stuff for the LaTeX preamble.
-    # 'preamble': '',
-}
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    ("index", "regionmask.tex", "regionmask Documentation", "Mathias Hauser", "manual")
-]
-
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-# latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-# latex_use_parts = False
-
-# If true, show page references after internal links.
-# latex_show_pagerefs = False
-
-# If true, show URL addresses after external links.
-# latex_show_urls = False
-
-# Documents to append as an appendix to all manuals.
-# latex_appendices = []
-
-# If false, no module index is generated.
-# latex_domain_indices = True
-
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -260,35 +217,6 @@ man_pages = [("index", "regionmask", "regionmask Documentation", ["Mathias Hause
 # If true, show URL addresses after external links.
 # man_show_urls = False
 
-
-# -- Options for Texinfo output -------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-    (
-        "index",
-        "regionmask",
-        "regionmask Documentation",
-        "Mathias Hauser",
-        "regionmask",
-        "One line description of project.",
-        "Miscellaneous",
-    )
-]
-
-# Documents to append as an appendix to all manuals.
-# texinfo_appendices = []
-
-# If false, no module index is generated.
-# texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-# texinfo_show_urls = 'footnote'
-
-# If true, do not generate a @detailmenu in the "Top" node's menu.
-# texinfo_no_detailmenu = False
 
 # disable warnings
 warnings.filterwarnings("ignore")

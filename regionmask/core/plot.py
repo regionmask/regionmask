@@ -46,21 +46,9 @@ def _draw_poly(ax, polygons, subsample=False, **kwargs):
 
 def _subsample(outl, num=50):
     # assumes outl is closed - i.e outl[:-1] == outl[0]
-    # TODO: use the following once requiring numpy > 0.16
-    #   out.append(np.linspace(beg, end, num=num, endpoint=False))
-    #   out.append(outl[-1])
-    #   return np.vstack(out)
-
-    lon, lat = [], []
-    for beg, end in zip(outl[:-1], outl[1:]):
-        lon.append(np.linspace(beg[0], end[0], num=num, endpoint=False))
-        lat.append(np.linspace(beg[1], end[1], num=num, endpoint=False))
-
-    # add end point to close the coords
-    lon.append(outl[-1][0])
-    lat.append(outl[-1][1])
-
-    return np.stack((np.hstack(lon), np.hstack(lat))).T
+    out = np.linspace(outl[:-1], outl[1:], num=num, endpoint=False, axis=1)
+    out = out.reshape(-1, 2)
+    return np.vstack([out, outl[-1]])
 
 
 def _check_unused_kws(add, kws, feature_name, kws_name):

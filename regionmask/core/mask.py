@@ -236,7 +236,7 @@ def _mask_3D(
 
     if drop:
         numbers = np.unique(mask.values[~isnan])
-        numbers = numbers.astype(np.int)
+        numbers = numbers.astype(int)
 
     # if no regions are found return a 0 x lat x lon mask
     if len(numbers) == 0:
@@ -252,13 +252,7 @@ def _mask_3D(
     for num in numbers:
         mask_3D.append(mask == num)
 
-    from distutils.version import LooseVersion
-
-    # "override" is faster but was only introduced in version 0.13.0 of xarray
-    compat = "override" if LooseVersion(xr.__version__) >= "0.13.0" else "equals"
-
-    mask_3D = xr.concat(mask_3D, dim="region", compat=compat, coords="minimal")
-
+    mask_3D = xr.concat(mask_3D, dim="region", compat="override", coords="minimal")
     mask_3D = mask_3D.assign_coords(region=("region", numbers))
 
     if np.all(isnan):
@@ -269,7 +263,7 @@ def _mask_3D(
 
 
 def _determine_method(lon, lat):
-    """ find method to be used -> prefers faster methods"""
+    """find method to be used -> prefers faster methods"""
 
     if equally_spaced(lon, lat):
         return "rasterize"
@@ -681,7 +675,7 @@ def _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill=np.NaN, **kwargs
         out_shape=out_shape,
         fill=fill,
         transform=transform,
-        dtype=np.float,
+        dtype=float,
         **kwargs
     )
 
