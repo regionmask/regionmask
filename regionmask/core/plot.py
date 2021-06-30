@@ -85,55 +85,56 @@ def _plot(
     ax : axes handle, optional
         If given uses existing axes (needs to be a cartopy axes). If not
         given, creates a new axes with the specified projection.
-    proj : cartopy projection or None, optional
+    proj : cartopy projection or None, default: None
         Defines the projection of the map. If None uses 'PlateCarree'.
-        See cartopy home page. Default None.
-    regions : list of int or str | 'all', optional
+        See cartopy home page.
+    regions : list of int or str | 'all', default: 'all'
         Select the regions (by number, abbrev or name, can be mixed)
         that should be outlined.
-    add_label : bool
-        If true labels the regions. Optional, default True.
-    label : 'number' | 'name' | 'abbrev', optional
+    add_label : bool, default: True
+        If true labels the regions.
+    label : 'number' | 'name' | 'abbrev', default: 'number'
         If 'number' labels the regions with numbers, if 'name' uses
         the long name of the regions, if 'short_name' uses
-        abbreviations of the regions. Default 'number'.
-    add_ocean : bool, optional
-        If true adds the ocean feature. See ocean_kws. Default: False.
-    line_kws : dict, optional
+        abbreviations of the regions.
+    coastlines : bool, default: True
+        If true plots coastlines. See coastline_kws.
+    add_ocean : bool,  default: False
+        If true adds the ocean feature. See ocean_kws.
+    line_kws : dict, default: None
         Arguments passed to plot.
-    text_kws : dict, optional
+    text_kws : dict, default, None
         Arguments passed to the labels (ax.text).
-    resolution : '110m' | '50m' | '10m'
+    resolution : '110m' | '50m' | '10m', default: '110m'
         Specify the resolution of the coastline and the ocean dataset.
         See cartopy for details.
-    subsample : None or bool, optional
+    subsample : None or bool, default: None
         If True subsamples the outline of the coords to make better
         looking plots on certain maps. If False does not subsample.
         If None, infers the subsampling -> if the input is given as
         array subsamples if it is given as (Multi)Polygons does not
         subsample.
-    add_land : bool, optional
-        If true adds the land feature. See land_kws. Default: False.
-    coastline_kws : dict, optional
-        Arguments passed to ``ax.coastlines()``. Per default uses ``color="0.4"``
-        and ``lw=0.5``.
-    ocean_kws : dict, optional
+    add_land : bool, default: False
+        If true adds the land feature. See land_kws.
+    coastline_kws : dict, default: None
+        Arguments passed to ``ax.coastlines()``. If None uses ``color="0.4"`` and
+        ``lw=0.5``.
+    ocean_kws : dict, default: None
         Arguments passed to ``ax.add_feature(OCEAN)``. Per default uses the cartopy
         ocean color and ``zorder=0.9``.
-    land_kws : dict, optional
+    land_kws : dict, default: None
         Arguments passed to ``ax.add_feature(LAND)``. Per default uses the cartopy
         land color and ``zorder=0.9``.
-    label_multipolygon : 'largest' | 'all', optional
+    label_multipolygon : 'largest' | 'all', default: 'largest'.
         If 'largest' only adds a text label for the largest Polygon of a
-        MultiPolygon. If 'all' adds text labels to all of them. Default:
-        'largest'.
+        MultiPolygon. If 'all' adds text labels to all of them.
 
     Returns
     -------
     ax : axes handle
 
-    Note
-    ----
+    Notes
+    -----
     plot internally calls :py:func:`Regions.plot_regions`.
 
     """
@@ -220,15 +221,10 @@ def _plot_regions(
         If 'number' labels the regions with numbers, if 'name' uses
         the long name of the regions, if 'short_name' uses
         abbreviations of the regions. Default 'number'.
-    add_ocean : bool, optional
-        If true colors the ocean blue. Default: True.
     line_kws : dict, optional
         Arguments passed to plot.
     text_kws : dict, optional
         Arguments passed to the labels (ax.text).
-    resolution : '110m' | '50m' | '10m'
-        Specify the resolution of the coastline and the ocean dataset.
-        See cartopy for details.
     subsample : None or bool, optional
         If True subsamples the outline of the coords to make better
         looking plots on certain maps. If False does not subsample.

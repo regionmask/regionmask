@@ -47,8 +47,8 @@ class Regions:
         source : string, optional
             Source of the region definitions. Default: "".
 
-        Example
-        -------
+        Examples
+        --------
         Create your own ``Regions``::
 
             from regionmask import Regions
@@ -145,7 +145,6 @@ class Regions:
         Returns
         -------
         mapped_key : int or list of int
-
         Raises a KeyError if the key does not exist.
 
         """
@@ -270,8 +269,8 @@ class Regions:
         str or None
             Returns the result as a string.
 
-        Note
-        ----
+        Notes
+        -----
         Used as the repr.
 
         """
@@ -351,7 +350,6 @@ class _OneRegion:
 
     def __init__(self, number, name, abbrev, outline, centroid=None):
         """
-
         Parameters
         ----------
         number : int
@@ -367,9 +365,8 @@ class _OneRegion:
             Center of mass of this region. If not provided is calculated
             as (Multi)Polygon.centroid. Position of the label on map plots.
 
-        Example
-        -------
-
+        Examples
+        --------
         ``_OneRegion`` can be created with numpy-style outlines::
 
             outl = ((0, 0), (0, 1), (1, 1.), (1, 0))

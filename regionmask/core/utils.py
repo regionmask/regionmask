@@ -131,7 +131,7 @@ def create_lon_lat_dataarray_from_bounds(
     """example xarray Dataset
 
     Parameters
-    ==========
+    ----------
     lon_start : number
         Start of lon bounds. The bounds includes this value.
     lon_stop : number
@@ -146,7 +146,7 @@ def create_lon_lat_dataarray_from_bounds(
         Spacing between values.
 
     Returns
-    =======
+    -------
     ds : xarray Dataarray
         Example dataset including, lon, lat, lon_bnds, lat_bnds.
 
