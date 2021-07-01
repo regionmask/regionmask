@@ -66,10 +66,10 @@ jobs:
           python -c "import regionmask"
       - name: Run tests
         run: |
-          python -m pytest \
-             --junitxml=junit/test-results.xml \
-             --cov=regionmask \
-             --cov-report=xml \
+          python -m pytest
+             --junitxml=junit/test-results.xml
+             --cov=regionmask
+             --cov-report=xml
              $PYTEST_EXTRA_FLAGS
 
       - name: Upload code coverage to Codecov

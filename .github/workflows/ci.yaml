@@ -61,9 +61,9 @@ jobs:
         run: |
           python -c "import regionmask"
       - name: Run tests
-        run: python -m pytest -n 4
-          --cov=regionmask \
-          --cov-report=xml \
+        run: python -m pytest
+          --cov=regionmask
+          --cov-report=xml
           --junitxml=test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
 
       - name: Upload test results
