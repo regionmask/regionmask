@@ -3,7 +3,6 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - python=3.6
   - cartopy
   - geopandas
   - matplotlib-base
@@ -15,3 +14,7 @@ dependencies:
   - pytest
   - pytest-cov
   - pytest-env
+# for linting TODO: remove?
+  - black
+  - flake8
+  - isort
