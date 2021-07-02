@@ -19,8 +19,6 @@ def _check_duplicates(data, name):
     -------
     bool : True if no duplicates in data.
 
-    Raises
-    ------
     """
     if data.duplicated().any():
         duplicates = data[data.duplicated(keep=False)]

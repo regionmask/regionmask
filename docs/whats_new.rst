@@ -73,6 +73,7 @@ Docs
 - Mentioned how to calculate regional medians (:issue:`170`).
 - Mentioned how to open regions specified in a yaml file using intake and fsspec
   (:issue:`93`, :pull:`205`). By `Aaron Spring <https://github.com/aaronspring>`_.
+- Fixed the docstrings using `velin  <https://github.com/Carreau/velin>`__  (:pull:`231`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
