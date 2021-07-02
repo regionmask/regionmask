@@ -65,11 +65,10 @@ jobs:
         run: |
           python -c "import regionmask"
       - name: Run tests
-        run: |
-          python -m pytest
-             --cov=regionmask
-             --cov-report=xml
-             $PYTEST_EXTRA_FLAGS
+        run: python -m pytest
+          --cov=regionmask
+          --cov-report=xml
+          $PYTEST_EXTRA_FLAGS
 
       - name: Upload code coverage to Codecov
         uses: codecov/codecov-action@v1
