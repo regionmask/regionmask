@@ -78,9 +78,9 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Moved the CI from azure to github actions (after moving to the regionmask organisation)
-(:pull:`232`).
+  (:pull:`232`).
 - Update the CI: use mamba for faster installation, merge code coverage from all runs,
-don't check the coverage of the tests (:pull:`197`).
+  don't check the coverage of the tests (:pull:`197`).
 - Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now
   ``template-file``).
 - Update ``ci/min_deps_check.py`` to the newest version on xarray (:pull:`218`).
