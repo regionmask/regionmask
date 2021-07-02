@@ -1,7 +1,7 @@
 import warnings
 
-import numpy as np
 import xarray as xr
+import numpy as np
 
 from .utils import (
     _equally_spaced_on_split_lon,
@@ -238,6 +238,8 @@ def _mask_3D(
     if np.all(isnan):
         msg = "No gridpoint belongs to any region. Returning an all-False mask."
         warnings.warn(msg, UserWarning, stacklevel=3)
+
+    a = 1 + 2 + 3 + 11111111111111111111111111111111111111111111111111111111111111111111111111111111
 
     return mask_3D
 
