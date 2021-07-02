@@ -7,11 +7,10 @@
 plotting and creation of masks of spatial regions
 =================================================
 
-
-.. image:: https://dev.azure.com/mathause/regionmask/_apis/build/status/mathause.regionmask?branchName=master
-   :target: https://dev.azure.com/mathause/regionmask/_build/latest?definitionId=1&branchName=master
-.. image:: https://codecov.io/gh/mathause/regionmask/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/mathause/regionmask
+.. image:: https://github.com/regionmask/regionmask/workflows/CI/badge.svg?branch=master
+   :target: https://github.com/regionmask/regionmask/actions?query=workflow%3ACI
+.. image:: https://codecov.io/gh/regionmask/regionmask/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/regionmask/regionmask
 .. image:: https://readthedocs.org/projects/regionmask/badge/?version=latest
    :target: https://regionmask.readthedocs.io
 .. image:: https://img.shields.io/pypi/v/regionmask.svg
