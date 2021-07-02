@@ -58,12 +58,13 @@ New regions
 - Added :py:attr:`natural_earth.land_10` and :py:attr:`natural_earth.land_50` regions from
   natural earth (:pull:`195`) by `Martin van Driel <https://github.com/martinvandriel>`_.
 
-
 Bug Fixes
 ~~~~~~~~~
 
 - Text labels outside of the map area should now be correctly clipped in most cases
   (:issue:`157`).
+- Move ``_flatten_polygons`` to ``utils`` and raise an error when something else than
+  a ``Polygon`` or ``MultiPolygon`` is passed (:pull:`211`).
 
 Docs
 ~~~~
@@ -76,12 +77,12 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now
-  ``template-file``).
+- Moved the CI from azure to github actions (after moving to the regionmask organisation)
+  (:pull:`232`).
 - Update the CI: use mamba for faster installation, merge code coverage from all runs,
   don't check the coverage of the tests (:pull:`197`).
-- Move ``_flatten_polygons`` to ``utils`` and raise an error when something else than
-  a ``Polygon`` or ``MultiPolygon`` is passed (:pull:`211`).
+- Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now
+  ``template-file``).
 - Update ``ci/min_deps_check.py`` to the newest version on xarray (:pull:`218`).
 - Add a test environment for python 3.9 (:issue:`215`).
 - Enforce minimum versions in `requirements.txt` and clean up required dependencies
