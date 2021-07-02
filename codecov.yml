@@ -1,5 +1,0 @@
-codecov:
-  ci:
-    # by default, codecov doesn't recognize azure as a CI provider
-    - dev.azure.com
-  require_ci_to_pass: yes
