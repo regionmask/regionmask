@@ -64,22 +64,15 @@ jobs:
       - name: isort
         run: isort --check .
       - name: black
+        if: always()
         run: black --check .
       - name: flake8
+        if: always()
         run: flake8 .
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: Test results for ${{ runner.os }}-${{ matrix.python-version }}
-          path: test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
-
-      - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          file: ./coverage.xml
-          flags: unittests
-          env_vars: RUNNER_OS,PYTHON_VERSION
-          name: codecov-umbrella
-          fail_ci_if_error: false
+      # - name: Upload test results
+      #   if: always()
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: Test results for ${{ runner.os }}-${{ matrix.python-version }}
+      #     path: test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
