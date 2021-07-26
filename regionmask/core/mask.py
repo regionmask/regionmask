@@ -2,7 +2,6 @@ import warnings
 
 import numpy as np
 import xarray as xr
-from xarray.core.dataarray import DataArray
 
 from .utils import (
     _equally_spaced_on_split_lon,
