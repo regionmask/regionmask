@@ -2,6 +2,7 @@ import warnings
 
 import numpy as np
 import xarray as xr
+from xarray.core.dataarray import DataArray
 
 from .utils import (
     _equally_spaced_on_split_lon,
@@ -298,10 +299,16 @@ def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
 
     # dict with the coordinates
     coords = {
-        dim1D_names[0]: dim1D_0,
-        dim1D_names[1]: dim1D_1,
-        lat_name: (dim1D_names, lat2D.data),
-        lon_name: (dim1D_names, lon2D.data),
+        dim1D_names[0]: dim1D_0.data,
+        dim1D_names[1]: dim1D_1.data,
+        lat_name: (
+            dim1D_names,
+            lat2D.data if isinstance(lat2D, xr.DataArray) else lat2D,
+        ),
+        lon_name: (
+            dim1D_names,
+            lon2D.data if isinstance(lon2D, xr.DataArray) else lon2D,
+        ),
     }
 
     mask = xr.DataArray(mask, coords=coords, dims=dim1D_names)
