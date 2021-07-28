@@ -1,4 +1,4 @@
-# How to issue a regionmask release in 18 easy steps
+# How to issue a regionmask release in n easy steps
 
 Time required: about an hour.
 
@@ -15,6 +15,7 @@ These instructions assume that `upstream` refers to the main repository
  2. Maybe write a release summary: ~50 words describing the high level features.
  3. Look over whats-new.rst and the docs. Make sure "What's New" is complete
     (check the date!) and add the release summary at the top.
+ 4. Update version number in regionmask/version.py
  4. Open a PR with the release summary and whatsnew changes.
  5. After merging, again ensure your master branch is synced to upstream:
      ```sh

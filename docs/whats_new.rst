@@ -10,8 +10,13 @@ What's New
 
 .. _whats-new.0.7.0:
 
-v0.7.0 (unreleased)
+v0.7.0 (28.07.2021)
 -------------------
+
+Version 0.7.0 is mostly a maintenance version. It drops python 2.7 support, accompanies
+the move of the repo to the regionmask organisation (`regionmask/regionmask <http://github.com/regionmask/regionmask>`__),
+finalizes a number of deprecations, and restores compatibility with xarray 0.19.
+
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
