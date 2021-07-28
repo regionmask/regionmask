@@ -65,6 +65,7 @@ Bug Fixes
   (:issue:`157`).
 - Move ``_flatten_polygons`` to ``utils`` and raise an error when something else than
   a ``Polygon`` or ``MultiPolygon`` is passed (:pull:`211`).
+- Fix incompatibility with xarray >=0.19.0 (:pull:`234`). By `Julius Busecke <https://github.com/jbusecke>`_.
 
 Docs
 ~~~~
