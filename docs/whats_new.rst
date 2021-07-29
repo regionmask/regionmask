@@ -34,6 +34,8 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Moved contents of setup.py to setup.cfg.
+
 
 v0.7.0 (28.07.2021)
 -------------------
@@ -45,6 +47,7 @@ finalizes a number of deprecations, and restores compatibility with xarray 0.19.
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
+
 - Removed support for Python 2. This is the first version of regionmask that is Python 3 only!
 
 - The minimum versions of some dependencies were changed (:pull:`220`):
