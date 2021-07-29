@@ -9,6 +9,7 @@ dependencies:
   - numpy
   - pooch
   - rasterio
+  - setuptools
   - xarray
 # for testing
   - pytest
