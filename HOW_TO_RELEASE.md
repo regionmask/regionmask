@@ -15,7 +15,6 @@ These instructions assume that `upstream` refers to the main repository
  2. Maybe write a release summary: ~50 words describing the high level features.
  3. Look over whats-new.rst and the docs. Make sure "What's New" is complete
     (check the date!) and add the release summary at the top.
- 4. Update version number in regionmask/version.py
  4. Open a PR with the release summary and whatsnew changes.
  5. After merging, again ensure your master branch is synced to upstream:
      ```sh
@@ -28,7 +27,8 @@ These instructions assume that `upstream` refers to the main repository
       ```
  9. Ensure the dependencies for building are installed:
       ```sh
-      pip install setuptools-scm twine wheel
+      mamba update pip
+      python -m pip install setuptools setuptools-scm wheel twine check-manifest
       ```
 10. Build source and binary wheels for PyPI:
       ```sh
@@ -40,15 +40,15 @@ These instructions assume that `upstream` refers to the main repository
       ```
 11. Use twine to check the package build:
       ```sh
-      twine check dist/xarray-{0.X.Y}*
+      twine check dist/regionmask*
       ```
 12. Use twine to register and upload the release on PyPI. Be careful, you can't
     take this back!
       ```sh
-      twine upload dist/xarray-{0.X.Y}*
+      twine upload dist/regionmask-{0.X.Y}*
       ```
     You will need to be listed as a package owner at
-    <https://pypi.python.org/pypi/xarray> for this to work.
+    <https://pypi.python.org/pypi/regionmask> for this to work.
 13. Push your changes to master:
       ```sh
       git push upstream master
@@ -98,9 +98,9 @@ These instructions assume that `upstream` refers to the main repository
       ```
     You're done pushing to master!
 17. Issue the release on GitHub. Click on "Draft a new release" at
-    <https://github.com/pydata/xarray/releases>. Type in the version number
+    <https://github.com/pydata/regionmask/releases>. Type in the version number
     and paste the release summary in the notes.
-18. Update the docs. Login to <https://readthedocs.org/projects/xray/versions/>
+18. Update the docs. Login to <https://readthedocs.org/projects/regionmask/versions/>
     and switch your new release tag (at the bottom) from "Inactive" to "Active".
     It should now build automatically.
 19. Release regionmask on conda - also update the requirements in meta.yaml <https://github.com/conda-forge/regionmask-feedstock>
