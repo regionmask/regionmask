@@ -11,6 +11,7 @@ dependencies:
   - pandas=1.0
   - pooch=1.0
   - rasterio=1.0
+  - setuptools=40.4
   - shapely=1.6
   - xarray=0.15
 # for testing
