@@ -34,8 +34,11 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- Moved contents of setup.py to setup.cfg.
-
+- Updated setup configuration and automated version numbering:
+  - Moved contents of setup.py to setup.cfg (:pull:`240`).
+  - Use ``pyproject.toml`` to define the installation requirements (:pull:`240`).
+  - Allow installing from git archives (:pull:`240`).
+  - Use setuptools-scm for automatic versioning (:pull:`240`).
 
 v0.7.0 (28.07.2021)
 -------------------
