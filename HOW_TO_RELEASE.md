@@ -98,7 +98,7 @@ These instructions assume that `upstream` refers to the main repository
       ```
     You're done pushing to master!
 17. Issue the release on GitHub. Click on "Draft a new release" at
-    <https://github.com/pydata/regionmask/releases>. Type in the version number
+    <https://github.com/regionmask/regionmask/releases>. Type in the version number
     and paste the release summary in the notes.
 18. Update the docs. Login to <https://readthedocs.org/projects/regionmask/versions/>
     and switch your new release tag (at the bottom) from "Inactive" to "Active".
