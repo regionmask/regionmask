@@ -24,6 +24,8 @@ Deprecations
 
 New regions
 ~~~~~~~~~~~
+- Added :py:attr:`climate_indices` regions from Climate Prediction Center (:pull:`244`) by `Andrew Huang <https://github.com/ahuang11>`_.
+
 
 Bug Fixes
 ~~~~~~~~~

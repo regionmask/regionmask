@@ -6,6 +6,7 @@ The following regions, used in the scientific literature, are already defined:
 
 * Giorgi Regions (from Giorgi and Franciso, 2000)
 * SREX Regions (Special Report on Managing the Risks of Extreme Events and Disasters to Advance Climate Change Adaptation (SREX) from Seneviratne et al., 2012)
+* Climate Indices Regions (CPC)
 * AR6 Regions (Iturbide et al., 2020; ESSD)
 
 .. ipython:: python
@@ -45,7 +46,17 @@ SREX Regions
 
     @savefig plotting_srex.png width=100%
     plt.tight_layout()
-    
+
+CPC Regions
+============
+
+.. ipython:: python
+
+    regionmask.defined_regions.climate_indices.plot();
+
+    @savefig plotting_cpc.png width=100%
+    plt.tight_layout()
+
 AR6 Regions
 ===========
 
@@ -120,3 +131,4 @@ References
 * Giorgi and Franciso, 2000: `<http://onlinelibrary.wiley.com/doi/10.1029/1999GL011016>`_
 * Iturbide et al., 2020: `<https://essd.copernicus.org/preprints/essd-2019-258/>`_
 * Seneviratne et al., 2012:  `<https://www.ipcc.ch/pdf/special-reports/srex/SREX-Ch3-Supplement_FINAL.pdf>`_
+* Climate Prediction Center: `<https://www.cpc.ncep.noaa.gov/products/precip/CWlink/pna/nao.shtml>`_
