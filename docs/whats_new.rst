@@ -28,6 +28,9 @@ New regions
 Bug Fixes
 ~~~~~~~~~
 
+- Raise a ValueError if the input coordinates (lat and lon) have wrong number of dimensions
+  or shape (:pull:`245`, :issue:`242`).
+
 Docs
 ~~~~
 

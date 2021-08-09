@@ -393,7 +393,7 @@ def _parse_input(lon, lat, coords, fill, numbers):
         numbers = range(n_coords)
     else:
         if len(numbers) != n_coords:
-            raise ValueError("`numbers` and `coords` must have the same length")
+            raise ValueError("`numbers` and `coords` must have the same length.")
 
     if fill in numbers:
         raise ValueError("The fill value should not be one of the region numbers.")
@@ -403,17 +403,36 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
 def _get_LON_LAT_out_shape(lon, lat, fill):
 
-    if lon.ndim == 2:
+    if lon.ndim != lat.ndim:
+        raise ValueError(
+            f"Equal number of dimensions required, found "
+            f"lon.ndim={lon.ndim} & lat.ndim={lat.ndim}."
+        )
+
+    ndim = lon.ndim
+
+    if ndim == 2 and lon.shape != lat.shape:
+        raise ValueError(
+            "2D lon and lat coordinates need to have the same shape, found "
+            f"lon.shape={lon.shape} & lat.shape={lat.shape}."
+        )
+
+    if ndim == 1:
+        LON, LAT = np.meshgrid(lon, lat)
+    elif ndim == 2:
         LON, LAT = lon, lat
     else:
-        LON, LAT = np.meshgrid(lon, lat)
+        raise ValueError(
+            f"1D or 2D data required - found {ndim} dimensions. Use `squeeze` to remove"
+            " axes of length 1 - e.g. `mask(lon.squeeze(), lat.squeeze())`."
+        )
 
     shape = LON.shape
 
-    LON, LAT = LON.flatten(), LAT.flatten()
+    LON, LAT = LON.ravel(), LAT.ravel()
 
-    # create output variable
-    out = np.empty(shape=shape).flatten()
+    # create flattened output variable
+    out = np.empty(shape=np.prod(shape))
     out.fill(fill)
 
     return LON, LAT, out, shape
@@ -494,7 +513,7 @@ def _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill=np.NaN, **kwargs
         fill=fill,
         transform=transform,
         dtype=float,
-        **kwargs
+        **kwargs,
     )
 
     return raster
