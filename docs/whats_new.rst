@@ -10,11 +10,25 @@ What's New
 
 .. _whats-new.0.8.0:
 
-v{0.8.0} (unreleased)
----------------------
+v0.8.0 (unreleased)
+-------------------
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
+
+ - Updates to :py:meth:`Regions.plot` and :py:meth:`Regions.plot_regions` (:pull:`246`):
+
+   - Deprecated all positional arguments (keword arguments only).
+   - The ``regions`` keyword was deprecated. Subset regions before plotting, i.e.
+     use ``r[regions].plot()`` instead of ``r.plot(regions=regions)``. This will allow
+     to remove a argument from the methods.
+ - Updates to :py:meth:`Regions.plot` (:pull:`246`):
+
+   - Added ``lw=0`` to the default ``ocean_kws`` and ``land_kws`` to avoid overlap with
+     the coastlines.
+   - Renamed the ``proj`` keyword to ``projection`` for consistency with cartopy.
+   - Renamed the ``coastlines`` keyword to ``add_coastlines`` for consistency with other
+     keywords (e.g. ``add_land``).
 
 Enhancements
 ~~~~~~~~~~~~
@@ -31,14 +45,17 @@ Bug Fixes
 Docs
 ~~~~
 
+- Updated the plotting tutorial (:pull:`246`).
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Updated setup configuration and automated version numbering:
-  - Moved contents of setup.py to setup.cfg (:pull:`240`).
-  - Use ``pyproject.toml`` to define the installation requirements (:pull:`240`).
-  - Allow installing from git archives (:pull:`240`).
-  - Use setuptools-scm for automatic versioning (:pull:`240`).
+
+  - Moved contents of `setup.py` to `setup.cfg` (:pull:`240`).
+  - Use `pyproject.toml` to define the installation requirements (:pull:`241`).
+  - Allow installing from git archives (:pull:`241`).
+  - Use setuptools-scm for automatic versioning (:pull:`241`).
 
 v0.7.0 (28.07.2021)
 -------------------
