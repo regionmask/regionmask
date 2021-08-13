@@ -31,7 +31,10 @@ Bug Fixes
 Docs
 ~~~~
 
-- Install `regionmask` via `ci/requirements/docs.yml` on RTD using pip (:pull:`248`).
+- Install `regionmask` via `ci/requirements/docs.yml` on RTD using pip and update the
+  packages: don't require jupyter (but ipykernel, which leads to a smaller environment),
+  use new versions of sphinx and sphinx_rtd_theme (:pull:`248`).
+
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
