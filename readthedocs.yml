@@ -1,23 +1,17 @@
-# .readthedocs.yml
 # Read the Docs configuration file
-# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+# https://docs.readthedocs.io/en/stable/config-file/v2.html
 
 # Required
 version: 2
 
-# Build documentation in the docs/ directory with Sphinx
+# build documentation in the docs directory with Sphinx
 sphinx:
   configuration: docs/conf.py
 
 build:
-    image: stable
+    image: latest
 
 conda:
     environment: ci/requirements/docs.yml
-python:
-    version: 3.7
-    install:
-      - method: setuptools
-        path: .
 
 formats: []
