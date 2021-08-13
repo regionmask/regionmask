@@ -38,3 +38,5 @@ dependencies:
   - pip:
     - intake_geopandas>=0.2.4
     - msgpack
+    # install regionmask relative to this file. Needs to be editable to be accepted.
+    - -e ../..

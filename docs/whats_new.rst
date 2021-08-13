@@ -31,6 +31,8 @@ Bug Fixes
 Docs
 ~~~~
 
+- Install `regionmask` via `ci/requirements/docs.yml` on RTD using pip (:pull:`248`).
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
