@@ -193,8 +193,6 @@ def test_plot_projection():
 
 
 @requires_cartopy
-# @pytest.mark.filterwarnings("ignore:numpy.dtype size changed")
-# @pytest.mark.filterwarnings("ignore:numpy.ufunc size changed")
 def test_plot_deprecated_proj():
 
     proj = ccrs.PlateCarree()
