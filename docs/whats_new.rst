@@ -10,11 +10,25 @@ What's New
 
 .. _whats-new.0.8.0:
 
-v{0.8.0} (unreleased)
----------------------
+v0.8.0 (unreleased)
+-------------------
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
+
+ - Updates to :py:meth:`Regions.plot` and :py:meth:`Regions.plot_regions` (:pull:`246`):
+
+   - Deprecated all positional arguments (keword arguments only).
+   - The ``regions`` keyword was deprecated. Subset regions before plotting, i.e.
+     use ``r[regions].plot()`` instead of ``r.plot(regions=regions)``. This will allow
+     to remove a argument from the methods.
+ - Updates to :py:meth:`Regions.plot` (:pull:`246`):
+
+   - Added ``lw=0`` to the default ``ocean_kws`` and ``land_kws`` to avoid overlap with
+     the coastlines.
+   - Renamed the ``proj`` keyword to ``projection`` for consistency with cartopy.
+   - Renamed the ``coastlines`` keyword to ``add_coastlines`` for consistency with other
+     keywords (e.g. ``add_land``).
 
 Enhancements
 ~~~~~~~~~~~~
@@ -31,6 +45,7 @@ Bug Fixes
 Docs
 ~~~~
 
+- Updated the plotting tutorial (:pull:`246`).
 - Install `regionmask` via `ci/requirements/docs.yml` on RTD using pip and update the
   packages: don't require jupyter (but ipykernel, which leads to a smaller environment),
   use new versions of sphinx and sphinx_rtd_theme (:pull:`248`).
@@ -40,6 +55,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Updated setup configuration and automated version numbering:
+
   - Moved contents of setup.py to setup.cfg (:pull:`240`).
   - Use ``pyproject.toml`` to define the installation requirements (:pull:`240`, :pull:`247`).
   - Allow installing from git archives (:pull:`240`).
