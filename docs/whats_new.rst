@@ -33,6 +33,10 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- Creating masks for irregular and 2D grids can be speed up considerably by installing
+  `pygeos <https://pygeos.readthedocs.io/en/stable/>`__. pygeos is an optional dependency
+  (:issue:`123`).
+
 Deprecations
 ~~~~~~~~~~~~
 

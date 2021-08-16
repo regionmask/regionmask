@@ -4,7 +4,7 @@ import pytest
 from regionmask import defined_regions
 from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
 
-from . import has_cartopy
+from . import has_cartopy, has_pygeos
 
 
 def regions():
@@ -52,3 +52,8 @@ def test_mask_equal_defined_regions(region, ds):
     shapely = region.mask(ds, method="shapely")
 
     assert np.allclose(rasterize, shapely, equal_nan=True)
+
+    if has_pygeos:
+        pygeos = region.mask(ds, method="pygeos")
+
+        assert np.allclose(rasterize, pygeos, equal_nan=True)

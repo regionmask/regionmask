@@ -22,6 +22,12 @@ For plotting
 - `cartopy <http://scitools.org.uk/cartopy/>`__ for plotting on geographical maps and
   for downloading natural earth data.
 
+For faster masking
+~~~~~~~~~~~~~~~~~~
+
+- `pygeos <https://pygeos.readthedocs.io/en/stable/>`__ enables faster mask creations for
+  irregular and 2D grids.
+
 Instructions
 ------------
 
@@ -31,10 +37,10 @@ on the conda-forge channel.
 
 .. code-block:: bash
 
-    conda install -c conda-forge regionmask cartopy
+    conda install -c conda-forge regionmask cartopy pygeos
 
 All required dependencies can be installed with pip. You can thus install regionmask
-regionmask directly:
+directly:
 
 .. code-block:: bash
 
@@ -45,7 +51,8 @@ Note, however, that the optional dependency cartopy can be very difficult to ins
 Testing
 -------
 
-To run the test suite after installing regionmask, install `py.test <https://pytest.org>`__ and run ``pytest`` in the root directory of regionmask.
+To run the test suite after installing regionmask, install `py.test <https://pytest.org>`__
+and run ``pytest`` in the root directory of regionmask.
 
 To install the development version (master), do:
 

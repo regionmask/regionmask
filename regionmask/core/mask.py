@@ -12,6 +12,14 @@ from .utils import (
     equally_spaced,
 )
 
+try:
+    import pygeos
+
+    has_pygeos = True
+except ModuleNotFoundError:
+    has_pygeos = False
+
+
 _MASK_DOCSTRING_TEMPLATE = """\
 create a {nd} {dtype} mask of a set of regions for the given lat/ lon grid
 
@@ -26,13 +34,13 @@ lat : array_like, optional
     If ``lon_or_obj`` is a longitude array, the latitude needs to be
     specified here.
 {drop_doc}lon_name : str, optional
-    Name of longitude in ``lon_or_obj``. Default: "lon".
+    Name of longitude in ``lon_or_obj``, default: "lon".
 lat_name : str, optional
-    Name of latgitude in ``lon_or_obj``. Default: "lat"
-{numbers_doc}method : "rasterize" | "shapely", optional
+    Name of latgitude in ``lon_or_obj``, default: "lat"
+{numbers_doc}method : "rasterize" | "shapely" | "pygeos". Default: None
     Method used to determine whether a gridpoint lies in a region.
-    Both methods should lead to the same result. If None (default)
-    autoselects the method depending on the grid spacing.
+    All methods lead to the same mask. If None (default)
+    autoselects the method.
 wrap_lon : bool | 180 | 360, optional
     Whether to wrap the longitude around, inferred automatically.
     If the regions and the provided longitude do not have the same
@@ -54,7 +62,7 @@ See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
 
 _GP_DOCSTRING = """\
 geodataframe : GeoDataFrame or GeoSeries
-    Object providing the region definitions (outlines).
+    Object providing the region definitions (polygons).
 """
 
 _NUMBERS_DOCSTRING = """\
@@ -66,7 +74,7 @@ numbers : str, optional
 
 
 _DROP_DOCSTRING = """\
-drop : boolean, optional
+drop : boolean, default: True
     If True (default) drops slices where all elements are False (i.e no
     gridpoints are contained in a region). If False returns one slice per
     region.
@@ -123,8 +131,8 @@ def _mask(
     if wrap_lon:
         lon = _wrapAngle(lon, wrap_lon)
 
-    if method not in (None, "rasterize", "shapely"):
-        msg = "Method must be None or one of 'rasterize' and 'shapely'."
+    if method not in (None, "rasterize", "shapely", "pygeos"):
+        msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
         raise ValueError(msg)
 
     if method is None:
@@ -134,6 +142,8 @@ def _mask(
         if "rasterize" not in method:
             msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
             raise ValueError(msg)
+    elif method == "pygeos" and not has_pygeos:
+        raise ModuleNotFoundError("No module named 'pygeos'")
 
     if method == "rasterize":
         mask = _mask_rasterize(lon, lat, outlines, numbers=numbers)
@@ -141,6 +151,8 @@ def _mask(
         mask = _mask_rasterize_flip(lon, lat, outlines, numbers=numbers)
     elif method == "rasterize_split":
         mask = _mask_rasterize_split(lon, lat, outlines, numbers=numbers)
+    elif method == "pygeos":
+        mask = _mask_pygeos(lon, lat, outlines, numbers=numbers)
     elif method == "shapely":
         mask = _mask_shapely(lon, lat, outlines, numbers=numbers)
 
@@ -258,6 +270,9 @@ def _determine_method(lon, lat):
         else:
             return "rasterize_split"
 
+    if has_pygeos:
+        return "pygeos"
+
     return "shapely"
 
 
@@ -360,10 +375,33 @@ def _mask_edgepoints_shapely(mask, lon, lat, polygons, numbers, fill=np.NaN):
     return mask.reshape(shape)
 
 
+def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN):
+    """create a mask using pygeos.STRtree"""
+
+    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
+
+    LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill)
+
+    # add a tiny offset to get a consistent edge behaviour
+    LON = LON - 1 * 10 ** -8
+    LAT = LAT - 1 * 10 ** -10
+
+    # convert shapely points to pygeos
+    poly_pygeos = pygeos.from_shapely(polygons)
+    points_pygeos = pygeos.points(LON, LAT)
+
+    tree = pygeos.STRtree(points_pygeos)
+    a, b = tree.query_bulk(poly_pygeos, predicate="contains")
+
+    for i, (polygon, number) in enumerate(zip(poly_pygeos, numbers)):
+
+        out[b[a == i]] = number
+
+    return out.reshape(shape)
+
+
 def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN):
-    """
-    create a mask using shapely.vectorized.contains
-    """
+    """create a mask using shapely.vectorized.contains"""
 
     import shapely.vectorized as shp_vect
 

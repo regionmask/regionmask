@@ -8,6 +8,7 @@ dependencies:
   - matplotlib-base
   - numpy
   - pooch
+  - pygeos
   - rasterio
   - setuptools
   - xarray

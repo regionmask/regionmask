@@ -5,7 +5,7 @@ channels:
   - nodefaults
 
 dependencies:
-  - python=3.7
+  - python
 # regionmask dependencies
   # https://github.com/SciTools/cartopy/pull/1646
   - cartopy=0.17
@@ -14,6 +14,7 @@ dependencies:
   - matplotlib-base==3.2
   - numpy
   - pooch
+  - pygeos
   - rasterio
   - xarray
 # depencies for the examples
