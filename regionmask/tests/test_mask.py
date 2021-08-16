@@ -113,6 +113,37 @@ def test_mask_xarray_name(method):
     assert msk.name == "region"
 
 
+@pytest.mark.parametrize("ndims", [(2, 1), (1, 2), (0, 1)])
+def test_mask_unequal_ndim(ndims):
+
+    lon = np.zeros(shape=ndims[0] * (2,))
+    lat = np.zeros(shape=ndims[1] * (2,))
+
+    with pytest.raises(ValueError, match="Equal number of dimensions required"):
+        dummy_region.mask(lon, lat)
+
+
+def test_mask_unequal_2D_shapes():
+
+    lon = np.zeros(shape=(2, 3))
+    lat = np.zeros(shape=(2, 4))
+
+    with pytest.raises(
+        ValueError, match="2D lon and lat coordinates need to have the same shape"
+    ):
+        dummy_region.mask(lon, lat)
+
+
+@pytest.mark.parametrize("ndim", [0, 3, 4])
+def test_mask_ndim_ne_1_2(ndim):
+
+    lon = np.zeros(shape=ndim * (2,))
+    lat = np.zeros(shape=ndim * (2,))
+
+    with pytest.raises(ValueError, match="1D or 2D data required"):
+        dummy_region.mask(lon, lat)
+
+
 @pytest.mark.parametrize("lon_name", ["lon", "longitude"])
 @pytest.mark.parametrize("lat_name", ["lat", "latitude"])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
