@@ -65,6 +65,7 @@ jobs:
         run: |
           python -c "import regionmask"
       - name: Run tests
+        timeout-minutes: 5
         run: python -u -m pytest
           --cov=regionmask
           --cov-report=xml
