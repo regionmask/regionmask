@@ -739,7 +739,7 @@ numbers : str, optional
     takes ``geodataframe.index.values``.
 method : "rasterize" | "shapely" | "pygeos". Default: None
     Method used to determine whether a gridpoint lies in a region.
-    All methods lead to the same result. If None (default)
+    All methods lead to the same mask. If None (default)
     autoselects the method.
 wrap_lon : bool | 180 | 360, optional
     Whether to wrap the longitude around, inferred automatically.
