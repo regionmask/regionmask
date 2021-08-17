@@ -62,7 +62,7 @@ jobs:
           python -c "import regionmask"
       - name: Run tests
         timeout-minutes: 5
-        run: strace python -u -m pytest
+        run: python -u -m pytest
           --cov=regionmask
           --cov-report=xml
           --junitxml=test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
