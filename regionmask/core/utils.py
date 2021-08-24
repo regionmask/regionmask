@@ -59,7 +59,7 @@ def _sanitize_names_abbrevs(numbers, values, default):
 
 
 def _wrapAngle360(lon):
-    """wrap angle to [0, 360[."""
+    """wrap angle to `[0, 360[`."""
     lon = np.array(lon)
     return np.mod(lon, 360)
 
@@ -68,7 +68,7 @@ def _wrapAngle360(lon):
 
 
 def _wrapAngle180(lon):
-    """wrap angle to [-180,180[."""
+    """wrap angle to `[-180, 180[`."""
     lon = np.array(lon)
     sel = (lon < -180) | (180 <= lon)
     lon[sel] = _wrapAngle360(lon[sel] + 180) - 180
@@ -89,12 +89,7 @@ def _wrapAngle(lon, wrap_lon=True):
     new_lon = lon
 
     if wrap_lon is True:
-        if lon.min() < 0 and lon.max() > 180:
-            msg = (
-                "lon has both data that is larger than 180 and "
-                "smaller than 0. Cannot infer the transformation."
-            )
-            raise RuntimeError(msg)
+        _is_180(lon.min(), lon.max(), msg_add="Cannot infer the transformation.")
 
     wl = int(wrap_lon)
 
@@ -107,8 +102,7 @@ def _wrapAngle(lon, wrap_lon=True):
     # check if they are still unique
     if new_lon.ndim == 1:
         if new_lon.shape != np.unique(new_lon).shape:
-            msg = "There are equal longitude coordinates (when wrapped)!"
-            raise IndexError(msg)
+            raise ValueError("There are equal longitude coordinates (when wrapped)!")
 
     return new_lon
 
@@ -116,13 +110,13 @@ def _wrapAngle(lon, wrap_lon=True):
 # -----------------------------------------------------------------------------
 
 
-def _is_180(lon_min, lon_max):
+def _is_180(lon_min, lon_max, msg_add=""):
 
     lon_min = np.round(lon_min, 6)
     lon_max = np.round(lon_max, 6)
 
     if (lon_min < 0) and (lon_max > 180):
-        msg = "lon has both data that is larger than 180 and smaller than 0."
+        msg = "lon has both data that is larger than 180 and smaller than 0. " + msg_add
         raise ValueError(msg)
 
     return lon_max <= 180

@@ -86,6 +86,9 @@ def test_is_180():
     with pytest.raises(ValueError, match="lon has both data that is larger than 180"):
         _is_180(-1, 181)
 
+    with pytest.raises(ValueError, match="and smaller than 0. Additional text."):
+        _is_180(-1, 181, "Additional text.")
+
 
 @pytest.mark.parametrize("lon_vals", [(-161, -29, 2), (-180, 181, 2)])
 @pytest.mark.parametrize("lat_vals", [(75, 13, -2), (90, -91, -2)])

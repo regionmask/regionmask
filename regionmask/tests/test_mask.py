@@ -195,6 +195,45 @@ def test_mask_wrap(method):
     assert np.allclose(result, expected, equal_nan=True)
 
 
+@pytest.mark.parametrize("meth", ["mask", "mask_3D"])
+def test_wrap_lon_no_error_wrap_lon_false(meth):
+
+    # regions that exceed 360° longitude
+    r = Regions([[[-180, 0], [-180, 10], [360, 10], [360, 0]]], numbers=[1])
+
+    # lons that exceed 360° longitude
+    lon = np.arange(-175, 360, 2.5)
+    lat = np.arange(10, 1, -3)
+
+    mask = getattr(r, meth)(lon, lat, wrap_lon=False)
+
+    # the region index is 1 -> thus this works for 2D and 3D masks
+    assert (mask == 1).all()
+    np.testing.assert_equal(lon, mask.lon)
+    np.testing.assert_equal(lat, mask.lat)
+
+    # -180° is not special cased (no _mask_edgepoints_shapely)
+    lon = [-180]
+    mask = getattr(r, meth)(lon, lat, wrap_lon=False)
+    assert (mask != 1).all()
+    np.testing.assert_equal(lon, mask.lon)
+    np.testing.assert_equal(lat, mask.lat)
+
+
+@pytest.mark.parametrize("meth", ["mask", "mask_3D"])
+def test_wrap_lon_error_wrap_lon(meth):
+
+    # regions that exceed 360° longitude
+    r = Regions([[[-180, 0], [-180, 10], [360, 10], [360, 0]]])
+
+    # lons that exceed 360° longitude
+    lon = np.arange(-180, 360, 2.5)
+    lat = np.arange(10, 1, -3)
+
+    with pytest.raises(ValueError, match="Set `wrap_lon=False` to skip this check."):
+        getattr(r, meth)(lon, lat)
+
+
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_autowrap(method):
 
@@ -677,54 +716,14 @@ def test_inject_mask_docstring():
 
     result = _inject_mask_docstring(True, True)
 
-    expected = """\
-create a 3D float mask of a set of regions for the given lat/ lon grid
+    assert "3D" in result
+    assert "2D" not in result
+    assert "drop :" in result
+    assert "geodataframe" in result
 
-Parameters
-----------
-geodataframe : GeoDataFrame or GeoSeries
-    Object providing the region definitions (outlines).
-lon_or_obj : object or array_like
-    Can either be a longitude array and then ``lat`` needs to be
-    given. Or an object where the longitude and latitude can be
-    retrived as: ``lon = lon_or_obj[lon_name]`` and
-    ``lat = lon_or_obj[lat_name]``
-lat : array_like, optional
-    If ``lon_or_obj`` is a longitude array, the latitude needs to be
-    specified here.
-drop : boolean, optional
-    If True (default) drops slices where all elements are False (i.e no
-    gridpoints are contained in a region). If False returns one slice per
-    region.
-lon_name : str, optional
-    Name of longitude in ``lon_or_obj``. Default: "lon".
-lat_name : str, optional
-    Name of latgitude in ``lon_or_obj``. Default: "lat"
-numbers : str, optional
-    Name of the column to use for numbering the regions.
-    This column must not have duplicates. If None (default),
-    takes ``geodataframe.index.values``.
-method : "rasterize" | "shapely", optional
-    Method used to determine whether a gridpoint lies in a region.
-    Both methods should lead to the same result. If None (default)
-    autoselects the method depending on the grid spacing.
-wrap_lon : bool | 180 | 360, optional
-    Whether to wrap the longitude around, inferred automatically.
-    If the regions and the provided longitude do not have the same
-    base (i.e. one is -180..180 and the other 0..360) one of them
-    must be wrapped. This can be achieved with wrap_lon.
-    If wrap_lon is None autodetects whether the longitude needs to be
-    wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
-    longitude data is wrapped to 360 if its minimum is smaller
-    than 0 and wrapped to 180 if its maximum is larger than 180.
+    result = _inject_mask_docstring(False, False)
 
-Returns
--------
-mask_3D : float xarray.DataArray
-
-References
-----------
-See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
-"""
-
-    assert result == expected
+    assert "2D" in result
+    assert "3D" not in result
+    assert "drop :" not in result
+    assert "geodataframe" not in result

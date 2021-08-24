@@ -54,9 +54,9 @@ def test__wrapAngle():
 
     assert np.allclose(result, expected)
 
-    raises(RuntimeError, _wrapAngle, [-1, 181])
+    raises(ValueError, _wrapAngle, [-1, 181])
 
-    raises(IndexError, _wrapAngle, [0, 0])
+    raises(ValueError, _wrapAngle, [0, 0])
 
     # test explicit argument
     assert _wrapAngle(-1, 180) == -1
