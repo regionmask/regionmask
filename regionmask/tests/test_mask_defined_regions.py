@@ -18,6 +18,7 @@ ds_glob_360_2 = create_lon_lat_dataarray_from_bounds(*(0, 361, 2), *(90, -91, -2
 ds_glob_360_2_part = create_lon_lat_dataarray_from_bounds(*(0, 220, 2), *(90, -91, -2))
 
 
+@pytest.mark.timeout(10)
 @pytest.mark.parametrize("region_name", all_defined_regions(return_n=False))
 @pytest.mark.parametrize(
     "ds", [ds_glob_1, ds_glob_2, ds_glob_360_2, ds_glob_360_2_part]
