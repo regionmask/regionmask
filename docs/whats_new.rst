@@ -63,6 +63,8 @@ Internal Changes
   - Use ``pyproject.toml`` to define the installation requirements (:pull:`240`, :pull:`247`).
   - Allow installing from git archives (:pull:`240`).
   - Use setuptools-scm for automatic versioning (:pull:`240`).
+- Refactor ``test_defined_region`` and ``test_mask_equal_defined_regions`` - globally
+  define a list of all available `defined_regions` (:issue:`256`).
 
 v0.7.0 (28.07.2021)
 -------------------
