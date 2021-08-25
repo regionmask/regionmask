@@ -14,3 +14,4 @@ dependencies:
   - pytest
   - pytest-cov
   - pytest-env
+  - pytest-timeout
