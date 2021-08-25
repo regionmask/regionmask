@@ -9,6 +9,7 @@ from . import has_cartopy, requires_cartopy
 from .utils import all_defined_regions
 
 
+@pytest.mark.timeout(10)
 @pytest.mark.parametrize(
     "region_name, n_regions", all_defined_regions(return_n=True, return_all=True)
 )
