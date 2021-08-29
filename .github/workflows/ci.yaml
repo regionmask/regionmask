@@ -32,9 +32,14 @@ jobs:
       - name: Cache conda
         uses: actions/cache@v2
         with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{
-            hashFiles('ci/requirements/**.yml') }}
+          path: |
+            ~/conda_pkgs_dir
+            ~/.cache/regionmask/
+            ~/.local/share/cartopy/
+          key: ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{ hashFiles('ci/requirements/**.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ matrix.python-version }}-
+            ${{ runner.os }}-
       - uses: conda-incubator/setup-miniconda@v2
         with:
           channels: conda-forge

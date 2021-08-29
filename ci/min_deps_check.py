@@ -28,7 +28,6 @@ IGNORE_DEPS = {
     "pytest",
     "pytest-cov",
     "pytest-env",
-    "pytest-timeout",
     "pytest-xdist",
 }
 
