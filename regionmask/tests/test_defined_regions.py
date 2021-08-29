@@ -6,22 +6,45 @@ from regionmask import Regions, defined_regions
 from regionmask.defined_regions import _maybe_get_column
 
 from . import has_cartopy, requires_cartopy
-from .utils import all_defined_regions
-
-
-@pytest.mark.timeout(10)
-@pytest.mark.parametrize(
-    "region_name, n_regions", all_defined_regions(return_n=True, return_all=True)
+from .utils import (
+    REGIONS,
+    REGIONS_DEPRECATED,
+    REGIONS_REQUIRING_CARTOPY,
+    get_naturalearth_region_or_skip,
 )
-def test_defined_region(region_name, n_regions):
 
-    region = attrgetter(region_name)(defined_regions)
 
+def _test_region(region, n_regions):
     assert isinstance(region, Regions)
     assert len(region) == n_regions
 
     # currently all regions are -180..180
     assert region.lon_180
+
+
+@pytest.mark.parametrize("region_name, n_regions", REGIONS.items())
+def test_defined_region(region_name, n_regions):
+
+    region = attrgetter(region_name)(defined_regions)
+
+    _test_region(region, n_regions)
+
+
+@pytest.mark.parametrize("region_name, n_regions", REGIONS_DEPRECATED.items())
+def test_defined_region_deprecated(region_name, n_regions):
+
+    region = attrgetter(region_name)(defined_regions)
+
+    _test_region(region, n_regions)
+
+
+@requires_cartopy
+@pytest.mark.parametrize("region_name, n_regions", REGIONS_REQUIRING_CARTOPY.items())
+def test_defined_regions_natural_earth(monkeypatch, region_name, n_regions):
+
+    region = get_naturalearth_region_or_skip(monkeypatch, region_name)
+
+    _test_region(region, n_regions)
 
 
 @requires_cartopy
