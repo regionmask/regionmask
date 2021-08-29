@@ -41,7 +41,7 @@ def test_mask_func(func):
     assert np.allclose(result, expected, equal_nan=True)
 
     result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[5, 6, 7])
-    expected = expected_mask_2D(a=5, b=6)
+    expected = expected_mask_2D(a=5, b=6,c=7)
     assert np.allclose(result, expected, equal_nan=True)
 
 
@@ -90,9 +90,10 @@ def test_mask_xarray(method):
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_poly_z_value(method):
 
-    outl1 = Polygon(((0, 0, 1), (0, 1, 1), (1, 1.0, 1), (1, 0, 1)))
-    outl2 = Polygon(((0, 1, 1), (0, 2, 1), (1, 2.0, 1), (1, 1, 1)))
-    outlines = [outl1, outl2]
+    outl1 = Polygon(((1, 1, 2), (1, 2, 2), (2, 2.0, 2), (2, 1, 2)))
+    outl2 = Polygon(((1, 2, 2), (1, 3, 2), (2, 3.0, 2), (2, 2, 2)))
+    outl3 = Polygon(((1, 3, 3), (1, 4, 3), (2, 4.0, 2), (2, 3, 2)))
+    outlines = [outl1, outl2,outl3]
 
     r_z = Regions(outlines)
 
@@ -160,22 +161,31 @@ def test_mask_obj(lon_name, lat_name, method):
 
 
 @pytest.mark.filterwarnings("ignore:No gridpoint belongs to any region.")
-@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+#@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+@pytest.mark.parametrize("method", [ "shapely"])
 def test_mask_wrap(method):
 
     # create a test case where the outlines and the lon coordinates
     # are different
 
     # outline 0..359.9
-    outl1 = ((359, 0), (359, 1), (0, 1.0), (0, 0))
-    outl2 = ((359, 1), (359, 2), (0, 2.0), (0, 1))
-    outlines = [outl1, outl2]
+    #outl1 = ((359, 0), (359, 1), (0, 1.0), (0, 0))
+    #outl2 = ((359, 1), (359, 2), (0, 2.0), (0, 1))
+    #outlines = [outl1, outl2]
+	
+
+    outl1 = ((359, 1), (359, 2), (0, 2.0), (0, 1))
+    outl2 = ((359, 2), (359, 3), (0, 3.0), (0, 2))
+    outl3 = ((359, 3), (359, 4), (0, 4.0), (0, 3))
+    outlines = [outl1, outl2,outl3]
 
     r = Regions(outlines)
 
     # lon -180..179.9
-    lon = [-1.5, -0.5]
-    lat = [0.5, 1.5]
+    #lon = [-1.5, -0.5]
+    #lat = [0.5, 1.5]
+    lon = [-5,-4,-3,-2,-1,-0.]
+    lat = [0.,1., 2.,3.,4.,5.]
 
     result = r.mask(lon, lat, method=method, wrap_lon=False).values
     assert np.all(np.isnan(result))
@@ -184,8 +194,13 @@ def test_mask_wrap(method):
     result = r.mask(lon, lat, method=method, wrap_lon=180).values
     assert np.all(np.isnan(result))
 
-    expected = expected_mask_2D()
-
+    #expected = expected_mask_2D()
+    expected = np.array([[np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+       [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+       [ 0.,  0.,  0.,  0.,  0., np.nan],
+       [ 1.,  1.,  1.,  1.,  1., np.nan],
+       [ 2.,  2.,  2.,  2.,  2., np.nan],
+       [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan]])
     # determine the wrap automatically
     result = r.mask(lon, lat, method=method, wrap_lon=True).values
     assert np.allclose(result, expected, equal_nan=True)
@@ -195,7 +210,9 @@ def test_mask_wrap(method):
     assert np.allclose(result, expected, equal_nan=True)
 
 
-@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+#@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+@pytest.mark.parametrize("method", ["shapely"])
+
 def test_mask_autowrap(method):
 
     expected = expected_mask_2D()
@@ -204,22 +221,34 @@ def test_mask_autowrap(method):
     # are different - or the same - should work either way
 
     # 1. -180..180 regions and -180..180 lon
-    lon = [0.5, 1.5]
-    lat = [0.5, 1.5]
+    lon = [0,1,2,3,4,5]#[0.5, 1.5]
+    lat = [0,1,2,3,4,5]#[0.5, 1.5]
     result = dummy_region.mask(lon, lat, method=method).values
     assert np.allclose(result, expected, equal_nan=True)
 
     # 2. -180..180 regions and 0..360 lon
     # outline -180..180
-    outl1 = ((-180, 0), (-180, 1), (-1, 1.0), (-1, 0))
-    outl2 = ((-180, 1), (-180, 2), (-1, 2.0), (-1, 1))
-    outlines = [outl1, outl2]
+    #outl1 = ((-180, 0), (-180, 1), (-1, 1.0), (-1, 0))
+    #outl2 = ((-180, 1), (-180, 2), (-1, 2.0), (-1, 1))
+    #outlines = [outl1, outl2]
+
+    outl1 = ((-180, 1), (-180, 2), (-1, 2.0), (-1, 1))
+    outl2 = ((-180, 2), (-180, 3), (-1, 3.0), (-1, 2))
+    outl3 = ((-180, 3), (-180, 4), (-1, 4.0), (-1, 3))
+    outlines = [outl1, outl2,outl3]
 
     r = Regions(outlines)
 
     # lon -180..179.9
-    lon = [358.5, 359.5]
-    lat = [0.5, 1.5]
+    lon = [-5,-4,-3,-2,-1,0]#[358.5, 359.5]
+    lat = [0,1,2,3,4,5]#[0.5, 1.5]
+    #expected = expected_mask_2D()
+    expected = np.array([[np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+       [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan],
+       [ 0.,  0.,  0.,  0.,  0., np.nan],
+       [ 1.,  1.,  1.,  1.,  1., np.nan],
+       [ 2.,  2.,  2.,  2.,  2., np.nan],
+       [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan]])
 
     result = r.mask(lon, lat, method=method).values
     assert np.allclose(result, expected, equal_nan=True)
@@ -227,15 +256,23 @@ def test_mask_autowrap(method):
     # 3. 0..360 regions and -180..180 lon
 
     # outline 0..359.9
-    outl1 = ((359, 0), (359, 1), (0, 1.0), (0, 0))
-    outl2 = ((359, 1), (359, 2), (0, 2.0), (0, 1))
-    outlines = [outl1, outl2]
+    #outl1 = ((359, 0), (359, 1), (0, 1.0), (0, 0))
+    #outl2 = ((359, 1), (359, 2), (0, 2.0), (0, 1))
+    #outlines = [outl1, outl2]
+    #r = Regions(outlines)
+
+    outl1 = ((359, 1), (359, 2), (0, 2.0), (0, 1))
+    outl2 = ((359, 2), (359, 3), (0, 3.0), (0, 2))
+    outl3 = ((359, 3), (359, 4), (0, 4.0), (0, 3))
+    outlines = [outl1, outl2,outl3]
 
     r = Regions(outlines)
 
     # lon -180..179.9
-    lon = [-1.5, -0.5]
-    lat = [0.5, 1.5]
+    #lon = [-1.5, -0.5]
+    #lat = [0.5, 1.5]
+    lon = [-5,-4,-3,-2,-1,-0.]
+    lat = [0.,1., 2.,3.,4.,5.]
 
     result = r.mask(lon, lat, method=method).values
     assert np.allclose(result, expected, equal_nan=True)
@@ -243,8 +280,8 @@ def test_mask_autowrap(method):
     # 3. 0..360 regions and 0..360 lon
 
     # lon 0..359.9
-    lon = [0.5, 359.5]
-    lat = [0.5, 1.5]
+    lon = [355,356,357,358,359,0] #[0.5, 359.5]
+    lat = [0.,1., 2.,3.,4.,5.] #[0.5, 1.5]
 
     result = r.mask(lon, lat, method=method).values
     assert np.allclose(result, expected, equal_nan=True)
@@ -252,7 +289,7 @@ def test_mask_autowrap(method):
 
 def test_mask_wrong_method():
 
-    msg = "Method must be None or one of 'rasterize' and 'shapely'."
+    msg = "Method must be None or one of 'rasterize', 'shapely', 'weights_default' or 'weights_rot_pole'."
     with pytest.raises(ValueError, match=msg):
 
         dummy_region.mask(dummy_lon, dummy_lat, method="method")

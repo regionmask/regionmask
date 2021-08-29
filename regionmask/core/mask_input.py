@@ -98,10 +98,6 @@ def _mask(
     lat_name="lat",
     method=None,
     wrap_lon=None,
-    central_rotated_longitude=None, 
-    pole_latitude=None, 
-    pole_longitude=None, 
-    globe=None,
 ):
     """
     internal function to create a mask
@@ -150,10 +146,8 @@ def _mask(
     elif method == "weights_default":
         mask = _Default(lon, lat, outlines, numbers=numbers)
     elif method == "weights_rot_pole":
-        mask = _Rotated_Pole(lon, lat, outlines, numbers=numbers, central_rotated_longitude = central_rotated_longitude, pole_latitude= pole_latitude, pole_longitude= pole_longitude, globe= globe) 
+        mask = _Rotated_Pole(lon, lat, outlines, numbers=numbers) 
     elif method == "weights_irregular":
-        msg = "Method is under construction."
-        warnings.warn(msg, UserWarning, stacklevel=3)
         mask = _Irregular(lon, lat, outlines, numbers=numbers) 
         
     # we need to treat the points at -180°E/0°E and -90°N
@@ -178,10 +172,6 @@ def _mask_2D(
     lat_name="lat",
     method=None,
     wrap_lon=None,
-    central_rotated_longitude=None, 
-    pole_latitude=None, 
-    pole_longitude=None, 
-    globe=None,
 ):
 
     mask = _mask(
@@ -194,10 +184,6 @@ def _mask_2D(
         lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
-        central_rotated_longitude= central_rotated_longitude, 
-        pole_latitude= pole_latitude, 
-        pole_longitude= pole_longitude, 
-        globe= globe,
     )
 
     if np.all(np.isnan(mask)):
@@ -236,7 +222,7 @@ def _mask_3D(
 
     if drop:
         numbers = np.unique(mask.values[~isnan])
-        numbers = numbers.astype(int)
+        numbers = numbers.astype(np.int)
 
     # if no regions are found return a 0 x lat x lon mask
     if len(numbers) == 0:
@@ -252,7 +238,13 @@ def _mask_3D(
     for num in numbers:
         mask_3D.append(mask == num)
 
-    mask_3D = xr.concat(mask_3D, dim="region", compat="override", coords="minimal")
+    from distutils.version import LooseVersion
+
+    # "override" is faster but was only introduced in version 0.13.0 of xarray
+    compat = "override" if LooseVersion(xr.__version__) >= "0.13.0" else "equals"
+
+    mask_3D = xr.concat(mask_3D, dim="region", compat=compat, coords="minimal")
+
     mask_3D = mask_3D.assign_coords(region=("region", numbers))
 
     if np.all(isnan):
@@ -263,7 +255,7 @@ def _mask_3D(
 
 
 def _determine_method(lon, lat):
-    """find method to be used -> prefers faster methods"""
+    """ find method to be used -> prefers faster methods"""
 
     if equally_spaced(lon, lat):
         return "rasterize"
@@ -318,16 +310,10 @@ def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
 
     # dict with the coordinates
     coords = {
-        dim1D_names[0]: dim1D_0.data,
-        dim1D_names[1]: dim1D_1.data,
-        lat_name: (
-            dim1D_names,
-            lat2D.data if isinstance(lat2D, xr.DataArray) else lat2D,
-        ),
-        lon_name: (
-            dim1D_names,
-            lon2D.data if isinstance(lon2D, xr.DataArray) else lon2D,
-        ),
+        dim1D_names[0]: dim1D_0,
+        dim1D_names[1]: dim1D_1,
+        lat_name: (dim1D_names, lat2D),
+        lon_name: (dim1D_names, lon2D),
     }
 
     mask = xr.DataArray(mask, coords=coords, dims=dim1D_names)
@@ -401,7 +387,7 @@ def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN):
 
     return out.reshape(shape)
 
-def _Rotated_Pole(lon, lat, polygons, numbers, central_rotated_longitude , pole_latitude, pole_longitude, globe,fill=np.NaN):
+def _Rotated_Pole(lon, lat, polygons, numbers, fill=np.NaN):
     """
     Projects shapefile in the rotated pole projection of the given lat/lon- grid and creates a weighted mask.
 
@@ -427,16 +413,12 @@ def _Rotated_Pole(lon, lat, polygons, numbers, central_rotated_longitude , pole_
     _mask_weights : Function for computation of the weighted mask.
 
     """
-
     import geopandas as gpd
-    #projection=input("Enter rotated pole projection in the form: +proj=ob_tran +o_proj=longlat +o_lon_p=... +o_lat_p=... +lon_0=... +to_meter=... +ellps=...: ")
+    projection=input("Enter rotated pole projection in the form: +proj=ob_tran +o_proj=longlat +o_lon_p=... +o_lat_p=... +lon_0=... +to_meter=... +ellps=...: ")
     lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
     crs="EPSG:4326"
-    shapefile_region =gpd.GeoDataFrame(polygons,columns=['geometry'],crs=crs)    
-
-    projection ="+proj=ob_tran +o_proj=longlat +o_lon_p={} +o_lat_p={} +lon_0={} +to_meter={} +ellps={}".format(central_rotated_longitude,pole_latitude, 180.+ pole_longitude, 0.017453292519943295, globe )
+    shapefile_region =gpd.GeoDataFrame(polygons,columns=['geometry'],crs=crs)
     proj_shp_region=shapefile_region.to_crs(projection)
-
     return _mask_weights(lon, lat, proj_shp_region.geometry.tolist()[0])
 
 def _Default(lon, lat, polygons, numbers, fill=np.NaN):
@@ -454,68 +436,55 @@ def _Default(lon, lat, polygons, numbers, fill=np.NaN):
     _mask_weights : Function for computation of the weighted mask.
 
     """
-
     lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
     shapefile_region=polygons[0]
     return _mask_weights(lon, lat, shapefile_region)
+#################################################################################
 
 def _Irregular(lon, lat, polygons, numbers, fill=np.NaN):
-    """
-    Creates a weighted mask for an irregular grid with lon(x,y), lat(x,y).
-
-    """
     #lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
+    
     shapefile_region=polygons[0]
     return _mask_weights_irregular(lon, lat, shapefile_region)
 
 
 def _mask_weights_irregular(lon, lat,shapefile_region):
-    
     from shapely.geometry import Polygon
 
     #Creating grid as polygons to intersect with shapefile
     Y,X=np.shape(lon)
 
-    grid_cells_coords = []
+    grid_cells = []
     for i in range(X-2):
         for j in range(Y-2):
-            x11=float(ds1.lon[j,i])     # + (float(ds1.lon[j,i+1])-float(ds1.lon[j,i]))/2.
-            x12=float(ds1.lon[j,i+1])   # + (float(ds1.lon[j,i+1+1])-float(ds1.lon[j,i+1]))/2.
-            x21=float(ds1.lon[j+1,i])   # + (float(ds1.lon[j+1,i+1])-float(ds1.lon[j+1,i]))/2.
-            x22=float(ds1.lon[j+1,i+1]) # + (float(ds1.lon[j+1,i+1+1])-float(ds1.lon[j+1,i+1]))/2.
+            x11=float(ds1.lon[j,i]) + (float(ds1.lon[j,i+1])-float(ds1.lon[j,i]))/2.
+            x12=float(ds1.lon[j,i+1]) + (float(ds1.lon[j,i+1+1])-float(ds1.lon[j,i+1]))/2.
+            x21=float(ds1.lon[j+1,i]) + (float(ds1.lon[j+1,i+1])-float(ds1.lon[j+1,i]))/2.
+            x22=float(ds1.lon[j+1,i+1]) + (float(ds1.lon[j+1,i+1+1])-float(ds1.lon[j+1,i+1]))/2.
 
-            y11=float(ds1.lat[j,i])     # + (float(ds1.lat[j+1,i])-float(ds1.lat[j,i]))/2.
-            y12=float(ds1.lat[j,i+1])   # + (float(ds1.lat[j+1,i+1])-float(ds1.lat[j,i+1]))/2.
-            y21=float(ds1.lat[j+1,i])   # + (float(ds1.lat[j+1+1,i])-float(ds1.lat[j+1,i]))/2.
-            y22=float(ds1.lat[j+1,i+1]) # + (float(ds1.lat[j+1+1,i+1])-float(ds1.lat[j+1,i+1]))/2.
+            y11=float(ds1.lat[j,i]) + (float(ds1.lat[j+1,i])-float(ds1.lat[j,i]))/2.
+            y12=float(ds1.lat[j,i+1]) + (float(ds1.lat[j+1,i+1])-float(ds1.lat[j,i+1]))/2.
+            y21=float(ds1.lat[j+1,i]) + (float(ds1.lat[j+1+1,i])-float(ds1.lat[j+1,i]))/2.
+            y22=float(ds1.lat[j+1,i+1]) + (float(ds1.lat[j+1+1,i+1])-float(ds1.lat[j+1,i+1]))/2.
 
-            grid_cells4.append(Polygon([[x11, y11],[x12,y12],[x22,y22], [x21, y21],[x11,y11]]))
 
-    grid_cells_polys = []
-    for i in range(len(grid_cells4)-int(np.sqrt(len(grid_cells4)))-1):
-        if (i+1) % (int(np.sqrt(len(grid_cells4)))) == 0:
-            continue
-        x11,y11=grid_cells4[i+0].centroid.coords[0]
-        x12,y12=grid_cells4[i+1].centroid.coords[0]
-        x21,y21=grid_cells4[i+int(np.sqrt(len(grid_cells4)))].centroid.coords[0]
-        x22,y22=grid_cells4[i+int(np.sqrt(len(grid_cells4)))+1].centroid.coords[0]
-        grid_cells5.append(Polygon([[x11, y11],[x12,y12],[x22,y22], [x21, y21],[x11,y11]]))
+            grid_cells.append(Polygon([[x11, y11],[x12,y12],[x22,y22], [x21, y21],[x11,y11]]))
 
     #selecting the geometry from the given shapefile
     polygons_to = shapefile_region
 
     #Calculating the areal weights as intersection between shapefile and grided polygon
     areas=[]
-    for r in grid_cells_polys:
+    for r in grid_cells:
         intersect = polygons_to.intersection(r)
         areas.append(intersect.area)
     poly_area=areas
 
     #Truning result in 2D array with right dimensions
     
-    pol=np.reshape(poly_area, (X-2, Y-2))
+    pol=np.reshape(poly_area, (len(lon)-2, len(lat)-2))
 
-    poly=np.zeros((X, Y))
+    poly=np.zeros((len(lon), len(lat)))
     poly[1:-1,1:-1]=pol
     
     poly_pol=np.nan_to_num(poly)
@@ -523,13 +492,12 @@ def _mask_weights_irregular(lon, lat,shapefile_region):
     out=poly_pol.T/(sum(sum(poly_pol.T)))
     return out
 
+#################################################################################
+
 
 def _mask_weights(lon, lat,shapefile_region):
-    """
-    Returns an array with the weighted areal mask.  
-
-    """
     from shapely.geometry import Polygon
+
     #Creating grid as polygons to intersect with shapefile
     grid_cells = []
     for i in range(len(lon)-2):
@@ -581,7 +549,7 @@ def _parse_input(lon, lat, coords, fill, numbers):
         numbers = range(n_coords)
     else:
         if len(numbers) != n_coords:
-            raise ValueError("`numbers` and `coords` must have the same length.")
+            raise ValueError("`numbers` and `coords` must have the same length")
 
     if fill in numbers:
         raise ValueError("The fill value should not be one of the region numbers.")
@@ -591,36 +559,17 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
 def _get_LON_LAT_out_shape(lon, lat, fill):
 
-    if lon.ndim != lat.ndim:
-        raise ValueError(
-            f"Equal number of dimensions required, found "
-            f"lon.ndim={lon.ndim} & lat.ndim={lat.ndim}."
-        )
-
-    ndim = lon.ndim
-
-    if ndim == 2 and lon.shape != lat.shape:
-        raise ValueError(
-            "2D lon and lat coordinates need to have the same shape, found "
-            f"lon.shape={lon.shape} & lat.shape={lat.shape}."
-        )
-
-    if ndim == 1:
-        LON, LAT = np.meshgrid(lon, lat)
-    elif ndim == 2:
+    if lon.ndim == 2:
         LON, LAT = lon, lat
     else:
-        raise ValueError(
-            f"1D or 2D data required - found {ndim} dimensions. Use `squeeze` to remove"
-            " axes of length 1 - e.g. `mask(lon.squeeze(), lat.squeeze())`."
-        )
+        LON, LAT = np.meshgrid(lon, lat)
 
     shape = LON.shape
 
-    LON, LAT = LON.ravel(), LAT.ravel()
+    LON, LAT = LON.flatten(), LAT.flatten()
 
-    # create flattened output variable
-    out = np.empty(shape=np.prod(shape))
+    # create output variable
+    out = np.empty(shape=shape).flatten()
     out.fill(fill)
 
     return LON, LAT, out, shape
@@ -700,8 +649,8 @@ def _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill=np.NaN, **kwargs
         out_shape=out_shape,
         fill=fill,
         transform=transform,
-        dtype=float,
-        **kwargs,
+        dtype=np.float,
+        **kwargs
     )
 
     return raster
