@@ -65,6 +65,8 @@ Internal Changes
   - Use setuptools-scm for automatic versioning (:pull:`240`).
 - Refactor ``test_defined_region`` and ``test_mask_equal_defined_regions`` - globally
   define a list of all available `defined_regions` (:issue:`256`).
+- In the tests: downloading naturalearth regions could run forever. Make sure this does
+  not happen and turn the timeout Error into a warning (:pull:`261`).
 
 v0.7.0 (28.07.2021)
 -------------------
