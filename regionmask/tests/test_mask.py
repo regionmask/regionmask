@@ -218,7 +218,7 @@ def test_mask_wrap(method):
     assert np.allclose(result, expected, equal_nan=True)
 
 
-@pytest.mark.parametrize("method", MASK_METHODS)
+@pytest.mark.parametrize("meth", ["mask", "mask_3D"])
 def test_wrap_lon_no_error_wrap_lon_false(meth):
 
     # regions that exceed 360° longitude
@@ -243,7 +243,7 @@ def test_wrap_lon_no_error_wrap_lon_false(meth):
     np.testing.assert_equal(lat, mask.lat)
 
 
-@pytest.mark.parametrize("method", MASK_METHODS)
+@pytest.mark.parametrize("meth", ["mask", "mask_3D"])
 def test_wrap_lon_error_wrap_lon(meth):
 
     # regions that exceed 360° longitude
