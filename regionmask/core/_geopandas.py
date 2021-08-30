@@ -49,8 +49,8 @@ def _construct_abbrevs(geodataframe, names):
         )
     abbrevs = []
     names = _maybe_get_column(geodataframe, names)
-    names = names.str.replace(r"[(\[\]).]", "")
-    names = names.str.replace("[/-]", " ")
+    names = names.str.replace(r"[(\[\]).]", "", regex=True)
+    names = names.str.replace("[/-]", " ", regex=True)
     abbrevs = names.str.split(" ").map(lambda x: "".join([y[:3] for y in x]))
     abbrevs = _enumerate_duplicates(abbrevs)
     return abbrevs
