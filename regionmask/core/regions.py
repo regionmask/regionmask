@@ -288,7 +288,7 @@ class Regions:
 
         return _mask_2D(
             outlines=self.polygons,
-            regions_is_180=self.lon_180,
+            lon_bounds=self.bounds_global[::2],
             numbers=self.numbers,
             lon_or_obj=lon_or_obj,
             lat=lat,
@@ -313,7 +313,7 @@ class Regions:
 
         mask_3D = _mask_3D(
             outlines=self.polygons,
-            regions_is_180=self.lon_180,
+            lon_bounds=self.bounds_global[::2],
             numbers=self.numbers,
             lon_or_obj=lon_or_obj,
             lat=lat,
