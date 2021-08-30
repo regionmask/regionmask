@@ -195,6 +195,7 @@ def test_mask_wrap(method):
     assert np.allclose(result, expected, equal_nan=True)
 
 
+@pytest.mark.filterwarnings("ignore:No gridpoint belongs to any region.")
 @pytest.mark.parametrize("meth", ["mask", "mask_3D"])
 def test_wrap_lon_no_error_wrap_lon_false(meth):
 
