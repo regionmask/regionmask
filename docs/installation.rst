@@ -51,7 +51,7 @@ Note, however, that the optional dependency cartopy can be very difficult to ins
 Testing
 -------
 
-To run the test suite after installing regionmask, install `py.test <https://pytest.org>`__
+To run the test suite after installing regionmask, install `pytest <https://pytest.org>`__
 and run ``pytest`` in the root directory of regionmask.
 
 To install the development version (master), do:
