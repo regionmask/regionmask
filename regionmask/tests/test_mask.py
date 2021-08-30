@@ -749,59 +749,6 @@ def test_inject_mask_docstring():
 
     result = _inject_mask_docstring(True, True)
 
-<<<<<<< HEAD
-    expected = """\
-create a 3D float mask of a set of regions for the given lat/ lon grid
-
-Parameters
-----------
-geodataframe : GeoDataFrame or GeoSeries
-    Object providing the region definitions (polygons).
-lon_or_obj : object or array_like
-    Can either be a longitude array and then ``lat`` needs to be
-    given. Or an object where the longitude and latitude can be
-    retrived as: ``lon = lon_or_obj[lon_name]`` and
-    ``lat = lon_or_obj[lat_name]``
-lat : array_like, optional
-    If ``lon_or_obj`` is a longitude array, the latitude needs to be
-    specified here.
-drop : boolean, default: True
-    If True (default) drops slices where all elements are False (i.e no
-    gridpoints are contained in a region). If False returns one slice per
-    region.
-lon_name : str, optional
-    Name of longitude in ``lon_or_obj``, default: "lon".
-lat_name : str, optional
-    Name of latgitude in ``lon_or_obj``, default: "lat"
-numbers : str, optional
-    Name of the column to use for numbering the regions.
-    This column must not have duplicates. If None (default),
-    takes ``geodataframe.index.values``.
-method : "rasterize" | "shapely" | "pygeos". Default: None
-    Method used to determine whether a gridpoint lies in a region.
-    All methods lead to the same mask. If None (default)
-    autoselects the method.
-wrap_lon : bool | 180 | 360, optional
-    Whether to wrap the longitude around, inferred automatically.
-    If the regions and the provided longitude do not have the same
-    base (i.e. one is -180..180 and the other 0..360) one of them
-    must be wrapped. This can be achieved with wrap_lon.
-    If wrap_lon is None autodetects whether the longitude needs to be
-    wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
-    longitude data is wrapped to 360 if its minimum is smaller
-    than 0 and wrapped to 180 if its maximum is larger than 180.
-
-Returns
--------
-mask_3D : float xarray.DataArray
-
-References
-----------
-See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
-"""
-
-    assert result == expected
-=======
     assert "3D" in result
     assert "2D" not in result
     assert "drop :" in result
@@ -813,4 +760,3 @@ See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
     assert "3D" not in result
     assert "drop :" not in result
     assert "geodataframe" not in result
->>>>>>> master
