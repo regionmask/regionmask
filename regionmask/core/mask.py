@@ -45,11 +45,16 @@ wrap_lon : bool | 180 | 360, optional
     Whether to wrap the longitude around, inferred automatically.
     If the regions and the provided longitude do not have the same
     base (i.e. one is -180..180 and the other 0..360) one of them
-    must be wrapped. This can be achieved with wrap_lon.
-    If wrap_lon is None autodetects whether the longitude needs to be
-    wrapped. If wrap_lon is False, nothing is done. If wrap_lon is True,
-    longitude data is wrapped to 360 if its minimum is smaller
-    than 0 and wrapped to 180 if its maximum is larger than 180.
+    must be wrapped. This can be achieved with wrap_lon:
+
+    - ``None``: autodetects whether the longitude needs to be wrapped
+    - ``False``: nothing is done. This is useful when working with coordinates that are
+      not in lat/ lon format.
+    - ``True``: longitude data is wrapped to `[0, 360[` if its minimum is smaller than 0
+      and wrapped to `[-180, 180[` if its maximum is larger than 180.
+    - ``180``: Wraps longitude coordinates to `[-180, 180[`
+    - ``360``: Wraps longitude coordinates to `[0, 360[`
+
 
 Returns
 -------
@@ -98,7 +103,7 @@ def _inject_mask_docstring(is_3D, gp_method):
 
 def _mask(
     outlines,
-    regions_is_180,
+    lon_bounds,
     numbers,
     lon_or_obj,
     lat=None,
@@ -123,13 +128,18 @@ def _mask(
 
     # automatically detect whether wrapping is necessary
     if wrap_lon is None:
-        grid_is_180 = _is_180(lon.min(), lon.max())
+        msg_add = "Set `wrap_lon=False` to skip this check."
+        grid_is_180 = _is_180(lon.min(), lon.max(), msg_add=msg_add)
 
-        wrap_lon = not regions_is_180 == grid_is_180
+        regions_is_180 = _is_180(*lon_bounds, msg_add=msg_add)
+
+        wrap_lon_ = not regions_is_180 == grid_is_180
+    else:
+        wrap_lon_ = wrap_lon
 
     lon_orig = lon.copy()
-    if wrap_lon:
-        lon = _wrapAngle(lon, wrap_lon)
+    if wrap_lon_:
+        lon = _wrapAngle(lon, wrap_lon_)
 
     if method not in (None, "rasterize", "shapely", "pygeos"):
         msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
@@ -156,8 +166,10 @@ def _mask(
     elif method == "shapely":
         mask = _mask_shapely(lon, lat, outlines, numbers=numbers)
 
-    # we need to treat the points at -180°E/0°E and -90°N
-    mask = _mask_edgepoints_shapely(mask, lon, lat, outlines, numbers)
+    # not False required
+    if wrap_lon is not False:
+        # treat the points at -180°E/0°E and -90°N
+        mask = _mask_edgepoints_shapely(mask, lon, lat, outlines, numbers)
 
     # create an xr.DataArray
     if lon.ndim == 1:
@@ -170,7 +182,7 @@ def _mask(
 
 def _mask_2D(
     outlines,
-    regions_is_180,
+    lon_bounds,
     numbers,
     lon_or_obj,
     lat=None,
@@ -182,7 +194,7 @@ def _mask_2D(
 
     mask = _mask(
         outlines=outlines,
-        regions_is_180=regions_is_180,
+        lon_bounds=lon_bounds,
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,
@@ -201,7 +213,7 @@ def _mask_2D(
 
 def _mask_3D(
     outlines,
-    regions_is_180,
+    lon_bounds,
     numbers,
     lon_or_obj,
     lat=None,
@@ -214,7 +226,7 @@ def _mask_3D(
 
     mask = _mask(
         outlines=outlines,
-        regions_is_180=regions_is_180,
+        lon_bounds=lon_bounds,
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,

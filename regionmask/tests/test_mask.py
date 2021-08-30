@@ -219,6 +219,45 @@ def test_mask_wrap(method):
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
+def test_wrap_lon_no_error_wrap_lon_false(meth):
+
+    # regions that exceed 360° longitude
+    r = Regions([[[-180, 0], [-180, 10], [360, 10], [360, 0]]], numbers=[1])
+
+    # lons that exceed 360° longitude
+    lon = np.arange(-175, 360, 2.5)
+    lat = np.arange(10, 1, -3)
+
+    mask = getattr(r, meth)(lon, lat, wrap_lon=False)
+
+    # the region index is 1 -> thus this works for 2D and 3D masks
+    assert (mask == 1).all()
+    np.testing.assert_equal(lon, mask.lon)
+    np.testing.assert_equal(lat, mask.lat)
+
+    # -180° is not special cased (no _mask_edgepoints_shapely)
+    lon = [-180]
+    mask = getattr(r, meth)(lon, lat, wrap_lon=False)
+    assert (mask != 1).all()
+    np.testing.assert_equal(lon, mask.lon)
+    np.testing.assert_equal(lat, mask.lat)
+
+
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_wrap_lon_error_wrap_lon(meth):
+
+    # regions that exceed 360° longitude
+    r = Regions([[[-180, 0], [-180, 10], [360, 10], [360, 0]]])
+
+    # lons that exceed 360° longitude
+    lon = np.arange(-180, 360, 2.5)
+    lat = np.arange(10, 1, -3)
+
+    with pytest.raises(ValueError, match="Set `wrap_lon=False` to skip this check."):
+        getattr(r, meth)(lon, lat)
+
+
+@pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_autowrap(method):
 
     expected = expected_mask_2D()
@@ -710,6 +749,7 @@ def test_inject_mask_docstring():
 
     result = _inject_mask_docstring(True, True)
 
+<<<<<<< HEAD
     expected = """\
 create a 3D float mask of a set of regions for the given lat/ lon grid
 
@@ -761,3 +801,16 @@ See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
 """
 
     assert result == expected
+=======
+    assert "3D" in result
+    assert "2D" not in result
+    assert "drop :" in result
+    assert "geodataframe" in result
+
+    result = _inject_mask_docstring(False, False)
+
+    assert "2D" in result
+    assert "3D" not in result
+    assert "drop :" not in result
+    assert "geodataframe" not in result
+>>>>>>> master
