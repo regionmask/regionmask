@@ -36,6 +36,9 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- Creating masks for irregular and 2D grids can be speed up considerably by installing
+  `pygeos <https://pygeos.readthedocs.io/en/stable/>`__. pygeos is an optional dependency
+  (:issue:`123`).
 - Can now create masks for regions with arbitrary coordinates e.g. for coordinate reference
   systems that are not lat/ lon based by setting ``wrap_lon=False`` (:issue:`151`).
 

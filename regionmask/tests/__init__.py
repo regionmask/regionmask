@@ -13,5 +13,6 @@ def _importorskip(modname):
     return has, func
 
 
-has_matplotlib, requires_matplotlib = _importorskip("matplotlib")
 has_cartopy, requires_cartopy = _importorskip("cartopy")
+has_matplotlib, requires_matplotlib = _importorskip("matplotlib")
+has_pygeos, requires_pygeos = _importorskip("pygeos")
