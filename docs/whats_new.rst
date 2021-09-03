@@ -54,7 +54,7 @@ New regions
 ~~~~~~~~~~~
 - Added :py:attr:`natural_earth.land_10` and :py:attr:`natural_earth.land_50` regions from
   natural earth (:pull:`195`) by `Martin van Driel <https://github.com/martinvandriel>`_.
-
+- Added :py:attr:`prudence` regions for Europe from `Christensen and Christensen, 2007, <https://link.springer.com/article/10.1007/s10584-006-9210-7>`_. 
 
 Bug Fixes
 ~~~~~~~~~
