@@ -5,7 +5,7 @@ channels:
   - nodefaults
 
 dependencies:
-  - python=3.7
+  - python
 # regionmask dependencies
   # https://github.com/SciTools/cartopy/pull/1646
   - cartopy=0.17
@@ -14,6 +14,7 @@ dependencies:
   - matplotlib-base==3.2
   - numpy
   - pooch
+  - pygeos
   - rasterio
   - xarray
 # depencies for the examples
@@ -27,14 +28,16 @@ dependencies:
 # dependencies to build the docu
   # https://github.com/readthedocs/sphinx_rtd_theme/issues/1115
   - docutils==0.16
-  - jupyter
+  - ipykernel
   - nbconvert
   - numpydoc
   - pillow
   - pip
-  - sphinx_rtd_theme==0.4.3
-  - sphinx==2.1.2
+  - sphinx_rtd_theme
+  - sphinx
 # for regionmask intake example
   - pip:
     - intake_geopandas>=0.2.4
     - msgpack
+    # install regionmask relative to this file. Needs to be editable to be accepted.
+    - -e ../..

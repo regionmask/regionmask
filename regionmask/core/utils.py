@@ -1,3 +1,6 @@
+import warnings
+from functools import wraps
+
 import numpy as np
 import xarray as xr
 
@@ -56,7 +59,7 @@ def _sanitize_names_abbrevs(numbers, values, default):
 
 
 def _wrapAngle360(lon):
-    """wrap angle to [0, 360[."""
+    """wrap angle to `[0, 360[`."""
     lon = np.array(lon)
     return np.mod(lon, 360)
 
@@ -65,7 +68,7 @@ def _wrapAngle360(lon):
 
 
 def _wrapAngle180(lon):
-    """wrap angle to [-180,180[."""
+    """wrap angle to `[-180, 180[`."""
     lon = np.array(lon)
     sel = (lon < -180) | (180 <= lon)
     lon[sel] = _wrapAngle360(lon[sel] + 180) - 180
@@ -86,12 +89,7 @@ def _wrapAngle(lon, wrap_lon=True):
     new_lon = lon
 
     if wrap_lon is True:
-        if lon.min() < 0 and lon.max() > 180:
-            msg = (
-                "lon has both data that is larger than 180 and "
-                "smaller than 0. Cannot infer the transformation."
-            )
-            raise RuntimeError(msg)
+        _is_180(lon.min(), lon.max(), msg_add="Cannot infer the transformation.")
 
     wl = int(wrap_lon)
 
@@ -104,8 +102,7 @@ def _wrapAngle(lon, wrap_lon=True):
     # check if they are still unique
     if new_lon.ndim == 1:
         if new_lon.shape != np.unique(new_lon).shape:
-            msg = "There are equal longitude coordinates (when wrapped)!"
-            raise IndexError(msg)
+            raise ValueError("There are equal longitude coordinates (when wrapped)!")
 
     return new_lon
 
@@ -113,13 +110,13 @@ def _wrapAngle(lon, wrap_lon=True):
 # -----------------------------------------------------------------------------
 
 
-def _is_180(lon_min, lon_max):
+def _is_180(lon_min, lon_max, msg_add=""):
 
     lon_min = np.round(lon_min, 6)
     lon_max = np.round(lon_max, 6)
 
     if (lon_min < 0) and (lon_max > 180):
-        msg = "lon has both data that is larger than 180 and smaller than 0."
+        msg = "lon has both data that is larger than 180 and smaller than 0. " + msg_add
         raise ValueError(msg)
 
     return lon_max <= 180
@@ -131,7 +128,7 @@ def create_lon_lat_dataarray_from_bounds(
     """example xarray Dataset
 
     Parameters
-    ==========
+    ----------
     lon_start : number
         Start of lon bounds. The bounds includes this value.
     lon_stop : number
@@ -146,7 +143,7 @@ def create_lon_lat_dataarray_from_bounds(
         Spacing between values.
 
     Returns
-    =======
+    -------
     ds : xarray Dataarray
         Example dataset including, lon, lat, lon_bnds, lat_bnds.
 
@@ -222,3 +219,24 @@ def _find_splitpoint(lon):
         raise ValueError("more or less than one split point found")
 
     return split_point.squeeze() + 1
+
+
+def _deprecate_positional(func):
+    """deprecate all positional arguments (except self)"""
+
+    @wraps(func)
+    def _inner(*args, **kwargs):
+
+        name = func.__name__
+
+        # careful only use for class methods
+        if len(args) > 1:
+            warnings.warn(
+                f"'{name}' now requires keyword arguments. From v0.10.0 "
+                "passing positional arguments will result in an error",
+                FutureWarning,
+            )
+
+        return func(*args, **kwargs)
+
+    return _inner

@@ -3,15 +3,17 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - python=3.6
   - cartopy
   - geopandas
   - matplotlib-base
   - numpy
   - pooch
+  - pygeos
   - rasterio
+  - setuptools
   - xarray
 # for testing
   - pytest
   - pytest-cov
   - pytest-env
+  - pytest-timeout

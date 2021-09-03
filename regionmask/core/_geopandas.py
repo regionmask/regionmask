@@ -3,7 +3,6 @@ import numpy as np
 from ..defined_regions.natural_earth import _maybe_get_column
 from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .regions import Regions
-from .utils import _is_180
 
 
 def _check_duplicates(data, name):
@@ -19,8 +18,6 @@ def _check_duplicates(data, name):
     -------
     bool : True if no duplicates in data.
 
-    Raises
-    ------
     """
     if data.duplicated().any():
         duplicates = data[data.duplicated(keep=False)]
@@ -52,8 +49,8 @@ def _construct_abbrevs(geodataframe, names):
         )
     abbrevs = []
     names = _maybe_get_column(geodataframe, names)
-    names = names.str.replace(r"[(\[\]).]", "")
-    names = names.str.replace("[/-]", " ")
+    names = names.str.replace(r"[(\[\]).]", "", regex=True)
+    names = names.str.replace("[/-]", " ", regex=True)
     abbrevs = names.str.split(" ").map(lambda x: "".join([y[:3] for y in x]))
     abbrevs = _enumerate_duplicates(abbrevs)
     return abbrevs
@@ -140,7 +137,7 @@ def _prepare_gdf_for_mask(geodataframe, method, numbers):
 
     lon_min = geodataframe.bounds["minx"].min()
     lon_max = geodataframe.bounds["maxx"].max()
-    is_180 = _is_180(lon_min, lon_max)
+    lon_bounds = [lon_min, lon_max]
 
     polygons = geodataframe.geometry.tolist()
 
@@ -151,7 +148,7 @@ def _prepare_gdf_for_mask(geodataframe, method, numbers):
     else:
         numbers = geodataframe.index.values
 
-    return polygons, is_180, numbers
+    return polygons, lon_bounds, numbers
 
 
 def mask_geopandas(
@@ -165,13 +162,13 @@ def mask_geopandas(
     wrap_lon=None,
 ):
 
-    polygons, is_180, numbers = _prepare_gdf_for_mask(
+    polygons, lon_bounds, numbers = _prepare_gdf_for_mask(
         geodataframe, method=method, numbers=numbers
     )
 
     return _mask_2D(
         outlines=polygons,
-        regions_is_180=is_180,
+        lon_bounds=lon_bounds,
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,
@@ -197,13 +194,13 @@ def mask_3D_geopandas(
     wrap_lon=None,
 ):
 
-    polygons, is_180, numbers = _prepare_gdf_for_mask(
+    polygons, lon_bounds, numbers = _prepare_gdf_for_mask(
         geodataframe, method=method, numbers=numbers
     )
 
     mask_3D = _mask_3D(
         outlines=polygons,
-        regions_is_180=is_180,
+        lon_bounds=lon_bounds,
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,

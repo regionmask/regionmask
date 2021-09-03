@@ -8,8 +8,10 @@ dependencies:
   - numpy
   - pooch
   - rasterio
-  - xarray
+  - setuptools
+  - xarray<0.19.0
 # for testing
   - pytest
   - pytest-cov
   - pytest-env
+  - pytest-timeout

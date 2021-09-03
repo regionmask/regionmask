@@ -42,6 +42,8 @@ POLICY_OVERRIDE = {
     # TODO remove this special case and the matching note in installing.rst
     #      after March 2022.
     "setuptools": (40, 4),
+    # cannot install pygeos=0.7 alongside shapely
+    "pygeos": (0, 9),
 }
 has_errors = False
 

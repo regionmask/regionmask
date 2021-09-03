@@ -2,6 +2,7 @@ import geopandas as gp
 import numpy as np
 import pandas as pd
 import pytest
+import shapely
 import xarray as xr
 
 from regionmask import Regions, from_geopandas, mask_3D_geopandas, mask_geopandas
@@ -280,6 +281,27 @@ def test_mask_3D_geopandas_warns_empty(geodataframe_clean, drop):
     assert result.shape == shape
     assert np.all(np.equal(result.lat.values, [10]))
     assert np.all(np.equal(result.lon.values, [10]))
+
+
+@pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
+def test_wrap_lon_maybe_error(func):
+
+    # regions that exceed 360° longitude
+    p = shapely.geometry.Polygon([[-180, 0], [-180, 10], [360, 10], [360, 0]])
+    gs = gp.GeoSeries(p, index=[1])
+    # lons that exceed 360° longitude
+    lon = np.arange(-175, 360, 2.5)
+    lat = np.arange(10, 1, -3)
+
+    mask = func(gs, lon, lat, wrap_lon=False)
+
+    # the region index is 1 -> thus this works for 2D and 3D masks
+    assert (mask == 1).all()
+    np.testing.assert_equal(lon, mask.lon)
+    np.testing.assert_equal(lat, mask.lat)
+
+    with pytest.raises(ValueError, match="Set `wrap_lon=False` to skip this check."):
+        func(gs, lon, lat)
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])

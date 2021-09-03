@@ -182,7 +182,7 @@ def test_plot_projection():
 
     # make sure the proj keword is respected
     with figure_context():
-        ax = r1.plot(subsample=False, proj=ccrs.Miller())
+        ax = r1.plot(subsample=False, projection=ccrs.Miller())
         assert isinstance(ax.projection, ccrs.Miller)
 
     # projection given with axes is respected
@@ -190,6 +190,19 @@ def test_plot_projection():
         ax = f.subplots(subplot_kw=dict(projection=ccrs.Mollweide()))
         ax = r1.plot(subsample=False, ax=ax)
         assert isinstance(ax.projection, ccrs.Mollweide)
+
+
+@requires_cartopy
+def test_plot_deprecated_proj():
+
+    proj = ccrs.PlateCarree()
+    with pytest.warns(FutureWarning, match="'proj' has been renamed to 'projection'"):
+        with figure_context():
+            ax = r1.plot(subsample=False, proj=proj)
+            assert isinstance(ax.projection, ccrs.PlateCarree)
+
+    with pytest.raises(TypeError, match="Cannot set 'proj' and 'projection'"):
+        r1.plot(subsample=False, proj=proj, projection=proj)
 
 
 @requires_cartopy
@@ -248,6 +261,7 @@ def test_plot_lines_multipoly(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
+@pytest.mark.filterwarnings("ignore:The 'regions' keyword has been deprecated")
 def test_plot_lines_selection(plotfunc):
 
     func = getattr(r1, plotfunc)
@@ -288,7 +302,46 @@ def test_plot_lines_selection(plotfunc):
         assert np.allclose(lines[0], outl1_closed)
 
 
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
+def test_plot_regions_kw_deprecated(plotfunc):
+
+    func = getattr(r1, plotfunc)
+
+    with pytest.warns(FutureWarning, match="The 'regions' keyword has been deprecated"):
+        with figure_context():
+            func(subsample=False, regions=[0, 1])
+
+    with pytest.warns(FutureWarning, match="The 'regions' keyword has been deprecated"):
+        with figure_context():
+            func(subsample=False, regions="all")
+
+
+@requires_matplotlib
+@requires_cartopy
+def test_error_extra_kwarg():
+    # manual TypeError for extra kwargs
+    # remove test after coastlines and proj kewords are removed
+
+    with pytest.raises(TypeError, match="got an unexpected keyword argument 'bar'"):
+        with figure_context():
+            r1.plot(bar=5)
+
+
 # -----------------------------------------------------------------------------
+
+
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
+def test_plot_deprecate_args(plotfunc):
+
+    func = getattr(r1, plotfunc)
+
+    with pytest.warns(
+        FutureWarning, match=f"'_{plotfunc}' now requires keyword arguments"
+    ):
+        with figure_context():
+            func(None)
 
 
 @requires_matplotlib
@@ -500,7 +553,7 @@ def test_plot_text_clip(plotfunc):
 @requires_cartopy
 def test_plot_ocean():
 
-    kwargs = dict(subsample=False, add_label=False, coastlines=False)
+    kwargs = dict(subsample=False, add_label=False, add_coastlines=False)
 
     # no ocean per default
     with figure_context():
@@ -518,6 +571,8 @@ def test_plot_ocean():
 
         art = ax.artists[0]
         assert art.get_zorder() == 0.9
+        # note testing private attribute
+        assert art._kwargs["lw"] == 0
 
     # user settings
     with figure_context():
@@ -532,7 +587,7 @@ def test_plot_ocean():
 @requires_cartopy
 def test_plot_land():
 
-    kwargs = dict(subsample=False, add_label=False, coastlines=False)
+    kwargs = dict(subsample=False, add_label=False, add_coastlines=False)
 
     # no land per default
     with figure_context():
@@ -549,6 +604,8 @@ def test_plot_land():
         assert len(ax.artists) == 1
         art = ax.artists[0]
         assert art.get_zorder() == 0.9
+        # note testing private attribute
+        assert art._kwargs["lw"] == 0
 
     # user settings
     with figure_context():
@@ -560,7 +617,7 @@ def test_plot_land():
 
 @requires_matplotlib
 @requires_cartopy
-def test_plot_coastlines():
+def test_plot_add_coastlines():
 
     kwargs = dict(subsample=False, add_label=False)
 
@@ -570,20 +627,35 @@ def test_plot_coastlines():
         assert len(ax.artists) == 1
 
     with figure_context():
-        ax = r1.plot(coastlines=False, **kwargs)
+        ax = r1.plot(add_coastlines=False, **kwargs)
         assert len(ax.artists) == 0
 
     with figure_context():
-        ax = r1.plot(coastlines=True, **kwargs)
+        ax = r1.plot(add_coastlines=True, **kwargs)
         assert len(ax.artists) == 1
         art = ax.artists[0]
         assert art._kwargs == {"lw": 0.5, "edgecolor": "0.4", "facecolor": "none"}
 
     with figure_context():
-        ax = r1.plot(coastlines=True, coastline_kws=dict(), **kwargs)
+        ax = r1.plot(add_coastlines=True, coastline_kws=dict(), **kwargs)
         assert len(ax.artists) == 1
         art = ax.artists[0]
         assert art._kwargs == {"edgecolor": "black", "facecolor": "none"}
+
+
+@requires_matplotlib
+@requires_cartopy
+def test_plot_coastlines_deprecated():
+
+    kwargs = dict(subsample=False, add_label=False)
+
+    with pytest.warns(FutureWarning, match="'coastlines' has been renamed"):
+        with figure_context():
+            ax = r1.plot(coastlines=True, **kwargs)
+            assert len(ax.artists) == 1
+
+    with pytest.raises(TypeError, match="Cannot set 'coastlines' and 'add_coastlines'"):
+        ax = r1.plot(add_coastlines=False, coastlines=True, **kwargs)
 
 
 @requires_matplotlib
@@ -668,7 +740,7 @@ def test_plot_unused_text_kws(plotfunc):
 @pytest.mark.parametrize(
     "feature_name, kws_name",
     [
-        ["coastlines", "coastline_kws"],
+        ["add_coastlines", "coastline_kws"],
         ["add_ocean", "ocean_kws"],
         ["add_land", "land_kws"],
     ],

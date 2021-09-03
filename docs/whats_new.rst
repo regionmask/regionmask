@@ -8,13 +8,91 @@ What's New
 
     import regionmask
 
-.. _whats-new.0.7.0:
+.. _whats-new.0.8.0:
 
-v0.7.0 (unreleased)
+v0.8.0 (unreleased)
 -------------------
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
+
+- Points at *exactly* -180°E (or 0°E) and -90°N are no longer special cased if
+  ``wrap_lon=False`` when creating a mask - see :doc:`methods<notebooks/method>` for
+  details (:issue:`151`).
+- Updates to :py:meth:`Regions.plot` and :py:meth:`Regions.plot_regions` (:pull:`246`):
+
+  - Deprecated all positional arguments (keword arguments only).
+  - The ``regions`` keyword was deprecated. Subset regions before plotting, i.e.
+    use ``r[regions].plot()`` instead of ``r.plot(regions=regions)``. This will allow
+    to remove a argument from the methods.
+- Updates to :py:meth:`Regions.plot` (:pull:`246`):
+
+  - Added ``lw=0`` to the default ``ocean_kws`` and ``land_kws`` to avoid overlap with
+    the coastlines.
+  - Renamed the ``proj`` keyword to ``projection`` for consistency with cartopy.
+  - Renamed the ``coastlines`` keyword to ``add_coastlines`` for consistency with other
+    keywords (e.g. ``add_land``).
+
+Enhancements
+~~~~~~~~~~~~
+
+- Creating masks for irregular and 2D grids can be speed up considerably by installing
+  `pygeos <https://pygeos.readthedocs.io/en/stable/>`__. pygeos is an optional dependency
+  (:issue:`123`).
+- Can now create masks for regions with arbitrary coordinates e.g. for coordinate reference
+  systems that are not lat/ lon based by setting ``wrap_lon=False`` (:issue:`151`).
+
+Deprecations
+~~~~~~~~~~~~
+
+New regions
+~~~~~~~~~~~
+- Added :py:attr:`prudence` regions for Europe from `Christensen and Christensen, 2007, <https://link.springer.com/article/10.1007/s10584-006-9210-7>`_.
+
+Bug Fixes
+~~~~~~~~~
+
+- :py:meth:`Regions.mask` (and all other ``mask`` methods and functions) no longer raise
+  an error for regions that exceed 360° latitude if ``wrap_lon=False``. This was most
+  likely a regression from :pull:`48` (:issue:`151`).
+- Raise a ValueError if the input coordinates (lat and lon) have wrong number of dimensions
+  or shape (:pull:`245`, :issue:`242`).
+
+Docs
+~~~~
+
+- Updated the plotting tutorial (:pull:`246`).
+- Install `regionmask` via `ci/requirements/docs.yml` on RTD using pip and update the
+  packages: don't require jupyter (but ipykernel, which leads to a smaller environment),
+  use new versions of sphinx and sphinx_rtd_theme (:pull:`248`).
+
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Updated setup configuration and automated version numbering:
+
+  - Moved contents of setup.py to setup.cfg (:pull:`240`).
+  - Use ``pyproject.toml`` to define the installation requirements (:pull:`240`, :pull:`247`).
+  - Allow installing from git archives (:pull:`240`).
+  - Use setuptools-scm for automatic versioning (:pull:`240`).
+- Refactor ``test_defined_region`` and ``test_mask_equal_defined_regions`` - globally
+  define a list of all available `defined_regions` (:issue:`256`).
+- In the tests: downloading naturalearth regions could run forever. Make sure this does
+  not happen and turn the timeout Error into a warning (:pull:`261`).
+- Set ``regex=True`` in ``pd.Series.str.replace`` due to an upcoming change in pandas (:pull:`262`).
+
+v0.7.0 (28.07.2021)
+-------------------
+
+Version 0.7.0 is mostly a maintenance version. It drops python 2.7 support, accompanies
+the move of the repo to the regionmask organisation (`regionmask/regionmask <http://github.com/regionmask/regionmask>`__),
+finalizes a number of deprecations, and restores compatibility with xarray 0.19.
+
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
 - Removed support for Python 2. This is the first version of regionmask that is Python 3 only!
 
 - The minimum versions of some dependencies were changed (:pull:`220`):
@@ -26,6 +104,9 @@ Breaking Changes
   xarray       0.13  0.15
   ============ ===== =====
 
+- Moved regionmask to its own organisation on github. It can now be found under
+  `regionmask/regionmask <http://github.com/regionmask/regionmask>`__ (:issue:`204` and
+  :pull:`224`).
 
 - matpoltlib and cartopy are now optional dependencies. Note that cartopy is also
   required to download and access the natural earth shapefiles (:issue:`169`).
@@ -54,13 +135,15 @@ New regions
 ~~~~~~~~~~~
 - Added :py:attr:`natural_earth.land_10` and :py:attr:`natural_earth.land_50` regions from
   natural earth (:pull:`195`) by `Martin van Driel <https://github.com/martinvandriel>`_.
-- Added :py:attr:`prudence` regions for Europe from `Christensen and Christensen, 2007, <https://link.springer.com/article/10.1007/s10584-006-9210-7>`_. 
 
 Bug Fixes
 ~~~~~~~~~
 
 - Text labels outside of the map area should now be correctly clipped in most cases
   (:issue:`157`).
+- Move ``_flatten_polygons`` to ``utils`` and raise an error when something else than
+  a ``Polygon`` or ``MultiPolygon`` is passed (:pull:`211`).
+- Fix incompatibility with xarray >=0.19.0 (:pull:`234`). By `Julius Busecke <https://github.com/jbusecke>`_.
 
 Docs
 ~~~~
@@ -69,16 +152,17 @@ Docs
 - Mentioned how to calculate regional medians (:issue:`170`).
 - Mentioned how to open regions specified in a yaml file using intake and fsspec
   (:issue:`93`, :pull:`205`). By `Aaron Spring <https://github.com/aaronspring>`_.
+- Fixed the docstrings using `velin  <https://github.com/Carreau/velin>`__  (:pull:`231`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now
-  ``template-file``).
+- Moved the CI from azure to github actions (after moving to the regionmask organisation)
+  (:pull:`232`).
 - Update the CI: use mamba for faster installation, merge code coverage from all runs,
   don't check the coverage of the tests (:pull:`197`).
-- Move ``_flatten_polygons`` to ``utils`` and raise an error when something else than
-  a ``Polygon`` or ``MultiPolygon`` is passed (:pull:`211`).
+- Fix doc creation for newest version of ``jupyter nbconvert`` (``template`` is now
+  ``template-file``).
 - Update ``ci/min_deps_check.py`` to the newest version on xarray (:pull:`218`).
 - Add a test environment for python 3.9 (:issue:`215`).
 - Enforce minimum versions in `requirements.txt` and clean up required dependencies
@@ -88,8 +172,8 @@ v0.6.2 (19.01.2021)
 -------------------
 
 This is a minor bugfix release that corrects a problem occurring only in python 2.7 which
-could lead to wrong coordinates of 3D masks derived with :py:attr:`Regions.mask_3D` and
-:py:attr:`mask_3D_geopandas`.
+could lead to wrong coordinates of 3D masks derived with :py:meth:`Regions.mask_3D` and
+:py:func:`mask_3D_geopandas`.
 
 Bug Fixes
 ~~~~~~~~~
@@ -98,8 +182,8 @@ Bug Fixes
   previously not always the case. Either when creating regions with unsorted numbers
   in python 3.6 and higher (e.g. ``Regions([poly2, poly1], [2, 1])``) or when indexing
   regions in python 2.7 (e.g. ``regionmask.defined_regions.ar6.land[[30, 31, 32]]`` sorts
-  the regions as 32, 30, 31). This can lead to problems for :py:attr:`Regions.mask_3D` and
-  :py:attr:`mask_3D_geopandas` (:issue:`200`).
+  the regions as 32, 30, 31). This can lead to problems for :py:meth:`Regions.mask_3D` and
+  :py:func:`mask_3D_geopandas` (:issue:`200`).
 
 v0.6.1 (19.08.2020)
 -------------------
@@ -137,7 +221,7 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
-- Create 3D boolean masks using :py:attr:`Regions.mask_3D` and :py:attr:`mask_3D_geopandas`
+- Create 3D boolean masks using :py:meth:`Regions.mask_3D` and :py:func:`mask_3D_geopandas`
   - see the :doc:`tutorial on 3D masks<notebooks/mask_3D>` (:issue:`4`, :issue:`73`).
 - Create regions from geopandas/ shapefiles :py:attr:`from_geopandas`
   (:pull:`101` by `Aaron Spring <https://github.com/aaronspring>`_).

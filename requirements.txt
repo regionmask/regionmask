@@ -1,3 +1,7 @@
+# This file is redundant with setup.cfg;
+# it exists to let GitHub build the repository dependency graph
+# https://help.github.com/en/github/visualizing-repository-data-with-graphs/listing-the-packages-that-a-repository-depends-on
+
 geopandas >= 0.6
 numpy >= 1.17
 pooch >= 1.0

@@ -44,8 +44,8 @@ extensions = [
 ]
 
 extlinks = {
-    "issue": ("https://github.com/mathause/regionmask/issues/%s", "GH"),
-    "pull": ("https://github.com/mathause/regionmask/pull/%s", "PR"),
+    "issue": ("https://github.com/regionmask/regionmask/issues/%s", "GH"),
+    "pull": ("https://github.com/regionmask/regionmask/pull/%s", "PR"),
 }
 
 autosummary_generate = True
@@ -77,7 +77,7 @@ copyright = "2016-%s, regionmask Developers" % datetime.datetime.now().year
 # built documents.
 #
 # The short X.Y version.
-version = regionmask.__version__
+version = regionmask.__version__.split("+")[0]
 # The full version, including alpha/beta/rc tags.
 release = regionmask.__version__
 

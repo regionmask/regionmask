@@ -1,0 +1,2 @@
+# allow installing from git archives
+.git_archival.txt  export-subst
