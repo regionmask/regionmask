@@ -7,6 +7,7 @@ The following regions, used in the scientific literature, are already defined:
 * Giorgi Regions (from Giorgi and Franciso, 2000)
 * SREX Regions (Special Report on Managing the Risks of Extreme Events and Disasters to Advance Climate Change Adaptation (SREX) from Seneviratne et al., 2012)
 * AR6 Regions (Iturbide et al., 2020; ESSD)
+* PRUDENCE Regions (from European Regional Climate Modelling PRUDENCE Project, Christensen and Christensen, 2007)
 
 .. ipython:: python
     :suppress:
@@ -114,9 +115,19 @@ Ocean
     plt.tight_layout()
 
 
+PRUDENCE Regions
+================
+
+.. ipython:: python
+
+    regionmask.defined_regions.prudence.plot();
+
+    @savefig plotting_prudence.png width=100%
+    plt.tight_layout()
 
 References
 ==========
 * Giorgi and Franciso, 2000: `<http://onlinelibrary.wiley.com/doi/10.1029/1999GL011016>`_
 * Iturbide et al., 2020: `<https://essd.copernicus.org/preprints/essd-2019-258/>`_
 * Seneviratne et al., 2012:  `<https://www.ipcc.ch/pdf/special-reports/srex/SREX-Ch3-Supplement_FINAL.pdf>`_
+* Christensen and Christensen, 2007: `<https://link.springer.com/article/10.1007/s10584-006-9210-7>`_
