@@ -512,7 +512,7 @@ def _mask_rasterize_flip(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     mask = _mask_rasterize(flipped_lon, lat, polygons, numbers=numbers)
 
     # revert the mask
-    return np.hstack((mask[:, split_point:], mask[:, :split_point]))
+    return np.hstack((mask[:, -split_point:], mask[:, :-split_point]))
 
 
 def _mask_rasterize_split(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):

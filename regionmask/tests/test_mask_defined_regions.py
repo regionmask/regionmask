@@ -19,6 +19,9 @@ ds_glob_360_2 = create_lon_lat_dataarray_from_bounds(*(0, 361, 2), *(90, -91, -2
 ds_glob_360_2_part = create_lon_lat_dataarray_from_bounds(*(0, 220, 2), *(90, -91, -2))
 
 
+DS = [ds_glob_1, ds_glob_2, ds_glob_360_2, ds_glob_360_2_part]
+
+
 def _test_mask_equal_defined_regions(region, ds):
 
     rasterize = region.mask(ds, method="rasterize")
@@ -33,9 +36,7 @@ def _test_mask_equal_defined_regions(region, ds):
 
 
 @pytest.mark.parametrize("region_name", REGIONS.keys())
-@pytest.mark.parametrize(
-    "ds", [ds_glob_1, ds_glob_2, ds_glob_360_2, ds_glob_360_2_part]
-)
+@pytest.mark.parametrize("ds", DS)
 def test_mask_equal_defined_regions(region_name, ds):
 
     region = attrgetter(region_name)(defined_regions)
@@ -45,9 +46,7 @@ def test_mask_equal_defined_regions(region_name, ds):
 
 @requires_cartopy
 @pytest.mark.parametrize("region_name", REGIONS_REQUIRING_CARTOPY.keys())
-@pytest.mark.parametrize(
-    "ds", [ds_glob_1, ds_glob_2, ds_glob_360_2, ds_glob_360_2_part]
-)
+@pytest.mark.parametrize("ds", DS)
 def test_mask_equal_defined_regions_cartopy(monkeypatch, region_name, ds):
 
     region = get_naturalearth_region_or_skip(monkeypatch, region_name)
