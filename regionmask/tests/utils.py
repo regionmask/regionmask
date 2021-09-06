@@ -77,6 +77,21 @@ def get_naturalearth_region_or_skip(monkeypatch, region_name):
     # add a timeout to cartopy.io.urlopen else it can run indefinitely
     monkeypatch.setattr(cartopy.io, "urlopen", partial(urlopen, timeout=5))
 
+    # natural earth data has moved to amazon, older version of cartopy still have the
+    # old url
+    # https://github.com/SciTools/cartopy/pull/1833
+    # https://github.com/nvkelso/natural-earth-vector/issues/445
+    # remove again once the minimum cartopy version is v0.19
+
+    _NE_URL_TEMPLATE = (
+        "https://naturalearth.s3.amazonaws.com/"
+        "{resolution}_{category}/ne_{resolution}_{name}.zip"
+    )
+
+    monkeypatch.setattr(
+        cartopy.io.shapereader.NEShpDownloader, "_NE_URL_TEMPLATE", _NE_URL_TEMPLATE
+    )
+
     try:
         region = attrgetter(region_name)(defined_regions)
     except URLError as e:
