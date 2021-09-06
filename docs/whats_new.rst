@@ -51,7 +51,7 @@ New regions
 Bug Fixes
 ~~~~~~~~~
 
-- Fixed a bug that could lead to a wrong mask in certain cases. Three conditions are
+- Fixed a bug that could silently lead to a wrong mask in certain cases. Three conditions are
   required:
 
   1. The longitude coordinates are not ordered (note that wrapping the longitudes can
@@ -60,7 +60,8 @@ Bug Fixes
   3. The split point is not in the middle of the array.
 
   Thus, the issue would happen for the following example longitude coordinates: ``[3, 4, 5, 1, 2]``
-  but not for ``[3, 4, 1, 2]``  (:issue:`266`).
+  (but not for ``[3, 4, 1, 2]``). Before the bugfix the mask would incorrectly be rearranged
+  in the following order ``[4, 5, 1, 2, 3]`` (:issue:`266`).
 
 - :py:meth:`Regions.mask` (and all other ``mask`` methods and functions) no longer raise
   an error for regions that exceed 360° latitude if ``wrap_lon=False``. This was most
