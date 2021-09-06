@@ -678,6 +678,21 @@ def test_rasterize_on_split_lon(ds_360, regions_180):
     xr.testing.assert_equal(result, expected_shapely)
 
 
+def test_rasterize_on_split_lon_asymmetric():
+    # https://github.com/regionmask/regionmask/issues/266
+
+    # for _mask_rasterize_flip: split_point not in the middle
+    lon = np.hstack([np.arange(-90, 20, 2), np.arange(-180, -90, 2)])
+    lat = np.arange(75, 13, -2)
+    ds = xr.Dataset(coords=dict(lon=lon, lat=lat))
+
+    assert _determine_method(ds.lon, ds.lat) == "rasterize_flip"
+
+    result = r_US_180_cw.mask(ds, method="rasterize")
+    expected = r_US_180_cw.mask(ds, method="shapely")
+    xr.testing.assert_equal(result, expected)
+
+
 METHOD_IRREGULAR = "pygeos" if has_pygeos else "shapely"
 METHODS = {
     0: "rasterize",
