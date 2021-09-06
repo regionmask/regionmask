@@ -148,13 +148,13 @@ def _mask(
         mask = _mask_shapely(lon, lat, outlines, numbers=numbers)
     # Edited by Pablo
     elif method == "weights_default":
-        mask = _Default(lon, lat, outlines, numbers=numbers)
+        mask = _mask_weights(lon, lat, outlines, numbers=numbers)
     elif method == "weights_rot_pole":
         mask = _Rotated_Pole(lon, lat, outlines, numbers=numbers, central_rotated_longitude = central_rotated_longitude, pole_latitude= pole_latitude, pole_longitude= pole_longitude, globe= globe) 
     elif method == "weights_irregular":
         msg = "Method is under construction."
         warnings.warn(msg, UserWarning, stacklevel=3)
-        mask = _Irregular(lon, lat, outlines, numbers=numbers) 
+        mask = _mask_weights_irregular(lon, lat, outlines, numbers=numbers) 
         
     # we need to treat the points at -180°E/0°E and -90°N
     mask = _mask_edgepoints_shapely(mask, lon, lat, outlines, numbers)
@@ -424,46 +424,16 @@ def _Rotated_Pole(lon, lat, polygons, numbers, central_rotated_longitude , pole_
 
     import geopandas as gpd
     #projection=input("Enter rotated pole projection in the form: +proj=ob_tran +o_proj=longlat +o_lon_p=... +o_lat_p=... +lon_0=... +to_meter=... +ellps=...: ")
-    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
+    #lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
     crs="EPSG:4326"
     shapefile_region =gpd.GeoDataFrame(polygons,columns=['geometry'],crs=crs)    
 
     projection ="+proj=ob_tran +o_proj=longlat +o_lon_p={} +o_lat_p={} +lon_0={} +to_meter={} +ellps={}".format(central_rotated_longitude,pole_latitude, 180.+ pole_longitude, 0.017453292519943295, globe )
     proj_shp_region=shapefile_region.to_crs(projection)
+    return _mask_weights(lon, lat, proj_shp_region.geometry.tolist(), numbers, fill=np.NaN)
+    #return _mask_weights(lon, lat, proj_shp_region.geometry.tolist()[0])
 
-    return _mask_weights(lon, lat, proj_shp_region.geometry.tolist()[0])
-
-def _Default(lon, lat, polygons, numbers, fill=np.NaN):
-    """
-    Creates a weighted mask for a regular lat/lon-grid.
-
-    Parameters
-    ----------
-    lon : Longitude; xarray.core.dataarray.DataArray
-    lat : Latitude; xarray.core.dataarray.DataArray
-    polygons: geopandas.geodataframe.GeoDataFrame, geopandas.geoseries.GeoSeries or list
-        
-    Return
-    -------
-    _mask_weights : Function for computation of the weighted mask.
-
-    """
-
-    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
-    shapefile_region=polygons[0]
-    return _mask_weights(lon, lat, shapefile_region)
-
-def _Irregular(lon, lat, polygons, numbers, fill=np.NaN):
-    """
-    Creates a weighted mask for an irregular grid with lon(x,y), lat(x,y).
-
-    """
-    #lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
-    shapefile_region=polygons[0]
-    return _mask_weights_irregular(lon, lat, shapefile_region)
-
-
-def _mask_weights_irregular(lon, lat,shapefile_region):
+def _mask_weights_irregular(lon, lat, polygons, numbers, fill=np.NaN):
     
     from shapely.geometry import Polygon
 
@@ -471,37 +441,34 @@ def _mask_weights_irregular(lon, lat,shapefile_region):
     Y,X=np.shape(lon)
 
     grid_cells_coords = []
-    for i in range(X-2):
-        for j in range(Y-2):
-            x11=float(ds1.lon[j,i])     # + (float(ds1.lon[j,i+1])-float(ds1.lon[j,i]))/2.
-            x12=float(ds1.lon[j,i+1])   # + (float(ds1.lon[j,i+1+1])-float(ds1.lon[j,i+1]))/2.
-            x21=float(ds1.lon[j+1,i])   # + (float(ds1.lon[j+1,i+1])-float(ds1.lon[j+1,i]))/2.
-            x22=float(ds1.lon[j+1,i+1]) # + (float(ds1.lon[j+1,i+1+1])-float(ds1.lon[j+1,i+1]))/2.
+    for i in range(X-1):
+        for j in range(Y-1):
+            x11=float(lon[j,i])     # + (float(ds1.lon[j,i+1])-float(ds1.lon[j,i]))/2.
+            x12=float(lon[j,i+1])   # + (float(ds1.lon[j,i+1+1])-float(ds1.lon[j,i+1]))/2.
+            x21=float(lon[j+1,i])   # + (float(ds1.lon[j+1,i+1])-float(ds1.lon[j+1,i]))/2.
+            x22=float(lon[j+1,i+1]) # + (float(ds1.lon[j+1,i+1+1])-float(ds1.lon[j+1,i+1]))/2.
 
-            y11=float(ds1.lat[j,i])     # + (float(ds1.lat[j+1,i])-float(ds1.lat[j,i]))/2.
-            y12=float(ds1.lat[j,i+1])   # + (float(ds1.lat[j+1,i+1])-float(ds1.lat[j,i+1]))/2.
-            y21=float(ds1.lat[j+1,i])   # + (float(ds1.lat[j+1+1,i])-float(ds1.lat[j+1,i]))/2.
-            y22=float(ds1.lat[j+1,i+1]) # + (float(ds1.lat[j+1+1,i+1])-float(ds1.lat[j+1,i+1]))/2.
+            y11=float(lat[j,i])     # + (float(ds1.lat[j+1,i])-float(ds1.lat[j,i]))/2.
+            y12=float(lat[j,i+1])   # + (float(ds1.lat[j+1,i+1])-float(ds1.lat[j,i+1]))/2.
+            y21=float(lat[j+1,i])   # + (float(ds1.lat[j+1+1,i])-float(ds1.lat[j+1,i]))/2.
+            y22=float(lat[j+1,i+1]) # + (float(ds1.lat[j+1+1,i+1])-float(ds1.lat[j+1,i+1]))/2.
 
-            grid_cells4.append(Polygon([[x11, y11],[x12,y12],[x22,y22], [x21, y21],[x11,y11]]))
+            grid_cells_coords.append(Polygon([[x11, y11],[x12,y12],[x22,y22], [x21, y21],[x11,y11]]))
 
     grid_cells_polys = []
-    for i in range(len(grid_cells4)-int(np.sqrt(len(grid_cells4)))-1):
-        if (i+1) % (int(np.sqrt(len(grid_cells4)))) == 0:
+    for i in range(len(grid_cells_coords)-int(np.sqrt(len(grid_cells_coords)))-1):
+        if (i+1) % (int(np.sqrt(len(grid_cells_coords)))) == 0:
             continue
-        x11,y11=grid_cells4[i+0].centroid.coords[0]
-        x12,y12=grid_cells4[i+1].centroid.coords[0]
-        x21,y21=grid_cells4[i+int(np.sqrt(len(grid_cells4)))].centroid.coords[0]
-        x22,y22=grid_cells4[i+int(np.sqrt(len(grid_cells4)))+1].centroid.coords[0]
-        grid_cells5.append(Polygon([[x11, y11],[x12,y12],[x22,y22], [x21, y21],[x11,y11]]))
-
-    #selecting the geometry from the given shapefile
-    polygons_to = shapefile_region
+        x11,y11= grid_cells_coords[i+0].centroid.coords[0]
+        x12,y12= grid_cells_coords[i+1].centroid.coords[0]
+        x21,y21= grid_cells_coords[i+int(np.sqrt(len(grid_cells_coords)))].centroid.coords[0]
+        x22,y22= grid_cells_coords[i+int(np.sqrt(len(grid_cells_coords)))+1].centroid.coords[0]
+        grid_cells_polys.append(Polygon([[x11, y11],[x12,y12],[x22,y22], [x21, y21],[x11,y11]]))
 
     #Calculating the areal weights as intersection between shapefile and grided polygon
     areas=[]
     for r in grid_cells_polys:
-        intersect = polygons_to.intersection(r)
+        intersect = polygons[0].intersection(r)
         areas.append(intersect.area)
     poly_area=areas
 
@@ -518,50 +485,56 @@ def _mask_weights_irregular(lon, lat,shapefile_region):
     return out
 
 
-def _mask_weights(lon, lat,shapefile_region):
+def _mask_weights(lon, lat, polygons, numbers, fill=np.NaN):
     """
     Returns an array with the weighted areal mask.  
 
     """
     from shapely.geometry import Polygon
+    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
     #Creating grid as polygons to intersect with shapefile
+    
+    # Creat lon-grid indexing for the case of wrap_lon needed.
+    ind=np.argsort(lon)
+    lon=np.sort(lon)
+    x1,y1,x2,y2=polygons[0].bounds
+    lon1=int(np.abs(lon - x1).argmin())
+    lon2=int(np.abs(lon - x2).argmin())
+    lat1=int(np.abs(lat - y1).argmin())
+    lat2=int(np.abs(lat - y2).argmin())
+    
+    lon,lat=np.float64(lon),np.float64(lat)
     grid_cells = []
-    for i in range(len(lon)-2):
-        for j in range(len(lat)-2):
+    for i in range(lon1-1,lon2):
+        for j in range(lat1-1,lat2):
         # bounds
-            cell_size_x=np.float64(lon[i+1])-np.float64(lon[i])
-            cell_size_y=np.float64(lat[j+1])-np.float64(lat[j])
+            cell_size_x=(lon[i+1])-(lon[i])
+            cell_size_y=(lat[j+1])-(lat[j])
 
-            x0=np.float64(lon[i])+cell_size_x/2.
-            y0=np.float64(lat[j])+cell_size_y/2.
+            x0=(lon[i])+cell_size_x/2.
+            y0=(lat[j])+cell_size_y/2.
             
-            cell_size_x=np.float64(lon[i+2])-np.float64(lon[i+1])
-            cell_size_y=np.float64(lat[j+2])-np.float64(lat[j+1])
+            cell_size_x=(lon[i+2])-(lon[i+1])
+            cell_size_y=(lat[j+2])-(lat[j+1])
             
-            x1 = np.float64(lon[i+1])+cell_size_x/2.
-            y1 = np.float64(lat[j+1])+cell_size_y/2.
+            x1 =(lon[i+1])+cell_size_x/2.
+            y1 =(lat[j+1])+cell_size_y/2.
             grid_cells.append(Polygon([[x0, y0],[x1,y0],[x1,y1], [x0, y1],[x0,y0]]))
-
-    #selecting the geometry from the given shapefile
-    polygons_to = shapefile_region
 
     #Calculating the areal weights as intersection between shapefile and grided polygon
     areas=[]
     for r in grid_cells:
-        intersect = polygons_to.intersection(r)
-        areas.append(intersect.area)
-    poly_area=areas
+        areas.append((polygons[0].intersection(r)).area)
 
     #Truning result in 2D array with right dimensions
     
-    pol=np.reshape(poly_area, (len(lon)-2, len(lat)-2))
-
     poly=np.zeros((len(lon), len(lat)))
-    poly[1:-1,1:-1]=pol
+    poly[lon1:lon2+1,lat1:lat2+1]=np.reshape(areas, (lon2-lon1+1, lat2-lat1+1))
     
     poly_pol=np.nan_to_num(poly)
-
-    out=poly_pol.T/(sum(sum(poly_pol.T)))
+    
+    #Rearange accordint to lon-grid indexing
+    out=np.take_along_axis(poly_pol.T/(sum(sum(poly_pol.T))), (np.zeros((len(lon), len(lat))).T+ind).astype(int), axis=1)
     return out
 
 def _parse_input(lon, lat, coords, fill, numbers):
