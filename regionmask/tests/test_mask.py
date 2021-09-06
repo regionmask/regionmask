@@ -686,8 +686,9 @@ def test_rasterize_on_split_lon_asymmetric():
     lat = np.arange(75, 13, -2)
     ds = xr.Dataset(coords=dict(lon=lon, lat=lat))
 
-    result = r_US_180_cw.mask(ds, method="rasterize")
+    assert _determine_method(ds.lon, ds.lat) == "rasterize_flip"
 
+    result = r_US_180_cw.mask(ds, method="rasterize")
     expected = r_US_180_cw.mask(ds, method="shapely")
     xr.testing.assert_equal(result, expected)
 
