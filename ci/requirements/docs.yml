@@ -8,10 +8,10 @@ dependencies:
   - python
 # regionmask dependencies
   # https://github.com/SciTools/cartopy/pull/1646
-  - cartopy=0.17
+  - cartopy=0.19
   - geopandas
   # related to the cartopy issue
-  - matplotlib-base==3.2
+  - matplotlib-base=3.4
   - numpy
   - pooch
   - pygeos

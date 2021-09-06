@@ -75,7 +75,11 @@ Docs
 - Install `regionmask` via `ci/requirements/docs.yml` on RTD using pip and update the
   packages: don't require jupyter (but ipykernel, which leads to a smaller environment),
   use new versions of sphinx and sphinx_rtd_theme (:pull:`248`).
-
+- Pin cartopy to version 0.19 and matplotlib to version 3.4 and use a (temorary) fix for
+  :issue:`165`. This allows to make use of `conda-forge/cartopy-feedstock#116
+  <https://github.com/conda-forge/cartopy-feedstock/pull/116>`__ such that natural_earth
+  shapefiles can be donwloaded again. Also added some other minor doc updates
+  (:pull:`269`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -84,8 +88,8 @@ Internal Changes
 
   - Moved contents of setup.py to setup.cfg (:pull:`240`).
   - Use ``pyproject.toml`` to define the installation requirements (:pull:`240`, :pull:`247`).
-  - Allow installing from git archives (:pull:`240`).
   - Use setuptools-scm for automatic versioning (:pull:`240`).
+  - Allow installing from git archives (:pull:`240`).
 - Refactor ``test_defined_region`` and ``test_mask_equal_defined_regions`` - globally
   define a list of all available `defined_regions` (:issue:`256`).
 - In the tests: downloading naturalearth regions could run forever. Make sure this does
