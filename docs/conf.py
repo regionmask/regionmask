@@ -217,6 +217,8 @@ man_pages = [("index", "regionmask", "regionmask Documentation", ["Mathias Hause
 # If true, show URL addresses after external links.
 # man_show_urls = False
 
+# list conda packages
+call("conda list", shell=True)
 
 # disable warnings
 warnings.filterwarnings("ignore")
@@ -231,6 +233,7 @@ notebooks = (
     "notebooks/create_own_regions",
 )
 
+print("\nBuilding notebooks:")
 for nb in notebooks:
 
     # only render notebooks if necessary
@@ -254,5 +257,3 @@ for nb in notebooks:
         ),
         shell=True,
     )
-
-call("conda list", shell=True)
