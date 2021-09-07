@@ -760,7 +760,7 @@ def test_mask_whole_grid(method, regions, lon):
     assert (mask == 0).all()
 
     # with wrap_lon=False the edges are not masked
-    mask = region_global.mask(lon, lat, method=method, wrap_lon=False)
+    mask = regions.mask(lon, lat, method=method, wrap_lon=False)
     assert mask.sel(lat=-90).isnull().all()
 
 
