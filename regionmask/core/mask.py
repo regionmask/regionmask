@@ -129,11 +129,9 @@ def _mask(
     # automatically detect whether wrapping is necessary
     if wrap_lon is None:
         msg_add = "Set `wrap_lon=False` to skip this check."
-        grid_is_180 = _is_180(lon.min(), lon.max(), msg_add=msg_add)
-
         regions_is_180 = _is_180(*lon_bounds, msg_add=msg_add)
 
-        wrap_lon_ = not regions_is_180 == grid_is_180
+        wrap_lon_ = 180 if regions_is_180 else 360
     else:
         wrap_lon_ = wrap_lon
 
