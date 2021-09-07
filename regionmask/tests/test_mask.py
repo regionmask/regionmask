@@ -766,7 +766,8 @@ def test_mask_whole_grid(method, regions, lon):
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 @pytest.mark.parametrize("regions", [r_GLOB_180, r_GLOB_360])
-def test_mask_whole_grid(method, regions):
+def test_mask_whole_grid_unusual_lon(method, regions):
+    # https://github.com/regionmask/regionmask/issues/213
 
     lat = np.arange(90, -91, -2.5)
     lon = np.arange(-300, 60, 2.5)
