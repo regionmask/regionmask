@@ -41,6 +41,9 @@ Enhancements
   (:issue:`123`).
 - Can now create masks for regions with arbitrary coordinates e.g. for coordinate reference
   systems that are not lat/ lon based by setting ``wrap_lon=False`` (:issue:`151`).
+- The extent of the longitude coordinates is no longer checked to determine the wrap,
+  now only the extent of the mask is considered (:issue:`249`). This should allow to
+  infer ``wrap_lon`` correctly for more cases (:issue:`213`).
 
 Deprecations
 ~~~~~~~~~~~~

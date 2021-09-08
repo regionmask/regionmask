@@ -93,10 +93,10 @@ def _wrapAngle(lon, wrap_lon=True):
 
     wl = int(wrap_lon)
 
-    if wl == 180 or (lon.max() > 180 and not wl == 360):
+    if wl == 180 or (wl != 360 and lon.max() > 180):
         new_lon = _wrapAngle180(lon.copy())
 
-    if wl == 360 or (lon.min() < 0 and not wl == 180):
+    if wl == 360 or (wl != 180 and lon.min() < 0):
         new_lon = _wrapAngle360(lon.copy())
 
     # check if they are still unique

@@ -136,11 +136,11 @@ def test_mask_xarray_name(method):
     assert msk.name == "region"
 
 
-@pytest.mark.parametrize("ndims", [(2, 1), (1, 2), (0, 1)])
+@pytest.mark.parametrize("ndims", [(2, 1), (1, 2)])
 def test_mask_unequal_ndim(ndims):
 
-    lon = np.zeros(shape=ndims[0] * (2,))
-    lat = np.zeros(shape=ndims[1] * (2,))
+    lon = np.arange(ndims[0] * 2).reshape(ndims[0] * (2,))
+    lat = np.arange(ndims[1] * 2).reshape(ndims[1] * (2,))
 
     with pytest.raises(ValueError, match="Equal number of dimensions required"):
         dummy_region.mask(lon, lat)
@@ -762,6 +762,18 @@ def test_mask_whole_grid(method, regions, lon):
     # with wrap_lon=False the edges are not masked
     mask = regions.mask(lon, lat, method=method, wrap_lon=False)
     assert mask.sel(lat=-90).isnull().all()
+
+
+@pytest.mark.parametrize("method", MASK_METHODS)
+@pytest.mark.parametrize("regions", [r_GLOB_180, r_GLOB_360])
+def test_mask_whole_grid_unusual_lon(method, regions):
+    # https://github.com/regionmask/regionmask/issues/213
+
+    lat = np.arange(90, -91, -2.5)
+    lon = np.arange(-300, 60, 2.5)
+    mask = regions.mask(lon, lat, method=method)
+
+    assert (mask == 0).all()
 
 
 def test_inject_mask_docstring():
