@@ -8,7 +8,31 @@ What's New
 
     import regionmask
 
-.. _whats-new.0.8.0:
+.. _whats-new.0.9.0:
+
+v0.9.0 (unreleased)
+---------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+Enhancements
+~~~~~~~~~~~~
+
+Deprecations
+~~~~~~~~~~~~
+
+New regions
+~~~~~~~~~~~
+
+Bug Fixes
+~~~~~~~~~
+
+Docs
+~~~~
+
+Internal Changes
+~~~~~~~~~~~~~~~~
 
 v0.8.0 (08.09.2021)
 -------------------
