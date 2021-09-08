@@ -10,8 +10,13 @@ What's New
 
 .. _whats-new.0.8.0:
 
-v0.8.0 (unreleased)
+v0.8.0 (08.09.2021)
 -------------------
+
+Version 0.8.0 contains an important bugfix, improves the handling of wrapped longitudes,
+can create masks for coordinates and regions that do not have a lat/ lon coordinate
+reference system and masks for irregular and 2D grids are created faster if the optional
+dependency `pygeos <https://pygeos.readthedocs.io/en/stable/>`__ is installed.
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
@@ -44,12 +49,6 @@ Enhancements
 - The extent of the longitude coordinates is no longer checked to determine the wrap,
   now only the extent of the mask is considered (:issue:`249`). This should allow to
   infer ``wrap_lon`` correctly for more cases (:issue:`213`).
-
-Deprecations
-~~~~~~~~~~~~
-
-New regions
-~~~~~~~~~~~
 
 Bug Fixes
 ~~~~~~~~~
