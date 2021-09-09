@@ -8,10 +8,41 @@ What's New
 
     import regionmask
 
-.. _whats-new.0.8.0:
+.. _whats-new.0.9.0:
 
-v0.8.0 (unreleased)
+v0.9.0 (unreleased)
+---------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+Enhancements
+~~~~~~~~~~~~
+
+Deprecations
+~~~~~~~~~~~~
+
+New regions
+~~~~~~~~~~~
+
+- Added :py:attr:`prudence` regions for Europe from `Christensen and Christensen, 2007, <https://link.springer.com/article/10.1007/s10584-006-9210-7>`_.
+
+Bug Fixes
+~~~~~~~~~
+
+Docs
+~~~~
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+v0.8.0 (08.09.2021)
 -------------------
+
+Version 0.8.0 contains an important bugfix, improves the handling of wrapped longitudes,
+can create masks for coordinates and regions that do not have a lat/ lon coordinate
+reference system and masks for irregular and 2D grids are created faster if the optional
+dependency `pygeos <https://pygeos.readthedocs.io/en/stable/>`__ is installed.
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
@@ -45,12 +76,24 @@ Enhancements
 Deprecations
 ~~~~~~~~~~~~
 
-New regions
-~~~~~~~~~~~
-- Added :py:attr:`prudence` regions for Europe from `Christensen and Christensen, 2007, <https://link.springer.com/article/10.1007/s10584-006-9210-7>`_.
+- The extent of the longitude coordinates is no longer checked to determine the wrap,
+  now only the extent of the mask is considered (:issue:`249`). This should allow to
+  infer ``wrap_lon`` correctly for more cases (:issue:`213`).
 
 Bug Fixes
 ~~~~~~~~~
+
+- Fixed a bug that could silently lead to a wrong mask in certain cases. Three conditions are
+  required:
+
+  1. The longitude coordinates are not ordered (note that wrapping the longitudes can
+     also lead to unordered coordinates).
+  2. Rearranging the coordinates makes them equally spaced.
+  3. The split point is not in the middle of the array.
+
+  Thus, the issue would happen for the following example longitude coordinates: ``[3, 4, 5, 1, 2]``
+  (but not for ``[3, 4, 1, 2]``). Before the bugfix the mask would incorrectly be rearranged
+  in the following order ``[4, 5, 1, 2, 3]`` (:issue:`266`).
 
 - :py:meth:`Regions.mask` (and all other ``mask`` methods and functions) no longer raise
   an error for regions that exceed 360° latitude if ``wrap_lon=False``. This was most
@@ -65,7 +108,11 @@ Docs
 - Install `regionmask` via `ci/requirements/docs.yml` on RTD using pip and update the
   packages: don't require jupyter (but ipykernel, which leads to a smaller environment),
   use new versions of sphinx and sphinx_rtd_theme (:pull:`248`).
-
+- Pin cartopy to version 0.19 and matplotlib to version 3.4 and use a (temorary) fix for
+  :issue:`165`. This allows to make use of `conda-forge/cartopy-feedstock#116
+  <https://github.com/conda-forge/cartopy-feedstock/pull/116>`__ such that natural_earth
+  shapefiles can be donwloaded again. Also added some other minor doc updates
+  (:pull:`269`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -74,8 +121,8 @@ Internal Changes
 
   - Moved contents of setup.py to setup.cfg (:pull:`240`).
   - Use ``pyproject.toml`` to define the installation requirements (:pull:`240`, :pull:`247`).
-  - Allow installing from git archives (:pull:`240`).
   - Use setuptools-scm for automatic versioning (:pull:`240`).
+  - Allow installing from git archives (:pull:`240`).
 - Refactor ``test_defined_region`` and ``test_mask_equal_defined_regions`` - globally
   define a list of all available `defined_regions` (:issue:`256`).
 - In the tests: downloading naturalearth regions could run forever. Make sure this does

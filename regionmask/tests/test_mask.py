@@ -136,11 +136,11 @@ def test_mask_xarray_name(method):
     assert msk.name == "region"
 
 
-@pytest.mark.parametrize("ndims", [(2, 1), (1, 2), (0, 1)])
+@pytest.mark.parametrize("ndims", [(2, 1), (1, 2)])
 def test_mask_unequal_ndim(ndims):
 
-    lon = np.zeros(shape=ndims[0] * (2,))
-    lat = np.zeros(shape=ndims[1] * (2,))
+    lon = np.arange(ndims[0] * 2).reshape(ndims[0] * (2,))
+    lat = np.arange(ndims[1] * 2).reshape(ndims[1] * (2,))
 
     with pytest.raises(ValueError, match="Equal number of dimensions required"):
         dummy_region.mask(lon, lat)
@@ -619,11 +619,11 @@ ds_for_45_deg = create_lon_lat_dataarray_from_bounds(*(-0.5, 16, 1), *(10.5, -0.
 # add a small offset to y to avoid https://github.com/mapbox/rasterio/issues/1844
 outline_45_deg = np.array([[0, 10.1], [0, 0.1], [5.1, 0.1], [15.1, 10.1]])
 
-r_45_def_ccw = Regions([outline_45_deg])
-r_45_def_cw = Regions([outline_45_deg[::-1]])
+r_45_deg_ccw = Regions([outline_45_deg])
+r_45_deg_cw = Regions([outline_45_deg[::-1]])
 
 
-@pytest.mark.parametrize("regions", [r_45_def_ccw, r_45_def_cw])
+@pytest.mark.parametrize("regions", [r_45_deg_ccw, r_45_deg_cw])
 def test_deg45_rasterize_shapely_equal(regions):
     # https://github.com/regionmask/regionmask/issues/80
 
@@ -637,7 +637,7 @@ def test_deg45_rasterize_shapely_equal(regions):
         xr.testing.assert_equal(pygeos, rasterize)
 
 
-@pytest.mark.parametrize("regions", [r_45_def_ccw, r_45_def_cw])
+@pytest.mark.parametrize("regions", [r_45_deg_ccw, r_45_deg_cw])
 def test_deg45_rasterize_offset_equal(regions):
     # https://github.com/regionmask/regionmask/issues/80
 
@@ -654,9 +654,9 @@ def test_deg45_rasterize_offset_equal(regions):
 # =============================================================================
 
 # the whole globe -> can be re-arranged (_mask_rasterize_flip)
-ds_GLOB_360 = create_lon_lat_dataarray_from_bounds(*(0, 360, 2) + (75, 13, -2))
+ds_GLOB_360 = create_lon_lat_dataarray_from_bounds(*(0, 360, 2), *(75, 13, -2))
 # not all lon -> must be masked twice (_mask_rasterize_split)
-ds_GLOB_360_part = create_lon_lat_dataarray_from_bounds(*(0, 300, 2) + (75, 13, -2))
+ds_GLOB_360_part = create_lon_lat_dataarray_from_bounds(*(0, 300, 2), *(75, 13, -2))
 
 
 @pytest.mark.parametrize("ds_360", [ds_GLOB_360, ds_GLOB_360_part])
@@ -676,6 +676,21 @@ def test_rasterize_on_split_lon(ds_360, regions_180):
 
     expected_shapely = regions_180.mask(ds_360, method="shapely")
     xr.testing.assert_equal(result, expected_shapely)
+
+
+def test_rasterize_on_split_lon_asymmetric():
+    # https://github.com/regionmask/regionmask/issues/266
+
+    # for _mask_rasterize_flip: split_point not in the middle
+    lon = np.hstack([np.arange(-90, 20, 2), np.arange(-180, -90, 2)])
+    lat = np.arange(75, 13, -2)
+    ds = xr.Dataset(coords=dict(lon=lon, lat=lat))
+
+    assert _determine_method(ds.lon, ds.lat) == "rasterize_flip"
+
+    result = r_US_180_cw.mask(ds, method="rasterize")
+    expected = r_US_180_cw.mask(ds, method="shapely")
+    xr.testing.assert_equal(result, expected)
 
 
 METHOD_IRREGULAR = "pygeos" if has_pygeos else "shapely"
@@ -731,9 +746,7 @@ r_GLOB_180 = Regions([outline_GLOB_180])
 r_GLOB_360 = Regions([outline_GLOB_360])
 
 lon180 = np.arange(-180, 180, 10)
-lon360 = np.arange(-180, 180, 10)
-
-lat = np.arange(90, -91, -10)
+lon360 = np.arange(0, 360, 10)
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
@@ -741,6 +754,23 @@ lat = np.arange(90, -91, -10)
 @pytest.mark.parametrize("lon", [lon180, lon360])
 def test_mask_whole_grid(method, regions, lon):
 
+    lat = np.arange(90, -91, -10)
+    mask = regions.mask(lon, lat, method=method)
+
+    assert (mask == 0).all()
+
+    # with wrap_lon=False the edges are not masked
+    mask = regions.mask(lon, lat, method=method, wrap_lon=False)
+    assert mask.sel(lat=-90).isnull().all()
+
+
+@pytest.mark.parametrize("method", MASK_METHODS)
+@pytest.mark.parametrize("regions", [r_GLOB_180, r_GLOB_360])
+def test_mask_whole_grid_unusual_lon(method, regions):
+    # https://github.com/regionmask/regionmask/issues/213
+
+    lat = np.arange(90, -91, -2.5)
+    lon = np.arange(-300, 60, 2.5)
     mask = regions.mask(lon, lat, method=method)
 
     assert (mask == 0).all()
