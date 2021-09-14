@@ -14,7 +14,6 @@ def rad_to_deg(ds):
         for c in ds.coords:
             if "units" in ds[c].attrs:
                 if ds[c].attrs["units"] == "radian":
-                    print(f"convert {c} from rad to deg")
                     ds[c] = np.rad2deg(ds[c])
                     ds[c].attrs["units"] = "degrees"
                     warnings.warn(f"convert {c} from radian to degrees")
