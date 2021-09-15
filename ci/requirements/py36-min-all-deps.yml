@@ -15,6 +15,7 @@ dependencies:
   - setuptools=40.4
   - shapely=1.6
   - xarray=0.15
+  - netcdf4
 # for testing
   - pytest
   - pytest-cov
