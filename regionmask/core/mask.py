@@ -124,11 +124,16 @@ def _mask(
     lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
 
     # determine whether unstructured grid
-    if len(lon.dims) == 1 and len(lat.dims) == 1:
-        if lon.name != lon.dims[0] and lat.name != lat.dims[0]:
-            is_unstructured = True
-            lat_orig = lat
-            lon_orig = lon
+    if isinstance(lon, xr.DataArray) and isinstance(lat, xr.DataArray):
+        if len(lon.dims) == 1 and len(lat.dims) == 1:
+            if lon.name != lon.dims[0] and lat.name != lat.dims[0]:
+                is_unstructured = True
+                lat_orig = lat
+                lon_orig = lon
+            else:
+                is_unstructured = False
+        else:
+            is_unstructured = False
     else:
         is_unstructured = False
 
