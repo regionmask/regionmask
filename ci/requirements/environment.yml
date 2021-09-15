@@ -12,6 +12,7 @@ dependencies:
   - rasterio
   - setuptools
   - xarray
+  - netcdf4
 # for testing
   - pytest
   - pytest-cov
