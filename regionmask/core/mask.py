@@ -200,7 +200,7 @@ def _mask_2D(
         pole_latitude= pole_latitude, 
         pole_longitude= pole_longitude, 
         globe= globe,
-        crs=crs
+        crs=crs,
     )
 
     if np.all(np.isnan(mask)):
