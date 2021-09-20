@@ -419,6 +419,8 @@ def _Rotated_Pole(lon, lat, polygons, numbers, central_rotated_longitude , pole_
     "+to_meter": math.radians(1) =  0.017453292519943295
     "+ellps": Globe; WGS84
     
+    crs : Coordinate Reference System  of the shapefile
+    
     Return
     -------
     _mask_weights : Function for computation of the weighted mask.
