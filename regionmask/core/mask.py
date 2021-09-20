@@ -102,6 +102,7 @@ def _mask(
     pole_latitude=None, 
     pole_longitude=None, 
     globe=None,
+    crs=None,
 ):
     """
     internal function to create a mask
@@ -150,7 +151,7 @@ def _mask(
     elif method == "weights_default":
         mask = _mask_weights(lon, lat, outlines, numbers=numbers)
     elif method == "weights_rot_pole":
-        mask = _Rotated_Pole(lon, lat, outlines, numbers=numbers, central_rotated_longitude = central_rotated_longitude, pole_latitude= pole_latitude, pole_longitude= pole_longitude, globe= globe) 
+        mask = _Rotated_Pole(lon, lat, outlines, numbers=numbers, central_rotated_longitude = central_rotated_longitude, pole_latitude= pole_latitude, pole_longitude= pole_longitude, globe= globe,crs=crs) 
     elif method == "weights_irregular":
         msg = "Method is under construction."
         warnings.warn(msg, UserWarning, stacklevel=3)
@@ -182,6 +183,7 @@ def _mask_2D(
     pole_latitude=None, 
     pole_longitude=None, 
     globe=None,
+    crs=None,
 ):
 
     mask = _mask(
@@ -198,6 +200,7 @@ def _mask_2D(
         pole_latitude= pole_latitude, 
         pole_longitude= pole_longitude, 
         globe= globe,
+        crs=crs
     )
 
     if np.all(np.isnan(mask)):
@@ -395,7 +398,7 @@ def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN):
 
     return out.reshape(shape)
 
-def _Rotated_Pole(lon, lat, polygons, numbers, central_rotated_longitude , pole_latitude, pole_longitude, globe,fill=np.NaN):
+def _Rotated_Pole(lon, lat, polygons, numbers, central_rotated_longitude , pole_latitude, pole_longitude, globe,crs, fill=np.NaN):
     """
     Projects shapefile in the rotated pole projection of the given lat/lon- grid and creates a weighted mask.
 
@@ -421,17 +424,14 @@ def _Rotated_Pole(lon, lat, polygons, numbers, central_rotated_longitude , pole_
     _mask_weights : Function for computation of the weighted mask.
 
     """
-
-    import geopandas as gpd
-    #projection=input("Enter rotated pole projection in the form: +proj=ob_tran +o_proj=longlat +o_lon_p=... +o_lat_p=... +lon_0=... +to_meter=... +ellps=...: ")
-    #lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
-    crs="EPSG:4326"
-    shapefile_region =gpd.GeoDataFrame(polygons,columns=['geometry'],crs=crs)    
+    import geopandas as gpd   
+    from shapely.ops import unary_union 
+    shapefile_region =gpd.GeoSeries(unary_union(polygons),crs=crs)
 
     projection ="+proj=ob_tran +o_proj=longlat +o_lon_p={} +o_lat_p={} +lon_0={} +to_meter={} +ellps={}".format(central_rotated_longitude,pole_latitude, 180.+ pole_longitude, 0.017453292519943295, globe )
     proj_shp_region=shapefile_region.to_crs(projection)
-    return _mask_weights(lon, lat, proj_shp_region.geometry.tolist(), numbers, fill=np.NaN)
-    #return _mask_weights(lon, lat, proj_shp_region.geometry.tolist()[0])
+    return _mask_weights(lon, lat, proj_shp_region, numbers, fill=np.NaN)
+
 
 def _mask_weights_irregular(lon, lat, polygons, numbers, fill=np.NaN):
     
