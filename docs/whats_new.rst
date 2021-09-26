@@ -25,7 +25,8 @@ Deprecations
 New regions
 ~~~~~~~~~~~
 
-- Added :py:attr:`prudence` regions for Europe from `Christensen and Christensen, 2007, <https://link.springer.com/article/10.1007/s10584-006-9210-7>`_.
+- Added :py:attr:`prudence` regions for Europe from `Christensen and Christensen, 2007, <https://link.springer.com/article/10.1007/s10584-006-9210-7>`_ (:pull:`276`). By `Ruth Lorenz <https://github.com/ruthlorenz>`_.
+
 
 Bug Fixes
 ~~~~~~~~~

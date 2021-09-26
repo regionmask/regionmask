@@ -120,11 +120,11 @@ PRUDENCE Regions
 
 The PRUDENCE regions were defined in the PRUDENCE project as European sub-areas for regional climate model output and are often used in European climate studies. They contain 8 regions, Alps (AL), British Isles (BI), Eastern Europe (EA), France (FR), Iberian Peninsula (IP), Mediterranean (MD), Mid-Europe (ME), and Scandinavia (SC). 
 
-.. warning:: The region FR and ME overlapp, hence 2D masks will not be correct. Use 3D masks, createmask for each region separately and then concatenate, see https://github.com/regionmask/regionmask/issues/228
+.. warning:: The region FR and ME overlap, hence 2D masks will not be correct. Use ``mask_3D`` to create masks for each region separately and then concatenate, see `#228 <https://github.com/regionmask/regionmask/issues/228>`__.
 
 .. ipython:: python
 
-    regionmask.defined_regions.prudence.plot();
+    regionmask.defined_regions.prudence.plot(resolution="50m");
 
     @savefig plotting_prudence.png width=100%
     plt.tight_layout()
