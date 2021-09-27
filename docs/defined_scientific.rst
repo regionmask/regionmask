@@ -25,6 +25,8 @@ The following imports are necessary for the examples.
 .. ipython:: python
 
     import regionmask
+
+    import cartopy.crs as ccrs
     import matplotlib.pyplot as plt
 
 Giorgi Regions
@@ -46,12 +48,12 @@ SREX Regions
 
     @savefig plotting_srex.png width=100%
     plt.tight_layout()
-    
+
 AR6 Regions
 ===========
 
-There are 58 AR6 regions as defined in Iturbide et al. (2020). The regions cover 
-the land and ocean (``ar6.all``). In addition the regions are also divided into land 
+There are 58 AR6 regions as defined in Iturbide et al. (2020). The regions cover
+the land and ocean (``ar6.all``). In addition the regions are also divided into land
 (``ar6.land``) and ocean (``ar6.ocean``) categories. The numbering is kept consistent
 between the categories. Note that some regions are in the land and in the ocean
 categories (e.g. the Mediterranean).
@@ -62,7 +64,7 @@ categories (e.g. the Mediterranean).
   final region definitions are available at ``regionmask.defined_regions.ar6``.
   For completeness, the submitted region definitions (also referred to as SOD regions)
   are available at ``regionmask.defined_regions._ar6_pre_revisions``.
-  
+
 
 All
 ~~~
@@ -73,9 +75,9 @@ All
 
 
 .. ipython:: python
-    
+
     text_kws = dict(color="#67000d", fontsize=7, bbox=dict(pad=0.2, color="w"))
-    
+
     regionmask.defined_regions.ar6.all.plot(
         text_kws=text_kws, label_multipolygon="all"
     );
@@ -96,8 +98,8 @@ Land
 
     @savefig plotting_ar6_land.png width=100%
     plt.tight_layout()
-        
-        
+
+
 Ocean
 ~~~~~
 
@@ -118,13 +120,15 @@ Ocean
 PRUDENCE Regions
 ================
 
-The PRUDENCE regions were defined in the PRUDENCE project as European sub-areas for regional climate model output and are often used in European climate studies. They contain 8 regions, Alps (AL), British Isles (BI), Eastern Europe (EA), France (FR), Iberian Peninsula (IP), Mediterranean (MD), Mid-Europe (ME), and Scandinavia (SC). 
+The PRUDENCE regions were defined in the PRUDENCE project as European sub-areas for regional climate model output and are often used in European climate studies. They contain 8 regions, Alps (AL), British Isles (BI), Eastern Europe (EA), France (FR), Iberian Peninsula (IP), Mediterranean (MD), Mid-Europe (ME), and Scandinavia (SC).
 
 .. warning:: The region FR and ME overlap, hence 2D masks will not be correct. Use ``mask_3D`` to create masks for each region separately and then concatenate, see `#228 <https://github.com/regionmask/regionmask/issues/228>`__.
 
 .. ipython:: python
 
-    regionmask.defined_regions.prudence.plot(resolution="50m");
+    # choose a good projection for regional maps
+    proj = ccrs.LambertConformal(central_longitude=10)
+    regionmask.defined_regions.prudence.plot(projection=proj, resolution="50m");
 
     @savefig plotting_prudence.png width=100%
     plt.tight_layout()
