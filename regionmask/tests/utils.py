@@ -46,6 +46,7 @@ REGIONS = {
     "ar6.ocean": 15,
     "giorgi": 21,
     "srex": 26,
+    "prudence": 8,
 }
 
 REGIONS_DEPRECATED = {
