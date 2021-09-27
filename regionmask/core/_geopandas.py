@@ -178,7 +178,10 @@ def mask_geopandas(
     globe=None,
     crs=None,
 ):
-
+    if crs==None:
+        crs= geodataframe.crs
+    else:
+        pass
     polygons, is_180, numbers = _prepare_gdf_for_mask(
         geodataframe, method=method, numbers=numbers
     )
