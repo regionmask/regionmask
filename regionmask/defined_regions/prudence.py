@@ -47,7 +47,7 @@ from ..core.regions import Regions
 numbers = range(1, 9)
 source = (
     "Christensen and Christensen, 2007, Climatic Change 81:7-30"
-    "(https://link.springer.com/article/10.1007/s10584-006-9210-7)"
+    " (https://link.springer.com/article/10.1007/s10584-006-9210-7)"
 )
 
 prudence = Regions(
