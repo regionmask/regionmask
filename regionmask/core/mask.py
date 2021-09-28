@@ -124,9 +124,9 @@ def _mask(
     lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
 
     # determine whether unstructured grid
+    # have to do this before np.asarray
     is_unstructured = False
     if isinstance(lon, xr.DataArray) and isinstance(lat, xr.DataArray):
-        ...
         if len(lon.dims) == 1 and len(lat.dims) == 1:
             if lon.name != lon.dims[0] and lat.name != lat.dims[0]:
                 is_unstructured = True
@@ -320,13 +320,16 @@ def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
 
 def _create_xarray(mask, lon, lat, lon_name, lat_name, is_unstructured):
     """create an xarray DataArray"""
-
-    # create the xarray output
     if is_unstructured:
+        # lat is xr.DataArray to retrieve cell_name
         cell_name = lat.dims[0]
         mask = xr.DataArray(
             mask,
-            coords={cell_name: lat.coords[cell_name]},
+            coords={
+                cell_name: lat.coords[cell_name],
+                "lat": (cell_name, lat.values),
+                "lon": (cell_name, lon),
+            },
             dims=cell_name,
             name="region",
         )
