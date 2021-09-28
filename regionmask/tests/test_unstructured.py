@@ -2,9 +2,11 @@ import numpy as np
 import pytest
 import xarray as xr
 
+from . import has_pygeos
 from .utils import dummy_region, expected_mask_2D
 
 
+@pytest.mark.skipif(not has_pygeos, reason="Only errors if pygeos is missing")
 @pytest.mark.parametrize("method", ["shapely", "pygeos"])
 def test_unstructured_dummy(method):
     """Test for unstructured output."""
