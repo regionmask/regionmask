@@ -24,7 +24,7 @@ Enhancements
   - `FESOM <https://fesom.de/>`_
   - `MPAS <https://mpas-dev.github.io/>`_
 
-  with Coordinates: ```lon(cell)`` and ``lat(cell)`` when ``wrap_lon=False``.
+  with Coordinates ``lon(cell)`` and ``lat(cell)`` when ``wrap_lon=False``.
   (:issue:`278`, :pull:`280`). By `Aaron Spring <https://github.com/aaronspring>`_.
 
 Deprecations
