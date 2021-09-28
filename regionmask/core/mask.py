@@ -330,7 +330,7 @@ def _create_xarray(mask, lon, lat, lon_name, lat_name, is_unstructured):
         cell_name = lat.dims[0]
         mask = xr.DataArray(
             mask,
-            coords={cell_name: lat.coords[cell_name]},
+            coords={lat_name: lat, lon_name: lon},
             dims=cell_name,
             name="region",
         )
