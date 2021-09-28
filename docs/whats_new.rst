@@ -18,7 +18,7 @@ Breaking Changes
 
 Enhancements
 ~~~~~~~~~~~~
-- Works with unstructured grids such as ICON. (:issue:`278`, :pull:`280`).
+- Works with unstructured 1D grids such as ICON. (:issue:`278`, :pull:`280`).
   By `Aaron Spring <https://github.com/aaronspring>`_.
 
 Deprecations
