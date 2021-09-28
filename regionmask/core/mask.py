@@ -132,12 +132,6 @@ def _mask(
                 is_unstructured = True
                 lat_orig = lat
                 lon_orig = lon
-            else:
-                is_unstructured = False
-        else:
-            is_unstructured = False
-    else:
-        is_unstructured = False
 
     lon = np.asarray(lon)
     lat = np.asarray(lat)
