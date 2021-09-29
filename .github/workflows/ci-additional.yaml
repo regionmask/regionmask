@@ -20,9 +20,10 @@ jobs:
         os: ["ubuntu-latest"]
         env:
           [
-            "py36-bare-minimum",
-            "py36-min-all-deps",
+            "bare-minimum",
+            "min-all-deps",
           ]
+        python-version: ["3.6"]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -30,7 +31,10 @@ jobs:
 
       - name: Set environment variables
         run: |
-            echo "CONDA_ENV_FILE=ci/requirements/${{ matrix.env }}.yml" >> $GITHUB_ENV
+            PY=${{ matrix.python-version }}
+            # replace "." in matrix.env
+            echo "PY=py${PY//./}" >> $GITHUB_ENV
+            echo "CONDA_ENV_FILE=ci/requirements/py${PY}-${{ matrix.env }}.yml" >> $GITHUB_ENV
       - name: Cache conda
         uses: actions/cache@v2
         with:
@@ -41,7 +45,7 @@ jobs:
           key:
             ${{ runner.os }}-conda-${{ matrix.env }}-${{ hashFiles('ci/requirements/**.yml') }}
           restore-keys: |
-            ${{ runner.os }}-conda-${{ matrix.env }}
+            ${{ runner.os }}-conda-py${{ matrix.env }}-
             ${{ runner.os }}-
 
       - uses: conda-incubator/setup-miniconda@v2
@@ -70,7 +74,7 @@ jobs:
         run: |
           python -c "import regionmask"
       - name: Run tests
-        timeout-minutes: 5
+        timeout-minutes: 15
         run: python -u -m pytest
           --cov=regionmask
           --cov-report=xml
