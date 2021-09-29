@@ -43,9 +43,9 @@ jobs:
             ~/.cache/regionmask/
             ~/.local/share/cartopy/
           key:
-            ${{ runner.os }}-conda-${{ matrix.env }}-${{ hashFiles('ci/requirements/**.yml') }}
+            ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{ matrix.env }}-${{ hashFiles('ci/requirements/**.yml') }}
           restore-keys: |
-            ${{ runner.os }}-conda-py${{ matrix.env }}-
+            ${{ runner.os }}-conda-py${{ matrix.python-version }}-
             ${{ runner.os }}-
 
       - uses: conda-incubator/setup-miniconda@v2
