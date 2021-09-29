@@ -1,6 +1,4 @@
-# =============================================================================
-
-# the outlines is given at https://link.springer.com/article/10.1007/s10584-006-9210-7
+# the outlines are given at https://link.springer.com/article/10.1007/s10584-006-9210-7
 
 outlines = dict()
 
