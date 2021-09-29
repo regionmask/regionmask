@@ -100,10 +100,11 @@ These instructions assume that `upstream` refers to the main repository
 17. Issue the release on GitHub. Click on "Draft a new release" at
     <https://github.com/regionmask/regionmask/releases>. Type in the version number
     and paste the release summary in the notes.
-18. Update the docs. Login to <https://readthedocs.org/projects/regionmask/versions/>
+18. Update zenodo link.
+19. Update the docs. Login to <https://readthedocs.org/projects/regionmask/versions/>
     and switch your new release tag (at the bottom) from "Inactive" to "Active".
     It should now build automatically.
-19. Release regionmask on conda - also update the requirements in meta.yaml <https://github.com/conda-forge/regionmask-feedstock>
+20. Release regionmask on conda - also update the requirements in meta.yaml <https://github.com/conda-forge/regionmask-feedstock>
 
 <!-- markdownlint-enable MD013 -->
 
