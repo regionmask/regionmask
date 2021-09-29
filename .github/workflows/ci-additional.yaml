@@ -32,8 +32,8 @@ jobs:
       - name: Set environment variables
         run: |
             PY=${{ matrix.python-version }}
-            # replace "." in matrix.env
-            echo "PY=py${PY//./}" >> $GITHUB_ENV
+            # replace "." in matrix.python-version
+            PY=${PY//./}
             echo "CONDA_ENV_FILE=ci/requirements/py${PY}-${{ matrix.env }}.yml" >> $GITHUB_ENV
       - name: Cache conda
         uses: actions/cache@v2
