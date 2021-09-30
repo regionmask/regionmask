@@ -179,7 +179,7 @@ def _mask(
         )
 
     # not False required
-    if wrap_lon is not False:
+    if wrap_lon is not False and not is_unstructured:
         # treat the points at -180°E/0°E and -90°N
         mask = _mask_edgepoints_shapely(mask, lon, lat, outlines, numbers)
 

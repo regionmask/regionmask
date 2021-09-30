@@ -14,7 +14,7 @@ def test_unstructured_dummy(method):
     lon = [0.5, 1.5, 0.5, 1.5]
     grid = xr.Dataset(coords={"lon": ("cells", lon), "lat": ("cells", lat)})
 
-    result = dummy_region.mask(grid, method=method, wrap_lon=False)
+    result = dummy_region.mask(grid, method=method)
 
     expected = expected_mask_2D().flatten()
     assert isinstance(result, xr.DataArray)
