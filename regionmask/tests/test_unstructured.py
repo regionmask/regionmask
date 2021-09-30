@@ -6,8 +6,7 @@ from . import has_pygeos
 from .utils import dummy_region, expected_mask_2D
 
 
-@pytest.mark.skipif(not has_pygeos, reason="Only errors if pygeos is missing")
-@pytest.mark.parametrize("method", ["shapely", "pygeos"])
+@pytest.mark.parametrize("method", ["shapely", pytest.param("pygeos", marks=requires_pygeos)])
 def test_unstructured_dummy(method):
     """Test for unstructured output."""
     lat = [0.5, 0.5, 1.5, 1.5]
