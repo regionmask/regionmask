@@ -48,12 +48,13 @@ def test_defined_regions_natural_earth(monkeypatch, region_name, n_regions):
 
 
 @requires_cartopy
-def test_natural_earth_loaded_as_utf8():
+def test_natural_earth_loaded_as_utf8(monkeypatch):
     # GH 95
-    regions = defined_regions.natural_earth.ocean_basins_50
-    r = regions[90]
+    regions = get_naturalearth_region_or_skip(
+        monkeypatch, "natural_earth.ocean_basins_50"
+    )
 
-    assert r.name == "Río de la Plata"
+    assert regions[90].name == "Río de la Plata"
 
 
 def test_maybe_get_column():
