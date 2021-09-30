@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import xarray as xr
 
-from . import has_pygeos
+from . import requires_pygeos
 from .utils import dummy_region, expected_mask_2D
 
 
