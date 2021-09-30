@@ -92,7 +92,7 @@ Region Definitions
 ------------------
 .. [#] `Giorgi and Franciso, 2000 <http://onlinelibrary.wiley.com/doi/10.1029/1999GL011016>`__
 .. [#] `Seneviratne et al., 2012 <https://www.ipcc.ch/pdf/special-reports/srex/SREX-Ch3-Supplement_FINAL.pdf>`__
-
+.. [#] `Christensen and Christensen, 2007 <https://link.springer.com/article/10.1007/s10584-006-9210-7>`__
 
 
 Indices and tables
