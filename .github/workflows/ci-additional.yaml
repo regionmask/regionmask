@@ -55,7 +55,7 @@ jobs:
           mamba-version: "*"
           activate-environment: regionmask-tests
           auto-update-conda: false
-          python-version: {{ matrix.python-version }}
+          python-version: ${{ matrix.python-version }}
           use-only-tar-bz2: true
 
       - name: Install conda dependencies
