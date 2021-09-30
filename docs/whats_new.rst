@@ -24,7 +24,7 @@ Enhancements
   - `FESOM <https://fesom.de/>`_
   - `MPAS <https://mpas-dev.github.io/>`_
 
-  with variable ``var(cell)`` and coordinates ``lon(cell)`` and ``lat(cell)``
+  with coordinates of the form ``lon(cell)`` and ``lat(cell)``
   when ``wrap_lon=False``.
   (:issue:`278`, :pull:`280`). By `Aaron Spring <https://github.com/aaronspring>`_.
 
