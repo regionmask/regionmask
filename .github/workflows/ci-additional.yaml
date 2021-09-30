@@ -35,18 +35,18 @@ jobs:
             # replace "." in matrix.python-version
             PY=${PY//./}
             echo "CONDA_ENV_FILE=ci/requirements/py${PY}-${{ matrix.env }}.yml" >> $GITHUB_ENV
-      - name: Cache conda
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/conda_pkgs_dir
-            ~/.cache/regionmask/
-            ~/.local/share/cartopy/
-          key:
-            ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{ matrix.env }}-${{ hashFiles('ci/requirements/**.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-py${{ matrix.python-version }}-
-            ${{ runner.os }}-
+      # - name: Cache conda
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: |
+      #       ~/conda_pkgs_dir
+      #       ~/.cache/regionmask/
+      #       ~/.local/share/cartopy/
+      #     key:
+      #       ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{ matrix.env }}-${{ hashFiles('ci/requirements/**.yml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-conda-py${{ matrix.python-version }}-
+      #       ${{ runner.os }}-
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
