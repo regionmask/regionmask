@@ -23,7 +23,7 @@ jobs:
             "bare-minimum",
             "min-all-deps",
           ]
-        python-version: ["3.6"]
+        python-version: ["3.7"]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -55,7 +55,7 @@ jobs:
           mamba-version: "*"
           activate-environment: regionmask-tests
           auto-update-conda: false
-          python-version: 3.6
+          python-version: ${{ matrix.python-version }}
           use-only-tar-bz2: true
 
       - name: Install conda dependencies
@@ -110,4 +110,4 @@ jobs:
       - name: minimum versions policy
         run: |
           mamba install -y pyyaml conda python-dateutil
-          python ci/min_deps_check.py ci/requirements/py36-min-all-deps.yml
+          python ci/min_deps_check.py ci/requirements/py37-min-all-deps.yml

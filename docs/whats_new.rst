@@ -16,6 +16,8 @@ v0.9.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Removed support for Python 3.6.
+
 Enhancements
 ~~~~~~~~~~~~
 
