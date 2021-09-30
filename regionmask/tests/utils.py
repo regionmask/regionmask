@@ -89,7 +89,7 @@ def get_naturalearth_region_or_skip(monkeypatch, region_name):
     )
 
     monkeypatch.setattr(
-        cartopy.io.shapereader.NEShpDownloader, "url_template", url_template
+        cartopy.io.shapereader.NEShpDownloader(), "url_template", url_template
     )
 
     try:
