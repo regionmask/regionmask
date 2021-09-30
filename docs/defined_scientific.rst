@@ -19,6 +19,9 @@ The following regions, used in the scientific literature, are already defined:
 
     # cut border when saving (for maps)
     mpl.rcParams["savefig.bbox"] = "tight"
+    # better quality figures (mostly for PRUDENCE)
+    plt.rcParams['savefig.dpi'] = 300
+
 
 The following imports are necessary for the examples.
 
