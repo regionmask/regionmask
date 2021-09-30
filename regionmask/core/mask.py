@@ -147,7 +147,7 @@ def _mask(
 
     lon_orig = lon.copy()
     if wrap_lon_:
-        lon = _wrapAngle(lon, wrap_lon_)
+        lon = _wrapAngle(lon, wrap_lon_, is_unstructured=is_unstructured)
 
     if method not in (None, "rasterize", "shapely", "pygeos"):
         msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
