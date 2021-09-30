@@ -4,7 +4,7 @@ Installation
 Required dependencies
 ---------------------
 
-- Python (3.6 or later)
+- Python (3.7 or later)
 - `geopandas <http://geopandas.org/>`__ (0.6 or later)
 - `numpy <http://www.numpy.org/>`__ (1.17 or later)
 - `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.0 or later)

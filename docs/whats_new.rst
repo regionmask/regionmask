@@ -16,6 +16,8 @@ v0.9.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Removed support for Python 3.6.
+
 Enhancements
 ~~~~~~~~~~~~
 
@@ -38,6 +40,9 @@ Docs
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
+
+- Fix downloading naturalearth regions part 2 (see :pull:`261`): Monkeypatch the correct
+  download URL and catch all ``URLError``, not only timeouts (:pull:`289`).
 
 v0.8.0 (08.09.2021)
 -------------------

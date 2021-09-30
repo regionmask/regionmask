@@ -70,7 +70,6 @@ REGIONS_REQUIRING_CARTOPY = {
 
 def get_naturalearth_region_or_skip(monkeypatch, region_name):
 
-    from socket import timeout
     from urllib.request import URLError, urlopen
 
     import cartopy
@@ -84,22 +83,19 @@ def get_naturalearth_region_or_skip(monkeypatch, region_name):
     # https://github.com/nvkelso/natural-earth-vector/issues/445
     # remove again once the minimum cartopy version is v0.19
 
-    _NE_URL_TEMPLATE = (
+    url_template = (
         "https://naturalearth.s3.amazonaws.com/"
         "{resolution}_{category}/ne_{resolution}_{name}.zip"
     )
 
-    monkeypatch.setattr(
-        cartopy.io.shapereader.NEShpDownloader, "_NE_URL_TEMPLATE", _NE_URL_TEMPLATE
-    )
+    downloader = cartopy.config["downloaders"][("shapefiles", "natural_earth")]
+    monkeypatch.setattr(downloader, "url_template", url_template)
 
     try:
         region = attrgetter(region_name)(defined_regions)
     except URLError as e:
-        if isinstance(e.reason, timeout):
-            warnings.warn("naturalearth donwload timeout - test not run!")
-            pytest.skip()
-        else:
-            raise
+        warnings.warn(str(e))
+        warnings.warn("naturalearth donwload timeout - test not run!")
+        pytest.skip()
 
     return region
