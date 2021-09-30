@@ -87,13 +87,8 @@ def get_naturalearth_region_or_skip(monkeypatch, region_name):
         "{resolution}_{category}/ne_{resolution}_{name}.zip"
     )
 
-    # downloader = cartopy.config["downloaders"][("shapefiles", "natural_earth")]
-    monkeypatch.setattr(
-        # downloader, "url_template", url_template
-        cartopy.io.shapereader.NEShpDownloader(),
-        "url_template",
-        url_template,
-    )
+    downloader = cartopy.config["downloaders"][("shapefiles", "natural_earth")]
+    monkeypatch.setattr(downloader, "url_template", url_template)
 
     try:
         region = attrgetter(region_name)(defined_regions)
