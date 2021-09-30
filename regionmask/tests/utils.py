@@ -95,7 +95,7 @@ def get_naturalearth_region_or_skip(monkeypatch, region_name):
     try:
         region = attrgetter(region_name)(defined_regions)
     except URLError as e:
-            warnings.warn("naturalearth donwload timeout - test not run!")
-            pytest.skip()
+        warnings.warn("naturalearth donwload timeout - test not run!")
+        pytest.skip()
 
     return region
