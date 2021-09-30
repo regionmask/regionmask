@@ -181,7 +181,9 @@ def _mask(
     # not False required
     if wrap_lon is not False:
         # treat the points at -180°E/0°E and -90°N
-        mask = _mask_edgepoints_shapely(mask, lon, lat, outlines, numbers, is_unstructured=is_unstructured)
+        mask = _mask_edgepoints_shapely(
+            mask, lon, lat, outlines, numbers, is_unstructured=is_unstructured
+        )
 
     # create an xr.DataArray
     if lon.ndim == 1:
@@ -375,14 +377,18 @@ def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
     return mask
 
 
-def _mask_edgepoints_shapely(mask, lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False):
+def _mask_edgepoints_shapely(
+    mask, lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False
+):
 
     import shapely.vectorized as shp_vect
 
     # not sure if this is really necessary
     lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
 
-    LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill, is_unstructured=is_unstructured)
+    LON, LAT, out, shape = _get_LON_LAT_out_shape(
+        lon, lat, fill, is_unstructured=is_unstructured
+    )
 
     mask = mask.flatten()
     mask_unassigned = np.isnan(mask)
