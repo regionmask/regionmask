@@ -20,6 +20,15 @@ Breaking Changes
 
 Enhancements
 ~~~~~~~~~~~~
+- Works with unstructured 1D grids such as:
+
+  - `ICON <https://code.mpimet.mpg.de/projects/iconpublic>`_
+  - `FESOM <https://fesom.de/>`_
+  - `MPAS <https://mpas-dev.github.io/>`_
+
+  with 1-dimensional coordinates of the form ``lon(cell)`` and ``lat(cell)``.
+  Note that only xarray arrays can be detected as unstructured grids.
+  (:issue:`278`, :pull:`280`). By `Aaron Spring <https://github.com/aaronspring>`_.
 
 Deprecations
 ~~~~~~~~~~~~

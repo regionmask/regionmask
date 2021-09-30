@@ -75,7 +75,7 @@ def _wrapAngle180(lon):
     return lon
 
 
-def _wrapAngle(lon, wrap_lon=True):
+def _wrapAngle(lon, wrap_lon=True, is_unstructured=False):
     """wrap the angle to the other base
 
     If lon is from -180 to 180 wraps them to 0..360
@@ -100,7 +100,7 @@ def _wrapAngle(lon, wrap_lon=True):
         new_lon = _wrapAngle360(lon.copy())
 
     # check if they are still unique
-    if new_lon.ndim == 1:
+    if new_lon.ndim == 1 and not is_unstructured:
         if new_lon.shape != np.unique(new_lon).shape:
             raise ValueError("There are equal longitude coordinates (when wrapped)!")
 

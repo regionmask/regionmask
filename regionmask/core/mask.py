@@ -123,6 +123,16 @@ def _mask(
 
     lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
 
+    # determine whether unstructured grid
+    # have to do this before np.asarray
+    is_unstructured = False
+    if isinstance(lon, xr.DataArray) and isinstance(lat, xr.DataArray):
+        if len(lon.dims) == 1 and len(lat.dims) == 1:
+            if lon.name != lon.dims[0] and lat.name != lat.dims[0]:
+                is_unstructured = True
+                lat_orig = lat
+                lon_orig = lon
+
     lon = np.asarray(lon)
     lat = np.asarray(lat)
 
@@ -137,7 +147,7 @@ def _mask(
 
     lon_orig = lon.copy()
     if wrap_lon_:
-        lon = _wrapAngle(lon, wrap_lon_)
+        lon = _wrapAngle(lon, wrap_lon_, is_unstructured=is_unstructured)
 
     if method not in (None, "rasterize", "shapely", "pygeos"):
         msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
@@ -160,18 +170,31 @@ def _mask(
     elif method == "rasterize_split":
         mask = _mask_rasterize_split(lon, lat, outlines, numbers=numbers)
     elif method == "pygeos":
-        mask = _mask_pygeos(lon, lat, outlines, numbers=numbers)
+        mask = _mask_pygeos(
+            lon, lat, outlines, numbers=numbers, is_unstructured=is_unstructured
+        )
     elif method == "shapely":
-        mask = _mask_shapely(lon, lat, outlines, numbers=numbers)
+        mask = _mask_shapely(
+            lon, lat, outlines, numbers=numbers, is_unstructured=is_unstructured
+        )
 
     # not False required
     if wrap_lon is not False:
         # treat the points at -180°E/0°E and -90°N
-        mask = _mask_edgepoints_shapely(mask, lon, lat, outlines, numbers)
+        mask = _mask_edgepoints_shapely(
+            mask, lon, lat, outlines, numbers, is_unstructured=is_unstructured
+        )
 
     # create an xr.DataArray
     if lon.ndim == 1:
-        mask = _create_xarray(mask, lon_orig, lat, lon_name, lat_name)
+        if is_unstructured:
+            mask = _create_xarray(
+                mask, lon_orig, lat_orig, lon_name, lat_name, is_unstructured
+            )
+        else:
+            mask = _create_xarray(
+                mask, lon_orig, lat, lon_name, lat_name, is_unstructured
+            )
     else:
         mask = _create_xarray_2D(mask, lon_or_obj, lat_orig, lon_name, lat_name)
 
@@ -297,12 +320,26 @@ def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
     return lon, lat
 
 
-def _create_xarray(mask, lon, lat, lon_name, lat_name):
+def _create_xarray(mask, lon, lat, lon_name, lat_name, is_unstructured):
     """create an xarray DataArray"""
-
-    # create the xarray output
-    coords = {lat_name: lat, lon_name: lon}
-    mask = xr.DataArray(mask, coords=coords, dims=(lat_name, lon_name), name="region")
+    if is_unstructured:
+        # lat is xr.DataArray to retrieve cell_name
+        cell_name = lat.dims[0]
+        mask = xr.DataArray(
+            mask,
+            coords={
+                cell_name: lat.coords[cell_name],
+                "lat": (cell_name, lat.values),
+                "lon": (cell_name, lon),
+            },
+            dims=cell_name,
+            name="region",
+        )
+    else:
+        coords = {lat_name: lat, lon_name: lon}
+        mask = xr.DataArray(
+            mask, coords=coords, dims=(lat_name, lon_name), name="region"
+        )
 
     return mask
 
@@ -340,14 +377,18 @@ def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
     return mask
 
 
-def _mask_edgepoints_shapely(mask, lon, lat, polygons, numbers, fill=np.NaN):
+def _mask_edgepoints_shapely(
+    mask, lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False
+):
 
     import shapely.vectorized as shp_vect
 
     # not sure if this is really necessary
     lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
 
-    LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill)
+    LON, LAT, out, shape = _get_LON_LAT_out_shape(
+        lon, lat, fill, is_unstructured=is_unstructured
+    )
 
     mask = mask.flatten()
     mask_unassigned = np.isnan(mask)
@@ -385,12 +426,14 @@ def _mask_edgepoints_shapely(mask, lon, lat, polygons, numbers, fill=np.NaN):
     return mask.reshape(shape)
 
 
-def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN):
+def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False):
     """create a mask using pygeos.STRtree"""
 
     lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
 
-    LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill)
+    LON, LAT, out, shape = _get_LON_LAT_out_shape(
+        lon, lat, fill, is_unstructured=is_unstructured
+    )
 
     # add a tiny offset to get a consistent edge behaviour
     LON = LON - 1 * 10 ** -8
@@ -410,14 +453,16 @@ def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN):
     return out.reshape(shape)
 
 
-def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN):
+def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False):
     """create a mask using shapely.vectorized.contains"""
 
     import shapely.vectorized as shp_vect
 
     lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
 
-    LON, LAT, out, shape = _get_LON_LAT_out_shape(lon, lat, fill)
+    LON, LAT, out, shape = _get_LON_LAT_out_shape(
+        lon, lat, fill, is_unstructured=is_unstructured
+    )
 
     # add a tiny offset to get a consistent edge behaviour
     LON = LON - 1 * 10 ** -8
@@ -449,7 +494,7 @@ def _parse_input(lon, lat, coords, fill, numbers):
     return lon, lat, numbers
 
 
-def _get_LON_LAT_out_shape(lon, lat, fill):
+def _get_LON_LAT_out_shape(lon, lat, fill, is_unstructured=False):
 
     if lon.ndim != lat.ndim:
         raise ValueError(
@@ -465,7 +510,9 @@ def _get_LON_LAT_out_shape(lon, lat, fill):
             f"lon.shape={lon.shape} & lat.shape={lat.shape}."
         )
 
-    if ndim == 1:
+    if is_unstructured:
+        LON, LAT = lon, lat
+    elif ndim == 1:
         LON, LAT = np.meshgrid(lon, lat)
     elif ndim == 2:
         LON, LAT = lon, lat
