@@ -69,7 +69,6 @@ REGIONS_REQUIRING_CARTOPY = {
 
 def get_naturalearth_region_or_skip(monkeypatch, region_name):
 
-    from socket import timeout
     from urllib.request import URLError, urlopen
 
     import cartopy
@@ -88,13 +87,17 @@ def get_naturalearth_region_or_skip(monkeypatch, region_name):
         "{resolution}_{category}/ne_{resolution}_{name}.zip"
     )
 
+    # downloader = cartopy.config["downloaders"][("shapefiles", "natural_earth")]
     monkeypatch.setattr(
-        cartopy.io.shapereader.NEShpDownloader(), "url_template", url_template
+        # downloader, "url_template", url_template
+        cartopy.io.shapereader.NEShpDownloader(),
+        "url_template",
+        url_template,
     )
 
     try:
         region = attrgetter(region_name)(defined_regions)
-    except Exception as e:
+    except URLError as e:
         warnings.warn(str(e))
         warnings.warn("naturalearth donwload timeout - test not run!")
         pytest.skip()
