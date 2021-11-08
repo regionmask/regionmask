@@ -50,6 +50,7 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Fix compatibility with shapely 1.8 (:pull:`291`).
 - Fix downloading naturalearth regions part 2 (see :pull:`261`): Monkeypatch the correct
   download URL and catch all ``URLError``, not only timeouts (:pull:`289`).
 

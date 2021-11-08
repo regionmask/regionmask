@@ -15,7 +15,7 @@ def _flatten_polygons(polygons, error="raise"):
     polys = []
     for p in polygons:
         if isinstance(p, MultiPolygon):
-            polys += list(p)
+            polys += list(p.geoms)
         elif isinstance(p, Polygon):
             polys += [p]
         else:

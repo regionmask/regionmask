@@ -9,8 +9,8 @@ def _polygons_coords(polygons):
 
     coords = []
     for p in polygons:
-        coords += [np.asarray(p.exterior)[:, :2]] + [
-            np.asarray(i)[:, :2] for i in p.interiors
+        coords += [np.asarray(p.exterior.coords)[:, :2]] + [
+            np.asarray(i.coords)[:, :2] for i in p.interiors
         ]
 
     return coords

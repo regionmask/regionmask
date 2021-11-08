@@ -407,7 +407,7 @@ class _OneRegion:
             if isinstance(poly, MultiPolygon):
                 # find the polygon with the largest area and assig as centroid
                 area = 0
-                for p in poly:
+                for p in poly.geoms:
                     if p.area > area:
                         centroid = np.array(p.centroid.coords).squeeze()
                         area = p.area
@@ -443,7 +443,7 @@ class _OneRegion:
             if isinstance(self._polygon, Polygon):
                 polys = [self._polygon]
             else:
-                polys = list(self._polygon)
+                polys = list(self._polygon.geoms)
 
             # separate the single polygons with NaNs
             nan = np.ones(shape=(1, 2)) * np.nan
