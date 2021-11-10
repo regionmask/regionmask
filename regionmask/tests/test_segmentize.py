@@ -53,6 +53,16 @@ def test_segmentize():
     assert np.allclose(expected, result)
 
 
+def test_segmentize_mixed_length():
+    # only one of the segements needs to be split
+
+    outl = ((0, 0), (0, 1), (0, 5))
+    result = segmentize(outl, tolerance=1)
+    expected = ((0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5))
+
+    assert np.allclose(expected, result)
+
+
 @pytest.mark.parametrize("number", [1, 2, 5, 20, 100])
 def test_segmentize_n_segments(number):
 
