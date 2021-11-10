@@ -32,7 +32,7 @@ Enhancements
 
 - The plotting methods (:py:meth:`Regions.plot` and :py:meth:`Regions.plot_regions`) now
   use a more sophisticated logic to subsample lines on GeoAxes plots. The new method is
-  based on the eucledian distance of each segment. Per default the maximum distance of
+  based on the euclidean distance of each segment. Per default the maximum distance of
   each segment is 1 for lat/ lon coords - see the ``tolerance`` keyword of the plotting
   methods. The ``subsample`` keyword is deprecated (:issue:`109`, :pull:`292`).
 

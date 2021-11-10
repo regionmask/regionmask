@@ -56,8 +56,8 @@ def _draw_poly(ax, polygons, tolerance=None, **kwargs):
 def segmentize(coords, tolerance):
     """Adds vertices to line segments based on tolerance.
 
-    Additional vertices will be added to every line segment in an input geometry
-    so that segments are no greater than tolerance.  New vertices will evenly
+    Additional vertices will be added to every line segment in input coordinates
+    so that segments are no greater than tolerance. New vertices will evenly
     subdivide each segment.
 
 
@@ -67,7 +67,7 @@ def segmentize(coords, tolerance):
         2D coordinate array of shape N x 2
     tolerance : float
         Additional vertices will be added so that all line segments are no
-        greater than this value.  Must be greater than 0.
+        greater than this value. Must be greater than 0.
 
     See also
     --------
@@ -178,7 +178,7 @@ def _plot(
         certain maps.
 
         - None: draw original coordinates
-        - float > 0: the maximum (eucledian) lenght of each line segment.
+        - float > 0: the maximum (euclidean) length of each line segment.
         - 'auto': The tolerance is automatically determined based on the log10 of the
           largest absolute coordinate. Defaults to 1 for lat/ lon coordinates.
 
@@ -322,9 +322,9 @@ def _plot_regions(
         certain maps.
 
         - None: draw original coordinates
-        - float > 0: the maximum (eucledian) length of each line segment.
+        - float > 0: the maximum (euclidean) length of each line segment.
         - 'auto': None if a matplotlib axes is passed. If a cartopy GeoAxes is passed
-          the tolerance is automatically determined the based on the log10 of the
+          the tolerance is automatically determined based on the log10 of the
           largest absolute coordinate. Defaults to 1 for lat/ lon coordinates.
 
     Returns
