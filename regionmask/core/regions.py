@@ -216,11 +216,6 @@ class Regions:
         return self.combiner("centroid")
 
     @property
-    def _is_polygon(self):
-        """is there at least one region was passed as (Multi)Polygon"""
-        return np.any(np.array(self.combiner("_is_polygon")))
-
-    @property
     def bounds(self):
         """list of the bounds of the regions (min_lon, min_lat, max_lon, max_lat)"""
         return self.combiner("bounds")
@@ -384,9 +379,9 @@ class _OneRegion:
         self.name = name
         self.abbrev = abbrev
 
-        self._is_polygon = isinstance(outline, (Polygon, MultiPolygon))
+        _is_polygon = isinstance(outline, (Polygon, MultiPolygon))
 
-        if self._is_polygon:
+        if _is_polygon:
             self._polygon = outline
             self._coords = None
         else:

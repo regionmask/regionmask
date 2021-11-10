@@ -84,7 +84,6 @@ Attributes
    Regions.bounds_global
    Regions.lon_180
    Regions.lon_360
-   Regions._is_polygon
 
 
 _OneRegion

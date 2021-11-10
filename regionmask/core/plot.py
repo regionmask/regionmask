@@ -16,7 +16,13 @@ def _polygons_coords(polygons):
     return coords
 
 
-def _draw_poly(ax, polygons, subsample=False, **kwargs):
+def _get_tolerance(coords):
+
+    mx = np.max(np.abs(coords))
+    return 1 if mx == 0 else max(10 ** (int(np.log10(mx)) - 2), 1)
+
+
+def _draw_poly(ax, polygons, tolerance=None, **kwargs):
     """
     draw the outline of the regions
 
@@ -27,8 +33,11 @@ def _draw_poly(ax, polygons, subsample=False, **kwargs):
     polygons = _flatten_polygons(polygons)
     coords = _polygons_coords(polygons)
 
-    if subsample:
-        coords = [_subsample(coord) if len(coord) < 10 else coord for coord in coords]
+    if tolerance == "auto":
+        tolerance = _get_tolerance(np.concatenate(coords, 0))
+
+    if tolerance is not None:
+        coords = [segmentize(coord, tolerance) for coord in coords]
 
     color = kwargs.pop("color", "0.1")
 
@@ -44,11 +53,46 @@ def _draw_poly(ax, polygons, subsample=False, **kwargs):
     # ax.autoscale_view()
 
 
-def _subsample(outl, num=50):
-    # assumes outl is closed - i.e outl[:-1] == outl[0]
-    out = np.linspace(outl[:-1], outl[1:], num=num, endpoint=False, axis=1)
-    out = out.reshape(-1, 2)
-    return np.vstack([out, outl[-1]])
+def segmentize(coords, tolerance):
+    """Adds vertices to line segments based on tolerance.
+
+    Additional vertices will be added to every line segment in input coordinates
+    so that segments are no greater than tolerance. New vertices will evenly
+    subdivide each segment.
+
+
+    Parameters
+    ----------
+    coords : ndarray
+        2D coordinate array of shape N x 2
+    tolerance : float
+        Additional vertices will be added so that all line segments are no
+        greater than this value. Must be greater than 0.
+
+    See also
+    --------
+    pygeos.segmentize
+    """
+
+    coords = np.asarray(coords)
+    dist = np.sqrt(np.sum((coords[1:] - coords[:-1]) ** 2, axis=1))
+    num = np.ceil(dist / tolerance).astype(int)
+
+    if (num == 1).all():
+        return coords
+
+    out = list()
+    for i in range(len(coords) - 1):
+        if num[i] > 1:
+            out.append(
+                np.linspace(coords[i, :], coords[i + 1, :], num=num[i], endpoint=False)
+            )
+        else:
+            out.append(coords[i : i + 1, :])
+
+    out.append(coords[-1:, :])
+
+    return np.concatenate(out, 0)
 
 
 def _check_unused_kws(add, kws, feature_name, kws_name):
@@ -77,6 +121,7 @@ def _plot(
     ocean_kws=None,
     land_kws=None,
     label_multipolygon="largest",
+    tolerance="auto",
     **kwargs,
 ):
     """
@@ -113,11 +158,7 @@ def _plot(
         Specify the resolution of the coastline and the ocean dataset.
         See cartopy for details.
     subsample : None or bool, default: None
-        If True subsamples the outline of the coords to make better
-        looking plots on certain maps. If False does not subsample.
-        If None, infers the subsampling -> if the input is given as
-        array subsamples if it is given as (Multi)Polygons does not
-        subsample.
+        Deprecated, use tolerance.
     add_land : bool, default: False
         If true adds the land feature. See land_kws.
     coastline_kws : dict, default: None
@@ -132,6 +173,16 @@ def _plot(
     label_multipolygon : 'largest' | 'all', default: 'largest'.
         If 'largest' only adds a text label for the largest Polygon of a
         MultiPolygon. If 'all' adds text labels to all of them.
+    tolerance : None | 'auto' | float, default: 'auto'.
+        Maximum length of drawn line segments. Can lead to better looking plots on
+        certain maps.
+
+        - None: draw original coordinates
+        - float > 0: the maximum (euclidean) length of each line segment.
+        - 'auto': The tolerance is automatically determined based on the log10 of the
+          largest absolute coordinate. Defaults to 1 for lat/ lon coordinates.
+
+
 
     Returns
     -------
@@ -218,6 +269,7 @@ def _plot(
         text_kws=text_kws,
         subsample=subsample,
         label_multipolygon=label_multipolygon,
+        tolerance=tolerance,
     )
 
     return ax
@@ -234,6 +286,7 @@ def _plot_regions(
     text_kws=None,
     subsample=None,
     label_multipolygon="largest",
+    tolerance="auto",
 ):
     """
     plot map with with srex regions
@@ -259,15 +312,20 @@ def _plot_regions(
     text_kws : dict, optional
         Arguments passed to the labels (ax.text).
     subsample : None or bool, optional
-        If True subsamples the outline of the coords to make better
-        looking plots on certain maps. If False does not subsample.
-        If None, infers the subsampling -> if the input is given as
-        array subsamples if it is given as (Multi)Polygons does not
-        subsample.
+        Deprecated, use tolerance.
     label_multipolygon : 'largest' | 'all', optional
         If 'largest' only adds a text label for the largest Polygon of a
         MultiPolygon. If 'all' adds text labels to all of them. Default:
         'largest'.
+    tolerance : None | 'auto' | float, default: 'auto'.
+        Maximum length of drawn line segments. Can lead to better looking plots on
+        certain maps.
+
+        - None: draw original coordinates
+        - float > 0: the maximum (euclidean) length of each line segment.
+        - 'auto': None if a matplotlib axes is passed. If a cartopy GeoAxes is passed
+          the tolerance is automatically determined based on the log10 of the
+          largest absolute coordinate. Defaults to 1 for lat/ lon coordinates.
 
     Returns
     -------
@@ -284,15 +342,22 @@ def _plot_regions(
     else:
         regions = "all"
 
+    if subsample is not None:
+        warnings.warn(
+            "The 'subsample' keyword has been deprecated. Use ``tolerance`` instead.",
+            FutureWarning,
+        )
+
     import matplotlib.pyplot as plt
 
+    is_geoaxes = False
     try:
         import cartopy.crs as ccrs
         from cartopy.mpl import geoaxes
 
-        has_cartopy = True
+        is_geoaxes = isinstance(ax, geoaxes.GeoAxes)
     except ImportError:
-        has_cartopy = False
+        pass
 
     if label_multipolygon not in ["all", "largest"]:
         raise ValueError("'label_multipolygon' must be one of 'all' and 'largest'")
@@ -302,7 +367,7 @@ def _plot_regions(
     if ax is None:
         ax = plt.gca()
 
-    if has_cartopy and isinstance(ax, geoaxes.GeoAxes):
+    if is_geoaxes:
         trans = ccrs.PlateCarree()
     else:
         trans = ax.transData
@@ -315,18 +380,18 @@ def _plot_regions(
     if np.isscalar(regions):
         regions = [regions]
 
-    if subsample is None:
-        subsample = not self._is_polygon
-
     if line_kws is None:
         line_kws = dict()
 
     if text_kws is None:
         text_kws = dict()
 
+    if tolerance == "auto" and not is_geoaxes:
+        tolerance = None
+
     # draw the outlines
     polygons = [self[i].polygon for i in regions]
-    _draw_poly(ax, polygons, subsample=subsample, transform=trans, **line_kws)
+    _draw_poly(ax, polygons, tolerance=tolerance, transform=trans, **line_kws)
 
     if add_label:
 
