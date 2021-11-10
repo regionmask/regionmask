@@ -17,12 +17,7 @@ from shapely.geometry import MultiPolygon, Point, Polygon
 
 import regionmask
 from regionmask import Regions, plot_3D_mask
-from regionmask.core.plot import (
-    _check_unused_kws,
-    _flatten_polygons,
-    _polygons_coords,
-    _subsample,
-)
+from regionmask.core.plot import _check_unused_kws, _flatten_polygons, _polygons_coords
 
 from . import requires_cartopy, requires_matplotlib
 
@@ -59,6 +54,9 @@ r2 = Regions(name=name, numbers=numbers, names=names, abbrevs=abbrevs, outlines=
 multipoly = MultiPolygon([poly1, poly2])
 r3 = Regions([multipoly])
 
+# a region with segments longer than 1, use Polygon to close the coords
+r_large = regionmask.Regions([Polygon(c * 10) for c in r1.coords])
+
 # create a polygon with a hole
 interior1_closed = ((0.2, 0.2), (0.2, 0.45), (0.45, 0.45), (0.45, 0.2), (0.2, 0.2))
 interior2_closed = ((0.55, 0.55), (0.55, 0.8), (0.8, 0.8), (0.8, 0.55), (0.55, 0.55))
@@ -87,30 +85,6 @@ PLOTFUNCS = [
 
 
 # =============================================================================
-
-
-def test_subsample():
-
-    result = _subsample([[0, 1], [1, 0]])
-    expected = np.vstack((np.arange(0, 1.01, 0.02), np.arange(1, -0.01, -0.02))).T
-
-    assert np.allclose(expected, result)
-
-    result = _subsample(outl1_closed, num=2)
-
-    expected = [
-        [0, 0],
-        [0, 0.5],
-        [0, 1],
-        [0.5, 1],
-        [1, 1.0],
-        [1, 0.5],
-        [1, 0],
-        [0.5, 0],
-        [0, 0],
-    ]
-
-    assert np.allclose(expected, result)
 
 
 def test_flatten_polygons():
@@ -177,18 +151,18 @@ def test_plot_projection():
 
     # default is PlateCarree
     with figure_context():
-        ax = r1.plot(subsample=False)
+        ax = r1.plot(tolerance=None)
         assert isinstance(ax.projection, ccrs.PlateCarree)
 
     # make sure the proj keword is respected
     with figure_context():
-        ax = r1.plot(subsample=False, projection=ccrs.Miller())
+        ax = r1.plot(tolerance=None, projection=ccrs.Miller())
         assert isinstance(ax.projection, ccrs.Miller)
 
     # projection given with axes is respected
     with figure_context() as f:
         ax = f.subplots(subplot_kw=dict(projection=ccrs.Mollweide()))
-        ax = r1.plot(subsample=False, ax=ax)
+        ax = r1.plot(tolerance=None, ax=ax)
         assert isinstance(ax.projection, ccrs.Mollweide)
 
 
@@ -198,11 +172,11 @@ def test_plot_deprecated_proj():
     proj = ccrs.PlateCarree()
     with pytest.warns(FutureWarning, match="'proj' has been renamed to 'projection'"):
         with figure_context():
-            ax = r1.plot(subsample=False, proj=proj)
+            ax = r1.plot(tolerance=None, proj=proj)
             assert isinstance(ax.projection, ccrs.PlateCarree)
 
     with pytest.raises(TypeError, match="Cannot set 'proj' and 'projection'"):
-        r1.plot(subsample=False, proj=proj, projection=proj)
+        r1.plot(tolerance=None, proj=proj, projection=proj)
 
 
 @requires_cartopy
@@ -210,13 +184,13 @@ def test_plot_regions_projection():
 
     # if none is given -> no projection
     with figure_context():
-        ax = r1.plot_regions(subsample=False)
+        ax = r1.plot_regions(tolerance=None)
         assert not hasattr(ax, "projection")
 
     # projection given with axes is respected
     with figure_context() as f:
         ax = f.subplots(subplot_kw=dict(projection=ccrs.Mollweide()))
-        ax = r1.plot_regions(subsample=False, ax=ax)
+        ax = r1.plot_regions(tolerance=None, ax=ax)
         assert isinstance(ax.projection, ccrs.Mollweide)
 
 
@@ -230,7 +204,7 @@ def test_plot_lines(plotfunc):
     func = getattr(r1, plotfunc)
 
     with figure_context():
-        ax = func(subsample=False)
+        ax = func(tolerance=None)
 
         lines = ax.collections[0].get_segments()
 
@@ -248,7 +222,7 @@ def test_plot_lines_multipoly(plotfunc):
     func = getattr(r3, plotfunc)
 
     with figure_context():
-        ax = func(subsample=False)
+        ax = func(tolerance=None)
 
         lines = ax.collections[0].get_segments()
         assert len(lines) == 2
@@ -267,7 +241,7 @@ def test_plot_lines_selection(plotfunc):
     func = getattr(r1, plotfunc)
 
     with figure_context():
-        ax = func(subsample=False, regions=[0, 1])
+        ax = func(tolerance=None, regions=[0, 1])
         lines = ax.collections[0].get_segments()
         assert len(lines) == 2
         assert np.allclose(lines[0], outl1_closed)
@@ -275,28 +249,28 @@ def test_plot_lines_selection(plotfunc):
 
     # select a single number
     with figure_context():
-        ax = func(subsample=False, regions=0)
+        ax = func(tolerance=None, regions=0)
         lines = ax.collections[0].get_segments()
         assert len(lines) == 1
         assert np.allclose(lines[0], outl1_closed)
 
     # select by number
     with figure_context():
-        ax = func(subsample=False, regions=[0])
+        ax = func(tolerance=None, regions=[0])
         lines = ax.collections[0].get_segments()
         assert len(lines) == 1
         assert np.allclose(lines[0], outl1_closed)
 
     # select by long_name
     with figure_context():
-        ax = func(subsample=False, regions=["Unit Square1"])
+        ax = func(tolerance=None, regions=["Unit Square1"])
         lines = ax.collections[0].get_segments()
         assert len(lines) == 1
         assert np.allclose(lines[0], outl1_closed)
 
     # select by abbreviation
     with figure_context():
-        ax = func(subsample=False, regions=["uSq1"])
+        ax = func(tolerance=None, regions=["uSq1"])
         lines = ax.collections[0].get_segments()
         assert len(lines) == 1
         assert np.allclose(lines[0], outl1_closed)
@@ -310,11 +284,11 @@ def test_plot_regions_kw_deprecated(plotfunc):
 
     with pytest.warns(FutureWarning, match="The 'regions' keyword has been deprecated"):
         with figure_context():
-            func(subsample=False, regions=[0, 1])
+            func(tolerance=None, regions=[0, 1])
 
     with pytest.warns(FutureWarning, match="The 'regions' keyword has been deprecated"):
         with figure_context():
-            func(subsample=False, regions="all")
+            func(tolerance=None, regions="all")
 
 
 @requires_matplotlib
@@ -346,12 +320,12 @@ def test_plot_deprecate_args(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_lines_subsample(plotfunc):
+def test_plot_lines_tolerance(plotfunc):
 
     func = getattr(r1, plotfunc)
 
     with figure_context():
-        ax = func(subsample=True)
+        ax = func(tolerance=1 / 50)
         lines = ax.collections[0].get_paths()
 
         assert len(lines) == 2
@@ -360,23 +334,61 @@ def test_plot_lines_subsample(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-@pytest.mark.parametrize("n, expected", [(9, (9 - 1) * 50 + 1), (10, 10)])
-def test_plot_lines_maybe_subsample(plotfunc, n, expected):
-    """only subset non-polygons if they have less than 10 elements GH153
-    should eventually be superseeded by GH109"""
+def test_plot_lines_tolerance_None(plotfunc):
 
-    # create closed coordinates with n points
-    coords = np.linspace(interior1_closed[0], interior1_closed[1], num=n - 4)
-    coords = np.vstack((coords, interior1_closed[1:]))
-    r = Regions([coords])
+    func = getattr(r_large, plotfunc)
 
-    func = getattr(r, plotfunc)
     with figure_context():
-        ax = func(subsample=True)
+        ax = func(tolerance=None)
         lines = ax.collections[0].get_paths()
 
-        assert len(lines) == 1
-        assert np.allclose(lines[0].vertices.shape, (expected, 2))
+        np.testing.assert_allclose(lines[0].vertices, r_large.coords[0])
+        np.testing.assert_allclose(lines[1].vertices, r_large.coords[1])
+
+
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
+@pytest.mark.parametrize("kwargs", ({}, {"tolerance": "auto"}))
+def test_plot_lines_tolerance_auto(plotfunc, kwargs):
+
+    func = getattr(r_large, plotfunc)
+
+    expected = (41, 2) if plotfunc == "plot" else (5, 2)
+
+    with figure_context():
+        ax = func(**kwargs)
+
+        lines = ax.collections[0].get_paths()
+        np.testing.assert_allclose(lines[0].vertices.shape, expected)
+        np.testing.assert_allclose(lines[1].vertices.shape, expected)
+
+
+@requires_cartopy
+def test_plot_regions_lines_tolerance_cartopy_axes():
+
+    expected = (41, 2)
+
+    # when passing GeoAxes -> auto segmentizes lines
+    with figure_context():
+        ax = r_large.plot_regions(ax=plt.axes(projection=ccrs.PlateCarree()))
+
+        lines = ax.collections[0].get_paths()
+        np.testing.assert_allclose(lines[0].vertices.shape, expected)
+        np.testing.assert_allclose(lines[1].vertices.shape, expected)
+
+
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
+@pytest.mark.parametrize("subsample", [True, False])
+def test_plot_lines_subsample_deprecated(plotfunc, subsample):
+
+    func = getattr(r1, plotfunc)
+
+    with pytest.warns(
+        FutureWarning, match="The 'subsample' keyword has been deprecated."
+    ):
+        with figure_context():
+            func(subsample=subsample)
 
 
 # -----------------------------------------------------------------------------
@@ -407,7 +419,7 @@ def test_plot_line_prop(plotfunc):
     func = getattr(r1, plotfunc)
 
     with figure_context():
-        ax = func(subsample=False, line_kws=dict(lw=2, color="g"))
+        ax = func(tolerance=None, line_kws=dict(lw=2, color="g"))
 
         collection = ax.collections[0]
 
@@ -425,7 +437,7 @@ def test_plot_label_defaults(plotfunc):
     func = getattr(r1, plotfunc)
 
     with figure_context():
-        ax = func(subsample=False)
+        ax = func(tolerance=None)
         texts = ax.texts
         assert len(texts) == 2
 
@@ -437,7 +449,7 @@ def test_plot_label(plotfunc):
     func = getattr(r1, plotfunc)
 
     with figure_context():
-        ax = func(subsample=False, add_label=True)
+        ax = func(tolerance=None, add_label=True)
         texts = ax.texts
 
         # default text is the number
@@ -451,13 +463,13 @@ def test_plot_label(plotfunc):
 
     # no label
     with figure_context():
-        ax = func(subsample=False, add_label=False)
+        ax = func(tolerance=None, add_label=False)
         texts = ax.texts
         assert len(texts) == 0
 
     # label: abbrev
     with figure_context():
-        ax = func(subsample=False, add_label=True, label="abbrev")
+        ax = func(tolerance=None, add_label=True, label="abbrev")
         texts = ax.texts
 
         assert len(texts) == 2
@@ -466,7 +478,7 @@ def test_plot_label(plotfunc):
 
     # label: name
     with figure_context():
-        ax = func(subsample=False, add_label=True, label="name")
+        ax = func(tolerance=None, add_label=True, label="name")
         texts = ax.texts
 
         assert len(texts) == 2
@@ -486,7 +498,7 @@ def test_plot_label_multipolygon(plotfunc):
         func(label_multipolygon=None)
 
     with figure_context():
-        ax = func(subsample=False, add_label=True, label_multipolygon="all")
+        ax = func(tolerance=None, add_label=True, label_multipolygon="all")
         texts = ax.texts
 
         assert len(texts) == 2
@@ -494,7 +506,7 @@ def test_plot_label_multipolygon(plotfunc):
         assert texts[1].get_text() == "0"
 
     with figure_context():
-        ax = func(subsample=False, add_label=True, label_multipolygon="largest")
+        ax = func(tolerance=None, add_label=True, label_multipolygon="largest")
         texts = ax.texts
 
         assert len(texts) == 1
@@ -509,7 +521,7 @@ def test_plot_text_prop(plotfunc):
 
     with figure_context():
 
-        ax = func(subsample=False, add_label=True, text_kws=dict(fontsize=15))
+        ax = func(tolerance=None, add_label=True, text_kws=dict(fontsize=15))
 
         texts = ax.texts
 
@@ -531,7 +543,7 @@ def test_plot_text_clip(plotfunc):
 
     with figure_context():
 
-        ax = func(subsample=False, add_label=True)
+        ax = func(tolerance=None, add_label=True)
 
         texts = ax.texts
 
@@ -541,7 +553,7 @@ def test_plot_text_clip(plotfunc):
 
     with figure_context():
 
-        ax = func(subsample=False, add_label=True, text_kws=dict(clip_on=False))
+        ax = func(tolerance=None, add_label=True, text_kws=dict(clip_on=False))
 
         texts = ax.texts
 
@@ -553,7 +565,7 @@ def test_plot_text_clip(plotfunc):
 @requires_cartopy
 def test_plot_ocean():
 
-    kwargs = dict(subsample=False, add_label=False, add_coastlines=False)
+    kwargs = dict(tolerance=None, add_label=False, add_coastlines=False)
 
     # no ocean per default
     with figure_context():
@@ -587,7 +599,7 @@ def test_plot_ocean():
 @requires_cartopy
 def test_plot_land():
 
-    kwargs = dict(subsample=False, add_label=False, add_coastlines=False)
+    kwargs = dict(tolerance=None, add_label=False, add_coastlines=False)
 
     # no land per default
     with figure_context():
@@ -619,7 +631,7 @@ def test_plot_land():
 @requires_cartopy
 def test_plot_add_coastlines():
 
-    kwargs = dict(subsample=False, add_label=False)
+    kwargs = dict(tolerance=None, add_label=False)
 
     # coastlines are added per default
     with figure_context():
@@ -647,7 +659,7 @@ def test_plot_add_coastlines():
 @requires_cartopy
 def test_plot_coastlines_deprecated():
 
-    kwargs = dict(subsample=False, add_label=False)
+    kwargs = dict(tolerance=None, add_label=False)
 
     with pytest.warns(FutureWarning, match="'coastlines' has been renamed"):
         with figure_context():
