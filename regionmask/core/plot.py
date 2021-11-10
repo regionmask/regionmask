@@ -179,8 +179,10 @@ def _plot(
 
         - None: draw original coordinates
         - float > 0: the maximum (eucledian) lenght of each line segment.
-        - 'auto': Automatically determine the tolerance based on the largest coordinate.
-          Defaults to 1 for lat/ lon coordinates.
+        - 'auto': The tolerance is automatically determined based on the log10 of the
+          largest absolute coordinate. Defaults to 1 for lat/ lon coordinates.
+
+
 
     Returns
     -------
@@ -348,6 +350,7 @@ def _plot_regions(
 
     import matplotlib.pyplot as plt
 
+    is_geoaxes = False
     try:
         import cartopy.crs as ccrs
         from cartopy.mpl import geoaxes
