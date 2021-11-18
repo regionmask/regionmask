@@ -112,6 +112,22 @@ def test_mask_xarray(method):
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_xr_keep_name(method):
+
+    ds = xr.Dataset(coords={"longitude": dummy_lon, "latitude": dummy_lat})
+
+    expected = expected_mask_2D()
+    result = dummy_region.mask(ds.longitude, ds.latitude, method=method)
+
+    assert isinstance(result, xr.DataArray)
+    assert np.allclose(result, expected, equal_nan=True)
+    assert "longitude" in ds.coords
+    assert "latitude" in ds.coords
+    assert np.all(np.equal(result.latitude.values, dummy_lat))
+    assert np.all(np.equal(result.longitude.values, dummy_lon))
+
+
+@pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_poly_z_value(method):
 
     outl1 = Polygon(((0, 0, 1), (0, 1, 1), (1, 1.0, 1), (1, 0, 1)))

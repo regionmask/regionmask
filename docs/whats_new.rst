@@ -17,10 +17,16 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Removed support for Python 3.6.
+- Passing mixed type coordinates to :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D`
+  is no longer supported, i.e. can no longer pass lon as numpy array and lat as
+  DataArray (:pull:`293`).
+- The mask now has non-dimension coordinates when 2D numpy arrays are passed as lat and
+  lon coords (:pull:`293`).
 
 Enhancements
 ~~~~~~~~~~~~
-- Works with unstructured 1D grids such as:
+- :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D` now works with unstructured 1D
+  grids such as:
 
   - `ICON <https://code.mpimet.mpg.de/projects/iconpublic>`_
   - `FESOM <https://fesom.de/>`_
@@ -51,6 +57,10 @@ New regions
 Bug Fixes
 ~~~~~~~~~
 
+- The name of lon and lat coordinates when passed as single elements is now repected when
+  creating masks i.e. for ``region.mask(ds.longitude, ds.longitude)`` (:issue:`129`,
+  :pull:`293`).
+
 Docs
 ~~~~
 
@@ -60,6 +70,7 @@ Internal Changes
 - Fix compatibility with shapely 1.8 (:pull:`291`).
 - Fix downloading naturalearth regions part 2 (see :pull:`261`): Monkeypatch the correct
   download URL and catch all ``URLError``, not only timeouts (:pull:`289`).
+- Rewrote the function to create the mask `DataArray` (:issue:`168`, :pull:`293`).
 
 v0.8.0 (08.09.2021)
 -------------------
