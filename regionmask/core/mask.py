@@ -1,4 +1,5 @@
 import warnings
+from distutils.version import LooseVersion
 
 import numpy as np
 import xarray as xr
@@ -314,7 +315,12 @@ def mask_to_dataarray(mask, lon_or_obj, lat=None, lon_name="lon", lat_name="lat"
         lon, lat = _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name)
 
     ds = lat.coords.merge(lon.coords)
-    dims = ds.dims.keys()
+
+    if LooseVersion(xr.__version__) < LooseVersion("0.18.1"):
+        # ds.dims were a SortedDict but we rely on the insertion order here
+        dims = ds._dims.keys()
+    else:
+        dims = ds.dims.keys()
 
     return ds.assign(region=(dims, mask)).region
 
