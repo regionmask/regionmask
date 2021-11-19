@@ -316,7 +316,7 @@ def mask_to_dataarray(mask, lon_or_obj, lat=None, lon_name="lon", lat_name="lat"
 
     ds = lat.coords.merge(lon.coords)
 
-    if LooseVersion(xr.__version__) < LooseVersion("0.18.1"):
+    if LooseVersion(xr.__version__) < LooseVersion("0.19"):
         # ds.dims were a SortedDict but we rely on the insertion order here
         dims = ds._dims.keys()
     else:
