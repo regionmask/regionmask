@@ -17,15 +17,15 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Removed support for Python 3.6.
-- Passing mixed type coordinates to :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D`
+- Passing coordinates with different type to :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D`
   is no longer supported, i.e. can no longer pass lon as numpy array and lat as
   DataArray (:pull:`293`).
-- The mask now has non-dimension coordinates when 2D numpy arrays are passed as lat and
+- The mask no longer has dimension coordinates when 2D numpy arrays are passed as lat and
   lon coords (:pull:`293`).
 
 Enhancements
 ~~~~~~~~~~~~
-- :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D` now works with unstructured 1D
+- :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D` now work with unstructured 1D
   grids such as:
 
   - `ICON <https://code.mpimet.mpg.de/projects/iconpublic>`_
