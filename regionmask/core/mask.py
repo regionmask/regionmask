@@ -1,4 +1,5 @@
 import warnings
+from distutils.version import LooseVersion
 
 import numpy as np
 import xarray as xr
@@ -29,7 +30,7 @@ Parameters
     Can either be a longitude array and then ``lat`` needs to be
     given. Or an object where the longitude and latitude can be
     retrived as: ``lon = lon_or_obj[lon_name]`` and
-    ``lat = lon_or_obj[lat_name]``
+    ``lat = lon_or_obj[lat_name]``.
 lat : array_like, optional
     If ``lon_or_obj`` is a longitude array, the latitude needs to be
     specified here.
@@ -120,7 +121,6 @@ def _mask(
         raise ValueError("'numbers' must be numeric")
 
     lat_orig = lat
-
     lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
 
     # determine whether unstructured grid
@@ -130,8 +130,6 @@ def _mask(
         if len(lon.dims) == 1 and len(lat.dims) == 1:
             if lon.name != lon.dims[0] and lat.name != lat.dims[0]:
                 is_unstructured = True
-                lat_orig = lat
-                lon_orig = lon
 
     lon = np.asarray(lon)
     lat = np.asarray(lat)
@@ -145,7 +143,6 @@ def _mask(
     else:
         wrap_lon_ = wrap_lon
 
-    lon_orig = lon.copy()
     if wrap_lon_:
         lon = _wrapAngle(lon, wrap_lon_, is_unstructured=is_unstructured)
 
@@ -185,20 +182,7 @@ def _mask(
             mask, lon, lat, outlines, numbers, is_unstructured=is_unstructured
         )
 
-    # create an xr.DataArray
-    if lon.ndim == 1:
-        if is_unstructured:
-            mask = _create_xarray(
-                mask, lon_orig, lat_orig, lon_name, lat_name, is_unstructured
-            )
-        else:
-            mask = _create_xarray(
-                mask, lon_orig, lat, lon_name, lat_name, is_unstructured
-            )
-    else:
-        mask = _create_xarray_2D(mask, lon_or_obj, lat_orig, lon_name, lat_name)
-
-    return mask
+    return mask_to_dataarray(mask, lon_or_obj, lat_orig, lon_name, lat_name)
 
 
 def _mask_2D(
@@ -320,61 +304,41 @@ def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
     return lon, lat
 
 
-def _create_xarray(mask, lon, lat, lon_name, lat_name, is_unstructured):
-    """create an xarray DataArray"""
-    if is_unstructured:
-        # lat is xr.DataArray to retrieve cell_name
-        cell_name = lat.dims[0]
-        mask = xr.DataArray(
-            mask,
-            coords={
-                cell_name: lat.coords[cell_name],
-                "lat": (cell_name, lat.values),
-                "lon": (cell_name, lon),
-            },
-            dims=cell_name,
-            name="region",
-        )
+def mask_to_dataarray(mask, lon_or_obj, lat=None, lon_name="lon", lat_name="lat"):
+
+    lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
+
+    if sum(isinstance(c, xr.DataArray) for c in (lon, lat)) == 1:
+        raise ValueError("Cannot handle coordinates with mixed types!")
+
+    if not isinstance(lon, xr.DataArray) or not isinstance(lat, xr.DataArray):
+        lon, lat = _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name)
+
+    ds = lat.coords.merge(lon.coords)
+
+    if LooseVersion(xr.__version__) < LooseVersion("0.19"):
+        # ds.dims were a SortedDict but we rely on the insertion order here
+        dims = ds._dims.keys()
     else:
-        coords = {lat_name: lat, lon_name: lon}
-        mask = xr.DataArray(
-            mask, coords=coords, dims=(lat_name, lon_name), name="region"
-        )
+        dims = ds.dims.keys()
 
-    return mask
+    return ds.assign(region=(dims, mask)).region
 
 
-def _create_xarray_2D(mask, lon_or_obj, lat, lon_name, lat_name):
-    """create an xarray DataArray for 2D fields"""
+def _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name):
+    # TODO: simplify once passing lon_name and lat_name is no longer supported
 
-    lon2D, lat2D = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
+    dims2D = (f"{lat_name}_idx", f"{lon_name}_idx")
 
-    if isinstance(lon2D, xr.DataArray):
-        dim1D_names = lon2D.dims
-        dim1D_0 = lon2D[dim1D_names[0]]
-        dim1D_1 = lon2D[dim1D_names[1]]
-    else:
-        dim1D_names = (lon_name + "_idx", lat_name + "_idx")
-        dim1D_0 = np.arange(np.array(lon2D).shape[0])
-        dim1D_1 = np.arange(np.array(lon2D).shape[1])
+    lon = np.asarray(lon)
+    dims = dims2D if lon.ndim == 2 else lon_name
+    lon = xr.Dataset(coords={lon_name: (dims, lon)})
 
-    # dict with the coordinates
-    coords = {
-        dim1D_names[0]: dim1D_0.data,
-        dim1D_names[1]: dim1D_1.data,
-        lat_name: (
-            dim1D_names,
-            lat2D.data if isinstance(lat2D, xr.DataArray) else lat2D,
-        ),
-        lon_name: (
-            dim1D_names,
-            lon2D.data if isinstance(lon2D, xr.DataArray) else lon2D,
-        ),
-    }
+    lat = np.asarray(lat)
+    dims = dims2D if lat.ndim == 2 else lat_name
+    lat = xr.Dataset(coords={lat_name: (dims, lat)})
 
-    mask = xr.DataArray(mask, coords=coords, dims=dim1D_names)
-
-    return mask
+    return lon, lat
 
 
 def _mask_edgepoints_shapely(
