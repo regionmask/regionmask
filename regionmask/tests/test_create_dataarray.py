@@ -18,28 +18,39 @@ def test_mask_to_dataarray_mixed_types():
 
 def create_test_datasets():
 
-    mask = np.arange(4).reshape(2, 2)
+    mask = np.arange(6).reshape(2, 3)
     mask1D = np.arange(2)
 
-    lon = [0, 1]
+    lon2 = [0, 1]
+    lon3 = [0, 1, 3]
     lat = [2, 3]
 
-    lon_2D = [[0, 1], [0, 1]]
-    lat_2D = [[1, 1], [0, 0]]
+    lon_2D = [[0, 1, 3], [0, 1, 3]]
+    lat_2D = [[1, 1, 1], [0, 0, 0]]
 
-    ds0 = xr.Dataset(coords={"lon": lon, "lat": lat})
-    ds1 = xr.Dataset(coords={"longitude": lon, "latitude": lat})
-    ds2 = xr.Dataset(coords={"lon": ("cells", lon), "lat": ("cells", lat)})
+    ds0 = xr.Dataset(coords={"lon": lon3, "lat": lat})
+    ds1 = xr.Dataset(coords={"longitude": lon3, "latitude": lat})
+    ds2 = xr.Dataset(coords={"lon": ("cells", lon2), "lat": ("cells", lat)})
     ds3 = xr.Dataset(
-        coords={"lon": ("cells", lon), "lat": ("cells", lat), "cells": ["a", "b"]}
+        coords={"lon": ("cells", lon2), "lat": ("cells", lat), "cells": ["a", "b"]}
     )
     ds4 = xr.Dataset(coords={"lon": (("y", "x"), lon_2D), "lat": (("y", "x"), lat_2D)})
     ds5 = xr.Dataset(
         coords={
             "lon": (("y", "x"), lon_2D),
             "lat": (("y", "x"), lat_2D),
-            "x": ["x0", "x1"],
             "y": ["y0", "y1"],
+            "x": ["x0", "x1", "x2"],
+        }
+    )
+
+    # pass x coords before the y coords https://github.com/regionmask/regionmask/issues/295
+    ds6 = xr.Dataset(
+        coords={
+            "x": ["x0", "x1", "x2"],
+            "y": ["y0", "y1"],
+            "lon": (("y", "x"), lon_2D),
+            "lat": (("y", "x"), lat_2D),
         }
     )
 
@@ -50,6 +61,7 @@ def create_test_datasets():
         (ds3, "lon", "lat", mask1D),
         (ds4, "lon", "lat", mask),
         (ds5, "lon", "lat", mask),
+        (ds6, "lon", "lat", mask),
     )
     return DATASETS
 
@@ -111,8 +123,8 @@ def test_numpy_coords_to_dataarray_1D(lon_name, lat_name):
 
     lon_actual, lat_actual = _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name)
 
-    lon_expected = xr.Dataset(coords={lon_name: lon})
-    lat_expected = xr.Dataset(coords={lat_name: lat})
+    lon_expected = xr.Dataset(coords={lon_name: lon})[lon_name]
+    lat_expected = xr.Dataset(coords={lat_name: lat})[lat_name]
 
     xr.testing.assert_equal(lon_expected, lon_actual)
     xr.testing.assert_equal(lat_expected, lat_actual)
@@ -128,8 +140,8 @@ def test_numpy_coords_to_dataarray_2D(lon_name, lat_name):
     lon_actual, lat_actual = _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name)
 
     dims = (f"{lat_name}_idx", f"{lon_name}_idx")
-    lon_expected = xr.Dataset(coords={lon_name: (dims, lon)})
-    lat_expected = xr.Dataset(coords={lat_name: (dims, lat)})
+    lon_expected = xr.Dataset(coords={lon_name: (dims, lon)})[lon_name]
+    lat_expected = xr.Dataset(coords={lat_name: (dims, lat)})[lat_name]
 
     xr.testing.assert_equal(lon_expected, lon_actual)
     xr.testing.assert_equal(lat_expected, lat_actual)
