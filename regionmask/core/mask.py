@@ -1,5 +1,4 @@
 import warnings
-from distutils.version import LooseVersion
 
 import numpy as np
 import xarray as xr
@@ -316,11 +315,7 @@ def mask_to_dataarray(mask, lon_or_obj, lat=None, lon_name="lon", lat_name="lat"
 
     ds = lat.coords.merge(lon.coords)
 
-    if LooseVersion(xr.__version__) < LooseVersion("0.19"):
-        # ds.dims were a SortedDict but we rely on the insertion order here
-        dims = ds._dims.keys()
-    else:
-        dims = ds.dims.keys()
+    dims = xr.core.variable.broadcast_variables(lat.variable, lon.variable)[0].dims
 
     return ds.assign(region=(dims, mask)).region
 
@@ -332,11 +327,11 @@ def _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name):
 
     lon = np.asarray(lon)
     dims = dims2D if lon.ndim == 2 else lon_name
-    lon = xr.Dataset(coords={lon_name: (dims, lon)})
+    lon = xr.Dataset(coords={lon_name: (dims, lon)})[lon_name]
 
     lat = np.asarray(lat)
     dims = dims2D if lat.ndim == 2 else lat_name
-    lat = xr.Dataset(coords={lat_name: (dims, lat)})
+    lat = xr.Dataset(coords={lat_name: (dims, lat)})[lat_name]
 
     return lon, lat
 
