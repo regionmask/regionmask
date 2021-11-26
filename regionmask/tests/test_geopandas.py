@@ -12,25 +12,18 @@ from regionmask.core._geopandas import (
     _enumerate_duplicates,
 )
 
-from .utils import (
-    dummy_lat,
-    dummy_ll_dict,
-    dummy_lon,
-    dummy_outlines_poly,
-    expected_mask_2D,
-    expected_mask_3D,
-)
+from .utils import dummy_ds, dummy_region, expected_mask_2D, expected_mask_3D
 
 
 @pytest.fixture
 def geodataframe_clean():
 
-    numbers = [1, 2, 3]
+    numbers = [0, 1, 2]
     names = ["Unit Square1", "Unit Square2", "Unit Square3"]
     abbrevs = ["uSq1", "uSq2", "uSq3"]
 
     d = dict(
-        names=names, abbrevs=abbrevs, numbers=numbers, geometry=dummy_outlines_poly
+        names=names, abbrevs=abbrevs, numbers=numbers, geometry=dummy_region.polygons
     )
 
     return gp.GeoDataFrame.from_dict(d)
@@ -44,7 +37,7 @@ def geodataframe_missing():
     abbrevs = ["uSq1", None, None]
 
     d = dict(
-        names=names, abbrevs=abbrevs, numbers=numbers, geometry=dummy_outlines_poly
+        names=names, abbrevs=abbrevs, numbers=numbers, geometry=dummy_region.polygons
     )
 
     return gp.GeoDataFrame.from_dict(d)
@@ -58,7 +51,7 @@ def geodataframe_duplicates():
     abbrevs = ["uSq", "uSq", "uSq"]
 
     d = dict(
-        names=names, abbrevs=abbrevs, numbers=numbers, geometry=dummy_outlines_poly
+        names=names, abbrevs=abbrevs, numbers=numbers, geometry=dummy_region.polygons
     )
 
     return gp.GeoDataFrame.from_dict(d)
@@ -84,10 +77,10 @@ def test_from_geopandas_use_columns(geodataframe_clean):
 
     assert isinstance(result, Regions)
 
-    assert result.polygons[0].equals(dummy_outlines_poly[0])
-    assert result.polygons[1].equals(dummy_outlines_poly[1])
-    assert result.polygons[2].equals(dummy_outlines_poly[2])
-    assert result.numbers == [1, 2, 3]
+    assert result.polygons[0].equals(dummy_region.polygons[0])
+    assert result.polygons[1].equals(dummy_region.polygons[1])
+    assert result.polygons[2].equals(dummy_region.polygons[2])
+    assert result.numbers == [0, 1, 2]
     assert result.names == ["Unit Square1", "Unit Square2", "Unit Square3"]
     assert result.abbrevs == ["uSq1", "uSq2", "uSq3"]
     assert result.name == "name"
@@ -100,9 +93,9 @@ def test_from_geopandas_default(geodataframe_clean):
 
     assert isinstance(result, Regions)
 
-    assert result.polygons[0].equals(dummy_outlines_poly[0])
-    assert result.polygons[1].equals(dummy_outlines_poly[1])
-    assert result.polygons[2].equals(dummy_outlines_poly[2])
+    assert result.polygons[0].equals(dummy_region.polygons[0])
+    assert result.polygons[1].equals(dummy_region.polygons[1])
+    assert result.polygons[2].equals(dummy_region.polygons[2])
     assert result.numbers == [0, 1, 2]
     assert result.names == ["Region0", "Region1", "Region2"]
     assert result.abbrevs == ["r0", "r1", "r2"]
@@ -187,7 +180,7 @@ def test_construct_abbrevs():
 # uses the same function as `Regions.mask` - only do minimal tests here
 
 
-@pytest.mark.parametrize("lon_lat", [(dummy_lon, dummy_lat), (dummy_ll_dict, None)])
+@pytest.mark.parametrize("lon_lat", [(dummy_ds.lon, dummy_ds.lat), (dummy_ds, None)])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_geopandas(geodataframe_clean, lon_lat, method):
 
@@ -195,92 +188,75 @@ def test_mask_geopandas(geodataframe_clean, lon_lat, method):
     result = mask_geopandas(geodataframe_clean, lon, lat, method=method)
     expected = expected_mask_2D()
 
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat.values, dummy_lat))
-    assert np.all(np.equal(result.lon.values, dummy_lon))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("drop", [True, False])
-@pytest.mark.parametrize("lon_lat", [(dummy_lon, dummy_lat), (dummy_ll_dict, None)])
+@pytest.mark.parametrize("lon_lat", [(dummy_ds.lon, dummy_ds.lat), (dummy_ds, None)])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_3D_geopandas(geodataframe_clean, drop, lon_lat, method):
 
     lon, lat = lon_lat
     result = mask_3D_geopandas(geodataframe_clean, lon, lat, drop=drop, method=method)
-    expected = expected_mask_3D(drop=drop)
+    expected = expected_mask_3D(drop=drop).drop_vars(["names", "abbrevs"])
 
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat.values, dummy_lat))
-    assert np.all(np.equal(result.lon.values, dummy_lon))
-
-    numbers = [0, 1] if drop else [0, 1, 2]
-    assert np.all(np.equal(result.region.values, numbers))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_geopandas_numbers(geodataframe_clean, method):
 
     result = mask_geopandas(
-        geodataframe_clean, dummy_lon, dummy_lat, method=method, numbers="numbers"
+        geodataframe_clean, dummy_ds.lon, dummy_ds.lat, method=method, numbers="numbers"
     )
-    expected = expected_mask_2D(1, 2)
+    expected = expected_mask_2D()
 
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat.values, dummy_lat))
-    assert np.all(np.equal(result.lon.values, dummy_lon))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_geopandas_warns_empty(geodataframe_clean, method):
 
+    lon = lat = [10, 11]
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
         result = mask_geopandas(
-            geodataframe_clean, [10, 11], [10, 11], method=method, numbers="numbers"
+            geodataframe_clean, lon, lat, method=method, numbers="numbers"
         )
 
-    assert isinstance(result, xr.DataArray)
-    assert result.isnull().all()
-    assert np.all(np.equal(result.lat.values, [10, 11]))
-    assert np.all(np.equal(result.lon.values, [10, 11]))
+    expected = expected_mask_2D(coords={"lon": lon, "lat": lat})
+
+    xr.testing.assert_equal(result, expected * np.NaN)
 
 
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_3D_geopandas_numbers(geodataframe_clean, drop, method):
 
-    expected = expected_mask_3D(drop)
+    expected = expected_mask_3D(drop).drop_vars(["names", "abbrevs"])
     result = mask_3D_geopandas(
         geodataframe_clean,
-        dummy_lon,
-        dummy_lat,
+        dummy_ds.lon,
+        dummy_ds.lat,
         drop=drop,
         method=method,
         numbers="numbers",
     )
 
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat.values, dummy_lat))
-    assert np.all(np.equal(result.lon.values, dummy_lon))
-
-    numbers = geodataframe_clean.numbers[:2] if drop else geodataframe_clean.numbers
-    assert np.all(np.equal(result.region.values, numbers))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("drop", [True, False])
 def test_mask_3D_geopandas_warns_empty(geodataframe_clean, drop):
 
+    lon = lat = [10, 11]
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
-        result = mask_3D_geopandas(geodataframe_clean, [10], [10], drop=drop)
+        result = mask_3D_geopandas(geodataframe_clean, lon, lat, drop=drop)
 
-    assert isinstance(result, xr.DataArray)
-    shape = (0, 1, 1) if drop else (3, 1, 1)
-    assert result.shape == shape
-    assert np.all(np.equal(result.lat.values, [10]))
-    assert np.all(np.equal(result.lon.values, [10]))
+    coords = {"lat": lat, "lon": lon}
+    expected = expected_mask_3D(False, coords=coords).drop_vars(["names", "abbrevs"])
+    expected = expected.isel(region=slice(0, 0)) if drop else expected
+
+    xr.testing.assert_equal(result, expected * False)
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
@@ -308,32 +284,32 @@ def test_wrap_lon_maybe_error(func):
 def test_mask_geopandas_wrong_input(func):
 
     with pytest.raises(TypeError, match="'GeoDataFrame' or 'GeoSeries'"):
-        func(None, dummy_lon, dummy_lat)
+        func(None, dummy_ds.lon, dummy_ds.lat)
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_mask_geopandas_wrong_numbers(geodataframe_clean, func):
 
     with pytest.raises(KeyError):
-        func(geodataframe_clean, dummy_lon, dummy_lat, numbers="not_a_column")
+        func(geodataframe_clean, dummy_ds.lon, dummy_ds.lat, numbers="not_a_column")
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_mask_geopandas_missing_error(geodataframe_missing, func):
 
     with pytest.raises(ValueError, match="cannot contain missing values"):
-        func(geodataframe_missing, dummy_lon, dummy_lat, numbers="numbers")
+        func(geodataframe_missing, dummy_ds.lon, dummy_ds.lat, numbers="numbers")
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_mask_geopandas_duplicates_error(geodataframe_duplicates, func):
 
     with pytest.raises(ValueError, match="cannot contain duplicate values"):
-        func(geodataframe_duplicates, dummy_lon, dummy_lat, numbers="numbers")
+        func(geodataframe_duplicates, dummy_ds.lon, dummy_ds.lat, numbers="numbers")
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_raise_on_non_numeric_numbers(geodataframe_clean, func):
 
     with pytest.raises(ValueError, match="'numbers' must be numeric"):
-        func(geodataframe_clean, dummy_lon, dummy_lat, numbers="abbrevs")
+        func(geodataframe_clean, dummy_ds.lon, dummy_ds.lat, numbers="abbrevs")
