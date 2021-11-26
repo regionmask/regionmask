@@ -344,7 +344,7 @@ def _mask_edgepoints_shapely(
     import shapely.vectorized as shp_vect
 
     # not sure if this is really necessary
-    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
+    lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
 
     LON, LAT, out, shape = _get_LON_LAT_out_shape(
         lon, lat, fill, is_unstructured=is_unstructured
@@ -389,7 +389,7 @@ def _mask_edgepoints_shapely(
 def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False):
     """create a mask using pygeos.STRtree"""
 
-    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
+    lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
 
     LON, LAT, out, shape = _get_LON_LAT_out_shape(
         lon, lat, fill, is_unstructured=is_unstructured
@@ -418,7 +418,7 @@ def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=Fals
 
     import shapely.vectorized as shp_vect
 
-    lon, lat, numbers = _parse_input(lon, lat, polygons, fill, numbers)
+    lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
 
     LON, LAT, out, shape = _get_LON_LAT_out_shape(
         lon, lat, fill, is_unstructured=is_unstructured
@@ -442,16 +442,13 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
     n_coords = len(coords)
 
-    if numbers is None:
-        numbers = range(n_coords)
-    else:
-        if len(numbers) != n_coords:
-            raise ValueError("`numbers` and `coords` must have the same length.")
+    if len(numbers) != n_coords:
+        raise ValueError("`numbers` and `coords` must have the same length.")
 
     if fill in numbers:
         raise ValueError("The fill value should not be one of the region numbers.")
 
-    return lon, lat, numbers
+    return lon, lat
 
 
 def _get_LON_LAT_out_shape(lon, lat, fill, is_unstructured=False):
@@ -538,9 +535,12 @@ def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
 
     for internal use: does not check valitity of input
     """
+
+    lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
+
     # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
-    lon = np.asarray(lon) - 1 * 10 ** -8
-    lat = np.asarray(lat) - 1 * 10 ** -10
+    lon = lon - 1 * 10 ** -8
+    lat = lat - 1 * 10 ** -10
 
     return _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill, **kwargs)
 

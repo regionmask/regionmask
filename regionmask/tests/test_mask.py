@@ -59,23 +59,16 @@ def test_mask_func(func):
     np.testing.assert_equal(result, expected)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [
-        pytest.param(_mask_rasterize, marks=pytest.mark.xfail),
-        _mask_shapely,
-        pytest.param(_mask_pygeos, marks=requires_pygeos),
-    ],
-)
+@pytest.mark.parametrize("func", MASK_FUNCS)
 def test_mask_wrong_number_fill(func):
 
     with pytest.raises(ValueError, match="The fill value should not"):
-        _mask_shapely(
+        func(
             dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[0, 1, 2], fill=0
         )
 
     with pytest.raises(ValueError, match="`numbers` and `coords` must have"):
-        _mask_shapely(dummy_ds.lon, dummy_ds.lat, dummy_region.coords, numbers=[5])
+        func(dummy_ds.lon, dummy_ds.lat, dummy_region.coords, numbers=[5])
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
@@ -362,7 +355,7 @@ def test_rasterize(a, b, fill):
     expected = expected_mask_2D(a=a, b=b, fill=fill)
 
     result = _mask_rasterize(
-        dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[a, b], fill=fill
+        dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[a, b, -1], fill=fill
     )
 
     np.testing.assert_equal(result, expected)
