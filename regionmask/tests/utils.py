@@ -4,6 +4,7 @@ from operator import attrgetter
 
 import numpy as np
 import pytest
+import xarray as xr
 
 from regionmask import Regions, defined_regions
 
@@ -12,32 +13,56 @@ outl2 = ((0, 1), (0, 2), (1, 2.0), (1, 1))
 # no gridpoint in outl3
 outl3 = ((0, 2), (0, 3), (1, 3.0), (1, 2))
 
-dummy_outlines = [outl1, outl2, outl3]
-dummy_region = Regions(dummy_outlines)
-dummy_outlines_poly = dummy_region.polygons
+dummy_region = Regions([outl1, outl2, outl3])
 
-dummy_lon = [0.5, 1.5]
-dummy_lat = [0.5, 1.5]
-dummy_ll_dict = dict(lon=dummy_lon, lat=dummy_lat)
+_dummy_lon = [0.5, 1.5]
+_dummy_lat = [0.5, 1.5]
+dummy_ds = xr.Dataset(coords={"lon": _dummy_lon, "lat": _dummy_lat})
+
 
 # in this example the result looks:
 # | a fill |
 # | b fill |
 
 
-def expected_mask_2D(a=0, b=1, fill=np.NaN):
-    return np.array([[a, fill], [b, fill]])
+def expected_mask_2D(a=0, b=1, fill=np.NaN, flatten=False, coords=None, dims=None):
+
+    mask = np.array([[a, fill], [b, fill]])
+
+    if flatten:
+        mask = mask.flatten()
+
+    if coords is None:
+        coords = {"lon": _dummy_lon, "lat": _dummy_lat}
+
+    if dims is None:
+        dims = ("lat", "lon")
+
+    return xr.DataArray(mask, dims=dims, coords=coords, name="region")
 
 
-def expected_mask_3D(drop):
+def expected_mask_3D(drop, coords=None):
 
     a = [[True, False], [False, False]]
     b = [[False, False], [True, False]]
     c = [[False, False], [False, False]]
+    mask = np.array([a, b, c])
 
-    if drop:
-        return np.array([a, b])
-    return np.array([a, b, c])
+    if coords is None:
+        coords = {"lon": _dummy_lon, "lat": _dummy_lat}
+
+    coords.update(
+        {
+            "region": ("region", [0, 1, 2]),
+            "abbrevs": ("region", ["r0", "r1", "r2"]),
+            "names": ("region", ["Region0", "Region1", "Region2"]),
+        }
+    )
+    dims = ("region",) + ("lat", "lon")
+
+    expected = xr.DataArray(mask, coords=coords, dims=dims)
+
+    return expected.isel(region=[0, 1]) if drop else expected
 
 
 REGIONS = {

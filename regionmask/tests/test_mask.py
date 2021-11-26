@@ -17,15 +17,7 @@ from regionmask.core.mask import (
 from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
 
 from . import has_pygeos, requires_pygeos
-from .utils import (
-    dummy_lat,
-    dummy_lon,
-    dummy_outlines,
-    dummy_outlines_poly,
-    dummy_region,
-    expected_mask_2D,
-    expected_mask_3D,
-)
+from .utils import dummy_ds, dummy_region, expected_mask_2D, expected_mask_3D
 
 MASK_FUNCS = [
     _mask_rasterize,
@@ -52,17 +44,19 @@ MASK_METHODS_IRREGULAR = [
 def test_mask_func(func):
 
     # standard
-    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1, 2])
+    result = func(dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[0, 1, 2])
     expected = expected_mask_2D()
-    assert np.allclose(result, expected, equal_nan=True)
+    np.testing.assert_equal(result, expected)
 
-    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1, 2], fill=5)
+    result = func(
+        dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[0, 1, 2], fill=5
+    )
     expected = expected_mask_2D(fill=5)
-    assert np.allclose(result, expected, equal_nan=True)
+    np.testing.assert_equal(result, expected)
 
-    result = func(dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[5, 6, 7])
+    result = func(dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[5, 6, 7])
     expected = expected_mask_2D(a=5, b=6)
-    assert np.allclose(result, expected, equal_nan=True)
+    np.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize(
@@ -77,54 +71,48 @@ def test_mask_wrong_number_fill(func):
 
     with pytest.raises(ValueError, match="The fill value should not"):
         _mask_shapely(
-            dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[0, 1, 2], fill=0
+            dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[0, 1, 2], fill=0
         )
 
     with pytest.raises(ValueError, match="`numbers` and `coords` must have"):
-        _mask_shapely(dummy_lon, dummy_lat, dummy_outlines, numbers=[5])
+        _mask_shapely(dummy_ds.lon, dummy_ds.lat, dummy_region.coords, numbers=[5])
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask(method):
 
     expected = expected_mask_2D()
-    result = dummy_region.mask(dummy_lon, dummy_lat, method=method).values
-    assert np.allclose(result, expected, equal_nan=True)
+    result = dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method=method)
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.skipif(has_pygeos, reason="Only errors if pygeos is missing")
 def test_missing_pygeos_error():
 
     with pytest.raises(ModuleNotFoundError, match="No module named 'pygeos'"):
-        dummy_region.mask(dummy_lon, dummy_lat, method="pygeos")
+        dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method="pygeos")
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_xarray(method):
 
     expected = expected_mask_2D()
-    result = dummy_region.mask(dummy_lon, dummy_lat, method=method)
-
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat.values, dummy_lat))
-    assert np.all(np.equal(result.lon.values, dummy_lon))
+    result = dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method=method)
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_xr_keep_name(method):
 
-    ds = xr.Dataset(coords={"longitude": dummy_lon, "latitude": dummy_lat})
+    ds = xr.Dataset(
+        coords={"longitude": dummy_ds.lon.values, "latitude": dummy_ds.lat.values}
+    )
 
-    expected = expected_mask_2D()
+    expected = expected_mask_2D().rename(lat="latitude", lon="longitude")
+
     result = dummy_region.mask(ds.longitude, ds.latitude, method=method)
 
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert "longitude" in ds.coords
-    assert "latitude" in ds.coords
-    assert np.all(np.equal(result.latitude.values, dummy_lat))
-    assert np.all(np.equal(result.longitude.values, dummy_lon))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
@@ -132,23 +120,18 @@ def test_mask_poly_z_value(method):
 
     outl1 = Polygon(((0, 0, 1), (0, 1, 1), (1, 1.0, 1), (1, 0, 1)))
     outl2 = Polygon(((0, 1, 1), (0, 2, 1), (1, 2.0, 1), (1, 1, 1)))
-    outlines = [outl1, outl2]
-
-    r_z = Regions(outlines)
+    r_z = Regions([outl1, outl2])
 
     expected = expected_mask_2D()
-    result = r_z.mask(dummy_lon, dummy_lat, method=method)
+    result = r_z.mask(dummy_ds, method=method)
 
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat.values, dummy_lat))
-    assert np.all(np.equal(result.lon.values, dummy_lon))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_xarray_name(method):
 
-    msk = dummy_region.mask(dummy_lon, dummy_lat, method=method)
+    msk = dummy_region.mask(dummy_ds, method=method)
     assert msk.name == "region"
 
 
@@ -188,14 +171,12 @@ def test_mask_ndim_ne_1_2(ndim):
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_obj(lon_name, lat_name, method):
 
-    expected = expected_mask_2D()
+    expected = expected_mask_2D().rename(lat=lat_name, lon=lon_name)
 
-    obj = {lon_name: dummy_lon, lat_name: dummy_lat}
-    result = dummy_region.mask(
-        obj, method=method, lon_name=lon_name, lat_name=lat_name
-    ).values
+    obj = {lon_name: dummy_ds.lon.values, lat_name: dummy_ds.lat.values}
+    result = dummy_region.mask(obj, method=method, lon_name=lon_name, lat_name=lat_name)
 
-    assert np.allclose(result, expected, equal_nan=True)
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.filterwarnings("ignore:No gridpoint belongs to any region.")
@@ -216,22 +197,22 @@ def test_mask_wrap(method):
     lon = [-1.5, -0.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, method=method, wrap_lon=False).values
-    assert np.all(np.isnan(result))
+    result = r.mask(lon, lat, method=method, wrap_lon=False)
+    assert result.isnull().all()
 
     # this is the wrong wrapping
-    result = r.mask(lon, lat, method=method, wrap_lon=180).values
-    assert np.all(np.isnan(result))
+    result = r.mask(lon, lat, method=method, wrap_lon=180)
+    assert result.isnull().all()
 
-    expected = expected_mask_2D()
+    expected = expected_mask_2D(coords={"lon": lon, "lat": lat})
 
     # determine the wrap automatically
-    result = r.mask(lon, lat, method=method, wrap_lon=True).values
-    assert np.allclose(result, expected, equal_nan=True)
+    result = r.mask(lon, lat, method=method, wrap_lon=True)
+    xr.testing.assert_equal(result, expected)
 
     # determine the wrap by hand
-    result = r.mask(lon, lat, method=method, wrap_lon=360).values
-    assert np.allclose(result, expected, equal_nan=True)
+    result = r.mask(lon, lat, method=method, wrap_lon=360)
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.filterwarnings("ignore:No gridpoint belongs to any region.")
@@ -275,65 +256,37 @@ def test_wrap_lon_error_wrap_lon(meth):
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
-def test_mask_autowrap(method):
+@pytest.mark.parametrize(
+    "lon, extent",
+    (
+        ([358.5, 359.5], (-180, -1)),
+        ([-1.5, -0.5], (-180, -1)),
+        ([-1.5, -0.5], (359, 0)),
+        ([358.5, 359.5], (359, 0)),
+    ),
+)
+def test_mask_autowrap(method, lon, extent):
 
-    expected = expected_mask_2D()
+    # outlines and lon are different - or the same - should work either way
 
-    # create a test case where the outlines and the lon coordinates
-    # are different - or the same - should work either way
-
-    # 1. -180..180 regions and -180..180 lon
-    lon = [0.5, 1.5]
-    lat = [0.5, 1.5]
-    result = dummy_region.mask(lon, lat, method=method).values
-    assert np.allclose(result, expected, equal_nan=True)
-
-    # 2. -180..180 regions and 0..360 lon
-    # outline -180..180
-    outl1 = ((-180, 0), (-180, 1), (-1, 1.0), (-1, 0))
-    outl2 = ((-180, 1), (-180, 2), (-1, 2.0), (-1, 1))
-    outlines = [outl1, outl2]
-
-    r = Regions(outlines)
-
-    # lon -180..179.9
-    lon = [358.5, 359.5]
     lat = [0.5, 1.5]
 
-    result = r.mask(lon, lat, method=method).values
-    assert np.allclose(result, expected, equal_nan=True)
+    r_from, r_to = extent
+    outl1 = ((r_from, 0), (r_from, 1), (r_to, 1.0), (r_to, 0))
+    outl2 = ((r_from, 1), (r_from, 2), (r_to, 2.0), (r_to, 1))
+    r = Regions([outl1, outl2])
 
-    # 3. 0..360 regions and -180..180 lon
+    expected = expected_mask_2D(coords={"lon": lon, "lat": lat})
 
-    # outline 0..359.9
-    outl1 = ((359, 0), (359, 1), (0, 1.0), (0, 0))
-    outl2 = ((359, 1), (359, 2), (0, 2.0), (0, 1))
-    outlines = [outl1, outl2]
-
-    r = Regions(outlines)
-
-    # lon -180..179.9
-    lon = [-1.5, -0.5]
-    lat = [0.5, 1.5]
-
-    result = r.mask(lon, lat, method=method).values
-    assert np.allclose(result, expected, equal_nan=True)
-
-    # 3. 0..360 regions and 0..360 lon
-
-    # lon 0..359.9
-    lon = [0.5, 359.5]
-    lat = [0.5, 1.5]
-
-    result = r.mask(lon, lat, method=method).values
-    assert np.allclose(result, expected, equal_nan=True)
+    result = r.mask(lon, lat, method=method)
+    xr.testing.assert_equal(result, expected)
 
 
 def test_mask_wrong_method():
 
     msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
     with pytest.raises(ValueError, match=msg):
-        dummy_region.mask(dummy_lon, dummy_lat, method="wrong")
+        dummy_region.mask(dummy_ds, method="wrong")
 
 
 # ======================================================================
@@ -346,17 +299,13 @@ lat_2D = [[0.5, 0.5], [1.5, 1.5]]
 @pytest.mark.parametrize("method", MASK_METHODS_IRREGULAR)
 def test_mask_2D(method):
 
-    expected = expected_mask_2D()
+    dims = ("lat_idx", "lon_idx")
+    coords = {"lat": (dims, lat_2D), "lon": (dims, lon_2D)}
+
+    expected = expected_mask_2D(coords=coords, dims=dims)
     result = dummy_region.mask(lon_2D, lat_2D, method=method)
 
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-
-    assert np.all(np.equal(result.lat.values, lat_2D))
-    assert np.all(np.equal(result.lon.values, lon_2D))
-
-    assert np.all(np.equal(result.lat_idx.values, [0, 1]))
-    assert np.all(np.equal(result.lon_idx.values, [0, 1]))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("lon", [lon_2D, [0, 1, 3], 0])
@@ -378,22 +327,12 @@ def test_mask_xarray_in_out_2D(method):
         "lon_2D": (("lat_1D", "lon_1D"), lon_2D),
     }
 
-    d = np.random.rand(2, 2)
+    data = xr.Dataset(coords=coords)
 
-    data = xr.DataArray(d, coords=coords, dims=("lat_1D", "lon_1D"))
+    expected = expected_mask_2D(coords=coords, dims=("lat_1D", "lon_1D"))
+    result = dummy_region.mask(data.lon_2D, data.lat_2D, method=method)
 
-    expected = expected_mask_2D()
-    result = dummy_region.mask(
-        data, lon_name="lon_2D", lat_name="lat_2D", method=method
-    )
-
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat_2D.values, lat_2D))
-    assert np.all(np.equal(result.lon_2D.values, lon_2D))
-
-    assert np.all(np.equal(result.lat_1D.values, [1, 2]))
-    assert np.all(np.equal(result.lon_1D.values, [1, 2]))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("lon_start", [0, 1, -5])
@@ -423,22 +362,41 @@ def test_rasterize(a, b, fill):
     expected = expected_mask_2D(a=a, b=b, fill=fill)
 
     result = _mask_rasterize(
-        dummy_lon, dummy_lat, dummy_outlines_poly, numbers=[a, b], fill=fill
+        dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[a, b], fill=fill
     )
 
-    assert np.allclose(result, expected, equal_nan=True)
+    np.testing.assert_equal(result, expected)
 
 
 def test_mask_empty():
 
+    lon = lat = [10, 11]
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
-        result = dummy_region.mask([10, 11], [10, 11], method="shapely")
+        result = dummy_region.mask(lon, lat, method="shapely")
 
-    assert isinstance(result, xr.DataArray)
-    assert result.shape == (2, 2)
-    assert result.isnull().all()
-    assert np.all(np.equal(result.lon.values, [10, 11]))
-    assert np.all(np.equal(result.lat.values, [10, 11]))
+    expected = expected_mask_2D(coords={"lon": lon, "lat": lat})
+
+    xr.testing.assert_equal(result, expected * np.NaN)
+
+
+# =============================================================================
+# =============================================================================
+# test unstructured
+
+
+@pytest.mark.parametrize("method", MASK_METHODS_IRREGULAR)
+def test_mask_unstructured(method):
+    """Test for unstructured output."""
+    lat = [0.5, 0.5, 1.5, 1.5]
+    lon = [0.5, 1.5, 0.5, 1.5]
+
+    coords = {"lon": ("cells", lon), "lat": ("cells", lat)}
+    grid = xr.Dataset(coords=coords)
+
+    result = dummy_region.mask(grid, method=method)
+    expected = expected_mask_2D(flatten=True, coords=coords, dims="cells")
+
+    xr.testing.assert_equal(result, expected)
 
 
 # =============================================================================
@@ -451,31 +409,23 @@ def test_mask_empty():
 def test_mask_3D(drop, method):
 
     expected = expected_mask_3D(drop)
-    result = dummy_region.mask_3D(dummy_lon, dummy_lat, drop=drop, method=method)
+    result = dummy_region.mask_3D(dummy_ds.lon, dummy_ds.lat, drop=drop, method=method)
 
-    assert isinstance(result, xr.DataArray)
-    assert result.shape == expected.shape
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat.values, dummy_lat))
-    assert np.all(np.equal(result.lon.values, dummy_lon))
-
-    _dr = dummy_region[[0, 1]] if drop else dummy_region
-
-    assert np.all(np.equal(result.region.values, _dr.numbers))
-    assert np.all(result.abbrevs.values == _dr.abbrevs)
-    assert np.all(result.names.values == _dr.names)
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_3D_empty(method):
 
+    lon = lat = [10, 11]
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
-        result = dummy_region.mask_3D([10, 11], [10, 11], drop=True, method=method)
+        result = dummy_region.mask_3D(lon, lat, drop=True, method=method)
 
-    assert isinstance(result, xr.DataArray)
+    coords = {"lat": lat, "lon": lon}
+    expected = expected_mask_3D(False, coords=coords).isel(region=slice(0, 0))
+
     assert result.shape == (0, 2, 2)
-    assert np.all(np.equal(result.lon.values, [10, 11]))
-    assert np.all(np.equal(result.lat.values, [10, 11]))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("lon_name", ["lon", "longitude"])
@@ -484,26 +434,14 @@ def test_mask_3D_empty(method):
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_3D_obj(lon_name, lat_name, drop, method):
 
-    expected = expected_mask_3D(drop)
+    expected = expected_mask_3D(drop).rename(lon=lon_name, lat=lat_name)
 
-    obj = {lon_name: dummy_lon, lat_name: dummy_lat}
+    obj = dummy_ds.rename(lon=lon_name, lat=lat_name)
     result = dummy_region.mask_3D(
         obj, method=method, drop=drop, lon_name=lon_name, lat_name=lat_name
     )
 
-    assert isinstance(result, xr.DataArray)
-
-    assert result.shape == expected.shape
-    assert np.allclose(result, expected, equal_nan=True)
-
-    assert np.all(np.equal(result[lat_name].values, dummy_lat))
-    assert np.all(np.equal(result[lon_name].values, dummy_lon))
-
-    _dr = dummy_region[[0, 1]] if drop else dummy_region
-
-    assert np.all(np.equal(result.region.values, _dr.numbers))
-    assert np.all(result.abbrevs.values == _dr.abbrevs)
-    assert np.all(result.names.values == _dr.names)
+    xr.testing.assert_equal(result, expected)
 
 
 # =============================================================================
@@ -566,6 +504,8 @@ def expected_mask_edge(ds, is_360, number=0, fill=np.NaN):
     expected = expected.where(expected, fill)
     expected = expected.where(expected != 1, number)
 
+    coords = {"lat": ds.lat, "lon": ds.lon}
+    expected = xr.DataArray(expected, dims=("lat", "lon"), coords=coords)
     return expected
 
 
@@ -580,6 +520,8 @@ def expected_mask_interior_and_edge(ds, is_360, number=0, fill=np.NaN):
     expected = expected.where(expected, fill)
     expected = expected.where(expected != 1, number)
 
+    coords = {"lat": ds.lat, "lon": ds.lon}
+    expected = xr.DataArray(expected, dims=("lat", "lon"), coords=coords)
     return expected
 
 
@@ -593,10 +535,7 @@ def test_mask_edge(method, regions, ds_US, is_360):
     expected = expected_mask_edge(ds_US, is_360)
     result = regions.mask(ds_US, method=method)
 
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat, ds_US.lat))
-    assert np.all(np.equal(result.lon, ds_US.lon))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
@@ -610,10 +549,7 @@ def test_mask_interior_and_edge(method, regions, ds_US, is_360):
     expected = expected_mask_interior_and_edge(ds_US, is_360)
     result = regions.mask(ds_US, method=method)
 
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat.values, ds_US.lat))
-    assert np.all(np.equal(result.lon.values, ds_US.lon))
+    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.xfail(
@@ -627,7 +563,7 @@ def test_rasterize_edge():
     expected = expected_mask_edge(ds_US_180, is_360=False)
     result = _mask_rasterize_no_offset(lon, lat, r_US_180_ccw.polygons, numbers=[0])
 
-    assert np.allclose(result, expected, equal_nan=True)
+    np.testing.assert_equal(result, expected)
 
 
 ds_for_45_deg = create_lon_lat_dataarray_from_bounds(*(-0.5, 16, 1), *(10.5, -0.5, -1))
@@ -664,7 +600,7 @@ def test_deg45_rasterize_offset_equal(regions):
     result_no_offset = _mask_rasterize_no_offset(lon, lat, polygons, numbers=[0])
     result_offset = _mask_rasterize(lon, lat, polygons, numbers=[0])
 
-    assert np.allclose(result_no_offset, result_offset, equal_nan=True)
+    np.testing.assert_equal(result_no_offset, result_offset)
 
 
 # =============================================================================
@@ -685,10 +621,7 @@ def test_rasterize_on_split_lon(ds_360, regions_180):
     result = regions_180.mask(ds_360, method="rasterize")
 
     expected = expected_mask_edge(ds_360, is_360=True)
-    assert isinstance(result, xr.DataArray)
-    assert np.allclose(result, expected, equal_nan=True)
-    assert np.all(np.equal(result.lat, expected.lat))
-    assert np.all(np.equal(result.lon, expected.lon))
+    xr.testing.assert_equal(result, expected)
 
     expected_shapely = regions_180.mask(ds_360, method="shapely")
     xr.testing.assert_equal(result, expected_shapely)
