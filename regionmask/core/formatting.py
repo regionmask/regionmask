@@ -45,15 +45,8 @@ def _display_metadata(name, source, max_width=80):
 def _display_regions_gp(self, max_rows, max_width, max_colwidth):  # pragma: no cover
     summary = ["Regions:"]
 
-    data = dict(
-        numbers=self.numbers,
-        abbrevs=self.abbrevs,
-        names=self.names,
-        # __repr__ of polygons can be slow
-        # geometry=self.polygons,
-    )
-
-    df = gp.GeoDataFrame.from_dict(data)
+    # __repr__ of polygons can be slow -> use pd.DataFrame
+    df = self.to_dataframe().reset_index()
 
     summary.append(
         df.to_string(

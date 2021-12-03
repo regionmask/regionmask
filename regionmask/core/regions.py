@@ -6,6 +6,8 @@
 import copy
 from collections import OrderedDict
 
+import geopandas as gp
+import pandas as pd
 import numpy as np
 from shapely.geometry import MultiPolygon, Polygon
 
@@ -330,6 +332,33 @@ class Regions:
         return mask_3D
 
     mask_3D.__doc__ = _inject_mask_docstring(is_3D=True, gp_method=False)
+
+    def to_dataframe(self):
+
+        data = dict(
+            numbers=self.numbers,
+            abbrevs=self.abbrevs,
+            names=self.names,
+        )
+
+        return pd.DataFrame.from_dict(data).set_index("numbers")
+
+    def to_geodataframe(self):
+
+        data = dict(
+            numbers=self.numbers,
+            abbrevs=self.abbrevs,
+            names=self.names,
+            geometry=self.polygons,
+        )
+
+        return gp.GeoDataFrame.from_dict(data).set_index("numbers")
+
+    def to_geoseries(self):
+
+
+        return gp.GeoSeries(self.polygons, index=self.numbers)
+
 
 
 # add the plotting methods
