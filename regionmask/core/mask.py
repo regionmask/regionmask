@@ -406,7 +406,7 @@ def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False
     tree = pygeos.STRtree(points_pygeos)
     a, b = tree.query_bulk(poly_pygeos, predicate="contains")
 
-    for i, (polygon, number) in enumerate(zip(poly_pygeos, numbers)):
+    for i, number in enumerate(numbers):
 
         out[b[a == i]] = number
 
@@ -511,7 +511,7 @@ def _mask_rasterize_flip(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     split_point = _find_splitpoint(lon)
     flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
 
-    mask = _mask_rasterize(flipped_lon, lat, polygons, numbers=numbers)
+    mask = _mask_rasterize(flipped_lon, lat, polygons, numbers=numbers, **kwargs)
 
     # revert the mask
     return np.hstack((mask[:, -split_point:], mask[:, :-split_point]))
@@ -522,8 +522,8 @@ def _mask_rasterize_split(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     split_point = _find_splitpoint(lon)
     lon_l, lon_r = lon[:split_point], lon[split_point:]
 
-    mask_l = _mask_rasterize(lon_l, lat, polygons, numbers=numbers)
-    mask_r = _mask_rasterize(lon_r, lat, polygons, numbers=numbers)
+    mask_l = _mask_rasterize(lon_l, lat, polygons, numbers=numbers, **kwargs)
+    mask_r = _mask_rasterize(lon_r, lat, polygons, numbers=numbers, **kwargs)
 
     return np.hstack((mask_l, mask_r))
 
@@ -531,9 +531,7 @@ def _mask_rasterize_split(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
 def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
-    This only works for 1D lat and lon arrays.
-
-    for internal use: does not check valitity of input
+    This only works for regularly spaced 1D lat and lon arrays.
     """
 
     lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
@@ -545,10 +543,12 @@ def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     return _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill, **kwargs)
 
 
-def _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+def _mask_rasterize_no_offset(
+    lon, lat, polygons, numbers, fill=np.NaN, dtype=float, **kwargs
+):
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
-    This only works for 1D lat and lon arrays.
+    This only works for regularly spaced 1D lat and lon arrays.
 
     for internal use: does not check valitity of input
     """
@@ -567,7 +567,7 @@ def _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill=np.NaN, **kwargs
         out_shape=out_shape,
         fill=fill,
         transform=transform,
-        dtype=float,
+        dtype=dtype,
         **kwargs,
     )
 
