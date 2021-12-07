@@ -12,6 +12,7 @@ from regionmask.core.utils import (
     _sanitize_names_abbrevs,
     create_lon_lat_dataarray_from_bounds,
     equally_spaced,
+    unpackbits,
 )
 
 
@@ -212,3 +213,88 @@ def test_deprecate_positional():
 
     with pytest.warns(FutureWarning, match="'func' now requires keyword arguments"):
         func(1, 2, b=3)
+
+
+def test_unpackbits():
+
+    numbers = np.array([0, 1, 3, 254, 255])
+    result = unpackbits(numbers, 8)
+    expected = [
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+    ]
+    expected = np.array(expected, dtype=bool)
+
+    np.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("num_bits", np.arange(1, 33))
+def test_unpackbits_num_bits(num_bits):
+
+    # zero -> all zeros
+    result = unpackbits(np.array([0]), num_bits)
+    expected = np.zeros((1, num_bits))
+    np.testing.assert_equal(result, expected)
+
+    # one -> one + zeros
+    result = unpackbits(np.array([1]), num_bits)
+    expected = np.array([1] + [0] * (num_bits - 1)).reshape(1, -1)
+    np.testing.assert_equal(result, expected)
+
+    # 2 ** (num_bits - 1) -> zeros + one
+    result = unpackbits(np.array([2 ** (num_bits - 1)]), num_bits)
+    expected = np.array([0] * (num_bits - 1) + [1]).reshape(1, -1)
+    np.testing.assert_equal(result, expected)
+
+    # 2 ** num_bits -1 -> all ones
+    result = unpackbits(np.array([2 ** num_bits - 1]), num_bits)
+    expected = np.ones((1, num_bits))
+    np.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("shape", ((2, 3), (3, 2), (2, 2), (2, 3, 4)))
+@pytest.mark.parametrize("num_bits", [1, 2, 4, 8, 16, 32])
+def test_unpackbits_shape(shape, num_bits):
+
+    numbers = np.ones(shape=shape, dtype=np.uint32)
+    result = unpackbits(numbers, num_bits)
+
+    assert result.shape == shape + (num_bits,)
+
+    assert np.all(result[..., 0])
+    assert not np.any(result[..., 1:])
+
+    for i in range(num_bits):
+        assert unpackbits(numbers * 2 ** i, num_bits)[..., i].all()
+
+
+def test_unpackbits_numpy():
+    # np.unpackbits only works for uint8
+
+    numbers = np.arange(255, dtype=np.uint8)
+
+    result = unpackbits(numbers, 8)
+    expected = np.unpackbits(numbers, bitorder="little").reshape(255, 8)
+
+    np.testing.assert_equal(result, expected)
+
+
+def test_unpackbits_wrong_dtype():
+
+    with pytest.raises(ValueError, match="needs to be int-like"):
+        unpackbits(np.array(0, dtype=float), 8)
+
+
+@pytest.mark.parametrize(
+    "numbers, n_bits", ((np.array([1, 3, 0, 255]), 8), (np.arange(2 ** 4), 4))
+)
+def test_unpackbits_roundtrip(numbers, n_bits):
+
+    numbers = 2 ** np.arange(n_bits)
+
+    result = (unpackbits(np.array(numbers), n_bits) * numbers).sum(axis=1)
+
+    np.testing.assert_equal(result, numbers)
