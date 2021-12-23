@@ -1,7 +1,7 @@
 import importlib
-from packaging.version import Version
 
 import pytest
+from packaging.version import Version
 
 
 def _importorskip(modname):
