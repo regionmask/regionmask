@@ -83,13 +83,13 @@ REGIONS_DEPRECATED = {
 
 REGIONS_REQUIRING_CARTOPY = {
     "natural_earth.countries_110": 177,
-    "natural_earth.countries_50": 241,
+    "natural_earth.countries_50": 242,
     "natural_earth.us_states_50": 51,
     "natural_earth.us_states_10": 51,
     "natural_earth.land_110": 1,
     "natural_earth.land_50": 1,
     "natural_earth.land_10": 1,
-    "natural_earth.ocean_basins_50": 119,
+    "natural_earth.ocean_basins_50": 118,
 }
 
 

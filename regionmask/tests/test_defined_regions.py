@@ -54,7 +54,7 @@ def test_natural_earth_loaded_as_utf8(monkeypatch):
         monkeypatch, "natural_earth.ocean_basins_50"
     )
 
-    assert regions[90].name == "Río de la Plata"
+    assert "Río de la Plata" in regions.names
 
 
 def test_maybe_get_column():
