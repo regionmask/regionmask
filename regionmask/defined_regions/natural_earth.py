@@ -267,7 +267,7 @@ class NaturalEarth:
                 title="Natural Earth: ocean basins 50m",
                 names="name",
                 abbrevs="name",
-                preprocess=_fix_ocean_basins_50,
+                preprocess=_fix_ocean_basins_50_cartopy,
             )
 
             regs = _obtain_ne(**opt)
@@ -288,24 +288,14 @@ class natural_earth_cls(NaturalEarth):
 natural_earth = NaturalEarth()
 
 
-def _fix_ocean_basins_50(df):
-    """ocean basins 50 has duplicate entries
-
-    Version 4.0
-    - Mediterranean Sea and Ross Sea is split in two - these were renamed to Eastern and
-      Western basin
-
-    Version 5.0
-    - Mediterranean Sea and Ross Sea is **no longer** split in two.
-    - There are two regions named Great Barrier Reef - these are now merged
-    - The numbers/ indices are different from Version 4.0!
-    """
+def _fix_ocean_basins_50_cartopy(df):
+    """ocean basins 50 has duplicate entries"""
 
     names_v4 = {
-        14: ("Mediterranean Sea", "Mediterranean Eastern Basin Sea"),
-        30: ("Mediterranean Sea", "Mediterranean Western Basin Sea"),
-        26: ("Ross Sea", "Ross Eastern Basin Sea"),
-        29: ("Ross Sea", "Ross Western Basin Sea"),
+        14: "Mediterranean Sea",
+        30: "Mediterranean Sea",
+        26: "Ross Sea",
+        29: "Ross Sea",
     }
 
     names_v5 = {
@@ -313,26 +303,62 @@ def _fix_ocean_basins_50(df):
         114: "Great Barrier Reef",
     }
 
-    is_v4 = all(df.loc[idx]["name"] == name[0] for idx, name in names_v4.items())
+    is_v4 = all(df.loc[idx]["name"] == name for idx, name in names_v4.items())
     is_v5 = all(df.loc[idx]["name"] == name for idx, name in names_v5.items())
 
     if is_v4:
 
         # rename duplicated regions
-        for idx, (__, new_name) in names_v4:
-            df.loc[idx, "name"] = new_name
+        df = _fix_ocean_basins_50_v4_1_0(df)
 
     elif is_v5:
-        # merge the two Great Barrier Reef polygons - 74 <<< 114
-        poly = df.loc[[74]].union(df.loc[[114]], False).item()
-        df.at[74, "geometry"] = poly
-        # remove the now merged row
-        df.drop(labels=114).reset_index()
+        df = _fix_ocean_basins_50_v5_0_0(df)
 
     else:
         raise ValueError(
             "Unkown version of the ocean basins 50m data from naturalearth. Please "
             "raise an issue in regionmask."
         )
+
+    return df
+
+
+def _fix_ocean_basins_50_v4_1_0(df):
+    """fix ocean basins 50 for naturalearth v4.1.0
+
+    - Mediterranean Sea and Ross Sea have two parts: renamed to Eastern and Western
+      Basin
+    """
+
+    new_names = {
+        14: "Mediterranean Eastern Basin Sea",
+        30: "Mediterranean Western Basin Sea",
+        26: "Ross Eastern Basin Sea",
+        29: "Ross Western Basin Sea",
+    }
+
+    # rename duplicated regions
+    for idx, new_name in new_names.items():
+        df.loc[idx, "name"] = new_name
+
+    return df
+
+
+def _fix_ocean_basins_50_v5_0_0(df):
+    """fix ocean basins 50 for naturalearth v5.0.0
+
+    - Mediterranean Sea and Ross Sea is **no longer** split in two.
+    - There are two regions named Great Barrier Reef - these are now merged
+    - The numbers/ indices are different from Version 4.0!
+    """
+
+    p1 = df.loc[74].geometry
+    p2 = df.loc[114].geometry
+
+    # merge the two Great Barrier Reef polygons - 74 <<< 114
+    poly = p1.union(p2)
+    df.at[74, "geometry"] = poly
+    # remove the now merged row
+    df = df.drop(labels=114).reset_index()
 
     return df

@@ -89,7 +89,7 @@ REGIONS_REQUIRING_CARTOPY = {
     "natural_earth.land_110": 1,
     "natural_earth.land_50": 1,
     "natural_earth.land_10": 1,
-    "natural_earth.ocean_basins_50": 118,
+    "natural_earth.ocean_basins_50": 117,
 }
 
 
