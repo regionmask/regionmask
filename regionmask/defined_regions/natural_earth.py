@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 from shapely.geometry import MultiPolygon
 
@@ -34,6 +36,7 @@ def _obtain_ne(
     coords="geometry",
     query=None,
     combine_coords=False,
+    preprocess=None,
 ):
     """
     create Regions object from naturalearth data
@@ -87,6 +90,9 @@ def _obtain_ne(
     if query is not None:
         df = df.query(query).reset_index(drop=True)
 
+    if preprocess is not None:
+        df = preprocess(df)
+
     # get necessary data for Regions_cls
     numbers = _maybe_get_column(df, numbers)
     names = _maybe_get_column(df, names)
@@ -112,7 +118,7 @@ def _obtain_ne(
 # =============================================================================
 
 
-class natural_earth_cls:
+class NaturalEarth:
     """
     class combining all natural_earth features/ geometries
 
@@ -261,37 +267,98 @@ class natural_earth_cls:
                 title="Natural Earth: ocean basins 50m",
                 names="name",
                 abbrevs="name",
+                preprocess=_fix_ocean_basins_50_cartopy,
             )
 
             regs = _obtain_ne(**opt)
-
-            # NOTE: naturalearth includes duplicate names
-
-            # raise an error if naturalearth changes the name
-            msg = (
-                "naturalearth renamed this region, please raise an issue in regionmask"
-            )
-
-            # rename the "Mediterranean Sea" region
-            assert regs[14].name == "Mediterranean Sea", msg
-            regs[14].name = "Mediterranean Sea Eastern Basin"
-            regs[14].abbrev = "Mediterranean Sea Eastern Basin"
-
-            assert regs[30].name == "Mediterranean Sea", msg
-            regs[30].name = "Mediterranean Sea Western Basin"
-            regs[30].abbrev = "Mediterranean Sea Western Basin"
-
-            # rename the "Ross Sea" region
-            assert regs[26].name == "Ross Sea", msg
-            regs[26].name = "Ross Sea Eastern Basin"
-            regs[26].abbrev = "Ross Sea Eastern Basin"
-
-            assert regs[29].name == "Ross Sea", msg
-            regs[29].name = "Ross Sea Western Basin"
-            regs[29].abbrev = "Ross Sea Western Basin"
 
             self._ocean_basins_50 = regs
         return self._ocean_basins_50
 
 
-natural_earth = natural_earth_cls()
+class natural_earth_cls(NaturalEarth):
+    def __init__(self):
+
+        warnings.warn(
+            "The ``natural_earth_cls`` class has been renamed to ``NaturalEarth``"
+        )
+        super().__init__()
+
+
+natural_earth = NaturalEarth()
+
+
+def _fix_ocean_basins_50_cartopy(df):
+    """ocean basins 50 has duplicate entries"""
+
+    names_v4 = {
+        14: "Mediterranean Sea",
+        30: "Mediterranean Sea",
+        26: "Ross Sea",
+        29: "Ross Sea",
+    }
+
+    names_v5 = {
+        74: "Great Barrier Reef",
+        114: "Great Barrier Reef",
+    }
+
+    is_v4 = all(df.loc[idx]["name"] == name for idx, name in names_v4.items())
+    is_v5 = all(df.loc[idx]["name"] == name for idx, name in names_v5.items())
+
+    if is_v4:
+
+        # rename duplicated regions
+        df = _fix_ocean_basins_50_v4_1_0(df)
+
+    elif is_v5:
+        df = _fix_ocean_basins_50_v5_0_0(df)
+
+    else:
+        raise ValueError(
+            "Unkown version of the ocean basins 50m data from naturalearth. Please "
+            "raise an issue in regionmask."
+        )
+
+    return df
+
+
+def _fix_ocean_basins_50_v4_1_0(df):
+    """fix ocean basins 50 for naturalearth v4.1.0
+
+    - Mediterranean Sea and Ross Sea have two parts: renamed to Eastern and Western
+      Basin
+    """
+
+    new_names = {
+        14: "Mediterranean Eastern Basin Sea",
+        30: "Mediterranean Western Basin Sea",
+        26: "Ross Eastern Basin Sea",
+        29: "Ross Western Basin Sea",
+    }
+
+    # rename duplicated regions
+    for idx, new_name in new_names.items():
+        df.loc[idx, "name"] = new_name
+
+    return df
+
+
+def _fix_ocean_basins_50_v5_0_0(df):
+    """fix ocean basins 50 for naturalearth v5.0.0
+
+    - Mediterranean Sea and Ross Sea is **no longer** split in two.
+    - There are two regions named Great Barrier Reef - these are now merged
+    - The numbers/ indices are different from Version 4.0!
+    """
+
+    p1 = df.loc[74].geometry
+    p2 = df.loc[114].geometry
+
+    # merge the two Great Barrier Reef polygons - 74 <<< 114
+    poly = p1.union(p2)
+    df.at[74, "geometry"] = poly
+    # remove the now merged row
+    df = df.drop(labels=114).reset_index()
+
+    return df
