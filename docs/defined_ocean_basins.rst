@@ -58,4 +58,3 @@ Also create a mask for a 1° grid globally:
 
     @savefig plotting_basins_mask.png width=100%
     plt.tight_layout()
-
