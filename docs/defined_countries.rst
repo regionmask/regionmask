@@ -73,4 +73,3 @@ Also create a mask for a 1° grid over the US:
 
     @savefig plotting_states_mask.png width=100%
     plt.tight_layout()
-
