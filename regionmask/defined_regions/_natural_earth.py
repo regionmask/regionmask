@@ -143,7 +143,7 @@ class _NaturalEarthFeature:
 
         fNs = self.fetch(version)
         # the comma is required
-        fN, = (lambda x: x, fNs if fN.endswith(".shp"))
+        fN, = filter(lambda x: x.endswith(".shp"), fNs)
 
         return fN
 
