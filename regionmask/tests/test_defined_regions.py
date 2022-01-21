@@ -40,6 +40,7 @@ def test_defined_region_deprecated(region_name, n_regions):
 
 
 @requires_cartopy
+@pytest.mark.filterwarnings("ignore:Downloading")
 @pytest.mark.parametrize("region_name, n_regions", REGIONS_REQUIRING_CARTOPY.items())
 def test_defined_regions_natural_earth(monkeypatch, region_name, n_regions):
     # TODO: remove this test once defined_regions.natural_earth is removed

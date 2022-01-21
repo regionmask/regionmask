@@ -11,7 +11,7 @@ from shapely.geometry import MultiPolygon
 from ..core.regions import Regions
 from ..core.utils import _flatten_polygons
 
-# TODO: remove
+# TODO: remove deprecated natural_earth class and instance & clean up
 
 ALTERNATIVE = (
     "Please use ``regionmask.defined_regions.natural_earth_v4_1_0`` or "
@@ -188,24 +188,6 @@ _ocean_basins_50 = _NaturalEarthFeature(
     name="geography_marine_polys",
 )
 
-_naturalearthfeatures = [
-    _countries_110,
-    _countries_50,
-    _us_states_50,
-    _us_states_10,
-    _land_110,
-    _land_50,
-    _land_10,
-    _ocean_basins_50,
-]
-
-
-base = "https://github.com/nvkelso/natural-earth-vector/raw/"
-version = "v5.0.0"
-
-for n in _naturalearthfeatures:
-    pooch.retrieve(f"{base}{version}/geojson/ne_{n.resolution}_{n.name}.geojson", None)
-
 
 class NaturalEarth(ABC):
     """
@@ -229,9 +211,6 @@ class NaturalEarth(ABC):
         self._land_10 = None
 
         self._ocean_basins_50 = None
-
-    def __repr__(self):
-        return "Region Definitions from 'http://www.naturalearthdata.com'."
 
     @abstractmethod
     def _obtain_ne(self, natural_earth_feature, **kwargs):
@@ -343,6 +322,9 @@ class NaturalEarth(ABC):
 
         return self._ocean_basins_50
 
+    def __repr__(self):
+        return "Region Definitions from 'http://www.naturalearthdata.com'."
+
 
 def _fix_ocean_basins_50_cartopy(self, df):
     """ocean basins 50 has duplicate entries"""
@@ -369,7 +351,7 @@ def _fix_ocean_basins_50_cartopy(self, df):
         df = _fix_ocean_basins_50_v5_0_0(self, df)
     else:
         raise ValueError(
-            "Unkown version of the ocean basins 50m data from naturalearth."
+            "Unkown version of the ocean basins 50m data from naturalearth. "
             f"{ALTERNATIVE}."
         )
 
