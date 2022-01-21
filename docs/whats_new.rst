@@ -16,11 +16,20 @@ v0.9.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
-- Removed support for Python 3.6.
+- Removed support for Python 3.6 (:pull:`288`).
+- The minimum versions of some dependencies were changed (:pull:`311`):
+
+  ============ ===== =====
+  Package      Old   New
+  ============ ===== =====
+  pooch        1.0   1.2
+  ============ ===== =====
+
 - ``regionmask.defined_regions.natural_earth`` is deprecated. ``defined_regions.natural_earth`` used
   cartopy to download natural_earth data and it was unclear which version of the regions
   is available. This is problematic because some regions change between the versions.
-  Please use ``defined_regions.natural_earth_v4_1_0`` or ``defined_regions.natural_earth_v5_0_0`` instead.
+  Please use ``defined_regions.natural_earth_v4_1_0`` or ``defined_regions.natural_earth_v5_0_0``
+  instead (:issue:`306`, :pull:`311`).
 - Passing coordinates with different type to :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D`
   is no longer supported, i.e. can no longer pass lon as numpy array and lat as
   DataArray (:pull:`294`).
@@ -46,7 +55,7 @@ Enhancements
   each segment is 1 for lat/ lon coords - see the ``tolerance`` keyword of the plotting
   methods. The ``subsample`` keyword is deprecated (:issue:`109`, :pull:`292`).
 - The download of the natural_earth regions is now done in regionmask (using pooch) and no
-  longer relies on cartopy.
+  longer relies on cartopy (:issue:`306`, :pull:`311`).
 
 Deprecations
 ~~~~~~~~~~~~
