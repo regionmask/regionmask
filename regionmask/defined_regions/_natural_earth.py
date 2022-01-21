@@ -142,6 +142,7 @@ class _NaturalEarthFeature:
     def shapefilename(self, version):
 
         fNs = self.fetch(version)
+
         # the comma is required
         fN, = filter(lambda x: x.endswith(".shp"), fNs)
 
@@ -506,16 +507,9 @@ def _fetch_aws(version, resolution, category, name):
     )
 
     if Version(pooch.__version__) < Version("1.4"):
-
-        class FnameUnzip(pooch.Unzip):
-
-            def _extract_file(self, fname, extract_dir):
-                extract_dir = extract_dir.replace(".zip", "")
-
-                super()._extract_file(fname, extract_dir)
-
-        unzipper = FnameUnzip()
-
+        # extract_dir not available
+        print("here")
+        unzipper = pooch.Unzip()
     else:
         unzipper = pooch.Unzip(extract_dir=bname)
 
