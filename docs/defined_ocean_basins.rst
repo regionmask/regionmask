@@ -4,28 +4,35 @@ Marine Areas/ Ocean Basins (NaturalEarth)
 
 The outline of the marine areas are obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
-They are automatically downloaded on-the-fly (but only once) with cartopy and opened with geopandas.
+They are automatically downloaded on-the-fly, cached and opened with geopandas.
 The following marine regions are defined in regionmask:
 
 * Marine Areas 1:50m
 
+
+.. warning::
+   ``regionmask.defined_regions.natural_earth`` is deprecated. This used cartopy to download
+   natural_earth data and it is unclear which version of the regions is available.
+   Please use ``regionmask.defined_regions.natural_earth_v4_1_0`` or
+   ``regionmask.defined_regions.natural_earth_v5_0_0`` instead.
+
+   Be careful when with the different versions of ``natural_earth`` Regions. Some polygons
+   and regions have changed and the numbering of the regions may be different.
+
 .. ipython:: python
     :suppress:
 
-    # Use defaults so we don't get gridlines in generated docs
     import matplotlib as mpl
-    mpl.rcdefaults()
-    mpl.use('Agg')
 
     # cut border when saving (for maps)
     mpl.rcParams["savefig.bbox"] = "tight"
 
-The following imports are necessary for the examples.
+Import regionmask.
 
 .. ipython:: python
 
     import regionmask
-    import matplotlib.pyplot as plt
+    regionmask.__version__
 
 Ocean Basins
 ============
@@ -33,11 +40,12 @@ Ocean Basins
 .. ipython:: python
 
     basins = regionmask.defined_regions.natural_earth.ocean_basins_50
+    basins
 
-    basins.plot(add_label=False);
+.. ipython:: python
 
     @savefig plotting_basins.png width=100%
-    plt.tight_layout()
+    basins.plot(add_label=False);
 
 Also create a mask for a 1° grid globally:
 
@@ -53,9 +61,5 @@ Also create a mask for a 1° grid globally:
 
     basins.plot(add_label=False, add_ocean=False);
 
-     # plot using xarray
-     mask.plot(add_colorbar=False);
-
     @savefig plotting_basins_mask.png width=100%
-    plt.tight_layout()
-
+    mask.plot(add_colorbar=False);

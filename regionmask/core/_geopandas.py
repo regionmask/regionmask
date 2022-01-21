@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..defined_regions.natural_earth import _maybe_get_column
+from ..defined_regions._natural_earth import _maybe_get_column
 from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .regions import Regions
 

@@ -1,16 +1,17 @@
+import os
 from operator import attrgetter
 
 import pytest
 
 from regionmask import Regions, defined_regions
-from regionmask.defined_regions import _maybe_get_column
+from regionmask.defined_regions._natural_earth import _maybe_get_column
 
 from . import has_cartopy, requires_cartopy
 from .utils import (
     REGIONS,
     REGIONS_DEPRECATED,
     REGIONS_REQUIRING_CARTOPY,
-    get_naturalearth_region_or_skip,
+    download_naturalearth_region_or_skip,
 )
 
 
@@ -41,20 +42,55 @@ def test_defined_region_deprecated(region_name, n_regions):
 @requires_cartopy
 @pytest.mark.parametrize("region_name, n_regions", REGIONS_REQUIRING_CARTOPY.items())
 def test_defined_regions_natural_earth(monkeypatch, region_name, n_regions):
+    # TODO: remove this test once defined_regions.natural_earth is removed
 
-    region = get_naturalearth_region_or_skip(monkeypatch, region_name)
+    import cartopy
 
+    from regionmask.defined_regions import _natural_earth
+
+    match = "``regionmask.defined_regions.natural_earth`` is deprecated"
+
+    # get regionmask.defined_regions._natural_earth._land_10 dataclass
+    region = region_name.split(".")[1]
+    natural_earth_feature = attrgetter(f"_{region}")(_natural_earth)
+
+    # get the filename of cartopy-downloaded shapefiles
+    resolution = natural_earth_feature.resolution
+    category = natural_earth_feature.category
+    name = natural_earth_feature.name
+
+    _cartopy_data_dir = cartopy.config["data_dir"]
+
+    # check if cartopy has already downloaded the file
+    cartopy_file = os.path.join(
+        _cartopy_data_dir,
+        "shapefiles",
+        "natural_earth",
+        f"{category}",
+        f"ne_{resolution}_{name}.shp",
+    )
+
+    # only raise an error if the file is not downloaded
+    if not os.path.isfile(cartopy_file):
+        with pytest.raises(ValueError, match=match):
+            attrgetter(region_name)(defined_regions)
+
+    # download data using cartopy
+    download_naturalearth_region_or_skip(monkeypatch, natural_earth_feature)
+
+    # get region and ensure deprcation warning is raised
+    with pytest.warns(FutureWarning, match=match):
+        region = attrgetter(region_name)(defined_regions)
     _test_region(region, n_regions)
 
 
 @requires_cartopy
 def test_natural_earth_loaded_as_utf8(monkeypatch):
     # GH 95
-    regions = get_naturalearth_region_or_skip(
-        monkeypatch, "natural_earth.ocean_basins_50"
-    )
 
-    assert "Río de la Plata" in regions.names
+    region = attrgetter("natural_earth_v5_0_0.ocean_basins_50")(defined_regions)
+
+    assert "Río de la Plata" in region.names
 
 
 def test_maybe_get_column():
@@ -79,5 +115,5 @@ def test_maybe_get_column():
 @pytest.mark.skipif(has_cartopy, reason="should run if cartopy is _not_ installed")
 def test_natural_earth_raises_without_cartopy():
 
-    with pytest.raises(ImportError, match="cartopy is required"):
+    with pytest.raises(ImportError, match="requires cartopy"):
         defined_regions.natural_earth.countries_110

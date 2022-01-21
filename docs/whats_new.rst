@@ -17,6 +17,10 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Removed support for Python 3.6.
+- Deprecated ``regionmask.defined_regions.natural_earth``. This used cartopy to download
+  natural_earth data and it was unclear which version of the regions was available.
+  Please use ``regionmask.defined_regions.natural_earth_v4_1_0`` or
+  ``regionmask.defined_regions.natural_earth_v5_0_0`` instead.
 - Passing coordinates with different type to :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D`
   is no longer supported, i.e. can no longer pass lon as numpy array and lat as
   DataArray (:pull:`294`).
@@ -41,7 +45,8 @@ Enhancements
   based on the euclidean distance of each segment. Per default the maximum distance of
   each segment is 1 for lat/ lon coords - see the ``tolerance`` keyword of the plotting
   methods. The ``subsample`` keyword is deprecated (:issue:`109`, :pull:`292`).
-
+- The download of the natural_earth regions is now done in regionmask and no longer
+  relies on cartopy.
 
 Deprecations
 ~~~~~~~~~~~~
