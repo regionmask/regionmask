@@ -334,7 +334,7 @@ New regions
 - Added the AR6 reference regions described in `Iturbide et al., (2000)
   <https://essd.copernicus.org/preprints/essd-2019-258/>`_ (:pull:`61`).
 - New marine regions from natural earth added as :py:attr:`natural_earth.ocean_basins_50`
-  (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_).
+  (:pull:`91` by `Julius Busecke <https://github.com/jbusecke>`_).
 
 Bug Fixes
 ~~~~~~~~~

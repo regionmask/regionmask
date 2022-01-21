@@ -55,7 +55,7 @@ Also create a mask for a 1° grid globally:
 
     mask = basins.mask(lon, lat)
 
-    basins.plot(add_label=False, add_ocean=False);
+    basins.plot(add_label=False);
 
     @savefig plotting_basins_mask.png width=100%
     mask.plot(add_colorbar=False);
