@@ -3,7 +3,7 @@ Landmask (NaturalEarth)
 
 The outline of the landmask is obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
-They are automatically downloaded, cached and opened with geopandas.
+It is automatically downloaded, cached and opened with geopandas.
 The following landmasks are currently available:
 
 * Land 1:110m
