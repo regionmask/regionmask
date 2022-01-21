@@ -1,23 +1,20 @@
-#########################################
 Marine Areas/ Ocean Basins (NaturalEarth)
 #########################################
 
 The outline of the marine areas are obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
-They are automatically downloaded on-the-fly, cached and opened with geopandas.
+They are automatically downloaded, cached and opened with geopandas.
 The following marine regions are defined in regionmask:
 
 * Marine Areas 1:50m
 
 
 .. warning::
-   ``regionmask.defined_regions.natural_earth`` is deprecated. This used cartopy to download
-   natural_earth data and it is unclear which version of the regions is available.
-   Please use ``regionmask.defined_regions.natural_earth_v4_1_0`` or
-   ``regionmask.defined_regions.natural_earth_v5_0_0`` instead.
+   ``regionmask.defined_regions.natural_earth`` is deprecated.
+   Please use ``natural_earth_v4_1_0`` or ``natural_earth_v5_0_0`` instead.
 
-   Be careful when with the different versions of ``natural_earth`` Regions. Some polygons
-   and regions have changed and the numbering of the regions may be different.
+   Be careful when working with the different versions of NaturalEarth regions. Some
+   polygons and regions have changed and the numbering of the regions may be different.
 
 .. ipython:: python
     :suppress:
@@ -27,19 +24,18 @@ The following marine regions are defined in regionmask:
     # cut border when saving (for maps)
     mpl.rcParams["savefig.bbox"] = "tight"
 
-Import regionmask.
+Import regionmask:
 
 .. ipython:: python
 
     import regionmask
-    regionmask.__version__
 
 Ocean Basins
 ============
 
 .. ipython:: python
 
-    basins = regionmask.defined_regions.natural_earth.ocean_basins_50
+    basins = regionmask.defined_regions.natural_earth_v5_0_0.ocean_basins_50
     basins
 
 .. ipython:: python

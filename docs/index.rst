@@ -20,7 +20,7 @@ regionmask is a Python module that:
   `Natural Earth <http://www.naturalearthdata.com/>`_), a
   :doc:`landmask</defined_landmask>` and regions used in the
   :doc:`scientific literature</defined_scientific>`
-  (the Giorgi regions [#]_ and   the SREX regions [#]_).
+  (the Giorgi regions [#]_ and the SREX regions [#]_).
 - can plot figures of these regions (:doc:`tutorial<notebooks/plotting>`) with
   `matplotlib <http://matplotlib.org/>`_ and
   `cartopy <http://scitools.org.uk/cartopy/>`_
@@ -33,7 +33,7 @@ regionmask is a Python module that:
 .. note::
    From version 0.5 ``regionmask`` treats points on borders differently
    and also considers poygon interiors (holes), e.g. the Caspian Sea in
-   ``natural_earth.land_110`` region. The differences are illustrated in a
+   ``natural_earth_v5_0_0.land_110`` region. The differences are illustrated in a
    :doc:`notebook<notebooks/method>`. See also in :doc:`What's new<whats_new>`
 
 

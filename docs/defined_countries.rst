@@ -1,16 +1,22 @@
-################################
 Countries/ States (NaturalEarth)
 ################################
 
 The outline of the countries are obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
-They are automatically downloaded on-the-fly (but only once) with cartopy and opened with geopandas.
+They are automatically downloaded, cached and opened with geopandas.
 The following countries and regions are defined in regionmask.
 
 * Countries 1:110m
 * Countries 1:50m
 * US States 1:50m
 * US States 1:10m
+
+.. warning::
+   ``regionmask.defined_regions.natural_earth`` is deprecated.
+   Please use ``natural_earth_v4_1_0`` or ``natural_earth_v5_0_0`` instead.
+
+   Be careful when working with the different versions of NaturalEarth regions. Some
+   polygons and regions have changed and the numbering of the regions may be different.
 
 .. note::
    A mask obtained with a fine resolution dataset is not necessarily better.
@@ -19,42 +25,35 @@ The following countries and regions are defined in regionmask.
 .. ipython:: python
     :suppress:
 
-    # Use defaults so we don't get gridlines in generated docs
     import matplotlib as mpl
-    mpl.rcdefaults()
-    mpl.use('Agg')
 
     # cut border when saving (for maps)
     mpl.rcParams["savefig.bbox"] = "tight"
 
-The following imports are necessary for the examples.
+Import regionmask:
 
 .. ipython:: python
 
     import regionmask
-    import matplotlib.pyplot as plt
 
 Countries
 =========
 
 .. ipython:: python
 
-    regionmask.defined_regions.natural_earth.countries_110.plot(add_label=False);
-
     @savefig plotting_countries.png width=100%
-    plt.tight_layout()
+    regionmask.defined_regions.natural_earth_v5_0_0.countries_110.plot(add_label=False);
 
 US States
 =========
 
 .. ipython:: python
 
-    states = regionmask.defined_regions.natural_earth.us_states_50
-
-    states.plot(add_label=False);
+    states = regionmask.defined_regions.natural_earth_v5_0_0.us_states_50
 
     @savefig plotting_states.png width=100%
-    plt.tight_layout()
+    states.plot(add_label=False);
+
 
 Also create a mask for a 1° grid over the US:
 
@@ -69,8 +68,5 @@ Also create a mask for a 1° grid over the US:
     mask = states.mask(lon, lat)
 
     states.plot(add_label=False);
-    mask.plot(add_colorbar=False)
-
     @savefig plotting_states_mask.png width=100%
-    plt.tight_layout()
-
+    mask.plot(add_colorbar=False)
