@@ -3,9 +3,10 @@ import warnings
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
+from packaging.version import Version
+
 import numpy as np
 import pooch
-from packaging.version import Version
 from shapely.geometry import MultiPolygon
 
 from ..core.regions import Regions
@@ -142,7 +143,7 @@ class _NaturalEarthFeature:
 
         fNs = self.fetch(version)
         # the comma is required
-        (fN,) = filter(lambda x: x.endswith(".shp"), fNs)
+        fN, = (lambda x: x, fNs if fN.endswith(".shp"))
 
         return fN
 
@@ -187,6 +188,7 @@ _ocean_basins_50 = _NaturalEarthFeature(
     category="physical",
     name="geography_marine_polys",
 )
+
 
 
 class NaturalEarth(ABC):
@@ -324,6 +326,7 @@ class NaturalEarth(ABC):
 
     def __repr__(self):
         return "Region Definitions from 'http://www.naturalearthdata.com'."
+
 
 
 def _fix_ocean_basins_50_cartopy(self, df):
@@ -505,13 +508,13 @@ def _fetch_aws(version, resolution, category, name):
     if Version(pooch.__version__) < Version("1.4"):
 
         class FnameUnzip(pooch.Unzip):
+
             def _extract_file(self, fname, extract_dir):
-                extract_dir = self.extract_dir
+                extract_dir = extract_dir.replace(".zip", "")
 
                 super()._extract_file(fname, extract_dir)
 
         unzipper = FnameUnzip()
-        unzipper.extract_dir = bname
 
     else:
         unzipper = pooch.Unzip(extract_dir=bname)
