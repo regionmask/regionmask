@@ -16,7 +16,7 @@ create masks of geographical regions
 Determine which geographic region each grid point belongs to.
 
 When working with gridded data such as climate model output or reanalysis data it is
-often important to create regional averages, such as over countries, continents or
+often important to create regional averages, e.g., over countries, continents or
 regions defined in the literature. To do so we need to know for each grid point to which
 region it belongs to.
 

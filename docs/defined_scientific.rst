@@ -31,7 +31,7 @@ The following imports are necessary for the examples.
 Giorgi Regions
 ==============
 
-The Giorgi reference regions, originally rectangular regions proposed in Giorgi and
+The Giorgi reference regions, rectangular regions proposed in Giorgi and
 Francisco, 2000 were used in the third and fourth assessment reports of the
 Intergovernmental Panel on Climate Change (IPCC).
 
