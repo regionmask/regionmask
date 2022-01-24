@@ -21,7 +21,13 @@ plotting and creation of masks of spatial regions
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5532848.svg
    :target: https://doi.org/10.5281/zenodo.5532848
 
+Create *masks* of geographical *regions* for arbitrary longitude and latitude grids.
 
 Documentation
 -------------
-See the `documentation <http://regionmask.readthedocs.io/>`_  (on readthedocs).
+See the `documentation <http://regionmask.readthedocs.io/>`_ (on readthedocs).
+
+License
+-------
+
+regionmask is published under a MIT license.

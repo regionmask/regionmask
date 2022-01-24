@@ -13,47 +13,54 @@
 create masks of geographical regions
 ************************************
 
-regionmask is a Python module that:
+Determine which geographic region each grid point belongs to.
+
+When working with gridded data such as climate model output or reanalysis data it is
+often important to create regional averages, such as over countries, continents or
+regions defined in the literature. To do so we need to know for each grid point to which
+region it belongs to.
+
+regionmask is a python package that:
+
+- can be used to create *masks* of geographic *regions* for arbitrary longitude and latitude grids.
+  These masks indicate which region a gridpoint belongs to. They come in two variants:
+
+  - :doc:`2D integer masks<notebooks/mask_2D>`
+  - :doc:`3D boolean masks<notebooks/mask_3D>`
 
 - contains a number of defined regions, including:
-  :doc:`countries</defined_countries>` (from
-  `Natural Earth <http://www.naturalearthdata.com/>`_), a
-  :doc:`landmask</defined_landmask>` and regions used in the
-  :doc:`scientific literature</defined_scientific>`
-  (the Giorgi regions [#]_ and the SREX regions [#]_).
-- can plot figures of these regions (:doc:`tutorial<notebooks/plotting>`) with
-  `matplotlib <http://matplotlib.org/>`_ and
-  `cartopy <http://scitools.org.uk/cartopy/>`_
-- can be used to create masks of the regions for arbitrary longitude
-  and latitude grids (:doc:`2D integer masks<notebooks/mask_2D>` and
-  :doc:`3D boolean masks<notebooks/mask_3D>`).
-- Support for shapefiles is provided via geopandas (:doc:`tutorial<notebooks/geopandas>`).
-- arbitrary regions can be defined easily (:doc:`tutorial<notebooks/create_own_regions>`).
 
-.. note::
-   From version 0.5 ``regionmask`` treats points on borders differently
-   and also considers poygon interiors (holes), e.g. the Caspian Sea in
-   ``natural_earth_v5_0_0.land_110`` region. The differences are illustrated in a
-   :doc:`notebook<notebooks/method>`. See also in :doc:`What's new<whats_new>`
+  - :doc:`countries</defined_countries>`
+  - :doc:`landmasks</defined_landmask>`
+  - :doc:`regions used in the scientific literature</defined_scientific>`
 
+- can :doc:`plot figures of these regions<notebooks/plotting>`
+
+- supports using arbitrary existing or user-defined region definitions:
+
+  - regions defined as shapefiles can be :doc:`accessed via geopandas<notebooks/geopandas>`
+  - :doc:`user-defined regions<notebooks/create_own_regions>` can be created via numpy or shapely
 
 Documentation
 =============
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
    :caption: Getting Started
 
    installation
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
    :caption: Methods
 
    notebooks/method
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
    :caption: Usage: Tutorials
 
    notebooks/plotting
@@ -65,6 +72,7 @@ Documentation
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
    :caption: Defined Regions
 
    defined_countries
@@ -74,6 +82,7 @@ Documentation
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
    :caption: API Reference
 
    whats_new
@@ -84,16 +93,6 @@ License
 =======
 
 regionmask is published under a MIT license.
-
-References
-==========
-
-Region Definitions
-------------------
-.. [#] `Giorgi and Franciso, 2000 <http://onlinelibrary.wiley.com/doi/10.1029/1999GL011016>`__
-.. [#] `Seneviratne et al., 2012 <https://www.ipcc.ch/pdf/special-reports/srex/SREX-Ch3-Supplement_FINAL.pdf>`__
-.. [#] `Christensen and Christensen, 2007 <https://link.springer.com/article/10.1007/s10584-006-9210-7>`__
-
 
 Indices and tables
 ==================
