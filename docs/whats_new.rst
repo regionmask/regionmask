@@ -17,12 +17,16 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Removed support for Python 3.6 (:pull:`288`).
-- The minimum versions of some dependencies were changed (:pull:`311`):
+- The minimum versions of some dependencies were changed (:pull:`311`, :pull:`312`):
 
   ============ ===== =====
   Package      Old   New
   ============ ===== =====
+  geopandas    0.6   0.7
+  matplotlib   3.1   3.2
   pooch        1.0   1.2
+  rasterio     1.0   1.1
+  shapely      1.6   1.7
   ============ ===== =====
 
 - ``regionmask.defined_regions.natural_earth`` is deprecated. ``defined_regions.natural_earth`` used
