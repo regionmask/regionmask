@@ -16,8 +16,8 @@ v0.9.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
-- Removed support for Python 3.6 (:pull:`288`, :pull:`312`).
-- The minimum versions of some dependencies were changed (:pull:`311`):
+- Removed support for Python 3.6 (:pull:`288`).
+- The minimum versions of some dependencies were changed (:pull:`311`, :pull:`312`):
 
   ============ ===== =====
   Package      Old   New
