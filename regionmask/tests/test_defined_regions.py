@@ -85,11 +85,22 @@ def test_defined_regions_natural_earth(monkeypatch, region_name, n_regions):
     _test_region(region, n_regions)
 
 
+def test_fix_ocean_basins_50():
+
+    region = defined_regions.natural_earth_v4_1_0.ocean_basins_50
+    assert "Mediterranean Sea Eastern Basin" in region.names
+    assert "Ross Sea Eastern Basin" in region.names
+
+    region = defined_regions.natural_earth_v5_0_0.ocean_basins_50
+    assert "Mediterranean Sea" in region.names
+    assert "Ross Sea" in region.names
+
+
 @requires_cartopy
 def test_natural_earth_loaded_as_utf8(monkeypatch):
     # GH 95
 
-    region = attrgetter("natural_earth_v5_0_0.ocean_basins_50")(defined_regions)
+    region = defined_regions.natural_earth_v5_0_0.ocean_basins_50
 
     assert "Río de la Plata" in region.names
 

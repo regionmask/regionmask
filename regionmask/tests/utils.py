@@ -82,7 +82,7 @@ _REGIONS_NATURAL_EARTH = {
     "natural_earth_v4_1_0.land_110": 1,
     "natural_earth_v4_1_0.land_50": 1,
     "natural_earth_v4_1_0.land_10": 1,
-    "natural_earth_v4_1_0.ocean_basins_50": 118,
+    "natural_earth_v4_1_0.ocean_basins_50": 119,
     # v5.0.0
     "natural_earth_v5_0_0.countries_110": 177,
     "natural_earth_v5_0_0.countries_50": 242,
@@ -91,7 +91,7 @@ _REGIONS_NATURAL_EARTH = {
     "natural_earth_v5_0_0.land_110": 1,
     "natural_earth_v5_0_0.land_50": 1,
     "natural_earth_v5_0_0.land_10": 1,
-    "natural_earth_v5_0_0.ocean_basins_50": 118,
+    "natural_earth_v5_0_0.ocean_basins_50": 117,
 }
 
 REGIONS.update(_REGIONS_NATURAL_EARTH)
