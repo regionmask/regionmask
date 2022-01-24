@@ -1,12 +1,11 @@
 import warnings
 from functools import partial
-from operator import attrgetter
 
 import numpy as np
 import pytest
 import xarray as xr
 
-from regionmask import Regions, defined_regions
+from regionmask import Regions
 
 outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
 outl2 = ((0, 1), (0, 2), (1, 2.0), (1, 1))
@@ -74,6 +73,30 @@ REGIONS = {
     "srex": 26,
 }
 
+_REGIONS_NATURAL_EARTH = {
+    # v4.1.0
+    "natural_earth_v4_1_0.countries_110": 177,
+    "natural_earth_v4_1_0.countries_50": 241,
+    "natural_earth_v4_1_0.us_states_50": 51,
+    "natural_earth_v4_1_0.us_states_10": 51,
+    "natural_earth_v4_1_0.land_110": 1,
+    "natural_earth_v4_1_0.land_50": 1,
+    "natural_earth_v4_1_0.land_10": 1,
+    "natural_earth_v4_1_0.ocean_basins_50": 119,
+    # v5.0.0
+    "natural_earth_v5_0_0.countries_110": 177,
+    "natural_earth_v5_0_0.countries_50": 242,
+    "natural_earth_v5_0_0.us_states_50": 51,
+    "natural_earth_v5_0_0.us_states_10": 51,
+    "natural_earth_v5_0_0.land_110": 1,
+    "natural_earth_v5_0_0.land_50": 1,
+    "natural_earth_v5_0_0.land_10": 1,
+    "natural_earth_v5_0_0.ocean_basins_50": 117,
+}
+
+REGIONS.update(_REGIONS_NATURAL_EARTH)
+
+
 REGIONS_DEPRECATED = {
     "_ar6_pre_revisions.all": 55,
     "_ar6_pre_revisions.land": 43,
@@ -93,11 +116,12 @@ REGIONS_REQUIRING_CARTOPY = {
 }
 
 
-def get_naturalearth_region_or_skip(monkeypatch, region_name):
+def download_naturalearth_region_or_skip(monkeypatch, natural_earth_feature):
 
     from urllib.request import URLError, urlopen
 
     import cartopy
+    from cartopy.io import shapereader
 
     # add a timeout to cartopy.io.urlopen else it can run indefinitely
     monkeypatch.setattr(cartopy.io, "urlopen", partial(urlopen, timeout=5))
@@ -117,10 +141,12 @@ def get_naturalearth_region_or_skip(monkeypatch, region_name):
     monkeypatch.setattr(downloader, "url_template", url_template)
 
     try:
-        region = attrgetter(region_name)(defined_regions)
+        shapereader.natural_earth(
+            natural_earth_feature.resolution,
+            natural_earth_feature.category,
+            natural_earth_feature.name,
+        )
     except URLError as e:
         warnings.warn(str(e))
         warnings.warn("naturalearth donwload timeout - test not run!")
         pytest.skip()
-
-    return region

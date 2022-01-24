@@ -6,8 +6,8 @@ import pytest
 from regionmask import defined_regions
 from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
 
-from . import has_pygeos, requires_cartopy
-from .utils import REGIONS, REGIONS_REQUIRING_CARTOPY, get_naturalearth_region_or_skip
+from . import has_pygeos
+from .utils import REGIONS
 
 # =============================================================================
 
@@ -39,15 +39,5 @@ def _test_mask_equal_defined_regions(region, ds):
 def test_mask_equal_defined_regions(region_name, ds):
 
     region = attrgetter(region_name)(defined_regions)
-
-    _test_mask_equal_defined_regions(region, ds)
-
-
-@requires_cartopy
-@pytest.mark.parametrize("region_name", REGIONS_REQUIRING_CARTOPY.keys())
-@pytest.mark.parametrize("ds", DATASETS)
-def test_mask_equal_defined_regions_cartopy(monkeypatch, region_name, ds):
-
-    region = get_naturalearth_region_or_skip(monkeypatch, region_name)
 
     _test_mask_equal_defined_regions(region, ds)
