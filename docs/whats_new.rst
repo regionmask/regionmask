@@ -22,7 +22,6 @@ Breaking Changes
   ============ ===== =====
   Package      Old   New
   ============ ===== =====
-  cartopy      0.17  0.18
   geopandas    0.6   0.7
   matplotlib   3.1   3.2
   pooch        1.0   1.2

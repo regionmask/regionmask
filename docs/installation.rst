@@ -19,7 +19,7 @@ For plotting
 ~~~~~~~~~~~~
 
 - `matplotlib <http://matplotlib.org/>`__ (v3.2 or later) is required to create any plots.
-- `cartopy <http://scitools.org.uk/cartopy/>`__ (v0.18 or later) for plotting on
+- `cartopy <http://scitools.org.uk/cartopy/>`__ (v0.17 or later) for plotting on
   geographical maps.
 
 For faster masking
