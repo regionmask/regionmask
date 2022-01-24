@@ -3,16 +3,15 @@ import warnings
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from packaging.version import Version
-
 import numpy as np
 import pooch
+from packaging.version import Version
 from shapely.geometry import MultiPolygon
 
 from ..core.regions import Regions
 from ..core.utils import _flatten_polygons
 
-# TODO: remove deprecated natural_earth class and instance & clean up
+# TODO: remove deprecated (v0.9.0) natural_earth class and instance & clean up
 
 ALTERNATIVE = (
     "Please use ``regionmask.defined_regions.natural_earth_v4_1_0`` or "
@@ -56,26 +55,22 @@ def _obtain_ne(
 
     Parameters
     ----------
-    resolution : "10m" | "50m" | "110m"
-        Resolution of the dataset.
-    category : "cultural" | "physical"
-        Natural earth categories.
-    name : string
-        Name of natural earth dataset.
+    shpfilename : string
+        Filename to read.
     title : string
         Displayed text in Regions.
-    names : string or list, optional
+    names : str or list, default: "name"
         Names of the single regions. If string, obtains them from the geopandas
-        DataFrame, else uses the provided list. Default: "name".
-    abbrevs : string or list, optional
+        DataFrame, else uses the provided list.
+    abbrevs : str or list, default: "postal".
         Abbreviations of the single regions. If string obtains them from the
-        geopandas DataFrame, else uses the provided list. Default: "postal".
-    numbers : string or list, optional
+        geopandas DataFrame, else uses the provided list.
+    numbers : str or list, default: "index".
         Numbers of the single regions. If string obtains them from the geopandas
-        DataFrame, else uses the provided list. Default: "index".
-    coords : string or list, optional
+        DataFrame, else uses the provided list.
+    coords : string or list, default: "geometry".
         Coordinates of the single regions. If string obtains them from the
-        geopandas DataFrame, else uses the provided list. Default: "geometry".
+        geopandas DataFrame, else uses the provided list.
     query : None or string, optional
         If given, the geopandas DataFrame is subset with df.query(query).
         Default: None.
@@ -91,7 +86,6 @@ def _obtain_ne(
     # read the file with geopandas
     df = geopandas.read_file(shpfilename, encoding="utf8")
 
-    # subset the whole dataset if necessary
     if query is not None:
         df = df.query(query).reset_index(drop=True)
 
@@ -124,7 +118,6 @@ VERSIONS = ["v4.1.0", "v5.0.0"]
 
 @dataclass
 class _NaturalEarthFeature:
-    """"""
 
     resolution: str
     category: str
@@ -144,7 +137,7 @@ class _NaturalEarthFeature:
         fNs = self.fetch(version)
 
         # the comma is required
-        fN, = filter(lambda x: x.endswith(".shp"), fNs)
+        (fN,) = filter(lambda x: x.endswith(".shp"), fNs)
 
         return fN
 
@@ -191,14 +184,11 @@ _ocean_basins_50 = _NaturalEarthFeature(
 )
 
 
-
 class NaturalEarth(ABC):
-    """
-    class combining all natural_earth features/ geometries
+    """class combining all natural_earth features/ geometries
 
     Because data must be downloaded, we organise it as a class so that
     we only download it on demand.
-
     """
 
     def __init__(self):
@@ -329,7 +319,6 @@ class NaturalEarth(ABC):
         return "Region Definitions from 'http://www.naturalearthdata.com'."
 
 
-
 def _fix_ocean_basins_50_cartopy(self, df):
     """ocean basins 50 has duplicate entries"""
 
@@ -420,7 +409,7 @@ class NaturalEarthCartopy(NaturalEarth):
 
 class NaturalEarth_v4_1_0(NaturalEarth):
 
-    _fix_ocean_basins_50 = _fix_ocean_basins_50_v5_0_0
+    _fix_ocean_basins_50 = _fix_ocean_basins_50_v4_1_0
     version = "v4.1.0"
 
     def _obtain_ne(self, natural_earth_feature, **kwargs):
@@ -430,7 +419,7 @@ class NaturalEarth_v4_1_0(NaturalEarth):
 
 class NaturalEarth_v5_0_0(NaturalEarth):
 
-    _fix_ocean_basins_50 = _fix_ocean_basins_50_v4_1_0
+    _fix_ocean_basins_50 = _fix_ocean_basins_50_v5_0_0
     version = "v5.0.0"
 
     def _obtain_ne(self, natural_earth_feature, **kwargs):
@@ -508,7 +497,6 @@ def _fetch_aws(version, resolution, category, name):
 
     if Version(pooch.__version__) < Version("1.4"):
         # extract_dir not available
-        print("here")
         unzipper = pooch.Unzip()
     else:
         unzipper = pooch.Unzip(extract_dir=bname)
