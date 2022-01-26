@@ -2,8 +2,8 @@
 
 {% block header %}
 
-.. note:: This tutorial was generated from an IPython notebook that can be
-          downloaded `here <../../notebooks/{{ resources.metadata.name }}.ipynb>`_.
+.. note:: This tutorial was generated from an IPython notebook that can be accessed from
+          `github <https://github.com/regionmask/regionmask/tree/master/docs/notebooks>`_.
 
 .. _{{resources.metadata.name}}:
 {% endblock %}
