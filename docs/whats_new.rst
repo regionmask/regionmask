@@ -83,6 +83,9 @@ Bug Fixes
 Docs
 ~~~~
 
+- Went over the documentation, imporved some sections, unpinned some packages, modernized
+  some aspects (:pull:`313`).
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
