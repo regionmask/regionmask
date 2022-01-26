@@ -29,5 +29,4 @@ See the `documentation <http://regionmask.readthedocs.io/>`_ (on readthedocs).
 
 License
 -------
-
 regionmask is published under a MIT license.
