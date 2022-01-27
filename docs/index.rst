@@ -28,7 +28,10 @@ regionmask is a python package that:
   - :doc:`2D integer masks<notebooks/mask_2D>`
   - :doc:`3D boolean masks<notebooks/mask_3D>`
 
-- takes great care
+- takes great care to consistently treat gridpoints and overlapping regions, see
+
+  - :doc:`Edge behavior and interiors<notebooks/method>`
+  - :doc:`Overlapping regions<notebooks/overlap>`
 
 - contains a number of defined regions, including:
 
