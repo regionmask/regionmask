@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import pytest
 import xarray as xr
@@ -17,7 +19,13 @@ from regionmask.core.mask import (
 from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
 
 from . import has_pygeos, requires_pygeos
-from .utils import dummy_ds, dummy_region, expected_mask_2D, expected_mask_3D
+from .utils import (
+    dummy_ds,
+    dummy_region,
+    dummy_region_overlap,
+    expected_mask_2D,
+    expected_mask_3D,
+)
 
 MASK_FUNCS = [
     _mask_rasterize,
@@ -87,14 +95,6 @@ def test_missing_pygeos_error():
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
-def test_mask_xarray(method):
-
-    expected = expected_mask_2D()
-    result = dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method=method)
-    xr.testing.assert_equal(result, expected)
-
-
-@pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_xr_keep_name(method):
 
     ds = xr.Dataset(
@@ -125,7 +125,7 @@ def test_mask_poly_z_value(method):
 def test_mask_xarray_name(method):
 
     msk = dummy_region.mask(dummy_ds, method=method)
-    assert msk.name == "region"
+    assert msk.name == "mask"
 
 
 @pytest.mark.parametrize("ndims", [(2, 1), (1, 2)])
@@ -282,6 +282,57 @@ def test_mask_wrong_method():
         dummy_region.mask(dummy_ds, method="wrong")
 
 
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_2D_overlap_error(method):
+
+    # make a copy to ensure dummy_region_overlap.overlap is not overwritten
+    region = copy.copy(dummy_region_overlap)
+    expected = expected_mask_2D(a=1, b=2)
+
+    match = "Creating a 2D mask with overlap regions yields wrong results"
+    with pytest.raises(ValueError, match=match):
+        region.mask(dummy_ds, method=method)
+
+    region.overlap = False
+    result = region.mask(dummy_ds, method=method)
+
+    xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("drop", [True, False])
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_3D_overlap(drop, method):
+
+    expected = expected_mask_3D(drop=drop, overlap=True)
+    result = dummy_region_overlap.mask_3D(dummy_ds, drop=drop, method=method)
+
+    xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_3D_overlap_empty(method):
+
+    match = "No gridpoint belongs to any region. "
+
+    lon = lat = [10, 11]
+    with pytest.warns(UserWarning, match=match + "Returning an empty mask"):
+        result = dummy_region_overlap.mask_3D(lon, lat, drop=True, method=method)
+
+    coords = {"lat": lat, "lon": lon}
+    expected = expected_mask_3D(False, coords=coords, overlap=True).isel(
+        region=slice(0, 0)
+    )
+
+    assert result.shape == (0, 2, 2)
+    xr.testing.assert_equal(result, expected)
+
+    with pytest.warns(UserWarning, match=match + "Returning an all-False mask."):
+        result = dummy_region_overlap.mask_3D(lon, lat, drop=False, method=method)
+
+    assert result.shape == (4, 2, 2)
+    assert not result.any()
+
+
 # ======================================================================
 
 # test 2D array
@@ -361,11 +412,12 @@ def test_rasterize(a, b, fill):
     np.testing.assert_equal(result, expected)
 
 
-def test_mask_empty():
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_empty(method):
 
     lon = lat = [10, 11]
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
-        result = dummy_region.mask(lon, lat, method="shapely")
+        result = dummy_region.mask(lon, lat, method=method)
 
     expected = expected_mask_2D(coords={"lon": lon, "lat": lat})
 
@@ -410,8 +462,10 @@ def test_mask_3D(drop, method):
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_3D_empty(method):
 
+    match = "No gridpoint belongs to any region. "
+
     lon = lat = [10, 11]
-    with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
+    with pytest.warns(UserWarning, match=match + "Returning an empty mask"):
         result = dummy_region.mask_3D(lon, lat, drop=True, method=method)
 
     coords = {"lat": lat, "lon": lon}
@@ -419,6 +473,12 @@ def test_mask_3D_empty(method):
 
     assert result.shape == (0, 2, 2)
     xr.testing.assert_equal(result, expected)
+
+    with pytest.warns(UserWarning, match=match + "Returning an all-False mask."):
+        result = dummy_region.mask_3D(lon, lat, drop=False, method=method)
+
+    assert result.shape == (3, 2, 2)
+    assert not result.any()
 
 
 @pytest.mark.parametrize("lon_name", ["lon", "longitude"])
@@ -718,6 +778,22 @@ def test_mask_whole_grid_unusual_lon(method, regions):
     assert (mask == 0).all()
 
 
+@pytest.mark.parametrize("method", MASK_METHODS)
+@pytest.mark.parametrize("outline", [outline_GLOB_180, outline_GLOB_360])
+@pytest.mark.parametrize("lon", [lon180, lon360])
+def test_mask_whole_grid_overlap(method, outline, lon):
+
+    regions = Regions([outline, outline], overlap=True)
+
+    lat = np.arange(90, -91, -10)
+    mask = regions.mask_3D(lon, lat, method=method)
+    assert mask.all()
+
+    # with wrap_lon=False the edges are not masked
+    mask = regions.mask_3D(lon, lat, method=method, wrap_lon=False)
+    assert not mask.sel(lat=-90).any()
+
+
 def test_inject_mask_docstring():
 
     result = _inject_mask_docstring(True, True)
@@ -726,6 +802,7 @@ def test_inject_mask_docstring():
     assert "2D" not in result
     assert "drop :" in result
     assert "geodataframe" in result
+    assert "overlap" in result
 
     result = _inject_mask_docstring(False, False)
 
@@ -733,3 +810,4 @@ def test_inject_mask_docstring():
     assert "3D" not in result
     assert "drop :" not in result
     assert "geodataframe" not in result
+    assert "overlap" not in result

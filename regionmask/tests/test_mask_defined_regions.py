@@ -21,23 +21,25 @@ ds_glob_360_2_part = create_lon_lat_dataarray_from_bounds(*(0, 220, 2), *(90, -9
 DATASETS = [ds_glob_1, ds_glob_2, ds_glob_360_2, ds_glob_360_2_part]
 
 
-def _test_mask_equal_defined_regions(region, ds):
+def _test_mask_equal_defined_regions(region, ds, mask_method):
 
-    rasterize = region.mask(ds, method="rasterize")
-    shapely = region.mask(ds, method="shapely")
+    mask = getattr(region, mask_method)
+
+    rasterize = mask(ds, method="rasterize")
+    shapely = mask(ds, method="shapely")
 
     assert np.allclose(rasterize, shapely, equal_nan=True)
 
     if has_pygeos:
-        pygeos = region.mask(ds, method="pygeos")
+        pygeos = mask(ds, method="pygeos")
 
         assert np.allclose(rasterize, pygeos, equal_nan=True)
 
 
-@pytest.mark.parametrize("region_name", REGIONS.keys())
+@pytest.mark.parametrize("defined_region", REGIONS)
 @pytest.mark.parametrize("ds", DATASETS)
-def test_mask_equal_defined_regions(region_name, ds):
+def test_mask_equal_defined_regions(defined_region, ds):
 
-    region = attrgetter(region_name)(defined_regions)
-
-    _test_mask_equal_defined_regions(region, ds)
+    region = attrgetter(defined_region.region_name)(defined_regions)
+    mask_method = "mask_3D" if defined_region.overlap else "mask"
+    _test_mask_equal_defined_regions(region, ds, mask_method)

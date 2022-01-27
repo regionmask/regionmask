@@ -47,6 +47,7 @@ class ar6_cls:
                 abbrevs="Acronym",
                 name=self._name,
                 source=self._source,
+                overlap=False,
             )
 
         return self._all
@@ -63,6 +64,7 @@ class ar6_cls:
                 abbrevs="Acronym",
                 name=self._name + " (land only)",
                 source=self._source,
+                overlap=False,
             )
 
         return self._land
@@ -79,6 +81,7 @@ class ar6_cls:
                 abbrevs="Acronym",
                 name=self._name + " (ocean only)",
                 source=self._source,
+                overlap=False,
             )
 
         return self._ocean

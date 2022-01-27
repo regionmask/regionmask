@@ -297,3 +297,20 @@ def test_getitem_sorted(numbers):
     assert r.numbers == numbers_expected
     assert r.abbrevs == abbrevs_expected
     assert r.names == names_expected
+
+
+@pytest.mark.parametrize("overlap", [None, True, False])
+def test_overlap(overlap):
+
+    r = Regions([outl1], overlap=overlap)
+
+    assert r.overlap is overlap
+
+
+@pytest.mark.parametrize("overlap", [None, True, False])
+def test_overlap_getitem(overlap):
+
+    r = Regions(3 * [outl1], overlap=overlap)
+    r_select = r[[0, 2]]
+
+    assert r_select.overlap is overlap

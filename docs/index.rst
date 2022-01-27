@@ -28,6 +28,8 @@ regionmask is a python package that:
   - :doc:`2D integer masks<notebooks/mask_2D>`
   - :doc:`3D boolean masks<notebooks/mask_3D>`
 
+- takes great care
+
 - contains a number of defined regions, including:
 
   - :doc:`countries</defined_countries>`
@@ -68,6 +70,7 @@ Documentation
    notebooks/mask_3D
    notebooks/geopandas
    notebooks/create_own_regions
+   notebooks/overlap
    intake_regionmask
 
 .. toctree::

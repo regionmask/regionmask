@@ -230,6 +230,7 @@ notebooks = (
     "notebooks/mask_2D",
     "notebooks/mask_3D",
     "notebooks/geopandas",
+    "notebooks/overlap",
     "notebooks/create_own_regions",
 )
 

@@ -25,6 +25,7 @@ def test_repr_srex():
     expected = """<regionmask.Regions>
 Name:     SREX
 Source:   Seneviratne et al., 2012 (https://www.ipcc.ch/site/assets/uploads/2...
+overlap:  False
 
 Regions:
  1 ALA       Alaska/N.W. Canada
@@ -46,14 +47,14 @@ Regions:
 
 def test_display_metadata():
 
-    expected = ["Name:     name"]
-    result = formatting._display_metadata("name", None)
+    expected = ["Name:     name", "overlap:  False"]
+    result = formatting._display_metadata("name", None, False)
     assert result == expected
 
-    expected = ["Name:     name", "Source:   source"]
-    result = formatting._display_metadata("name", "source")
+    expected = ["Name:     name", "Source:   source", "overlap:  True"]
+    result = formatting._display_metadata("name", "source", True)
     assert result == expected
 
-    expected = ["Name:     na..."]
-    result = formatting._display_metadata("name of regions", source=None, max_width=15)
+    expected = ["Name:     na...", "overlap:  None"]
+    result = formatting._display_metadata("name of regions", None, None, max_width=15)
     assert result == expected
