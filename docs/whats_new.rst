@@ -82,6 +82,8 @@ Bug Fixes
 - The name of lon and lat coordinates when passed as single elements is now repected when
   creating masks i.e. for ``region.mask(ds.longitude, ds.longitude)`` (:issue:`129`,
   :pull:`294`).
+- Ensure :py:meth:`Regions.plot` uses the current axes (``plt.gca()``) if possible and
+  error if a non-cartopy GeoAxes is passed (:issue:`316`, :pull:`321`).
 
 
 Docs
