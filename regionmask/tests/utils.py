@@ -69,7 +69,7 @@ def expected_mask_3D(drop, coords=None, overlap=False):
 
     expected = xr.DataArray(mask, coords=coords, dims=dims)
 
-    return expected.drop_isel(region=-1) if drop else expected
+    return expected.drop_sel(region=numbers[-1]) if drop else expected
 
 
 @dataclass
