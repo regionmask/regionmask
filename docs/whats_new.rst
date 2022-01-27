@@ -64,6 +64,10 @@ Enhancements
 Deprecations
 ~~~~~~~~~~~~
 
+- The ``regionmask.defined_regions._ar6_pre_revisions`` regions are deprecated. The
+  ``regionmask.defined_regions.ar6`` regions should be used instead
+  (:issue:`314`, :pull:`320`).
+
 New regions
 ~~~~~~~~~~~
 
