@@ -289,7 +289,7 @@ def test_mask_2D_overlap_error(method):
     region = copy.copy(dummy_region_overlap)
     expected = expected_mask_2D(a=1, b=2)
 
-    match = "Creating a 2D mask with overlap regions yields wrong results"
+    match = "Creating a 2D mask with overlapping regions yields wrong results"
     with pytest.raises(ValueError, match=match):
         region.mask(dummy_ds, method=method)
 
