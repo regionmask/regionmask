@@ -456,6 +456,12 @@ def plot_3D_mask(mask_3D, **kwargs):
     if "region" not in mask_3D.coords:
         raise ValueError("``mask_3D`` must contain the dimension 'region'")
 
+    if (mask_3D.sum("region") > 1).any():
+        warnings.warn(
+            "Found overlapping regions which cannot correctly be displayed on a 2D map",
+            RuntimeWarning,
+            )
+
     # flatten the mask
     mask_2D = (mask_3D * mask_3D.region).sum("region")
 
