@@ -63,7 +63,7 @@ def from_geopandas(
     abbrevs=None,
     name="unnamed",
     source=None,
-    overlap=None,
+    overlap=False,
 ):
     """
     Create ``regionmask.Region`` from ``geopandas.geodataframe.GeoDataFrame``.
@@ -87,6 +87,16 @@ def from_geopandas(
         name of the ``regionmask.Region`` instance created
     source : str, optional
         source of the shapefile
+    overlap : bool, default: False
+        Indicates if (some of) the regions overlap. If True ``mask_3D`` will ensure
+        overlapping regions are correctly assigned grid points while ``mask`` will
+        error (because overlapping regions cannot be represented by a 2D mask).
+
+        If False (default) assumes non-overlapping regions. Grid points will
+        silently be assigned to the region with the higher number (this may change
+        in a future version).
+
+        There is (currently) no automatic detection of overlapping regions.
 
     Returns
     -------

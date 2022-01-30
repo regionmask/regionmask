@@ -86,9 +86,14 @@ drop : boolean, default: True
 """
 
 _OVERLAP_DOCSTRING = """\
-overlap : bool, optional
-    Indicates if (some of) the regions overlap. If True ``mask_3D`` will ensure
-    overlapping regions are correctly assigned grid points.
+overlap : bool, default: False
+    Indicates if (some of) the regions overlap. If True ``mask_3D_geopandas`` will
+    ensure overlapping regions are correctly assigned grid points.
+
+    If False (default) assumes non-overlapping regions. Grid points will silently be
+    assigned to the region with the higher number (this may change in a future version).
+
+    There is (currently) no automatic detection of overlapping regions.
 """
 
 

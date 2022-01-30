@@ -47,6 +47,11 @@ Enhancements
 ~~~~~~~~~~~~
 - regionmask does now correctly treat overlapping regions if ``overlap=True`` is set in
   the constructor (:issue:`228`, :pull:`318`).
+
+  Per default regionmask assumes non-overlapping regions. In this case grid points of
+  overlapping polygons will silently be assigned to the region with the higher number.
+  This may change in a future version.
+
 - :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D` now work with unstructured 1D
   grids such as:
 

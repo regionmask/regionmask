@@ -28,7 +28,7 @@ class Regions:
         abbrevs=None,
         name="unnamed",
         source=None,
-        overlap=None,
+        overlap=False,
     ):
 
         """
@@ -47,11 +47,16 @@ class Regions:
             Name of the collection of regions. Default: "unnamed"
         source : string, optional
             Source of the region definitions. Default: "".
-        overlap : bool, optional
+        overlap : bool, default: False
             Indicates if (some of) the regions overlap. If True ``mask_3D`` will ensure
             overlapping regions are correctly assigned grid points while ``mask`` will
             error (because overlapping regions cannot be represented by a 2D mask).
-            There is no automatic detection of overlapping regions!
+
+            If False (default) assumes non-overlapping regions. Grid points will
+            silently be assigned to the region with the higher number (this may change
+            in a future version of regionmask).
+
+            There is (currently) no automatic detection of overlapping regions.
 
         Examples
         --------
