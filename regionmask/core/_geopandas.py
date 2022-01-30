@@ -89,7 +89,7 @@ def from_geopandas(
         source of the shapefile
     overlap : bool, default: False
         Indicates if (some of) the regions overlap. If True ``mask_3D`` will ensure
-        overlapping regions are correctly assigned grid points while ``mask`` will
+        overlapping regions are correctly assigned to grid points while ``mask`` will
         error (because overlapping regions cannot be represented by a 2D mask).
 
         If False (default) assumes non-overlapping regions. Grid points will
