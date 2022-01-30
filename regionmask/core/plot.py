@@ -487,7 +487,7 @@ def plot_3D_mask(mask_3D, **kwargs):
         warnings.warn(
             "Found overlapping regions which cannot correctly be displayed on a 2D map",
             RuntimeWarning,
-            )
+        )
 
     # flatten the mask
     mask_2D = (mask_3D * mask_3D.region).sum("region")

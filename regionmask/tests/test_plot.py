@@ -763,8 +763,9 @@ def test_plot_3D_mask_wrong_input():
         # ensure kwargs are passed through
         assert h.get_zorder() == 3
 
+
 @requires_matplotlib
-def test_plot_3D_mask_wrong_input():
+def test_plot_3D_mask_overlap():
 
     lon = np.arange(-180, 180, 2)
     lat = np.arange(90, -91, -2)
