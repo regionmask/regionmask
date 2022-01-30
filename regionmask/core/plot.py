@@ -102,6 +102,21 @@ def _check_unused_kws(add, kws, feature_name, kws_name):
         )
 
 
+def _maybe_gca(**kwargs):
+
+    import matplotlib.pyplot as plt
+
+    # can call gcf unconditionally: either it exists or would be created by plt.axes
+    f = plt.gcf()
+
+    # only call gca if an active axes exists
+    if f.axes:
+        # can not pass kwargs to active axes
+        return plt.gca()
+
+    return plt.axes(**kwargs)
+
+
 @_deprecate_positional
 def _plot(
     self,
@@ -130,8 +145,8 @@ def _plot(
     Parameters
     ----------
     ax : axes handle, optional
-        If given uses existing axes (needs to be a cartopy axes). If not
-        given, creates a new axes with the specified projection.
+        If given uses existing axes (needs to be a cartopy GeoAxes). If not given,
+        uses the current axes or creates a new axes with the specified projection.
     projection : cartopy projection, default: None
         Defines the projection of the map. If None uses 'PlateCarree'.
         See cartopy home page.
@@ -221,7 +236,7 @@ def _plot(
 
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
-    import matplotlib.pyplot as plt
+    from cartopy.mpl import geoaxes
 
     NEF = cfeature.NaturalEarthFeature
 
@@ -235,8 +250,20 @@ def _plot(
     if projection is None:
         projection = ccrs.PlateCarree()
 
+    if ax is not None and not isinstance(ax, geoaxes.GeoAxes):
+        raise TypeError(
+            "The passed axes (``ax``) is not a cartopy GeoAxes. "
+            "Either provide a GeoAxes or use ``plot_region``"
+        )
+
     if ax is None:
-        ax = plt.axes(projection=projection)
+        ax = _maybe_gca(projection=projection)
+
+    if not isinstance(ax, geoaxes.GeoAxes):
+        raise TypeError(
+            "The current axes (``plt.gca()``) is not a cartopy GeoAxes. "
+            "Either provide a GeoAxes or use ``plot_region``"
+        )
 
     if ocean_kws is None:
         ocean_kws = dict(color=cfeature.COLORS["water"], zorder=0.9, lw=0)
@@ -294,8 +321,8 @@ def _plot_regions(
     Parameters
     ----------
     ax : axes handle, optional
-        If given, uses existing axes. If not given, creates a new axes.
-        Note: in contrast to plot this does not create a cartopy axes.
+        If given, uses existing axes. If not given, uses the current axes or creates new
+        axes. In contrast to plot this does not create a cartopy axes.
     regions : list of int or str | 'all', default: "all"
         Deprecated - subset regions before plotting, i.e. use `r[regions].plot()`
         instead of `r.plot(regions=regions)`.

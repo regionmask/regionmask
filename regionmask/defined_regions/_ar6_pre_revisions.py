@@ -1,3 +1,5 @@
+import warnings
+
 import geopandas as gp
 from shapely import geometry
 
@@ -37,6 +39,11 @@ The region numbers for ``all``, ``land``, and ``ocean`` are consistent. The
 region numbers for ``separate_pacific`` and all others are not.
 
 """
+
+DEPRECATION = (
+    "The ``_ar6_pre_revisions`` regions are deprecated and will be removed in a future "
+    "release."
+)
 
 
 def _combine_to_multipolygon(df, column, *names):
@@ -159,6 +166,7 @@ class ar6_pre_revisions_cls:
 
     @property
     def all(self):
+        warnings.warn(DEPRECATION, FutureWarning)
         if self._all is None:
 
             self._all = from_geopandas(
@@ -178,6 +186,9 @@ class ar6_pre_revisions_cls:
             r = self.all[land]
             r.name = self._name + " (land only)"
             self._land = r
+        else:
+            warnings.warn(DEPRECATION, FutureWarning)
+
         return self._land
 
     @property
@@ -186,10 +197,13 @@ class ar6_pre_revisions_cls:
             r = self.all[ocean]
             r.name = self._name + " (ocean only)"
             self._ocean = r
+        else:
+            warnings.warn(DEPRECATION, FutureWarning)
         return self._ocean
 
     @property
     def separate_pacific(self):
+        warnings.warn(DEPRECATION, FutureWarning)
         if self._separate_pacific is None:
             # need to fix the duplicates
             df = self._df.copy()
