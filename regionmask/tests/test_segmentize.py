@@ -16,7 +16,7 @@ def test_get_tolerance():
     assert _get_tolerance(1000) == 10
     assert _get_tolerance([-1000, 10]) == 10
     assert _get_tolerance(10000) == 100
-    assert _get_tolerance(10 ** 8) == 10 ** 6
+    assert _get_tolerance(10**8) == 10**6
 
 
 def test_segmentize():

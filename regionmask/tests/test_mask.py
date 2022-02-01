@@ -706,7 +706,7 @@ METHODS = {
 equal = np.arange(0.5, 360)
 grid_2D = np.arange(10).reshape(2, 5)
 un_equal = [0, 1, 2, 4, 5, 6.1]
-close_to_equal = equal + np.random.randn(*equal.shape) * 10 ** -6
+close_to_equal = equal + np.random.randn(*equal.shape) * 10**-6
 
 
 @pytest.mark.parametrize(

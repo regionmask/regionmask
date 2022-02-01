@@ -448,13 +448,13 @@ def _mask_edgepoints_shapely(
         return mask.reshape(shape)
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON[borderpoints] - 1 * 10 ** -8
-    LAT = LAT[borderpoints] - 1 * 10 ** -10
+    LON = LON[borderpoints] - 1 * 10**-8
+    LAT = LAT[borderpoints] - 1 * 10**-10
 
     # wrap points LON_180W_or_0E: -180°E -> 180°E and 0°E -> 360°E
     LON[LON_180W_or_0E[borderpoints]] += 360
     # shift points at -90°N to -89.99...°N
-    LAT[LAT_90S[borderpoints]] = -90 + 1 * 10 ** -10
+    LAT[LAT_90S[borderpoints]] = -90 + 1 * 10**-10
 
     # "mask[borderpoints][sel] = number" does not work, need to use np.where
     idx = np.where(borderpoints)[0]
@@ -475,8 +475,8 @@ def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False
     )
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10 ** -8
-    LAT = LAT - 1 * 10 ** -10
+    LON = LON - 1 * 10**-8
+    LAT = LAT - 1 * 10**-10
 
     # convert shapely points to pygeos
     poly_pygeos = pygeos.from_shapely(polygons)
@@ -504,8 +504,8 @@ def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=Fals
     )
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10 ** -8
-    LAT = LAT - 1 * 10 ** -10
+    LON = LON - 1 * 10**-8
+    LAT = LAT - 1 * 10**-10
 
     for i, polygon in enumerate(polygons):
         sel = shp_vect.contains(polygon, LON, LAT)
@@ -616,8 +616,8 @@ def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
 
     # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
-    lon = lon - 1 * 10 ** -8
-    lat = lat - 1 * 10 ** -10
+    lon = lon - 1 * 10**-8
+    lat = lat - 1 * 10**-10
 
     return _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill, **kwargs)
 
