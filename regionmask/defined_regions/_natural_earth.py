@@ -109,7 +109,13 @@ def _obtain_ne(
     source = "http://www.naturalearthdata.com"
 
     return Regions(
-        coords, numbers=numbers, names=names, abbrevs=abbrevs, name=title, source=source
+        coords,
+        numbers=numbers,
+        names=names,
+        abbrevs=abbrevs,
+        name=title,
+        source=source,
+        overlap=False,
     )
 
 

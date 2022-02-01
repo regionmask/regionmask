@@ -29,7 +29,7 @@ def maybe_truncate(obj, maxlen=500):
     return s
 
 
-def _display_metadata(name, source, max_width=80):
+def _display_metadata(name, source, overlap, max_width=80):
     pad = 10
 
     name = pretty_print("Name:", pad) + maybe_truncate(name, max_width - pad)
@@ -38,6 +38,9 @@ def _display_metadata(name, source, max_width=80):
     if source is not None:
         source = pretty_print("Source:", pad) + maybe_truncate(source, max_width - pad)
         summary.append(source)
+
+    overlap = pretty_print("overlap:", pad) + f"{overlap}"
+    summary.append(overlap)
 
     return summary
 
@@ -81,7 +84,9 @@ def _display(self, max_rows=10, max_width=None, max_colwidth=50):
     if max_width is None:
         max_width, _ = console.get_console_size()
 
-    summary += _display_metadata(self.name, self.source, max_width=max_width)
+    summary += _display_metadata(
+        self.name, self.source, self.overlap, max_width=max_width
+    )
     summary.append("")
     summary += _display_regions_gp(self, max_rows, max_width, max_colwidth)
 

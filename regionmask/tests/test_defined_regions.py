@@ -15,36 +15,37 @@ from .utils import (
 )
 
 
-def _test_region(region, n_regions):
+def _test_region(defined_region):
+
+    region = attrgetter(defined_region.region_name)(defined_regions)
+
     assert isinstance(region, Regions)
-    assert len(region) == n_regions
+    assert len(region) == defined_region.n_regions
+
+    assert region.overlap is defined_region.overlap
 
     # currently all regions are -180..180
     assert region.lon_180
 
 
-@pytest.mark.parametrize("region_name, n_regions", REGIONS.items())
-def test_defined_region(region_name, n_regions):
+@pytest.mark.parametrize("defined_region", REGIONS)
+def test_defined_region(defined_region):
 
-    region = attrgetter(region_name)(defined_regions)
-
-    _test_region(region, n_regions)
+    _test_region(defined_region)
 
 
-@pytest.mark.parametrize("region_name, n_regions", REGIONS_DEPRECATED.items())
-def test_defined_region_deprecated(region_name, n_regions):
+@pytest.mark.parametrize("defined_region", REGIONS_DEPRECATED)
+def test_defined_region_deprecated(defined_region):
 
     match = "The ``_ar6_pre_revisions`` regions are deprecated"
     with pytest.warns(FutureWarning, match=match):
-        region = attrgetter(region_name)(defined_regions)
-
-    _test_region(region, n_regions)
+        _test_region(defined_region)
 
 
 @requires_cartopy
 @pytest.mark.filterwarnings("ignore:Downloading")
-@pytest.mark.parametrize("region_name, n_regions", REGIONS_REQUIRING_CARTOPY.items())
-def test_defined_regions_natural_earth(monkeypatch, region_name, n_regions):
+@pytest.mark.parametrize("defined_region", REGIONS_REQUIRING_CARTOPY)
+def test_defined_regions_natural_earth(monkeypatch, defined_region):
     # TODO: remove this test once defined_regions.natural_earth is removed
 
     import cartopy
@@ -54,7 +55,7 @@ def test_defined_regions_natural_earth(monkeypatch, region_name, n_regions):
     match = "``regionmask.defined_regions.natural_earth`` is deprecated"
 
     # get regionmask.defined_regions._natural_earth._land_10 dataclass
-    region = region_name.split(".")[1]
+    region = defined_region.region_name.split(".")[1]
     natural_earth_feature = attrgetter(f"_{region}")(_natural_earth)
 
     # get the filename of cartopy-downloaded shapefiles
@@ -76,15 +77,14 @@ def test_defined_regions_natural_earth(monkeypatch, region_name, n_regions):
     # only raise an error if the file is not downloaded
     if not os.path.isfile(cartopy_file):
         with pytest.raises(ValueError, match=match):
-            attrgetter(region_name)(defined_regions)
+            attrgetter(defined_region.region_name)(defined_regions)
 
     # download data using cartopy
     download_naturalearth_region_or_skip(monkeypatch, natural_earth_feature)
 
     # get region and ensure deprcation warning is raised
     with pytest.warns(FutureWarning, match=match):
-        region = attrgetter(region_name)(defined_regions)
-    _test_region(region, n_regions)
+        _test_region(defined_region)
 
 
 def test_fix_ocean_basins_50():

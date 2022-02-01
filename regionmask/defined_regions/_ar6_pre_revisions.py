@@ -175,6 +175,7 @@ class ar6_pre_revisions_cls:
                 abbrevs="V3",
                 name=self._name,
                 source=self._source,
+                overlap=False,
             )
 
         return self._all
@@ -214,6 +215,7 @@ class ar6_pre_revisions_cls:
                 abbrevs="V3",
                 name=self._name + "(separate Pacific regions)",
                 source=self._source,
+                overlap=False,
             )
 
         return self._separate_pacific

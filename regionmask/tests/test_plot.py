@@ -765,6 +765,23 @@ def test_plot_3D_mask_wrong_input():
 
 
 @requires_matplotlib
+def test_plot_3D_mask_overlap():
+
+    lon = np.arange(-180, 180, 2)
+    lat = np.arange(90, -91, -2)
+
+    outline_GLOB = np.array(
+        [[-180.0, 90.0], [-180.0, -90.0], [180.0, -90.0], [180.0, 90.0]]
+    )
+    region = regionmask.Regions([outline_GLOB, outline_GLOB], overlap=True)
+
+    mask_3D = region.mask_3D(lon, lat)
+
+    with pytest.warns(RuntimeWarning, match="overlapping regions"):
+        plot_3D_mask(mask_3D)
+
+
+@requires_matplotlib
 @requires_cartopy
 def test_check_unused_kws():
 

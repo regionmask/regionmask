@@ -17,6 +17,9 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Removed support for Python 3.6 (:pull:`288`).
+- The ``xarray.DataArray`` mask returned by all masking functions (e.g. :py:meth:`Regions.mask`)
+  was renamed from `region` to `mask`. The former was ambiguous with respect to the `region` dimension
+  of 3D masks (:pull:`318`).
 - The minimum versions of some dependencies were changed (:pull:`311`, :pull:`312`):
 
   ============ ===== =====
@@ -42,6 +45,13 @@ Breaking Changes
 
 Enhancements
 ~~~~~~~~~~~~
+- regionmask does now correctly treat overlapping regions if ``overlap=True`` is set in
+  the constructor (:issue:`228`, :pull:`318`).
+
+  Per default regionmask assumes non-overlapping regions. In this case grid points of
+  overlapping polygons will silently be assigned to the region with the higher number.
+  This may change in a future version.
+
 - :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D` now work with unstructured 1D
   grids such as:
 

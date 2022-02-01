@@ -70,18 +70,31 @@ def create_test_datasets():
 def test_mask_to_dataarray_ds_name(ds, lon_name, lat_name, mask):
 
     actual = mask_to_dataarray(mask, ds, None, lon_name, lat_name)
-    actual = actual.coords.to_dataset()
     expected = ds.coords.to_dataset()
-    xr.testing.assert_equal(expected, actual)
+    xr.testing.assert_equal(expected, actual.coords.to_dataset())
+    np.testing.assert_equal(mask, actual.values)
 
 
 @pytest.mark.parametrize("ds, lon_name, lat_name, mask", create_test_datasets())
 def test_mask_to_dataarray_ds_indiv(ds, lon_name, lat_name, mask):
 
     actual = mask_to_dataarray(mask, ds[lon_name], ds[lat_name])
-    actual = actual.coords.to_dataset()
     expected = ds.coords.to_dataset()
-    xr.testing.assert_equal(expected, actual)
+    xr.testing.assert_equal(expected, actual.coords.to_dataset())
+    np.testing.assert_equal(mask, actual.values)
+
+
+@pytest.mark.parametrize("n_regions", [1, 2, 3])
+@pytest.mark.parametrize("ds, lon_name, lat_name, mask", create_test_datasets())
+def test_mask_to_dataarray_3D_mask(n_regions, ds, lon_name, lat_name, mask):
+
+    mask_3D = np.stack([mask] * n_regions, 0)
+    actual = mask_to_dataarray(mask_3D, ds[lon_name], ds[lat_name])
+    expected = ds.coords.to_dataset()
+    xr.testing.assert_equal(expected, actual.coords.to_dataset())
+    np.testing.assert_equal(mask_3D, actual.values)
+    assert "region" in actual.dims
+    assert actual.region.size == n_regions
 
 
 @pytest.mark.parametrize("lon", ([0, 1], np.array([0.1, 2.3])))

@@ -57,7 +57,13 @@ def _construct_abbrevs(geodataframe, names):
 
 
 def from_geopandas(
-    geodataframe, numbers=None, names=None, abbrevs=None, name="unnamed", source=None
+    geodataframe,
+    numbers=None,
+    names=None,
+    abbrevs=None,
+    name="unnamed",
+    source=None,
+    overlap=False,
 ):
     """
     Create ``regionmask.Region`` from ``geopandas.geodataframe.GeoDataFrame``.
@@ -81,6 +87,16 @@ def from_geopandas(
         name of the ``regionmask.Region`` instance created
     source : str, optional
         source of the shapefile
+    overlap : bool, default: False
+        Indicates if (some of) the regions overlap. If True ``mask_3D`` will ensure
+        overlapping regions are correctly assigned to grid points while ``mask`` will
+        error (because overlapping regions cannot be represented by a 2D mask).
+
+        If False (default) assumes non-overlapping regions. Grid points will
+        silently be assigned to the region with the higher number (this may change
+        in a future version).
+
+        There is (currently) no automatic detection of overlapping regions.
 
     Returns
     -------
@@ -125,6 +141,7 @@ def from_geopandas(
         abbrevs=abbrevs,
         name=name,
         source=source,
+        overlap=overlap,
     )
 
 
@@ -192,6 +209,7 @@ def mask_3D_geopandas(
     numbers=None,
     method=None,
     wrap_lon=None,
+    overlap=False,
 ):
 
     polygons, lon_bounds, numbers = _prepare_gdf_for_mask(
@@ -209,6 +227,7 @@ def mask_3D_geopandas(
         lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
+        as_3D=overlap,
     )
 
     return mask_3D
