@@ -9,6 +9,7 @@ dependencies:
   - matplotlib-base=3.2
   - numpy=1.17
   - pandas=1.2
+  - packaging=20.0
   - pooch=1.2
   - pygeos=0.9
   - rasterio=1.1

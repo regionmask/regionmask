@@ -7,6 +7,7 @@ Required dependencies
 - Python (3.7 or later)
 - `geopandas <http://geopandas.org/>`__ (0.7 or later)
 - `numpy <http://www.numpy.org/>`__ (1.17 or later)
+- `packaging <https://packaging.pypa.io/en/latest/>`__ (20.0 or later)
 - `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.2 or later)
 - `rasterio <https://rasterio.readthedocs.io/>`__ (1.1 or later)
 - `shapely <http://toblerity.org/shapely/>`__ (1.7 or later)

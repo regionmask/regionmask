@@ -4,6 +4,7 @@
 
 geopandas >= 0.7
 numpy >= 1.17
+packaging >= 20.0
 pooch >= 1.2
 rasterio >= 1.1
 shapely >= 1.7
