@@ -6,6 +6,7 @@ dependencies:
   - python=3.7
   - geopandas
   - numpy
+  - packaging
   - pooch
   - rasterio
   - setuptools

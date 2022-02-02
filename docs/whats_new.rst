@@ -112,6 +112,7 @@ Internal Changes
 - Follow up to :pull:`294` - fix wrong dimension order for certain conditions (:issue:`295`).
 - Refactor `test_mask` - make use of ``xr.testing.assert_equal`` and simplify some
   elements (:pull:`297`).
+- Add `packaging` as a dependency (:issue:`324`, :pull:`328`).
 
 v0.8.0 (08.09.2021)
 -------------------

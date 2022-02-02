@@ -12,6 +12,7 @@ dependencies:
   - matplotlib-base
   - numpy
   - pooch
+  - packaging
   - pygeos
   - rasterio
   - xarray
