@@ -113,6 +113,7 @@ Internal Changes
 - Refactor `test_mask` - make use of ``xr.testing.assert_equal`` and simplify some
   elements (:pull:`297`).
 - Add `packaging` as a dependency (:issue:`324`, :pull:`328`).
+- Add python 3.10 to list of supported versions (:pull:`330`).
 
 v0.8.0 (08.09.2021)
 -------------------
