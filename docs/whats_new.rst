@@ -16,7 +16,27 @@ v0.9.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
-- Removed support for Python 3.6.
+- Removed support for Python 3.6 (:pull:`288`).
+- The ``xarray.DataArray`` mask returned by all masking functions (e.g. :py:meth:`Regions.mask`)
+  was renamed from `region` to `mask`. The former was ambiguous with respect to the `region` dimension
+  of 3D masks (:pull:`318`).
+- The minimum versions of some dependencies were changed (:pull:`311`, :pull:`312`):
+
+  ============ ===== =====
+  Package      Old   New
+  ============ ===== =====
+  geopandas    0.6   0.7
+  matplotlib   3.1   3.2
+  pooch        1.0   1.2
+  rasterio     1.0   1.1
+  shapely      1.6   1.7
+  ============ ===== =====
+
+- ``regionmask.defined_regions.natural_earth`` is deprecated. ``defined_regions.natural_earth`` used
+  cartopy to download natural_earth data and it was unclear which version of the regions
+  is available. This is problematic because some regions change between the versions.
+  Please use ``defined_regions.natural_earth_v4_1_0`` or ``defined_regions.natural_earth_v5_0_0``
+  instead (:issue:`306`, :pull:`311`).
 - Passing coordinates with different type to :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D`
   is no longer supported, i.e. can no longer pass lon as numpy array and lat as
   DataArray (:pull:`294`).
@@ -25,6 +45,13 @@ Breaking Changes
 
 Enhancements
 ~~~~~~~~~~~~
+- regionmask does now correctly treat overlapping regions if ``overlap=True`` is set in
+  the constructor (:issue:`228`, :pull:`318`).
+
+  Per default regionmask assumes non-overlapping regions. In this case grid points of
+  overlapping polygons will silently be assigned to the region with the higher number.
+  This may change in a future version.
+
 - :py:meth:`Regions.mask` and :py:meth:`Regions.mask_3D` now work with unstructured 1D
   grids such as:
 
@@ -41,10 +68,15 @@ Enhancements
   based on the euclidean distance of each segment. Per default the maximum distance of
   each segment is 1 for lat/ lon coords - see the ``tolerance`` keyword of the plotting
   methods. The ``subsample`` keyword is deprecated (:issue:`109`, :pull:`292`).
-
+- The download of the natural_earth regions is now done in regionmask (using pooch) and no
+  longer relies on cartopy (:issue:`306`, :pull:`311`).
 
 Deprecations
 ~~~~~~~~~~~~
+
+- The ``regionmask.defined_regions._ar6_pre_revisions`` regions are deprecated. The
+  ``regionmask.defined_regions.ar6`` regions should be used instead
+  (:issue:`314`, :pull:`320`).
 
 New regions
 ~~~~~~~~~~~
@@ -60,10 +92,15 @@ Bug Fixes
 - The name of lon and lat coordinates when passed as single elements is now repected when
   creating masks i.e. for ``region.mask(ds.longitude, ds.longitude)`` (:issue:`129`,
   :pull:`294`).
+- Ensure :py:meth:`Regions.plot` uses the current axes (``plt.gca()``) if possible and
+  error if a non-cartopy GeoAxes is passed (:issue:`316`, :pull:`321`).
 
 
 Docs
 ~~~~
+
+- Went over the documentation, imporved some sections, unpinned some packages, modernized
+  some aspects (:pull:`313`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -75,6 +112,8 @@ Internal Changes
 - Follow up to :pull:`294` - fix wrong dimension order for certain conditions (:issue:`295`).
 - Refactor `test_mask` - make use of ``xr.testing.assert_equal`` and simplify some
   elements (:pull:`297`).
+- Add `packaging` as a dependency (:issue:`324`, :pull:`328`).
+- Add python 3.10 to list of supported versions (:pull:`330`).
 
 v0.8.0 (08.09.2021)
 -------------------
@@ -329,7 +368,7 @@ New regions
 - Added the AR6 reference regions described in `Iturbide et al., (2000)
   <https://essd.copernicus.org/preprints/essd-2019-258/>`_ (:pull:`61`).
 - New marine regions from natural earth added as :py:attr:`natural_earth.ocean_basins_50`
-  (:pull:`63` by `Julius Busecke <https://github.com/jbusecke>`_).
+  (:pull:`91` by `Julius Busecke <https://github.com/jbusecke>`_).
 
 Bug Fixes
 ~~~~~~~~~

@@ -30,6 +30,7 @@ class Regions:
         abbrevs=None,
         name="unnamed",
         source=None,
+        overlap=False,
     ):
 
         """
@@ -48,6 +49,16 @@ class Regions:
             Name of the collection of regions. Default: "unnamed"
         source : string, optional
             Source of the region definitions. Default: "".
+        overlap : bool, default: False
+            Indicates if (some of) the regions overlap. If True ``mask_3D`` will ensure
+            overlapping regions are correctly assigned to grid points while ``mask`` will
+            error (because overlapping regions cannot be represented by a 2D mask).
+
+            If False (default) assumes non-overlapping regions. Grid points will
+            silently be assigned to the region with the higher number (this may change
+            in a future version of regionmask).
+
+            There is (currently) no automatic detection of overlapping regions.
 
         Examples
         --------
@@ -101,6 +112,7 @@ class Regions:
         self.regions = regions
         self.name = name
         self.source = source
+        self.overlap = overlap
 
     def __getitem__(self, key):
         """subset of Regions or Region
@@ -283,6 +295,12 @@ class Regions:
         wrap_lon=None,
     ):
 
+        if self.overlap:
+            raise ValueError(
+                "Creating a 2D mask with overlapping regions yields wrong results. "
+                "Set ``region.overlap = False`` to create a 2D mask anyway."
+            )
+
         return _mask_2D(
             outlines=self.polygons,
             lon_bounds=self.bounds_global[::2],
@@ -319,6 +337,7 @@ class Regions:
             lat_name=lat_name,
             method=method,
             wrap_lon=wrap_lon,
+            as_3D=self.overlap,
         )
 
         numbers = mask_3D.region.values

@@ -54,7 +54,7 @@ wrap_lon : bool | 180 | 360, optional
       and wrapped to `[-180, 180[` if its maximum is larger than 180.
     - ``180``: Wraps longitude coordinates to `[-180, 180[`
     - ``360``: Wraps longitude coordinates to `[0, 360[`
-
+{overlap}
 
 Returns
 -------
@@ -85,6 +85,17 @@ drop : boolean, default: True
     region.
 """
 
+_OVERLAP_DOCSTRING = """\
+overlap : bool, default: False
+    Indicates if (some of) the regions overlap. If True ``mask_3D_geopandas`` will
+    ensure overlapping regions are correctly assigned to grid points.
+
+    If False (default) assumes non-overlapping regions. Grid points will silently be
+    assigned to the region with the higher number (this may change in a future version).
+
+    There is (currently) no automatic detection of overlapping regions.
+"""
+
 
 def _inject_mask_docstring(is_3D, gp_method):
 
@@ -93,9 +104,15 @@ def _inject_mask_docstring(is_3D, gp_method):
     drop_doc = _DROP_DOCSTRING if is_3D else ""
     numbers_doc = _NUMBERS_DOCSTRING if gp_method else ""
     gp_doc = _GP_DOCSTRING if gp_method else ""
+    overlap = _OVERLAP_DOCSTRING if (gp_method and is_3D) else ""
 
     mask_docstring = _MASK_DOCSTRING_TEMPLATE.format(
-        dtype=dtype, nd=nd, drop_doc=drop_doc, numbers_doc=numbers_doc, gp_doc=gp_doc
+        dtype=dtype,
+        nd=nd,
+        drop_doc=drop_doc,
+        numbers_doc=numbers_doc,
+        gp_doc=gp_doc,
+        overlap=overlap,
     )
 
     return mask_docstring
@@ -111,6 +128,7 @@ def _mask(
     lat_name="lat",
     method=None,
     wrap_lon=None,
+    as_3D=False,
 ):
     """
     internal function to create a mask
@@ -159,27 +177,44 @@ def _mask(
     elif method == "pygeos" and not has_pygeos:
         raise ModuleNotFoundError("No module named 'pygeos'")
 
+    kwargs = {}
     if method == "rasterize":
-        mask = _mask_rasterize(lon, lat, outlines, numbers=numbers)
+        mask_func = _mask_rasterize
     elif method == "rasterize_flip":
-        mask = _mask_rasterize_flip(lon, lat, outlines, numbers=numbers)
+        mask_func = _mask_rasterize_flip
     elif method == "rasterize_split":
-        mask = _mask_rasterize_split(lon, lat, outlines, numbers=numbers)
+        mask_func = _mask_rasterize_split
     elif method == "pygeos":
-        mask = _mask_pygeos(
-            lon, lat, outlines, numbers=numbers, is_unstructured=is_unstructured
-        )
+        mask_func = _mask_pygeos
+        kwargs = {"is_unstructured": is_unstructured}
     elif method == "shapely":
-        mask = _mask_shapely(
-            lon, lat, outlines, numbers=numbers, is_unstructured=is_unstructured
-        )
+        mask_func = _mask_shapely
+        kwargs = {"is_unstructured": is_unstructured}
 
-    # not False required
-    if wrap_lon is not False:
-        # treat the points at -180°E/0°E and -90°N
-        mask = _mask_edgepoints_shapely(
-            mask, lon, lat, outlines, numbers, is_unstructured=is_unstructured
-        )
+    if as_3D:
+        masks = list()
+        for outline, number in zip(outlines, numbers):
+            mask = mask_func(lon, lat, [outline], numbers=[number], **kwargs)
+
+            # not False required
+            if wrap_lon is not False:
+                # treat the points at -180°E/0°E and -90°N
+                mask = _mask_edgepoints_shapely(
+                    mask, lon, lat, [outline], [number], is_unstructured=is_unstructured
+                )
+            masks.append(mask == number)
+
+        mask = np.stack(masks, axis=0)
+
+    else:
+        mask = mask_func(lon, lat, outlines, numbers=numbers, **kwargs)
+
+        # not False required
+        if wrap_lon is not False:
+            # treat the points at -180°E/0°E and -90°N
+            mask = _mask_edgepoints_shapely(
+                mask, lon, lat, outlines, numbers, is_unstructured=is_unstructured
+            )
 
     return mask_to_dataarray(mask, lon_or_obj, lat_orig, lon_name, lat_name)
 
@@ -226,6 +261,7 @@ def _mask_3D(
     lat_name="lat",
     method=None,
     wrap_lon=None,
+    as_3D=False,
 ):
 
     mask = _mask(
@@ -238,7 +274,18 @@ def _mask_3D(
         lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
+        as_3D=as_3D,
     )
+
+    if as_3D:
+        mask_3D = _unpack_3D_mask(mask, numbers, drop)
+    else:
+        mask_3D = _unpack_2D_mask(mask, numbers, drop)
+
+    return mask_3D
+
+
+def _unpack_2D_mask(mask, numbers, drop):
 
     isnan = np.isnan(mask.values)
 
@@ -265,6 +312,34 @@ def _mask_3D(
     mask_3D = mask_3D.assign_coords(region=("region", numbers))
 
     if np.all(isnan):
+        msg = "No gridpoint belongs to any region. Returning an all-False mask."
+        warnings.warn(msg, UserWarning, stacklevel=3)
+
+    return mask_3D
+
+
+def _unpack_3D_mask(mask_3D, numbers, drop):
+
+    any_masked = mask_3D.any(mask_3D.dims[1:])
+
+    if drop:
+        mask_3D = mask_3D.isel(region=any_masked)
+
+        numbers = np.asarray(numbers)[any_masked.values]
+
+    if len(numbers) == 0:
+
+        mask_3D = mask_3D.assign_coords(region=("region", numbers))
+        msg = (
+            "No gridpoint belongs to any region. Returning an empty mask"
+            f" with shape {mask_3D.shape}"
+        )
+        warnings.warn(msg, UserWarning, stacklevel=3)
+        return mask_3D
+
+    mask_3D = mask_3D.assign_coords(region=("region", numbers))
+
+    if not np.any(any_masked):
         msg = "No gridpoint belongs to any region. Returning an all-False mask."
         warnings.warn(msg, UserWarning, stacklevel=3)
 
@@ -318,11 +393,15 @@ def mask_to_dataarray(mask, lon_or_obj, lat=None, lon_name="lon", lat_name="lat"
 
     dims = xr.core.variable.broadcast_variables(lat.variable, lon.variable)[0].dims
 
-    return ds.assign(region=(dims, mask)).region
+    # unstructured grids are 1D
+    if mask.ndim - 1 == len(dims):
+        dims = ("region",) + dims
+
+    return ds.assign(mask=(dims, mask)).mask
 
 
 def _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name):
-    # TODO: simplify once passing lon_name and lat_name is no longer supported
+    # TODO: simplify if passing lon_name and lat_name is no longer supported
 
     dims2D = (f"{lat_name}_idx", f"{lon_name}_idx")
 
@@ -369,13 +448,13 @@ def _mask_edgepoints_shapely(
         return mask.reshape(shape)
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON[borderpoints] - 1 * 10 ** -8
-    LAT = LAT[borderpoints] - 1 * 10 ** -10
+    LON = LON[borderpoints] - 1 * 10**-8
+    LAT = LAT[borderpoints] - 1 * 10**-10
 
     # wrap points LON_180W_or_0E: -180°E -> 180°E and 0°E -> 360°E
     LON[LON_180W_or_0E[borderpoints]] += 360
     # shift points at -90°N to -89.99...°N
-    LAT[LAT_90S[borderpoints]] = -90 + 1 * 10 ** -10
+    LAT[LAT_90S[borderpoints]] = -90 + 1 * 10**-10
 
     # "mask[borderpoints][sel] = number" does not work, need to use np.where
     idx = np.where(borderpoints)[0]
@@ -396,8 +475,8 @@ def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False
     )
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10 ** -8
-    LAT = LAT - 1 * 10 ** -10
+    LON = LON - 1 * 10**-8
+    LAT = LAT - 1 * 10**-10
 
     # convert shapely points to pygeos
     poly_pygeos = pygeos.from_shapely(polygons)
@@ -406,7 +485,7 @@ def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False
     tree = pygeos.STRtree(points_pygeos)
     a, b = tree.query_bulk(poly_pygeos, predicate="contains")
 
-    for i, (polygon, number) in enumerate(zip(poly_pygeos, numbers)):
+    for i, number in enumerate(numbers):
 
         out[b[a == i]] = number
 
@@ -425,8 +504,8 @@ def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=Fals
     )
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10 ** -8
-    LAT = LAT - 1 * 10 ** -10
+    LON = LON - 1 * 10**-8
+    LAT = LAT - 1 * 10**-10
 
     for i, polygon in enumerate(polygons):
         sel = shp_vect.contains(polygon, LON, LAT)
@@ -511,7 +590,7 @@ def _mask_rasterize_flip(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     split_point = _find_splitpoint(lon)
     flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
 
-    mask = _mask_rasterize(flipped_lon, lat, polygons, numbers=numbers)
+    mask = _mask_rasterize(flipped_lon, lat, polygons, numbers=numbers, **kwargs)
 
     # revert the mask
     return np.hstack((mask[:, -split_point:], mask[:, :-split_point]))
@@ -522,8 +601,8 @@ def _mask_rasterize_split(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     split_point = _find_splitpoint(lon)
     lon_l, lon_r = lon[:split_point], lon[split_point:]
 
-    mask_l = _mask_rasterize(lon_l, lat, polygons, numbers=numbers)
-    mask_r = _mask_rasterize(lon_r, lat, polygons, numbers=numbers)
+    mask_l = _mask_rasterize(lon_l, lat, polygons, numbers=numbers, **kwargs)
+    mask_r = _mask_rasterize(lon_r, lat, polygons, numbers=numbers, **kwargs)
 
     return np.hstack((mask_l, mask_r))
 
@@ -531,24 +610,24 @@ def _mask_rasterize_split(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
 def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
-    This only works for 1D lat and lon arrays.
-
-    for internal use: does not check valitity of input
+    This only works for regularly spaced 1D lat and lon arrays.
     """
 
     lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
 
     # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
-    lon = lon - 1 * 10 ** -8
-    lat = lat - 1 * 10 ** -10
+    lon = lon - 1 * 10**-8
+    lat = lat - 1 * 10**-10
 
     return _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill, **kwargs)
 
 
-def _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+def _mask_rasterize_no_offset(
+    lon, lat, polygons, numbers, fill=np.NaN, dtype=float, **kwargs
+):
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
-    This only works for 1D lat and lon arrays.
+    This only works for regularly spaced 1D lat and lon arrays.
 
     for internal use: does not check valitity of input
     """
@@ -567,7 +646,7 @@ def _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill=np.NaN, **kwargs
         out_shape=out_shape,
         fill=fill,
         transform=transform,
-        dtype=float,
+        dtype=dtype,
         **kwargs,
     )
 

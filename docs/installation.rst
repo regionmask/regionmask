@@ -5,11 +5,12 @@ Required dependencies
 ---------------------
 
 - Python (3.7 or later)
-- `geopandas <http://geopandas.org/>`__ (0.6 or later)
+- `geopandas <http://geopandas.org/>`__ (0.7 or later)
 - `numpy <http://www.numpy.org/>`__ (1.17 or later)
-- `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.0 or later)
-- `rasterio <https://rasterio.readthedocs.io/>`__ (1.0 or later)
-- `shapely <http://toblerity.org/shapely/>`__ (1.6 or later)
+- `packaging <https://packaging.pypa.io/en/latest/>`__ (20.0 or later)
+- `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.2 or later)
+- `rasterio <https://rasterio.readthedocs.io/>`__ (1.1 or later)
+- `shapely <http://toblerity.org/shapely/>`__ (1.7 or later)
 - `xarray <http://xarray.pydata.org/>`__ (0.15 or later)
 
 Optional dependencies
@@ -18,14 +19,14 @@ Optional dependencies
 For plotting
 ~~~~~~~~~~~~
 
-- `matplotlib <http://matplotlib.org/>`__ is required to create any plots.
-- `cartopy <http://scitools.org.uk/cartopy/>`__ for plotting on geographical maps and
-  for downloading natural earth data.
+- `matplotlib <http://matplotlib.org/>`__ (3.2 or later) is required to create any plots.
+- `cartopy <http://scitools.org.uk/cartopy/>`__ (0.17 or later) for plotting on
+  geographical maps.
 
 For faster masking
 ~~~~~~~~~~~~~~~~~~
 
-- `pygeos <https://pygeos.readthedocs.io/en/stable/>`__ enables faster mask creations for
+- `pygeos <https://pygeos.readthedocs.io/en/stable/>`__ (0.9 or later) enables faster mask creations for
   irregular and 2D grids.
 
 Instructions

@@ -7,6 +7,10 @@ on:
     branches:
       - "*"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: py${{ matrix.python-version }}-${{ matrix.env }}
@@ -41,7 +45,6 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             ~/.cache/regionmask/
-            ~/.local/share/cartopy/
           key:
             ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{ matrix.env }}-${{ hashFiles('ci/requirements/**.yml') }}
           restore-keys: |

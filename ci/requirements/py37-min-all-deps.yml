@@ -5,15 +5,16 @@ channels:
 dependencies:
   - python=3.7
   - cartopy=0.17
-  - geopandas=0.6
-  - matplotlib-base=3.1
+  - geopandas=0.7
+  - matplotlib-base=3.2
   - numpy=1.17
-  - pandas=1.0
-  - pooch=1.0
+  - pandas=1.2
+  - packaging=20.0
+  - pooch=1.2
   - pygeos=0.9
-  - rasterio=1.0
+  - rasterio=1.1
   - setuptools=40.4
-  - shapely=1.6
+  - shapely=1.7
   - xarray=0.15
 # for testing
   - pytest

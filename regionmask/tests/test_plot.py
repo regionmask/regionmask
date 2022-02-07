@@ -17,7 +17,12 @@ from shapely.geometry import MultiPolygon, Point, Polygon
 
 import regionmask
 from regionmask import Regions, plot_3D_mask
-from regionmask.core.plot import _check_unused_kws, _flatten_polygons, _polygons_coords
+from regionmask.core.plot import (
+    _check_unused_kws,
+    _flatten_polygons,
+    _maybe_gca,
+    _polygons_coords,
+)
 
 from . import requires_cartopy, requires_matplotlib
 
@@ -144,9 +149,35 @@ def test_polygons_coords():
 # =============================================================================
 
 
+@requires_matplotlib
+def test_maybe_gca():
+
+    with figure_context():
+        ax = _maybe_gca(aspect=1)
+
+        assert isinstance(ax, mpl.axes.Axes)
+        assert ax.get_aspect() == 1
+
+    with figure_context():
+
+        # create figure without axes
+        plt.figure()
+        ax = _maybe_gca(aspect=1)
+
+        assert isinstance(ax, mpl.axes.Axes)
+        assert ax.get_aspect() == 1
+
+    with figure_context():
+        existing_axes = plt.axes()
+        ax = _maybe_gca(aspect=1)
+
+        # re-uses the existing axes
+        assert existing_axes == ax
+        # kwargs are ignored when reusing axes
+        assert ax.get_aspect() == "auto"
+
+
 @requires_cartopy
-@pytest.mark.filterwarnings("ignore:numpy.dtype size changed")
-@pytest.mark.filterwarnings("ignore:numpy.ufunc size changed")
 def test_plot_projection():
 
     # default is PlateCarree
@@ -164,6 +195,40 @@ def test_plot_projection():
         ax = f.subplots(subplot_kw=dict(projection=ccrs.Mollweide()))
         ax = r1.plot(tolerance=None, ax=ax)
         assert isinstance(ax.projection, ccrs.Mollweide)
+
+
+@requires_cartopy
+def test_plot_gca():
+
+    with figure_context() as f:
+        axs = f.subplots(1, 2, subplot_kw=dict(projection=ccrs.Robinson()))
+
+        ax = r1.plot(tolerance=None)
+        assert ax is axs[1]
+
+    with figure_context() as f:
+        ax = f.subplots()
+
+        match = "current axes .* is not a cartopy GeoAxes"
+        with pytest.raises(TypeError, match=match):
+            r1.plot(tolerance=None)
+
+    with figure_context() as f:
+        ax = f.subplots()
+
+        match = "passed axes .* is not a cartopy GeoAxes"
+        with pytest.raises(TypeError, match=match):
+            r1.plot(tolerance=None, ax=ax)
+
+
+@requires_cartopy
+def test_plot_regions_gca():
+
+    with figure_context() as f:
+        axs = f.subplots(1, 2)
+
+        ax = r1.plot_regions(tolerance=None)
+        assert ax is axs[1]
 
 
 @requires_cartopy
@@ -700,6 +765,23 @@ def test_plot_3D_mask_wrong_input():
 
 
 @requires_matplotlib
+def test_plot_3D_mask_overlap():
+
+    lon = np.arange(-180, 180, 2)
+    lat = np.arange(90, -91, -2)
+
+    outline_GLOB = np.array(
+        [[-180.0, 90.0], [-180.0, -90.0], [180.0, -90.0], [180.0, 90.0]]
+    )
+    region = regionmask.Regions([outline_GLOB, outline_GLOB], overlap=True)
+
+    mask_3D = region.mask_3D(lon, lat)
+
+    with pytest.warns(RuntimeWarning, match="overlapping regions"):
+        plot_3D_mask(mask_3D)
+
+
+@requires_matplotlib
 @requires_cartopy
 def test_check_unused_kws():
 
@@ -728,10 +810,11 @@ def test_plot_no_warning_default(plotfunc):
 
     func = getattr(r1, plotfunc)
 
-    # ensure no warning is raised on default
-    with pytest.warns(None) as record:
-        func()
-    assert not record
+    with figure_context():
+        # ensure no warning is raised on default
+        with pytest.warns(None) as record:
+            func()
+        assert not record
 
 
 @requires_matplotlib

@@ -55,16 +55,10 @@ def _sanitize_names_abbrevs(numbers, values, default):
     return values
 
 
-# -----------------------------------------------------------------------------
-
-
 def _wrapAngle360(lon):
     """wrap angle to `[0, 360[`."""
     lon = np.array(lon)
     return np.mod(lon, 360)
-
-
-# -----------------------------------------------------------------------------
 
 
 def _wrapAngle180(lon):
@@ -105,9 +99,6 @@ def _wrapAngle(lon, wrap_lon=True, is_unstructured=False):
             raise ValueError("There are equal longitude coordinates (when wrapped)!")
 
     return new_lon
-
-
-# -----------------------------------------------------------------------------
 
 
 def _is_180(lon_min, lon_max, msg_add=""):
@@ -240,3 +231,17 @@ def _deprecate_positional(func):
         return func(*args, **kwargs)
 
     return _inner
+
+
+def unpackbits(numbers, num_bits):
+    "Unpacks elements of a array into a binary-valued output array."
+
+    # after https://stackoverflow.com/a/51509307/3010700
+
+    if np.issubdtype(numbers.dtype, np.floating):
+        raise ValueError("numpy data type needs to be int-like")
+    shape = numbers.shape + (num_bits,)
+
+    numbers = numbers.reshape([-1, 1])
+    mask = 2 ** np.arange(num_bits, dtype=numbers.dtype).reshape([1, num_bits])
+    return (numbers & mask).astype(bool).reshape(shape)

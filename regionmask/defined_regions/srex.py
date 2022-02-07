@@ -237,4 +237,5 @@ srex = Regions(
     abbrevs=short_names,
     name="SREX",
     source=source,
+    overlap=False,
 )

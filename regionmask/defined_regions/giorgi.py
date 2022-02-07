@@ -88,4 +88,5 @@ giorgi = Regions(
     abbrevs=abbrevs,
     name="Giorgi",
     source=source,
+    overlap=False,
 )

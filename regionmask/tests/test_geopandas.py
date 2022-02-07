@@ -12,7 +12,13 @@ from regionmask.core._geopandas import (
     _enumerate_duplicates,
 )
 
-from .utils import dummy_ds, dummy_region, expected_mask_2D, expected_mask_3D
+from .utils import (
+    dummy_ds,
+    dummy_region,
+    dummy_region_overlap,
+    expected_mask_2D,
+    expected_mask_3D,
+)
 
 
 @pytest.fixture
@@ -24,6 +30,19 @@ def geodataframe_clean():
 
     d = dict(
         names=names, abbrevs=abbrevs, numbers=numbers, geometry=dummy_region.polygons
+    )
+
+    return gp.GeoDataFrame.from_dict(d)
+
+
+@pytest.fixture
+def geodataframe_clean_overlap():
+
+    d = dict(
+        names=dummy_region_overlap.names,
+        abbrevs=dummy_region_overlap.abbrevs,
+        numbers=dummy_region_overlap.numbers,
+        geometry=dummy_region_overlap.polygons,
     )
 
     return gp.GeoDataFrame.from_dict(d)
@@ -240,6 +259,24 @@ def test_mask_3D_geopandas_numbers(geodataframe_clean, drop, method):
         drop=drop,
         method=method,
         numbers="numbers",
+    )
+
+    xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("drop", [True, False])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_3D_overlap_geopandas_numbers(geodataframe_clean_overlap, drop, method):
+
+    expected = expected_mask_3D(drop, overlap=True).drop_vars(["names", "abbrevs"])
+    result = mask_3D_geopandas(
+        geodataframe_clean_overlap,
+        dummy_ds.lon,
+        dummy_ds.lat,
+        drop=drop,
+        method=method,
+        numbers="numbers",
+        overlap=True,
     )
 
     xr.testing.assert_equal(result, expected)
