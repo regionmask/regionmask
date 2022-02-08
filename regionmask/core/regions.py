@@ -7,8 +7,8 @@ import copy
 from collections import OrderedDict
 
 import geopandas as gp
-import pandas as pd
 import numpy as np
+import pandas as pd
 from shapely.geometry import MultiPolygon, Polygon
 
 from .formatting import _display
@@ -353,6 +353,13 @@ class Regions:
     mask_3D.__doc__ = _inject_mask_docstring(is_3D=True, gp_method=False)
 
     def to_dataframe(self):
+        """Convert this region into a pandas.DataFrame, excluding polygons.
+
+        See Also
+        --------
+        from_geopandas, Regions.to_geodataframe, Regions.to_geoseries, Regions.from_geodataframe
+
+        """
 
         data = dict(
             numbers=self.numbers,
@@ -360,9 +367,20 @@ class Regions:
             names=self.names,
         )
 
-        return pd.DataFrame.from_dict(data).set_index("numbers")
+        df = pd.DataFrame.from_dict(data).set_index("numbers")
+        return df
 
     def to_geodataframe(self):
+        """Convert this region into a geopandas.GeoDataFrame.
+
+        Use ``Regions.from_geodataframe`` to round-trip a geodataframe created with
+        this method.
+
+        See Also
+        --------
+        from_geopandas, Regions.to_dataframe, Regions.to_geoseries, Regions.from_geodataframe
+
+        """
 
         data = dict(
             numbers=self.numbers,
@@ -371,13 +389,87 @@ class Regions:
             geometry=self.polygons,
         )
 
-        return gp.GeoDataFrame.from_dict(data).set_index("numbers")
+        df = gp.GeoDataFrame.from_dict(data).set_index("numbers")
+        df.attrs["name"] = self.name
+        df.attrs["source"] = self.source
+        df.attrs["overlap"] = self.overlap
+
+        return df
 
     def to_geoseries(self):
+        """Convert this region into a geopandas.GeoSeries.
 
+        See Also
+        --------
+        from_geopandas, Regions.to_dataframe, Regions.to_geodataframe, Regions.from_geodataframe
 
-        return gp.GeoSeries(self.polygons, index=self.numbers)
+        """
 
+        df = gp.GeoSeries(self.polygons, index=self.numbers)
+        df.attrs["name"] = self.name
+        df.attrs["source"] = self.source
+        df.attrs["overlap"] = self.overlap
+
+        return df
+
+    @classmethod
+    def from_geodataframe(cls, df, *, name=None, source=None, overlap=None):
+        """
+        Convert a  ``geopandas.GeoDataFrame`` created with ``to_geodataframe`` back to
+        ``regionmask.Region`` (round trip)
+
+        Parameters
+        ----------
+        df : geopandas.GeoDataFrame
+            GeoDataFrame to be transformed to a Regions class.
+
+        name : str, optional
+            name of the Regions. If None uses ``df.attrs.get("name", "unnamed")``.
+
+        source : str, optional
+            Source of the shapefile.  If None uses ``df.attrs.get("source")``.
+
+        overlap : bool, default: None
+            Indicates if (some of) the regions overlap. If None uses
+            ``df.attrs.get("overlap")``. If True ``mask_3D`` will ensure
+            overlapping regions are correctly assigned to grid points while ``mask``
+            will error (because overlapping regions cannot be represented by a 2D mask).
+
+            If False assumes non-overlapping regions. Grid points will silently be
+            assigned to the region with the higher number (this may change in a future
+            version).
+
+            There is (currently) no automatic detection of overlapping regions.
+
+        Returns
+        -------
+        regionmask.core.regions.Regions
+
+        See Also
+        --------
+        from_geopandas, Regions.to_dataframe, Regions.to_geodataframe, Regions.to_geoseries
+        """
+
+        from regionmask.core._geopandas import _from_geopandas
+
+        if name is None:
+            name = df.attrs.get("name", "unnamed")
+
+        if source is None:
+            source = df.attrs.get("source")
+
+        if overlap is None:
+            overlap = df.attrs.get("overlap", False)
+
+        return _from_geopandas(
+            df,
+            numbers=None,
+            names="names",
+            abbrevs="abbrevs",
+            name=name,
+            source=source,
+            overlap=overlap,
+        )
 
 
 # add the plotting methods

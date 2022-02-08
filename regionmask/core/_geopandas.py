@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 
 from ..defined_regions._natural_earth import _maybe_get_column
@@ -66,27 +68,33 @@ def from_geopandas(
     overlap=False,
 ):
     """
-    Create ``regionmask.Region`` from ``geopandas.geodataframe.GeoDataFrame``.
+    Create ``regionmask.Regions`` from a ``geopandas.GeoDataFrame``.
 
     Parameters
     ----------
-    geodataframe : geopandas.geodataframe.GeoDataFrame
+    geodataframe : geopandas.GeoDataFrame
         GeoDataFrame to be transformed to a Regions class.
+
     numbers : str, optional
         Name of the column in geodataframe that gives each region its number.
         This column must not have duplicates. If None (default), takes
         ``geodataframe.index.values``.
+
     names : str, optional
         Name of the column in shapefile that names a region. Breaks for duplicates.
         If None (default) uses "Region0", .., "RegionN".
+
     abbrevs : str, optional
         Name of the column in shapefile that five a region its abbreviation.
         Breaks for duplicates. If ``_from_name``, a combination of the first letters
         of region name is taken. If None (default) uses "r0", .., "rN".
+
     name : str, optional
         name of the ``regionmask.Region`` instance created
+
     source : str, optional
         source of the shapefile
+
     overlap : bool, default: False
         Indicates if (some of) the regions overlap. If True ``mask_3D`` will ensure
         overlapping regions are correctly assigned to grid points while ``mask`` will
@@ -102,11 +110,44 @@ def from_geopandas(
     -------
     regionmask.core.regions.Regions
 
+    See Also
+    --------
+    Regions.to_dataframe, Regions.to_geodataframe, Regions.to_geoseries, Regions.from_geodataframe
     """
+
     from geopandas import GeoDataFrame
 
     if not isinstance(geodataframe, (GeoDataFrame)):
-        raise TypeError("`geodataframe` must be a geopandas 'GeoDataFrame'")
+        raise TypeError(
+            "`geodataframe` must be a geopandas 'GeoDataFrame',"
+            f" found {type(geodataframe)}"
+        )
+
+    if any(x in geodataframe.attrs for x in ["name", "source", "overlap"]):
+        warnings.warn(
+            "Use ``regionmask.Regions.from_geodataframe`` to round-trip ``Regions``"
+        )
+
+    return _from_geopandas(
+        geodataframe,
+        numbers=numbers,
+        names=names,
+        abbrevs=abbrevs,
+        name=name,
+        source=source,
+        overlap=overlap,
+    )
+
+
+def _from_geopandas(
+    geodataframe,
+    numbers=None,
+    names=None,
+    abbrevs=None,
+    name="unnamed",
+    source=None,
+    overlap=False,
+):
 
     if numbers is not None:
         # sort, otherwise breaks

@@ -1,6 +1,6 @@
 """String formatting routines for __repr__."""
 
-import geopandas as gp
+
 from pandas.io.formats import console
 
 
