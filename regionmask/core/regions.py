@@ -362,7 +362,7 @@ Regions.plot_regions = _plot_regions
 class _OneRegion:
     """a single Region, used as member of 'Regions'"""
 
-    def __init__(self, number, name, abbrev, outline, centroid=None):
+    def __init__(self, number, name, abbrev, outline):
         """
         Parameters
         ----------
@@ -391,16 +391,16 @@ class _OneRegion:
             from shapely.geometry import Polygon
 
             poly = Polygon(outl)
-            r = _OneRegion(1, 'Unit Square', 'USq', poly, centroid=[0.5, 0.75])
+            r = _OneRegion(1, 'Unit Square', 'USq', poly)
         """
 
         self.number = number
         self.name = name
         self.abbrev = abbrev
+        self._centroid = None
+        self._bounds = None
 
-        _is_polygon = isinstance(outline, (Polygon, MultiPolygon))
-
-        if _is_polygon:
+        if isinstance(outline, (Polygon, MultiPolygon)):
             self._polygon = outline
             self._coords = None
         else:
@@ -415,8 +415,16 @@ class _OneRegion:
 
             self._coords = np.array(outline)
 
+    def __repr__(self):
+
+        klass = type(self).__name__
+        return f"<regionmask.{klass}: {self.name} ({self.abbrev} / {self.number})>"
+
+    @property
+    def centroid(self):
+
         # the Polygon Centroid is much stabler
-        if centroid is None:
+        if self._centroid is None:
             poly = self.polygon
             if isinstance(poly, MultiPolygon):
                 # find the polygon with the largest area and assig as centroid
@@ -431,13 +439,9 @@ class _OneRegion:
             else:
                 centroid = np.array(poly.centroid.coords).squeeze()
 
-        self.centroid = centroid
+            self._centroid = centroid
 
-        self._bounds = None
-
-    def __repr__(self):
-        msg = "Region: {} ({} / {})\ncenter: {}"
-        return msg.format(self.name, self.abbrev, self.number, self.centroid)
+        return self._centroid
 
     @property
     def polygon(self):
@@ -460,10 +464,8 @@ class _OneRegion:
                 polys = list(self._polygon.geoms)
 
             # separate the single polygons with NaNs
-            nan = np.ones(shape=(1, 2)) * np.nan
-            lst = list()
-            for poly in polys:
-                lst.append(np.vstack((np.array(poly.exterior.coords), nan)))
+            nan = np.full((1, 2), np.nan)
+            lst = [np.vstack((np.array(poly.exterior.coords), nan)) for poly in polys]
 
             # remove the very last NaN
             self._coords = np.vstack(lst)[:-1, :]

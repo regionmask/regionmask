@@ -76,7 +76,7 @@ def _display_regions_gp(self, max_rows, max_width, max_colwidth):  # pragma: no 
 
 def _display(self, max_rows=10, max_width=None, max_colwidth=50):
 
-    summary = ["<regionmask.{}>".format(type(self).__name__)]
+    summary = [f"<regionmask.{type(self).__name__}>"]
 
     if max_rows is None:
         max_rows = len(self)
@@ -91,6 +91,6 @@ def _display(self, max_rows=10, max_width=None, max_colwidth=50):
     summary += _display_regions_gp(self, max_rows, max_width, max_colwidth)
 
     summary.append("")
-    summary.append("[{:d} regions]".format(len(self)))
+    summary.append(f"[{len(self):d} regions]")
 
     return "\n".join(summary)
