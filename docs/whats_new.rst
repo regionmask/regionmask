@@ -63,6 +63,11 @@ Enhancements
   Note that only xarray arrays can be detected as unstructured grids.
   (:issue:`278`, :pull:`280`). By `Aaron Spring <https://github.com/aaronspring>`_.
 
+- Add methods to convert :py:class:`Regions` to (geo)pandas objects, namely :py:meth:`Regions.to_geodataframe`,
+  :py:meth:`Regions.to_geoseries`, :py:meth:`Regions.to_dataframe`). The geopandas.GeoDataFrame
+  can be converted back (round-tripped) using py:meth:`Regions.from_geodataframe`
+  (:issue:`50`, :pull:`298`).
+
 - The plotting methods (:py:meth:`Regions.plot` and :py:meth:`Regions.plot_regions`) now
   use a more sophisticated logic to subsample lines on GeoAxes plots. The new method is
   based on the euclidean distance of each segment. Per default the maximum distance of
