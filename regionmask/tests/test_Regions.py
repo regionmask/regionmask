@@ -1,4 +1,7 @@
+import geopandas
+import geopandas.testing
 import numpy as np
+import pandas as pd
 import pytest
 from shapely.geometry import MultiPolygon, Polygon
 
@@ -314,3 +317,57 @@ def test_overlap_getitem(overlap):
     r_select = r[[0, 2]]
 
     assert r_select.overlap is overlap
+
+
+def _check_dataframe(df, r):
+
+    assert (df.index == r.numbers).all()
+    assert (df.abbrevs == r.abbrevs).all()
+    assert (df.names == r.names).all()
+
+
+def _check_attrs(df, r):
+
+    assert df.attrs["name"] == r.name
+    assert df.attrs["source"] == r.source
+    assert df.attrs["overlap"] == r.overlap
+
+
+def _check_polygons(df, r):
+
+    from geopandas import GeoSeries
+
+    geopandas.testing.assert_geoseries_equal(df, GeoSeries(r.polygons, index=r.numbers))
+
+
+def test_to_geodataframe():
+
+    r = test_regions1
+
+    df = r.to_geodataframe()
+
+    assert isinstance(df, geopandas.GeoDataFrame)
+    _check_dataframe(df, r)
+    _check_attrs(df, r)
+    _check_polygons(df["geometry"], r)
+
+
+def test_to_series():
+
+    r = test_regions1
+
+    df = r.to_geoseries()
+
+    assert isinstance(df, geopandas.GeoSeries)
+    _check_attrs(df, r)
+    _check_polygons(df, r)
+
+
+def test_to_dataframe():
+
+    r = test_regions1
+
+    df = r.to_dataframe()
+
+    assert isinstance(df, pd.DataFrame)
+    _check_dataframe(df, r)
