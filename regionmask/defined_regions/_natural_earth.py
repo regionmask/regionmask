@@ -1,9 +1,8 @@
 import os
 import warnings
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from contextlib import contextmanager
-
+from dataclasses import dataclass
 
 import numpy as np
 import pooch
@@ -478,7 +477,6 @@ def _get_shapefilename_cartopy(resolution, category, name):
 
 
 CACHE_ROOT = pooch.os_cache("regionmask")
-
 
 
 @contextmanager
