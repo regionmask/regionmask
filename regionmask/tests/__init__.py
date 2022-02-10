@@ -1,4 +1,6 @@
 import importlib
+import warnings
+from contextlib import contextmanager
 
 import pytest
 from packaging.version import Version
@@ -12,6 +14,14 @@ def _importorskip(modname):
         has = False
     func = pytest.mark.skipif(not has, reason=f"requires {modname}")
     return has, func
+
+
+@contextmanager
+def assert_no_warnings():
+
+    with warnings.catch_warnings(record=True) as record:
+        yield
+        assert len(record) == 0, "got unexpected warning(s)"
 
 
 has_cartopy, requires_cartopy = _importorskip("cartopy")

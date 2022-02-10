@@ -24,7 +24,7 @@ from regionmask.core.plot import (
     _polygons_coords,
 )
 
-from . import requires_cartopy, requires_matplotlib
+from . import assert_no_warnings, requires_cartopy, requires_matplotlib
 
 # =============================================================================
 
@@ -786,17 +786,14 @@ def test_plot_3D_mask_overlap():
 def test_check_unused_kws():
 
     # ensure no warning is raised
-    with pytest.warns(None) as record:
+    with assert_no_warnings():
         _check_unused_kws(True, None, "feature_name", "kws_name")
-    assert not record
 
-    with pytest.warns(None) as record:
+    with assert_no_warnings():
         _check_unused_kws(True, {}, "feature_name", "kws_name")
-    assert not record
 
-    with pytest.warns(None) as record:
+    with assert_no_warnings():
         _check_unused_kws(False, None, "feature_name", "kws_name")
-    assert not record
 
     with pytest.warns(
         RuntimeWarning, match="'kws_name' are passed but 'feature_name' is False"
@@ -807,14 +804,13 @@ def test_check_unused_kws():
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_no_warning_default(plotfunc):
+    # ensure no warning is raised on default
 
     func = getattr(r1, plotfunc)
 
     with figure_context():
-        # ensure no warning is raised on default
-        with pytest.warns(None) as record:
+        with assert_no_warnings():
             func()
-        assert not record
 
 
 @requires_matplotlib
