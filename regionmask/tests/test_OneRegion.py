@@ -60,11 +60,6 @@ def test_centroid():
     r = _OneRegion(1, "Unit Square", "USq", outl)
     assert np.allclose(r.centroid, (0.5, 0.5))
 
-    # user defined centroid
-    c = (1, 1)
-    r = _OneRegion(1, "Unit Square", "USq", outl, centroid=c)
-    assert np.allclose(r.centroid, c)
-
     # superfluous point -> center should still be at (0.5, 0.5)
     outl = ((0, 0), (0, 0.5), (0, 1), (1, 1.0), (1, 0))
     r = _OneRegion(1, "Unit Square", "USq", outl)
