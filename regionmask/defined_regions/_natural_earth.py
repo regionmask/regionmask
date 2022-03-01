@@ -1,6 +1,7 @@
 import os
 import warnings
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
 from dataclasses import dataclass
 
 import numpy as np
@@ -350,7 +351,7 @@ def _fix_ocean_basins_50_cartopy(self, df):
         df = _fix_ocean_basins_50_v5_0_0(self, df)
     else:
         raise ValueError(
-            "Unkown version of the ocean basins 50m data from naturalearth. "
+            "Unknown version of the ocean basins 50m data from naturalearth. "
             f"{ALTERNATIVE}."
         )
 
@@ -478,10 +479,20 @@ def _get_shapefilename_cartopy(resolution, category, name):
 CACHE_ROOT = pooch.os_cache("regionmask")
 
 
-def _fetch_aws(version, resolution, category, name):
+@contextmanager
+def set_pooch_log_level():
 
-    # this os not how pooch is supposed to be used
-    #
+    logger = pooch.get_logger()
+    level = logger.level
+    logger.setLevel("WARNING")
+
+    try:
+        yield
+    finally:
+        logger.setLevel(level)
+
+
+def _fetch_aws(version, resolution, category, name):
 
     base_url = "https://naturalearth.s3.amazonaws.com"
 
@@ -494,12 +505,7 @@ def _fetch_aws(version, resolution, category, name):
 
     url = f"{base_url}/{aws_version}/{resolution}_{category}/{bname}.zip"
 
-    registry = pooch.create(
-        path=CACHE_ROOT / f"natural_earth/{version}",
-        base_url="",
-        registry={fname: None},
-        urls={fname: url},
-    )
+    path = CACHE_ROOT / f"natural_earth/{version}"
 
     if Version(pooch.__version__) < Version("1.4"):
         # extract_dir not available
@@ -507,6 +513,13 @@ def _fetch_aws(version, resolution, category, name):
     else:
         unzipper = pooch.Unzip(extract_dir=bname)
 
-    fNs = registry.fetch(fname, processor=unzipper)
+    with set_pooch_log_level():
+        fNs = pooch.retrieve(
+            url,
+            None,
+            fname=fname,
+            path=path,
+            processor=unzipper,
+        )
 
     return fNs

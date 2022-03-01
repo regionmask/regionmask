@@ -294,8 +294,8 @@ def test_getitem_sorted(numbers):
     r = Regions([outl1] * 20)[numbers]
 
     numbers_expected = sorted(numbers)
-    abbrevs_expected = ["r{}".format(n) for n in numbers_expected]
-    names_expected = ["Region{}".format(n) for n in numbers_expected]
+    abbrevs_expected = [f"r{n}" for n in numbers_expected]
+    names_expected = [f"Region{n}" for n in numbers_expected]
 
     assert r.numbers == numbers_expected
     assert r.abbrevs == abbrevs_expected

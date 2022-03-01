@@ -20,7 +20,7 @@ Changes to Makefile
 # define targets
 TUTORIALS = tutorials/plotting.rst tutorials/mask_numpy.rst tutorials/mask_xarray.rst
 
-# recipie to create targets
+# recipe to create targets
 tutorials/%.rst: _static/notebooks/%.ipynb
         cd tutorials;ipython nbconvert --template tutorial_rst --to rst ../$<
 
