@@ -91,7 +91,6 @@ class Regions:
         overlap=False,
     ):
 
-
         if numbers is None:
             numbers = range(len(outlines))
 
