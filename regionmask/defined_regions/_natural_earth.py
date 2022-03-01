@@ -78,7 +78,7 @@ def _obtain_ne(
     combine_coords : bool, optional
         If False, uses the coords as is, else combines them all to a shapely
         MultiPolygon (used to combine all land Polygons). Default: False.
-    prepocess : callable, optional
+    preprocess : callable, optional
         If provided, call this function on the geodataframe.
     """
 

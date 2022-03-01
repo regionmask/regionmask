@@ -60,7 +60,6 @@ def segmentize(coords, tolerance):
     so that segments are no greater than tolerance. New vertices will evenly
     subdivide each segment.
 
-
     Parameters
     ----------
     coords : ndarray
@@ -69,7 +68,7 @@ def segmentize(coords, tolerance):
         Additional vertices will be added so that all line segments are no
         greater than this value. Must be greater than 0.
 
-    See also
+    See Also
     --------
     pygeos.segmentize
     """
@@ -147,47 +146,63 @@ def _plot(
     ax : axes handle, optional
         If given uses existing axes (needs to be a cartopy GeoAxes). If not given,
         uses the current axes or creates a new axes with the specified projection.
+
     projection : cartopy projection, default: None
         Defines the projection of the map. If None uses 'PlateCarree'.
         See cartopy home page.
+
     regions : list of int or str | 'all', default: 'all'
         Deprecated - subset regions before plotting, i.e. use `r[regions].plot()`
         instead of `r.plot(regions=regions)`.
         Select the regions (by number, abbrev or name, can be mixed)
         that should be drawn.
+
     add_label : bool, default: True
         If true labels the regions.
+
     label : 'number' | 'name' | 'abbrev', default: 'number'
         If 'number' labels the regions with numbers, if 'name' uses
         the long name of the regions, if 'short_name' uses
         abbreviations of the regions.
+
     add_coastlines : bool, default: None
         If None or true plots coastlines. See coastline_kws.
+
     add_ocean : bool,  default: False
         If true adds the ocean feature. See ocean_kws.
+
     line_kws : dict, default: None
         Arguments passed to plot.
+
     text_kws : dict, default, None
         Arguments passed to the labels (ax.text).
+
     resolution : '110m' | '50m' | '10m', default: '110m'
         Specify the resolution of the coastline and the ocean dataset.
         See cartopy for details.
+
     subsample : None or bool, default: None
         Deprecated, use tolerance.
+
     add_land : bool, default: False
         If true adds the land feature. See land_kws.
+
     coastline_kws : dict, default: None
         Arguments passed to ``ax.coastlines()``. If None uses ``color="0.4"`` and
         ``lw=0.5``.
+
     ocean_kws : dict, default: None
         Arguments passed to ``ax.add_feature(OCEAN)``. Per default uses the cartopy
         ocean color and ``zorder=0.9, lw=0``.
+
     land_kws : dict, default: None
         Arguments passed to ``ax.add_feature(LAND)``. Per default uses the cartopy
         land color and ``zorder=0.9, lw=0``.
+
     label_multipolygon : 'largest' | 'all', default: 'largest'.
         If 'largest' only adds a text label for the largest Polygon of a
         MultiPolygon. If 'all' adds text labels to all of them.
+
     tolerance : None | 'auto' | float, default: 'auto'.
         Maximum length of drawn line segments. Can lead to better looking plots on
         certain maps.
@@ -196,8 +211,6 @@ def _plot(
         - float > 0: the maximum (euclidean) length of each line segment.
         - 'auto': The tolerance is automatically determined based on the log10 of the
           largest absolute coordinate. Defaults to 1 for lat/ lon coordinates.
-
-
 
     Returns
     -------
@@ -323,27 +336,35 @@ def _plot_regions(
     ax : axes handle, optional
         If given, uses existing axes. If not given, uses the current axes or creates new
         axes. In contrast to plot this does not create a cartopy axes.
+
     regions : list of int or str | 'all', default: "all"
         Deprecated - subset regions before plotting, i.e. use `r[regions].plot()`
         instead of `r.plot(regions=regions)`.
         Select the regions (by number, abbrev or name, can be mixed)
         that should be drawn.
+
     add_label : bool
         If true labels the regions. Optional, default True.
+
     label : 'number' | 'name' | 'abbrev', optional
         If 'number' labels the regions with numbers, if 'name' uses
         the long name of the regions, if 'short_name' uses
         abbreviations of the regions. Default 'number'.
+
     line_kws : dict, optional
         Arguments passed to plot.
+
     text_kws : dict, optional
         Arguments passed to the labels (ax.text).
+
     subsample : None or bool, optional
         Deprecated, use tolerance.
+
     label_multipolygon : 'largest' | 'all', optional
         If 'largest' only adds a text label for the largest Polygon of a
         MultiPolygon. If 'all' adds text labels to all of them. Default:
         'largest'.
+
     tolerance : None | 'auto' | float, default: 'auto'.
         Maximum length of drawn line segments. Can lead to better looking plots on
         certain maps.

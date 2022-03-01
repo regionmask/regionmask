@@ -20,6 +20,64 @@ from .utils import _is_180, _is_numeric, _maybe_to_dict, _sanitize_names_abbrevs
 class Regions:
     """
     class for plotting regions and creating region masks
+
+    Parameters
+    ----------
+    outlines : iterable or dict of: Nx2 array of vertices, Polygon or MultiPolygon
+        List of the coordinates of the vertices (outline) of the region as
+        shapely Polygon/ MultiPolygon or list.
+    numbers : iterable of int, optional
+        List of numerical indices for every region. Default: range(0, len(outlines))
+    names : iterable or dict of string, optional
+        Long name of each region. Default: ["Region0", .., "RegionN"]
+    abbrevs : iterable or dict of string, optional
+        Abbreviations of each region. Default: ["r0", ..., "rN"]
+    name : string, optional
+        Name of the collection of regions. Default: "unnamed"
+    source : string, optional
+        Source of the region definitions. Default: "".
+    overlap : bool, default: False
+        Indicates if (some of) the regions overlap. If True ``mask_3D`` will ensure
+        overlapping regions are correctly assigned to grid points while ``mask`` will
+        error (because overlapping regions cannot be represented by a 2D mask).
+
+        If False (default) assumes non-overlapping regions. Grid points will
+        silently be assigned to the region with the higher number (this may change
+        in a future version of regionmask).
+
+        There is (currently) no automatic detection of overlapping regions.
+
+    Examples
+    --------
+    Create your own ``Regions``::
+
+        from regionmask import Regions
+
+        name = 'Example'
+        numbers = [0, 1]
+        names = ['Unit Square1', 'Unit Square2']
+        abbrevs = ['uSq1', 'uSq2']
+
+        outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
+        outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
+        outlines = [outl1, outl2]
+
+        r = Regions(outlines, numbers, names, abbrevs, name)
+
+    It's also possible to pass shapely Poylgons::
+
+        from shapely.geometry import Polygon
+
+        numbers = [1, 2]
+        names = {1:'Unit Square1', 2: 'Unit Square2'}
+        abbrevs = {1:'uSq1', 2:'uSq2'}
+        poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+
+        r = Regions(outlines, numbers, names, abbrevs, name)
+
+        # arguments are now optional
+        r = Regions(outlines)
+
     """
 
     def __init__(
@@ -33,65 +91,6 @@ class Regions:
         overlap=False,
     ):
 
-        """
-        Parameters
-        ----------
-        outlines : iterable or dict of: Nx2 array of vertices, Polygon or MultiPolygon
-            List of the coordinates of the vertices (outline) of the region as
-            shapely Polygon/ MultiPolygon or list.
-        numbers : iterable of int, optional
-            List of numerical indices for every region. Default: range(0, len(outlines))
-        names : iterable or dict of string, optional
-            Long name of each region. Default: ["Region0", .., "RegionN"]
-        abbrevs : iterable or dict of string, optional
-            Abbreviations of each region. Default: ["r0", ..., "rN"]
-        name : string, optional
-            Name of the collection of regions. Default: "unnamed"
-        source : string, optional
-            Source of the region definitions. Default: "".
-        overlap : bool, default: False
-            Indicates if (some of) the regions overlap. If True ``mask_3D`` will ensure
-            overlapping regions are correctly assigned to grid points while ``mask`` will
-            error (because overlapping regions cannot be represented by a 2D mask).
-
-            If False (default) assumes non-overlapping regions. Grid points will
-            silently be assigned to the region with the higher number (this may change
-            in a future version of regionmask).
-
-            There is (currently) no automatic detection of overlapping regions.
-
-        Examples
-        --------
-        Create your own ``Regions``::
-
-            from regionmask import Regions
-
-            name = 'Example'
-            numbers = [0, 1]
-            names = ['Unit Square1', 'Unit Square2']
-            abbrevs = ['uSq1', 'uSq2']
-
-            outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
-            outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
-            outlines = [outl1, outl2]
-
-            r = Regions(outlines, numbers, names, abbrevs, name)
-
-        It's also possible to pass shapely Poylgons::
-
-            from shapely.geometry import Polygon
-
-            numbers = [1, 2]
-            names = {1:'Unit Square1', 2: 'Unit Square2'}
-            abbrevs = {1:'uSq1', 2:'uSq2'}
-            poly = {1: Polygon(outl1), 2: Polygon(outl2)}
-
-            r = Regions(outlines, numbers, names, abbrevs, name)
-
-            # arguments are now optional
-            r = Regions(outlines)
-
-        """
 
         if numbers is None:
             numbers = range(len(outlines))
@@ -496,9 +495,6 @@ class _OneRegion:
         outline : Nx2 array of vertices, Polygon or MultiPolygon
             Coordinates/ outline of the region as shapely Polygon/
             MultiPolygon or list.
-        centroid : 1x2 iterable, optional.
-            Center of mass of this region. If not provided is calculated
-            as (Multi)Polygon.centroid. Position of the label on map plots.
 
         Examples
         --------
