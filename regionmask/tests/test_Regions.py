@@ -371,3 +371,56 @@ def test_to_dataframe():
 
     assert isinstance(df, pd.DataFrame)
     _check_dataframe(df, r)
+
+
+def test_from_geodataframe():
+
+    import geopandas
+
+    data = dict(names=names, abbrevs=abbrevs)
+
+    df = geopandas.GeoDataFrame(data=data, geometry=[poly1, poly2], index=numbers2)
+    df.attrs = dict(source="source", name=name, overlap=True)
+
+    r = Regions.from_geodataframe(df)
+
+    _check_dataframe(df, r)
+    _check_attrs(df, r)
+    _check_polygons(df["geometry"], r)
+
+    r = Regions.from_geodataframe(df, name="test")
+    assert r.name == "test"
+
+    r = Regions.from_geodataframe(df, source="test")
+    assert r.source == "test"
+
+    r = Regions.from_geodataframe(df, overlap=False)
+    assert r.overlap is False
+
+    df.attrs = {}
+
+    r = Regions.from_geodataframe(df)
+    assert r.name == "unnamed"
+    assert r.source is None
+    assert r.overlap is False
+
+
+def test_from_geodataframe_roundtrip():
+
+    import geopandas
+
+    data = dict(abbrevs=abbrevs, names=names)
+
+    df = geopandas.GeoDataFrame(data=data, geometry=[poly1, poly2], index=numbers2)
+    df.index.name = "numbers"
+    df.attrs = dict(source="source", name=name, overlap=True)
+
+    r = Regions.from_geodataframe(df)
+
+    df_roundtrip = r.to_geodataframe()
+
+    print(f"{df=}")
+
+    print(f"{df_roundtrip=}")
+
+    geopandas.testing.assert_geodataframe_equal(df, df_roundtrip)
