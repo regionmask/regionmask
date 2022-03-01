@@ -419,8 +419,4 @@ def test_from_geodataframe_roundtrip():
 
     df_roundtrip = r.to_geodataframe()
 
-    print(f"{df=}")
-
-    print(f"{df_roundtrip=}")
-
     geopandas.testing.assert_geodataframe_equal(df, df_roundtrip)
