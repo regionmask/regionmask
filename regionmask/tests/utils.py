@@ -164,5 +164,5 @@ def download_naturalearth_region_or_skip(monkeypatch, natural_earth_feature):
         )
     except URLError as e:
         warnings.warn(str(e))
-        warnings.warn("naturalearth donwload timeout - test not run!")
+        warnings.warn("naturalearth download timeout - test not run!")
         pytest.skip()

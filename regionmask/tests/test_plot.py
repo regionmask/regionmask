@@ -185,7 +185,7 @@ def test_plot_projection():
         ax = r1.plot(tolerance=None)
         assert isinstance(ax.projection, ccrs.PlateCarree)
 
-    # make sure the proj keword is respected
+    # make sure the proj keyword is respected
     with figure_context():
         ax = r1.plot(tolerance=None, projection=ccrs.Miller())
         assert isinstance(ax.projection, ccrs.Miller)
@@ -360,7 +360,7 @@ def test_plot_regions_kw_deprecated(plotfunc):
 @requires_cartopy
 def test_error_extra_kwarg():
     # manual TypeError for extra kwargs
-    # remove test after coastlines and proj kewords are removed
+    # remove test after coastlines and proj keywords are removed
 
     with pytest.raises(TypeError, match="got an unexpected keyword argument 'bar'"):
         with figure_context():

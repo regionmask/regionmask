@@ -351,7 +351,7 @@ def _fix_ocean_basins_50_cartopy(self, df):
         df = _fix_ocean_basins_50_v5_0_0(self, df)
     else:
         raise ValueError(
-            "Unkown version of the ocean basins 50m data from naturalearth. "
+            "Unknown version of the ocean basins 50m data from naturalearth. "
             f"{ALTERNATIVE}."
         )
 

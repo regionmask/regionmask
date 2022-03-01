@@ -89,7 +89,7 @@ New regions
 Bug Fixes
 ~~~~~~~~~
 
-- The name of lon and lat coordinates when passed as single elements is now repected when
+- The name of lon and lat coordinates when passed as single elements is now respected when
   creating masks i.e. for ``region.mask(ds.longitude, ds.longitude)`` (:issue:`129`,
   :pull:`294`).
 - Ensure :py:meth:`Regions.plot` uses the current axes (``plt.gca()``) if possible and
@@ -99,7 +99,7 @@ Bug Fixes
 Docs
 ~~~~
 
-- Went over the documentation, imporved some sections, unpinned some packages, modernized
+- Went over the documentation, improved some sections, unpinned some packages, modernized
   some aspects (:pull:`313`).
 
 Internal Changes
@@ -131,7 +131,7 @@ Breaking Changes
   details (:issue:`151`).
 - Updates to :py:meth:`Regions.plot` and :py:meth:`Regions.plot_regions` (:pull:`246`):
 
-  - Deprecated all positional arguments (keword arguments only).
+  - Deprecated all positional arguments (keyword arguments only).
   - The ``regions`` keyword was deprecated. Subset regions before plotting, i.e.
     use ``r[regions].plot()`` instead of ``r.plot(regions=regions)``. This will allow
     to remove a argument from the methods.
@@ -183,10 +183,10 @@ Docs
 - Install `regionmask` via `ci/requirements/docs.yml` on RTD using pip and update the
   packages: don't require jupyter (but ipykernel, which leads to a smaller environment),
   use new versions of sphinx and sphinx_rtd_theme (:pull:`248`).
-- Pin cartopy to version 0.19 and matplotlib to version 3.4 and use a (temorary) fix for
+- Pin cartopy to version 0.19 and matplotlib to version 3.4 and use a (temporary) fix for
   :issue:`165`. This allows to make use of `conda-forge/cartopy-feedstock#116
   <https://github.com/conda-forge/cartopy-feedstock/pull/116>`__ such that natural_earth
-  shapefiles can be donwloaded again. Also added some other minor doc updates
+  shapefiles can be downloaded again. Also added some other minor doc updates
   (:pull:`269`).
 
 Internal Changes

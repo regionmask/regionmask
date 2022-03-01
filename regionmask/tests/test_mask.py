@@ -736,7 +736,7 @@ def test_determine_method(lon, m_lon, lat, m_lat):
 # =============================================================================
 # =============================================================================
 
-# ensure a global region incudes all gridpoints - also the ones at
+# ensure a global region includes all gridpoints - also the ones at
 # 0°E/ -180°E and -90°N (#GH159)
 
 outline_GLOB_180 = np.array(
