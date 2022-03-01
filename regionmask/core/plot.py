@@ -48,8 +48,8 @@ def _draw_poly(ax, polygons, tolerance=None, **kwargs):
     # from matplotlib.path import Path
     # import matplotlib.patches as patches
     # paths = [Path(coord) for coord in coords]
-    # patchs = [patches.PathPatch(path, facecolor='none', **kwargs) for path in paths]
-    # [ax.add_patch(patch) for patch in patchs]
+    # patches = [patches.PathPatch(path, facecolor='none', **kwargs) for path in paths]
+    # [ax.add_patch(patch) for patch in patches]
     # ax.autoscale_view()
 
 

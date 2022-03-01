@@ -54,7 +54,7 @@ def test_segmentize():
 
 
 def test_segmentize_mixed_length():
-    # only one of the segements needs to be split
+    # only one of the segments needs to be split
 
     outl = ((0, 0), (0, 1), (0, 5))
     result = segmentize(outl, tolerance=1)

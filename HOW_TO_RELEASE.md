@@ -15,7 +15,7 @@ These instructions assume that `upstream` refers to the main repository
  2. Maybe write a release summary: ~50 words describing the high level features.
  3. Look over whats-new.rst and the docs. Make sure "What's New" is complete
     (check the date!) and add the release summary at the top.
- 4. Open a PR with the release summary and whats new changes.
+ 4. Open a PR with the release summary and what's new changes.
  5. After merging, again ensure your master branch is synced to upstream:
      ```sh
      git pull upstream master

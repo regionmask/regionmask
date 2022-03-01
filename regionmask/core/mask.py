@@ -28,7 +28,7 @@ Parameters
 {gp_doc}lon_or_obj : object or array_like
     Can either be a longitude array and then ``lat`` needs to be
     given. Or an object where the longitude and latitude can be
-    retrived as: ``lon = lon_or_obj[lon_name]`` and
+    retrieved as: ``lon = lon_or_obj[lon_name]`` and
     ``lat = lon_or_obj[lat_name]``.
 lat : array_like, optional
     If ``lon_or_obj`` is a longitude array, the latitude needs to be
@@ -570,7 +570,7 @@ def _get_LON_LAT_out_shape(lon, lat, fill, is_unstructured=False):
 
 
 def _transform_from_latlon(lon, lat):
-    """perform an affine tranformation to the latitude/longitude coordinates"""
+    """perform an affine transformation to the latitude/longitude coordinates"""
 
     from affine import Affine
 

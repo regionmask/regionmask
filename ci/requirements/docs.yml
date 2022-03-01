@@ -16,7 +16,7 @@ dependencies:
   - pygeos
   - rasterio
   - xarray
-# depencies for the examples
+# dependencies for the examples
   - cftime
   - netcdf4
 # for regionmask intake example
