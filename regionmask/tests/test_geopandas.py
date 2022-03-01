@@ -106,6 +106,18 @@ def test_from_geopandas_use_columns(geodataframe_clean):
     assert result.source == "source"
 
 
+@pytest.mark.parametrize("attr", ["name", "source", "overlap"])
+def test_from_geopandas_not_roundtrip_warning(attr, geodataframe_clean):
+
+    geodataframe_clean.attrs = {attr: "x"}
+
+    with pytest.warns(
+        UserWarning,
+        match="Use ``regionmask.Regions.from_geodataframe`` to round-trip ``Regions``",
+    ):
+        from_geopandas(geodataframe_clean)
+
+
 def test_from_geopandas_default(geodataframe_clean):
 
     result = from_geopandas(geodataframe_clean)

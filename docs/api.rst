@@ -1,6 +1,5 @@
 .. currentmodule:: regionmask
 
-#############
 API reference
 #############
 
@@ -66,6 +65,17 @@ Creating a Mask
    Regions.mask
    Regions.mask_3D
 
+Conversion
+----------
+
+.. autosummary::
+   :toctree: generated/
+
+   Regions.to_dataframe
+   Regions.to_geodataframe
+   Regions.to_geoseries
+   Regions.from_geodataframe
+
 
 Attributes
 ----------
@@ -84,7 +94,6 @@ Attributes
    Regions.bounds_global
    Regions.lon_180
    Regions.lon_360
-
 
 _OneRegion
 ==========
