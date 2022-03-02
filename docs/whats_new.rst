@@ -10,8 +10,16 @@ What's New
 
 .. _whats-new.0.9.0:
 
-v0.9.0 (unreleased)
----------------------
+v0.9.0 (02.03.2022)
+-------------------
+
+Version 0.9.0 contains some exiting improvements: overlapping regions and unstructured
+grids can now be masked correctly. Further, :py:class:`Regions` can now be round-tripped
+to :py:class:`geopandas.GeoDataFrame` objects. The new version also adds PRUDENCE
+regions and a more stable handling of naturalearth regions.
+
+Many thanks to the contributors to the v0.9.0 release: Aaron Spring, Mathias Hauser, and
+Ruth Lorenz!
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
@@ -45,6 +53,7 @@ Breaking Changes
 
 Enhancements
 ~~~~~~~~~~~~
+
 - regionmask does now correctly treat overlapping regions if ``overlap=True`` is set in
   the constructor (:issue:`228`, :pull:`318`).
 
@@ -65,7 +74,7 @@ Enhancements
 
 - Add methods to convert :py:class:`Regions` to (geo)pandas objects, namely :py:meth:`Regions.to_geodataframe`,
   :py:meth:`Regions.to_geoseries`, :py:meth:`Regions.to_dataframe`). The geopandas.GeoDataFrame
-  can be converted back (round-tripped) using py:meth:`Regions.from_geodataframe`
+  can be converted back (round-tripped) using :py:meth:`Regions.from_geodataframe`
   (:issue:`50`, :pull:`298`).
 
 - The plotting methods (:py:meth:`Regions.plot` and :py:meth:`Regions.plot_regions`) now
@@ -80,8 +89,7 @@ Deprecations
 ~~~~~~~~~~~~
 
 - The ``regionmask.defined_regions._ar6_pre_revisions`` regions are deprecated. The
-  ``regionmask.defined_regions.ar6`` regions should be used instead
-  (:issue:`314`, :pull:`320`).
+  ``regionmask.defined_regions.ar6`` regions should be used instead (:issue:`314`, :pull:`320`).
 
 New regions
 ~~~~~~~~~~~
@@ -89,7 +97,6 @@ New regions
 - Added :py:attr:`prudence` regions for Europe from `Christensen and Christensen, 2007,
   <https://link.springer.com/article/10.1007/s10584-006-9210-7>`_ (:pull:`283`).
   By `Ruth Lorenz <https://github.com/ruthlorenz>`_.
-
 
 Bug Fixes
 ~~~~~~~~~
@@ -99,7 +106,6 @@ Bug Fixes
   :pull:`294`).
 - Ensure :py:meth:`Regions.plot` uses the current axes (``plt.gca()``) if possible and
   error if a non-cartopy GeoAxes is passed (:issue:`316`, :pull:`321`).
-
 
 Docs
 ~~~~
