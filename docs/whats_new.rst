@@ -74,7 +74,7 @@ Enhancements
 
 - Add methods to convert :py:class:`Regions` to (geo)pandas objects, namely :py:meth:`Regions.to_geodataframe`,
   :py:meth:`Regions.to_geoseries`, :py:meth:`Regions.to_dataframe`). The geopandas.GeoDataFrame
-  can be converted back (round-tripped) using py:meth:`Regions.from_geodataframe`
+  can be converted back (round-tripped) using :py:meth:`Regions.from_geodataframe`
   (:issue:`50`, :pull:`298`).
 
 - The plotting methods (:py:meth:`Regions.plot` and :py:meth:`Regions.plot_regions`) now
