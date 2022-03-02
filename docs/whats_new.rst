@@ -14,13 +14,12 @@ v0.9.0 (02.03.2022)
 -------------------
 
 Version 0.9.0 contains some exiting improvements: overlapping regions and unstructured
-grids can now correctly be masked. Further, :py:class:`Regions` can now be round-tripped
-to :py:class:`geopandas.GeoDataFrame` objects. It adds PRUDENCE regions and a more stable
-handling of naturalearth regions.
+grids can now be masked correctly. Further, :py:class:`Regions` can now be round-tripped
+to :py:class:`geopandas.GeoDataFrame` objects. The new version also adds PRUDENCE
+regions and a more stable handling of naturalearth regions.
 
-Many thanks to the contributors to the v0.9.0 release!
-
-Aaron Spring, Mathias Hauser, Ruth Lorenz
+Many thanks to the contributors to the v0.9.0 release: Aaron Spring, Mathias Hauser, and
+Ruth Lorenz!
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
