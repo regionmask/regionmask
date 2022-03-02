@@ -1,4 +1,4 @@
-.. regionmask documentation master file, created by
+.. regionmask documentation file, created by
    sphinx-quickstart on Wed Jul 20 14:36:54 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -104,5 +104,4 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

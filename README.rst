@@ -6,9 +6,9 @@
 plotting and creation of masks of spatial regions
 =================================================
 
-.. image:: https://github.com/regionmask/regionmask/workflows/CI/badge.svg?branch=master
+.. image:: https://github.com/regionmask/regionmask/workflows/CI/badge.svg?branch=main
    :target: https://github.com/regionmask/regionmask/actions?query=workflow%3ACI
-.. image:: https://codecov.io/gh/regionmask/regionmask/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/regionmask/regionmask/branch/main/graph/badge.svg
   :target: https://codecov.io/gh/regionmask/regionmask
 .. image:: https://readthedocs.org/projects/regionmask/badge/?version=latest
    :target: https://regionmask.readthedocs.io

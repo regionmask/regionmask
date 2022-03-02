@@ -3,7 +3,7 @@
 {% block header %}
 
 .. note:: This tutorial was generated from an IPython notebook that can be accessed from
-          `github <https://github.com/regionmask/regionmask/tree/master/docs/notebooks>`_.
+          `github <https://github.com/regionmask/regionmask/tree/main/docs/notebooks>`_.
 
 .. _{{resources.metadata.name}}:
 {% endblock %}

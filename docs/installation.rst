@@ -55,7 +55,7 @@ Testing
 To run the test suite after installing regionmask, install `pytest <https://pytest.org>`__
 and run ``pytest`` in the root directory of regionmask.
 
-To install the development version (master), do:
+To install the development version (main), do:
 
 .. code-block:: bash
 
