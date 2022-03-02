@@ -10,7 +10,7 @@ What's New
 
 .. _whats-new.0.10.0:
 
-v{0.10.0} (unreleased)
+v0.10.0 (unreleased)
 ----------------------
 
 Breaking Changes
