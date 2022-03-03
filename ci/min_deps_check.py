@@ -4,7 +4,7 @@ policy on obsolete dependencies is being followed. Print a pretty report :)
 """
 
 # min_deps_check.py is copied from xarray:
-# https://github.com/pydata/xarray/blob/master/ci/min_deps_check.py
+# https://github.com/pydata/xarray/blob/main/ci/min_deps_check.py
 # Used under the terms of xarray's license, see licenses/XARRAY_LICENSE.
 
 import itertools
