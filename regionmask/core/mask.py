@@ -195,13 +195,6 @@ def _mask(
         masks = list()
         for outline, number in zip(outlines, numbers):
             mask = mask_func(lon, lat, [outline], numbers=[number], **kwargs)
-
-            # not False required
-            if wrap_lon is not False:
-                # treat the points at -180°E/0°E and -90°N
-                mask = _mask_edgepoints_shapely(
-                    mask, lon, lat, [outline], [number], is_unstructured=is_unstructured
-                )
             masks.append(mask == number)
 
         mask = np.stack(masks, axis=0)
@@ -209,12 +202,18 @@ def _mask(
     else:
         mask = mask_func(lon, lat, outlines, numbers=numbers, **kwargs)
 
-        # not False required
-        if wrap_lon is not False:
-            # treat the points at -180°E/0°E and -90°N
-            mask = _mask_edgepoints_shapely(
-                mask, lon, lat, outlines, numbers, is_unstructured=is_unstructured
-            )
+    # not False required
+    if wrap_lon is not False:
+        # treat the points at -180°E/0°E and -90°N
+        mask = _mask_edgepoints_shapely(
+            mask,
+            lon,
+            lat,
+            outlines,
+            numbers,
+            is_unstructured=is_unstructured,
+            as_3D=as_3D,
+        )
 
     return mask_to_dataarray(mask, lon_or_obj, lat_orig, lon_name, lat_name)
 
@@ -417,20 +416,29 @@ def _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name):
 
 
 def _mask_edgepoints_shapely(
-    mask, lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False
+    mask,
+    lon,
+    lat,
+    polygons,
+    numbers,
+    is_unstructured=False,
+    as_3D=False,
 ):
 
     import shapely.vectorized as shp_vect
 
-    # not sure if this is really necessary
-    lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
-
-    LON, LAT, out, shape = _get_LON_LAT_out_shape(
-        lon, lat, fill, is_unstructured=is_unstructured
+    LON, LAT, __, __ = _get_LON_LAT_out_shape(
+        lon, lat, np.NaN, is_unstructured=is_unstructured
     )
 
-    mask = mask.flatten()
-    mask_unassigned = np.isnan(mask)
+    shape = mask.shape
+    if as_3D:
+        mask = mask.reshape(mask.shape[0], -1)
+        # assume no points are assigned
+        mask_unassigned = True
+    else:
+        mask = mask.flatten()
+        mask_unassigned = np.isnan(mask)
 
     # find points at -180°E/0°E
     if lon.min() < 0:
@@ -458,9 +466,15 @@ def _mask_edgepoints_shapely(
 
     # "mask[borderpoints][sel] = number" does not work, need to use np.where
     idx = np.where(borderpoints)[0]
-    for i, polygon in enumerate(polygons):
-        sel = shp_vect.contains(polygon, LON, LAT)
-        mask[idx[sel]] = numbers[i]
+
+    if as_3D:
+        for i, polygon in enumerate(polygons):
+            sel = shp_vect.contains(polygon, LON, LAT)
+            mask[i, idx[sel]] = True
+    else:
+        for i, polygon in enumerate(polygons):
+            sel = shp_vect.contains(polygon, LON, LAT)
+            mask[idx[sel]] = numbers[i]
 
     return mask.reshape(shape)
 
