@@ -34,7 +34,7 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- Vectorized function to determine points at *exactly* -180°E (or 0°E) and -90°N as
+- "Vectorized" the function to determine points at *exactly* -180°E (or 0°E) and -90°N as
   part of :issue:`228` (:pull:`341`).
 
 .. _whats-new.0.9.0:
