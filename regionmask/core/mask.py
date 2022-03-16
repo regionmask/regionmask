@@ -186,12 +186,12 @@ def _mask(
         mask_func = _mask_rasterize_split
     elif method == "pygeos":
         mask_func = _mask_pygeos
-        kwargs = {"is_unstructured": is_unstructured}
+        kwargs = {"is_unstructured": is_unstructured, "as_3D": as_3D}
     elif method == "shapely":
         mask_func = _mask_shapely
-        kwargs = {"is_unstructured": is_unstructured}
+        kwargs = {"is_unstructured": is_unstructured, "as_3D": as_3D}
 
-    if as_3D:
+    if as_3D and method not in ["shapely", "pygeos"]:
         masks = list()
         for outline, number in zip(outlines, numbers):
             mask = mask_func(lon, lat, [outline], numbers=[number], **kwargs)
@@ -427,11 +427,10 @@ def _mask_edgepoints_shapely(
 
     import shapely.vectorized as shp_vect
 
-    LON, LAT, __, __ = _get_LON_LAT_out_shape(
-        lon, lat, np.NaN, is_unstructured=is_unstructured
+    LON, LAT, shape = _get_LON_LAT_shape(
+        lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
     )
 
-    shape = mask.shape
     if as_3D:
         mask = mask.reshape(mask.shape[0], -1)
         # assume no points are assigned
@@ -479,14 +478,17 @@ def _mask_edgepoints_shapely(
     return mask.reshape(shape)
 
 
-def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False):
+def _mask_pygeos(
+    lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False, as_3D=False
+):
     """create a mask using pygeos.STRtree"""
 
     lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
 
-    LON, LAT, out, shape = _get_LON_LAT_out_shape(
-        lon, lat, fill, is_unstructured=is_unstructured
+    LON, LAT, shape = _get_LON_LAT_shape(
+        lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
     )
+    out = _get_out(shape, fill, as_3D=as_3D)
 
     # add a tiny offset to get a consistent edge behaviour
     LON = LON - 1 * 10**-8
@@ -499,31 +501,43 @@ def _mask_pygeos(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False
     tree = pygeos.STRtree(points_pygeos)
     a, b = tree.query_bulk(poly_pygeos, predicate="contains")
 
-    for i, number in enumerate(numbers):
-
-        out[b[a == i]] = number
+    if as_3D:
+        for i in range(len(numbers)):
+            out[i, b[a == i]] = True
+    else:
+        for i, number in enumerate(numbers):
+            out[b[a == i]] = number
 
     return out.reshape(shape)
 
 
-def _mask_shapely(lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False):
+def _mask_shapely(
+    lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False, as_3D=False
+):
     """create a mask using shapely.vectorized.contains"""
 
     import shapely.vectorized as shp_vect
 
     lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
 
-    LON, LAT, out, shape = _get_LON_LAT_out_shape(
-        lon, lat, fill, is_unstructured=is_unstructured
+    LON, LAT, shape = _get_LON_LAT_shape(
+        lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
     )
+    out = _get_out(shape, fill, as_3D=as_3D)
 
     # add a tiny offset to get a consistent edge behaviour
     LON = LON - 1 * 10**-8
     LAT = LAT - 1 * 10**-10
 
-    for i, polygon in enumerate(polygons):
-        sel = shp_vect.contains(polygon, LON, LAT)
-        out[sel] = numbers[i]
+    if as_3D:
+        for i, polygon in enumerate(polygons):
+            sel = shp_vect.contains(polygon, LON, LAT)
+            out[i, sel] = True
+
+    else:
+        for i, polygon in enumerate(polygons):
+            sel = shp_vect.contains(polygon, LON, LAT)
+            out[sel] = numbers[i]
 
     return out.reshape(shape)
 
@@ -544,7 +558,7 @@ def _parse_input(lon, lat, coords, fill, numbers):
     return lon, lat
 
 
-def _get_LON_LAT_out_shape(lon, lat, fill, is_unstructured=False):
+def _get_LON_LAT_shape(lon, lat, numbers, is_unstructured=False, as_3D=False):
 
     if lon.ndim != lat.ndim:
         raise ValueError(
@@ -574,13 +588,22 @@ def _get_LON_LAT_out_shape(lon, lat, fill, is_unstructured=False):
 
     shape = LON.shape
 
+    if as_3D:
+        shape = (len(numbers),) + shape
+
     LON, LAT = LON.ravel(), LAT.ravel()
 
-    # create flattened output variable
-    out = np.empty(shape=np.prod(shape))
-    out.fill(fill)
+    return LON, LAT, shape
 
-    return LON, LAT, out, shape
+
+def _get_out(shape, fill, as_3D):
+    # create flattened output variable
+    if as_3D:
+        out = np.full(shape[:1] + (np.prod(shape[-2:]).item(),), False, bool)
+    else:
+        out = np.full(np.prod(shape), fill, float)
+
+    return out
 
 
 def _transform_from_latlon(lon, lat):
