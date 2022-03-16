@@ -34,8 +34,10 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- "Vectorized" the function to determine points at *exactly* -180°E (or 0°E) and -90°N as
-  part of :issue:`228` (:pull:`341`).
+- Directly create 3D masks, relevant for overlapping regions as part of :issue:`228`:
+
+  - using shapely and pygeos (:pull:`342`)
+  - in the function to determine points at *exactly* -180°E (or 0°E) and -90°N (:pull:`341`)
 
 .. _whats-new.0.9.0:
 
