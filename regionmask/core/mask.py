@@ -10,6 +10,7 @@ from .utils import (
     _is_numeric,
     _wrapAngle,
     equally_spaced,
+    unpackbits,
 )
 
 try:
@@ -186,21 +187,12 @@ def _mask(
         mask_func = _mask_rasterize_split
     elif method == "pygeos":
         mask_func = _mask_pygeos
-        kwargs = {"is_unstructured": is_unstructured, "as_3D": as_3D}
+        kwargs = {"is_unstructured": is_unstructured}
     elif method == "shapely":
         mask_func = _mask_shapely
-        kwargs = {"is_unstructured": is_unstructured, "as_3D": as_3D}
+        kwargs = {"is_unstructured": is_unstructured}
 
-    if as_3D and method not in ["shapely", "pygeos"]:
-        masks = list()
-        for outline, number in zip(outlines, numbers):
-            mask = mask_func(lon, lat, [outline], numbers=[number], **kwargs)
-            masks.append(mask == number)
-
-        mask = np.stack(masks, axis=0)
-
-    else:
-        mask = mask_func(lon, lat, outlines, numbers=numbers, **kwargs)
+    mask = mask_func(lon, lat, outlines, numbers=numbers, as_3D=as_3D, **kwargs)
 
     # not False required
     if wrap_lon is not False:
@@ -622,29 +614,89 @@ def _transform_from_latlon(lon, lat):
     return trans * scale
 
 
-def _mask_rasterize_flip(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+def _mask_rasterize_flip(
+    lon, lat, polygons, numbers, fill=np.NaN, as_3D=False, **kwargs
+):
 
     split_point = _find_splitpoint(lon)
     flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
 
-    mask = _mask_rasterize(flipped_lon, lat, polygons, numbers=numbers, **kwargs)
+    mask = _mask_rasterize(
+        flipped_lon, lat, polygons, numbers=numbers, as_3D=as_3D, **kwargs
+    )
 
     # revert the mask
-    return np.hstack((mask[:, -split_point:], mask[:, :-split_point]))
+    return np.concatenate((mask[..., -split_point:], mask[..., :-split_point]), axis=-1)
 
 
-def _mask_rasterize_split(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+def _mask_rasterize_split(
+    lon, lat, polygons, numbers, fill=np.NaN, as_3D=False, **kwargs
+):
 
     split_point = _find_splitpoint(lon)
     lon_l, lon_r = lon[:split_point], lon[split_point:]
 
-    mask_l = _mask_rasterize(lon_l, lat, polygons, numbers=numbers, **kwargs)
-    mask_r = _mask_rasterize(lon_r, lat, polygons, numbers=numbers, **kwargs)
+    mask_l = _mask_rasterize(
+        lon_l, lat, polygons, numbers=numbers, as_3D=as_3D, **kwargs
+    )
+    mask_r = _mask_rasterize(
+        lon_r, lat, polygons, numbers=numbers, as_3D=as_3D, **kwargs
+    )
 
-    return np.hstack((mask_l, mask_r))
+    return np.concatenate((mask_l, mask_r), axis=-1)
 
 
-def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, as_3D=False, **kwargs):
+
+    if as_3D:
+        return _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs)
+
+    return _mask_rasterize_internal(lon, lat, polygons, numbers, fill=fill, **kwargs)
+
+
+def _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs):
+
+    # rasterize always returns a flat mask, so we use "bits" and MergeAlg.add to
+    # determine overlapping regions. For three regions we use numbers 1, 2, 4 and then
+    # 1 -> 1
+    # 3 -> 1 & 2
+    # 6 -> 2 & 4
+    # etc
+
+    import rasterio
+
+    numbers = 2 ** np.arange(32)
+    n_polygons = len(polygons)
+
+    out = list()
+
+    # rasterize only supports uint32 -> rasterize in batches of 32
+    for i in range(np.ceil(n_polygons / 32).astype(int)):
+
+        sel = slice(32 * i, 32 * (i + 1))
+
+        result = _mask_rasterize_internal(
+            lon,
+            lat,
+            polygons[sel],
+            numbers[: min(32, n_polygons - i * 32)],
+            fill=0,
+            dtype=np.uint32,
+            merge_alg=rasterio.enums.MergeAlg.add,
+            **kwargs,
+        )
+
+        # disentangle the regions
+        result = unpackbits(result, 32)
+
+        # the region dim must be the first one
+        result = result.transpose([2, 0, 1])
+        out.append(result)
+
+    return np.concatenate(out, axis=2)[:n_polygons, ...]
+
+
+def _mask_rasterize_internal(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
     This only works for regularly spaced 1D lat and lon arrays.
