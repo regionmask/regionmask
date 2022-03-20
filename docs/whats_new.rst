@@ -36,7 +36,7 @@ Internal Changes
 
 - Directly create 3D masks, relevant for overlapping regions as part of :issue:`228`:
 
-  - using shapely and pygeos (:pull:`342`), and rasterio (:pull:`343`) 
+  - using shapely and pygeos (:pull:`343`), and rasterio (:pull:`345`) 
   - in the function to determine points at *exactly* -180°E (or 0°E) and -90°N (:pull:`341`)
 
 .. _whats-new.0.9.0:
