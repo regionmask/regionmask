@@ -6,6 +6,9 @@ build:
         # see https://github.com/readthedocs/readthedocs.org/issues/8201
       - git update-index --assume-unchanged ci/requirements/docs.yml docs/conf.py
       - git status
+      - echo $CONDA_DEFAULT_ENV
+      - pwd
+      - source activate regionmask-docs; pip install -e .
   tools:
     python: mambaforge-4.10
 sphinx:
