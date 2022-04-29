@@ -14,11 +14,12 @@ from regionmask.core.mask import (
     _mask_rasterize,
     _mask_rasterize_no_offset,
     _mask_shapely,
+    _mask_shapely2,
     _transform_from_latlon,
 )
 from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
 
-from . import has_pygeos, requires_pygeos
+from . import has_pygeos, has_shapely_2, requires_pygeos, requires_shapely_2
 from .utils import (
     dummy_ds,
     dummy_region,
@@ -30,6 +31,7 @@ from .utils import (
 MASK_FUNCS = [
     _mask_rasterize,
     _mask_shapely,
+    pytest.param(_mask_shapely2, marks=requires_shapely_2),
     pytest.param(_mask_pygeos, marks=requires_pygeos),
 ]
 
@@ -37,11 +39,13 @@ MASK_FUNCS = [
 MASK_METHODS = [
     "rasterize",
     "shapely",
+    pytest.param("shapely2", marks=requires_shapely_2),
     pytest.param("pygeos", marks=requires_pygeos),
 ]
 
 MASK_METHODS_IRREGULAR = [
     "shapely",
+    pytest.param("shapely2", marks=requires_shapely_2),
     pytest.param("pygeos", marks=requires_pygeos),
 ]
 
@@ -696,6 +700,15 @@ def test_rasterize_on_split_lon_asymmetric():
 
 
 METHOD_IRREGULAR = "pygeos" if has_pygeos else "shapely"
+
+if has_shapely_2:
+    METHOD_IRREGULAR = "shapely2"
+elif has_pygeos:
+    METHOD_IRREGULAR = "pygeos"
+else:
+    METHOD_IRREGULAR = "shapely"
+
+
 METHODS = {
     0: "rasterize",
     1: "rasterize_flip",

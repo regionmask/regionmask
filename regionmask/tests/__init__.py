@@ -6,10 +6,13 @@ import pytest
 from packaging.version import Version
 
 
-def _importorskip(modname):
+def _importorskip(modname, minversion=None):
     try:
-        importlib.import_module(modname)
+        mod = importlib.import_module(modname)
         has = True
+        if minversion is not None:
+            if Version(mod.__version__) < Version(minversion):
+                raise ImportError("Minimum version not satisfied")
     except ImportError:  # pragma: no cover
         has = False
     func = pytest.mark.skipif(not has, reason=f"requires {modname}")
@@ -27,6 +30,9 @@ def assert_no_warnings():
 has_cartopy, requires_cartopy = _importorskip("cartopy")
 has_matplotlib, requires_matplotlib = _importorskip("matplotlib")
 has_pygeos, requires_pygeos = _importorskip("pygeos")
+# TODO: switch minversion to 2.0 once it is out
+has_shapely_2, requires_shapely_2 = _importorskip("shapely", minversion="1.9")
+
 
 has_geos_3_10 = False
 if has_pygeos:

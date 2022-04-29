@@ -1,7 +1,9 @@
 import warnings
 
 import numpy as np
+import shapely
 import xarray as xr
+from packaging.version import Version
 
 from .utils import (
     _equally_spaced_on_split_lon,
@@ -164,7 +166,7 @@ def _mask(
     if wrap_lon_:
         lon = _wrapAngle(lon, wrap_lon_, is_unstructured=is_unstructured)
 
-    if method not in (None, "rasterize", "shapely", "pygeos"):
+    if method not in (None, "rasterize", "shapely", "pygeos", "shapely2"):
         msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
         raise ValueError(msg)
 
@@ -190,6 +192,9 @@ def _mask(
         kwargs = {"is_unstructured": is_unstructured}
     elif method == "shapely":
         mask_func = _mask_shapely
+        kwargs = {"is_unstructured": is_unstructured}
+    elif method == "shapely2":
+        mask_func = _mask_shapely2
         kwargs = {"is_unstructured": is_unstructured}
 
     mask = mask_func(lon, lat, outlines, numbers=numbers, as_3D=as_3D, **kwargs)
@@ -353,6 +358,10 @@ def _determine_method(lon, lat):
         else:
             return "rasterize_split"
 
+    # TODO: switch to Version("2.0") once it is out
+    if Version(shapely.__version__) > Version("1"):
+        return "shapely2"
+
     if has_pygeos:
         return "pygeos"
 
@@ -492,6 +501,38 @@ def _mask_pygeos(
 
     tree = pygeos.STRtree(points_pygeos)
     a, b = tree.query_bulk(poly_pygeos, predicate="contains")
+
+    if as_3D:
+        for i in range(len(numbers)):
+            out[i, b[a == i]] = True
+    else:
+        for i, number in enumerate(numbers):
+            out[b[a == i]] = number
+
+    return out.reshape(shape)
+
+
+def _mask_shapely2(
+    lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False, as_3D=False
+):
+    """create a mask using pygeos.STRtree"""
+
+    lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
+
+    LON, LAT, shape = _get_LON_LAT_shape(
+        lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
+    )
+    out = _get_out(shape, fill, as_3D=as_3D)
+
+    # add a tiny offset to get a consistent edge behaviour
+    LON = LON - 1 * 10**-8
+    LAT = LAT - 1 * 10**-10
+
+    # convert shapely points to pygeos
+    points = shapely.points(LON, LAT)
+
+    tree = shapely.STRtree(points)
+    a, b = tree.query_bulk(polygons, predicate="contains")
 
     if as_3D:
         for i in range(len(numbers)):
