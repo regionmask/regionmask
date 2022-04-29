@@ -5,11 +5,7 @@ build:
     pre_install:
         # see https://github.com/readthedocs/readthedocs.org/issues/8201
       - git update-index --assume-unchanged ci/requirements/docs.yml docs/conf.py
-      - git status
-      - echo $CONDA_DEFAULT_ENV
-      - pwd
-      - conda init
-      - which pip
+      # install regionmask, needs to be editable
       - pip install -e .
   tools:
     python: mambaforge-4.10
