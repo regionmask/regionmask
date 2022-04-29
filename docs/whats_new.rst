@@ -31,12 +31,17 @@ Bug Fixes
 Docs
 ~~~~
 
+- The version number should now be displayed correctly again on readthedocs. Formerly
+  regionmask was installed from a dirty git archive, thus setuptools_scm did not
+  report the correct version number (:pull:`348`, see also `readthedocs/readthedocs.org#8201
+  <https://github.com/readthedocs/readthedocs.org/issues/8201>`_).
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Directly create 3D masks, relevant for overlapping regions as part of :issue:`228`:
 
-  - using shapely, pygeos (:pull:`343`), and rasterio (:pull:`345`) 
+  - using shapely, pygeos (:pull:`343`), and rasterio (:pull:`345`)
   - in the function to determine points at *exactly* -180°E (or 0°E) and -90°N (:pull:`341`)
 
 .. _whats-new.0.9.0:
