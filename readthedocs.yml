@@ -9,7 +9,7 @@ build:
       - echo $CONDA_DEFAULT_ENV
       - pwd
       - conda init
-      - conda activate regionmask-docs; pip install -e .
+      - . activate regionmask-docs; pip install -e .
   tools:
     python: mambaforge-4.10
 sphinx:
