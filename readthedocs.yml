@@ -3,9 +3,6 @@ build:
   os: ubuntu-20.04
   jobs:
     pre_install:
-      - which conda
-      - which activate
-      - source activate
         # see https://github.com/readthedocs/readthedocs.org/issues/8201
       - git update-index --assume-unchanged ci/requirements/docs.yml docs/conf.py
       # install regionmask, needs to be editable
