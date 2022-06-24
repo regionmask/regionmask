@@ -49,8 +49,8 @@ extensions = [
 ]
 
 extlinks = {
-    "issue": ("https://github.com/regionmask/regionmask/issues/%s", "GH"),
-    "pull": ("https://github.com/regionmask/regionmask/pull/%s", "PR"),
+    "issue": ("https://github.com/regionmask/regionmask/issues/%s", "#%s"),
+    "pull": ("https://github.com/regionmask/regionmask/pull/%s", "#%s"),
 }
 
 autosummary_generate = True
