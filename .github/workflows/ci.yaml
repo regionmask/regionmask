@@ -83,7 +83,7 @@ jobs:
           path: test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
 
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
           flags: unittests
