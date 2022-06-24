@@ -4,7 +4,7 @@ build:
   jobs:
     pre_install:
       - which conda
-      - which source
+      - which activate
       - source activate
         # see https://github.com/readthedocs/readthedocs.org/issues/8201
       - git update-index --assume-unchanged ci/requirements/docs.yml docs/conf.py
