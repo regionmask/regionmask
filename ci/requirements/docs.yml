@@ -25,7 +25,6 @@ dependencies:
   - intake
   - requests
 # dependencies to build the docu
-  - docutils
   - ipykernel
   - nbconvert
   - numpydoc
