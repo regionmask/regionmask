@@ -17,6 +17,11 @@ import sys  # NOQA
 import warnings
 from subprocess import call
 
+# rtd does not activate the environment (needs to be before importing regionmask)
+on_rtd = os.environ.get("READTHEDOCS", None) == "True"
+if on_rtd:
+    os.environ["PROJ_LIB"] = f"{sys.prefix}/share/proj"
+
 import regionmask
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -44,8 +49,8 @@ extensions = [
 ]
 
 extlinks = {
-    "issue": ("https://github.com/regionmask/regionmask/issues/%s", "GH"),
-    "pull": ("https://github.com/regionmask/regionmask/pull/%s", "PR"),
+    "issue": ("https://github.com/regionmask/regionmask/issues/%s", "#%s"),
+    "pull": ("https://github.com/regionmask/regionmask/pull/%s", "#%s"),
 }
 
 autosummary_generate = True
