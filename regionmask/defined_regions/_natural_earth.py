@@ -329,26 +329,33 @@ class NaturalEarth(ABC):
 def _fix_ocean_basins_50_cartopy(self, df):
     """ocean basins 50 has duplicate entries"""
 
-    names_v4 = {
+    names_v4_1_0 = {
         14: "Mediterranean Sea",
         30: "Mediterranean Sea",
         26: "Ross Sea",
         29: "Ross Sea",
     }
 
-    names_v5 = {
+    names_v5_0_0 = {
         74: "Great Barrier Reef",
         114: "Great Barrier Reef",
     }
 
-    is_v4 = all(df.loc[idx]["name"] == name for idx, name in names_v4.items())
-    is_v5 = all(df.loc[idx]["name"] == name for idx, name in names_v5.items())
+    names_v5_1_2 = {
+        74: "Great Barrier Reef",
+        113: "Great Barrier Reef",
+    }
 
-    if is_v4:
+    is_v4_1_0 = all(df.loc[idx]["name"] == name for idx, name in names_v4_1_0.items())
+    is_v5_0_0 = all(df.loc[idx]["name"] == name for idx, name in names_v5_0_0.items())
+    is_v5_1_2 = all(df.loc[idx]["name"] == name for idx, name in names_v5_1_2.items())
+
+    if is_v4_1_0:
         df = _fix_ocean_basins_50_v4_1_0(self, df)
-
-    elif is_v5:
+    elif is_v5_0_0:
         df = _fix_ocean_basins_50_v5_0_0(self, df)
+    elif is_v5_1_2:
+        df = _fix_ocean_basins_50_v5_1_2(self, df)
     else:
         raise ValueError(
             "Unknown version of the ocean basins 50m data from naturalearth. "
@@ -379,6 +386,20 @@ def _fix_ocean_basins_50_v4_1_0(self, df):
     return df
 
 
+def _unify__great_barrier_reef(df, idx1, idx2):
+
+    p1 = df.loc[idx1].geometry
+    p2 = df.loc[idx2].geometry
+
+    # merge the two Great Barrier Reef polygons - idx1 <<< idx2
+    poly = p1.union(p2)
+    df.at[idx1, "geometry"] = poly
+    # remove the now merged row
+    df = df.drop(labels=idx2).reset_index()
+
+    return df
+
+
 def _fix_ocean_basins_50_v5_0_0(self, df):
     """fix ocean basins 50 for naturalearth v5.0.0
 
@@ -387,16 +408,18 @@ def _fix_ocean_basins_50_v5_0_0(self, df):
     - The numbers/ indices are different from Version 4.0!
     """
 
-    p1 = df.loc[74].geometry
-    p2 = df.loc[114].geometry
+    return _unify__great_barrier_reef(df, 74, 114)
 
-    # merge the two Great Barrier Reef polygons - 74 <<< 114
-    poly = p1.union(p2)
-    df.at[74, "geometry"] = poly
-    # remove the now merged row
-    df = df.drop(labels=114).reset_index()
 
-    return df
+def _fix_ocean_basins_50_v5_1_2(self, df):
+    """fix ocean basins 50 for naturalearth v5.1.2
+
+    - Sea of Japan & Korea Strait geometries are different
+    - the rest (including the split of the Great Barrier Reef) is as in v5.0.0
+    - but the regions are ordered different
+    """
+
+    return _unify__great_barrier_reef(df, 74, 113)
 
 
 class NaturalEarthCartopy(NaturalEarth):
