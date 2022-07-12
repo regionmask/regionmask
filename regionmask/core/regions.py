@@ -13,7 +13,13 @@ from shapely.geometry import MultiPolygon, Polygon
 from .formatting import _display
 from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .plot import _plot, _plot_regions
-from .utils import _is_180, _is_numeric, _maybe_to_dict, _sanitize_names_abbrevs
+from .utils import (
+    _clean_cf_flag_meanings,
+    _is_180,
+    _is_numeric,
+    _maybe_to_dict,
+    _sanitize_names_abbrevs,
+)
 
 
 class Regions:
@@ -287,6 +293,7 @@ class Regions:
         lat_name="lat",
         method=None,
         wrap_lon=None,
+        flag="abbrevs",
     ):
 
         if self.overlap:
@@ -295,7 +302,7 @@ class Regions:
                 "Set ``region.overlap = False`` to create a 2D mask anyway."
             )
 
-        return _mask_2D(
+        mask_2D = _mask_2D(
             outlines=self.polygons,
             lon_bounds=self.bounds_global[::2],
             numbers=self.numbers,
@@ -306,6 +313,30 @@ class Regions:
             method=method,
             wrap_lon=wrap_lon,
         )
+
+        if flag not in [None, "abbrevs", "names"]:
+            raise ValueError(
+                f"`flag` must be one of `None`, `'abbrevs'` and `'names'`, found {flag}"
+            )
+
+        if flag is not None:
+
+            # TODO: only assign for regions that were found?
+            # isnan = np.isnan(mask_2D.values)
+            # numbers = np.unique(mask_2D.values[~isnan])
+            # numbers = numbers.astype(int)
+            
+            numbers = self.numbers
+            flag_meanings = getattr(self[numbers], flag)
+
+            flag_meanings = _clean_cf_flag_meanings(flag_meanings)
+
+            flag_meanings = " ".join(flag_meanings)
+
+            mask_2D.attrs["flag_values"] = numbers
+            mask_2D.attrs["flag_meanings"] = flag_meanings
+
+        return mask_2D
 
     mask.__doc__ = _inject_mask_docstring(is_3D=False, gp_method=False)
 

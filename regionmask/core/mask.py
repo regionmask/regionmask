@@ -238,6 +238,8 @@ def _mask_2D(
         msg = "No gridpoint belongs to any region. Returning an all-NaN mask."
         warnings.warn(msg, UserWarning, stacklevel=3)
 
+    mask.attrs = {"standard_name": "region"}
+
     return mask
 
 
