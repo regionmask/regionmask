@@ -321,16 +321,15 @@ class Regions:
 
         if flag is not None:
 
-            # TODO: only assign for regions that were found?
-            # isnan = np.isnan(mask_2D.values)
-            # numbers = np.unique(mask_2D.values[~isnan])
-            # numbers = numbers.astype(int)
+            # find detected regions
+            isnan = np.isnan(mask_2D.values)
+            numbers = np.unique(mask_2D.values[~isnan])
+            numbers = numbers.astype(int)
             
-            numbers = self.numbers
+            # assign ALL regions?
+
             flag_meanings = getattr(self[numbers], flag)
-
             flag_meanings = _clean_cf_flag_meanings(flag_meanings)
-
             flag_meanings = " ".join(flag_meanings)
 
             mask_2D.attrs["flag_values"] = numbers
