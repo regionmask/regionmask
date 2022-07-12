@@ -325,7 +325,7 @@ class Regions:
             isnan = np.isnan(mask_2D.values)
             numbers = np.unique(mask_2D.values[~isnan])
             numbers = numbers.astype(int)
-            
+
             # assign ALL regions?
 
             flag_meanings = getattr(self[numbers], flag)

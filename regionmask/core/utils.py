@@ -249,6 +249,6 @@ def unpackbits(numbers, num_bits):
 
 def _clean_cf_flag_meanings(flags):
     # see http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#flags
-    
+
     # TODO: check for invalid characters
     return [flag.replace(" ", "_") for flag in flags]
