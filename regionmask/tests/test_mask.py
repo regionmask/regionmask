@@ -803,6 +803,7 @@ def test_inject_mask_docstring():
     assert "drop :" in result
     assert "geodataframe" in result
     assert "overlap" in result
+    assert "flag" not in result
 
     result = _inject_mask_docstring(False, False)
 
@@ -811,3 +812,4 @@ def test_inject_mask_docstring():
     assert "drop :" not in result
     assert "geodataframe" not in result
     assert "overlap" not in result
+    assert "flag" in result
