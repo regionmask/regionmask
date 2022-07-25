@@ -19,6 +19,9 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- The masking functions (e.g. :py:meth:`Regions.mask`) now warn if the `units` of the
+  coordinates(``lat.attrs["units"]`` ) are given as "radians" (:issue:`279`).
+
 Deprecations
 ~~~~~~~~~~~~
 
