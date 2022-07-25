@@ -23,6 +23,14 @@ For plotting
 - `cartopy <http://scitools.org.uk/cartopy/>`__ (0.17 or later) for plotting on
   geographical maps.
 
+For parsing flag values
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/>`__ (0.6.1 or later) allows
+  rich comparison of ``mask.cf`` for 2D masks with the abbreviations or names of the
+  regions.
+
+
 For faster masking
 ~~~~~~~~~~~~~~~~~~
 

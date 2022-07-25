@@ -19,6 +19,11 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- 2D masks (e.g. :py:meth:`Regions.mask`) now contain `flag_values` and `flag_values` as
+  attributes (`attrs`). Together with `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/flags.html>`__
+  these can be leveraged to select single (``mask.cf == "CNA"``) or multiple (``mask.cf.isin``)
+  regions (:pull:`361`, :issue:`346`).
+
 Deprecations
 ~~~~~~~~~~~~
 
