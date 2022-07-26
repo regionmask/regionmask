@@ -104,7 +104,7 @@ flag : str, default "abbrevs"
     `flag_values` and `flag_meanings` to the attributes (`attrs`) of the mask. If None
     nothing is added. Using cf_xarray these can be used to select single
     (``mask.cf == "CNA"``) or multiple (``mask.cf.isin``) regions. Note that spaces are
-    replaced by underscore.
+    replaced by underscores.
 """
 
 
