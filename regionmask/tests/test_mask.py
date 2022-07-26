@@ -84,7 +84,7 @@ def test_mask(method):
 
     expected = expected_mask_2D()
     result = dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method=method)
-    xr.testing.assert_equal(result, expected)
+    xr.testing.assert_identical(result, expected)
 
 
 @pytest.mark.skipif(has_pygeos, reason="Only errors if pygeos is missing")
@@ -105,7 +105,7 @@ def test_mask_xr_keep_name(method):
 
     result = dummy_region.mask(ds.longitude, ds.latitude, method=method)
 
-    xr.testing.assert_equal(result, expected)
+    xr.testing.assert_identical(result, expected)
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
@@ -456,7 +456,7 @@ def test_mask_3D(drop, method):
     expected = expected_mask_3D(drop)
     result = dummy_region.mask_3D(dummy_ds.lon, dummy_ds.lat, drop=drop, method=method)
 
-    xr.testing.assert_equal(result, expected)
+    xr.testing.assert_identical(result, expected)
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
