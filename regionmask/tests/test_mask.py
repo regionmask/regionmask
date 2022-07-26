@@ -352,8 +352,6 @@ def test_mask_flag():
 
 def test_mask_flag_space():
 
-    print(f"{dummy_region.polygons=}")
-
     r = Regions(dummy_region.polygons, names=["name with space", "another", "last"])
 
     expected = expected_mask_2D()
