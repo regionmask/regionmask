@@ -23,6 +23,8 @@ Enhancements
   attributes (`attrs`). Together with `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/flags.html>`__
   these can be leveraged to select single (``mask.cf == "CNA"``) or multiple (``mask.cf.isin``)
   regions (:pull:`361`, :issue:`346`).
+- The masking functions (e.g. :py:meth:`Regions.mask`) now warn if the `units` of the
+  coordinates(``lat.attrs["units"]`` ) are given as "radians" (:issue:`279`).
 
 Deprecations
 ~~~~~~~~~~~~

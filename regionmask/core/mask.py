@@ -157,9 +157,16 @@ def _mask(
     # have to do this before np.asarray
     is_unstructured = False
     if isinstance(lon, xr.DataArray) and isinstance(lat, xr.DataArray):
-        if len(lon.dims) == 1 and len(lat.dims) == 1:
+        if lon.ndim == 1 and lat.ndim == 1:
             if lon.name != lon.dims[0] and lat.name != lat.dims[0]:
                 is_unstructured = True
+
+        has_radians = any(c.attrs.get("units") == "radian" for c in (lon, lat))
+        if has_radians and wrap_lon is not False:
+            warnings.warn(
+                "lon or lat is given as 'radian' (see the 'units' attrs). Should they "
+                "be converted to degree?"
+            )
 
     lon = np.asarray(lon)
     lat = np.asarray(lat)
