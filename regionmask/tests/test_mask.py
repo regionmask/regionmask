@@ -333,6 +333,44 @@ def test_mask_3D_overlap_empty(method):
     assert not result.any()
 
 
+def test_mask_flag():
+
+    expected = expected_mask_2D()
+    result = dummy_region.mask(dummy_ds)
+    xr.testing.assert_identical(result, expected)
+
+    result = dummy_region.mask(dummy_ds, flag="names")
+    expected.attrs["flag_meanings"] = "Region0 Region1"
+    xr.testing.assert_identical(result, expected)
+
+    result = dummy_region.mask(dummy_ds, flag=None)
+    del expected.attrs["flag_meanings"]
+    del expected.attrs["flag_values"]
+
+    xr.testing.assert_identical(result, expected)
+
+
+def test_mask_flag_space():
+
+    print(f"{dummy_region.polygons=}")
+
+    r = Regions(dummy_region.polygons, names=["name with space", "another", "last"])
+
+    expected = expected_mask_2D()
+    expected.attrs["flag_meanings"] = "name_with_space another"
+
+    result = r.mask(dummy_ds, flag="names")
+    xr.testing.assert_identical(result, expected)
+
+
+def test_mask_flag_only_found():
+
+    result = dummy_region.mask([0.5], [0.5])
+
+    assert result.attrs["flag_meanings"] == "r0"
+    np.testing.assert_equal(result.attrs["flag_values"], np.array([0]))
+
+
 # ======================================================================
 
 # test 2D array
