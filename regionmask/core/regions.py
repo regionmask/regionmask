@@ -13,13 +13,7 @@ from shapely.geometry import MultiPolygon, Polygon
 from .formatting import _display
 from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .plot import _plot, _plot_regions
-from .utils import (
-    _clean_cf_flag_meanings,
-    _is_180,
-    _is_numeric,
-    _maybe_to_dict,
-    _sanitize_names_abbrevs,
-)
+from .utils import _is_180, _is_numeric, _maybe_to_dict, _sanitize_names_abbrevs
 
 
 class Regions:
@@ -320,17 +314,16 @@ class Regions:
             )
 
         if flag is not None:
+            # see http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#flags
 
-            # find detected regions
+            # find detected regions (assign ALL regions?)
             isnan = np.isnan(mask_2D.values)
             numbers = np.unique(mask_2D.values[~isnan])
             numbers = numbers.astype(int)
 
-            # assign ALL regions?
-
             flag_meanings = getattr(self[numbers], flag)
-            flag_meanings = _clean_cf_flag_meanings(flag_meanings)
-            flag_meanings = " ".join(flag_meanings)
+            # TODO: check for invalid characters
+            flag_meanings = " ".join(flag.replace(" ", "_") for flag in flag_meanings)
 
             mask_2D.attrs["flag_values"] = numbers
             mask_2D.attrs["flag_meanings"] = flag_meanings

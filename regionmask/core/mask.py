@@ -102,10 +102,11 @@ _FLAG_DOCSTRING = """\
 flag : str, default "abbrevs"
     Indicates if the "abbrevs" (abbreviations) or "names" should be added as
     `flag_values` and `flag_meanings` to the attributes (`attrs`) of the mask. If None
-    nothing is added. Using cf_xarray these can used to select single 
+    nothing is added. Using cf_xarray these can be used to select single
     (``mask.cf == "CNA"``) or multiple (``mask.cf.isin``) regions. Note that spaces are
     replaced by underscore.
 """
+
 
 def _inject_mask_docstring(is_3D, gp_method):
 
@@ -116,7 +117,6 @@ def _inject_mask_docstring(is_3D, gp_method):
     gp_doc = _GP_DOCSTRING if gp_method else ""
     overlap = _OVERLAP_DOCSTRING if (gp_method and is_3D) else ""
     flags = _FLAG_DOCSTRING if not (gp_method or is_3D) else ""
-
 
     mask_docstring = _MASK_DOCSTRING_TEMPLATE.format(
         dtype=dtype,
@@ -286,6 +286,8 @@ def _mask_3D(
         mask_3D = _unpack_3D_mask(mask, numbers, drop)
     else:
         mask_3D = _unpack_2D_mask(mask, numbers, drop)
+
+    mask_3D.attrs = {"standard_name": "region"}
 
     return mask_3D
 

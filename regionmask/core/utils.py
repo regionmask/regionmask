@@ -245,10 +245,3 @@ def unpackbits(numbers, num_bits):
     numbers = numbers.reshape([-1, 1])
     mask = 2 ** np.arange(num_bits, dtype=numbers.dtype).reshape([1, num_bits])
     return (numbers & mask).astype(bool).reshape(shape)
-
-
-def _clean_cf_flag_meanings(flags):
-    # see http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#flags
-
-    # TODO: check for invalid characters
-    return [flag.replace(" ", "_") for flag in flags]
