@@ -18,6 +18,7 @@ dependencies:
   - xarray
 # dependencies for the examples
   - cftime
+  - cf_xarray
   - netcdf4
 # for regionmask intake example
   - aiohttp
