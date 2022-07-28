@@ -19,6 +19,9 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- The masking functions (e.g. :py:meth:`Regions.mask`) now warn if the `units` of the
+  coordinates(``lat.attrs["units"]`` ) are given as "radians" (:issue:`279`).
+
 Deprecations
 ~~~~~~~~~~~~
 
@@ -32,6 +35,11 @@ Bug Fixes
 
 Docs
 ~~~~
+
+- The version number should now be displayed correctly again on readthedocs. Formerly
+  regionmask was installed from a dirty git archive, thus setuptools_scm did not
+  report the correct version number (:pull:`348`, see also `readthedocs/readthedocs.org#8201
+  <https://github.com/readthedocs/readthedocs.org/issues/8201>`_).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~

@@ -25,7 +25,6 @@ dependencies:
   - intake
   - requests
 # dependencies to build the docu
-  - docutils
   - ipykernel
   - nbconvert
   - numpydoc
@@ -38,4 +37,4 @@ dependencies:
     - intake_geopandas>=0.2.4
     - msgpack
     # install regionmask relative to this file. Needs to be editable to be accepted.
-    - -e ../..
+    # - -e ../.. -> is now done in readthedocs.yml pre_install

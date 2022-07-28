@@ -4,7 +4,6 @@
 # Date:
 
 import copy
-from collections import OrderedDict
 
 import geopandas as gp
 import numpy as np
@@ -102,10 +101,9 @@ class Regions:
         names = _sanitize_names_abbrevs(numbers, names, "Region")
         abbrevs = _sanitize_names_abbrevs(numbers, abbrevs, "r")
 
-        regions = OrderedDict()
-
-        for n in sorted(numbers):
-            regions[n] = _OneRegion(n, names[n], abbrevs[n], outlines[n])
+        regions = {
+            n: _OneRegion(n, names[n], abbrevs[n], outlines[n]) for n in sorted(numbers)
+        }
 
         self.regions = regions
         self.name = name
@@ -135,9 +133,7 @@ class Regions:
             return self.regions[key]
         else:
             # subsample the regions
-            regions = OrderedDict()
-            for k in key:
-                regions[k] = self.regions[k]
+            regions = {k: self.regions[k] for k in key}
             new_self = copy.copy(self)  # shallow copy
             new_self.regions = regions
             return new_self
@@ -238,10 +234,10 @@ class Regions:
 
         bounds = self.bounds
 
-        xmin = min([p[0] for p in bounds])
-        ymin = min([p[1] for p in bounds])
-        xmax = max([p[2] for p in bounds])
-        ymax = max([p[3] for p in bounds])
+        xmin = min(p[0] for p in bounds)
+        ymin = min(p[1] for p in bounds)
+        xmax = max(p[2] for p in bounds)
+        ymax = max(p[3] for p in bounds)
 
         return [xmin, ymin, xmax, ymax]
 

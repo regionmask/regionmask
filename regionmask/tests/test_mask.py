@@ -19,7 +19,13 @@ from regionmask.core.mask import (
 )
 from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
 
-from . import has_pygeos, has_shapely_2, requires_pygeos, requires_shapely_2
+from . import (
+    assert_no_warnings,
+    has_pygeos,
+    has_shapely_2,
+    requires_pygeos,
+    requires_shapely_2,
+)
 from .utils import (
     dummy_ds,
     dummy_region,
@@ -499,6 +505,29 @@ def test_mask_3D_obj(lon_name, lat_name, drop, method):
     )
 
     xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("meth", ["mask", "mask_3D"])
+def test_mask_warn_radian(meth):
+
+    lon = dummy_ds.lon.copy()
+    lat = dummy_ds.lat.copy()
+    mask_func = getattr(dummy_region, meth)
+
+    with assert_no_warnings():
+        mask_func(lon, lat)
+
+    lon.attrs["units"] = "radian"
+    with pytest.warns(UserWarning, match="given as 'radian'"):
+        mask_func(lon, lat)
+
+    lat.attrs["units"] = "radian"
+    with pytest.warns(UserWarning, match="given as 'radian'"):
+        mask_func(lon, lat)
+
+    # no warnings with 'wrap_lon=False'
+    with assert_no_warnings():
+        mask_func(lon, lat, wrap_lon=False)
 
 
 # =============================================================================
