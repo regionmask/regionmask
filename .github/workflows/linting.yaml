@@ -32,6 +32,8 @@ jobs:
       - name: Create conda environment
         uses: mamba-org/provision-with-micromamba@main
         with:
+          environment-name: regionmask-linting
+          environment-file: false
           cache-downloads: true
           micromamba-version: 'latest'
           environment-file: ci/requirements/environment.yml
@@ -50,8 +52,8 @@ jobs:
 
       - name: Version info
         run: |
-          micromamba info -a
-          micromamba list
+          conda info -a
+          conda list
       - name: Import regionmask
         run: |
           python -c "import regionmask"
