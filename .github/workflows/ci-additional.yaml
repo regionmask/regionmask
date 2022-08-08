@@ -99,9 +99,7 @@ jobs:
             pyyaml
             conda
             python-dateutil
-          channels: |
-            conda-forge
-            nodefaults
+          channels: conda-forge
 
       - name: minimum versions policy
         run: |
