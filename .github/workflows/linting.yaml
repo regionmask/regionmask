@@ -33,23 +33,14 @@ jobs:
           echo "CONDA_ENV_FILE=ci/requirements/environment.yml" >> $GITHUB_ENV
           echo "PYTHON_VERSION=${{ matrix.python-version }}" >> $GITHUB_ENV
 
-      - name: Cache conda
-        uses: actions/cache@v3
+      - name: Create conda environment
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{ hashFiles('ci/requirements/**.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-py${{ matrix.python-version }}-
-            ${{ runner.os }}-
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          channels: conda-forge
-          channel-priority: strict
-          mamba-version: "*"
-          activate-environment: regionmask-tests
-          auto-update-conda: false
-          python-version: ${{ matrix.python-version }}
-          use-only-tar-bz2: true
+          cache-downloads: true
+          micromamba-version: 'latest'
+          environment-file: $CONDA_ENV_FILE
+          extra-specs: |
+            python=${{ matrix.python-version }}
 
       - name: Install conda dependencies
         run: |
@@ -76,9 +67,3 @@ jobs:
         if: always()
         run: flake8 .
 
-      # - name: Upload test results
-      #   if: always()
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: Test results for ${{ runner.os }}-${{ matrix.python-version }}
-      #     path: test-results/${{ runner.os }}-${{ matrix.python-version }}.xml

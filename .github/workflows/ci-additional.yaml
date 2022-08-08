@@ -39,31 +39,15 @@ jobs:
             # replace "." in matrix.python-version
             PY=${PY//./}
             echo "CONDA_ENV_FILE=ci/requirements/py${PY}-${{ matrix.env }}.yml" >> $GITHUB_ENV
-      - name: Cache conda
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/conda_pkgs_dir
-            ~/.cache/regionmask/
-          key:
-            ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{ matrix.env }}-${{ hashFiles('ci/requirements/**.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-py${{ matrix.python-version }}-
-            ${{ runner.os }}-
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - name: Create conda environment
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          channels: conda-forge
-          channel-priority: strict
-          mamba-version: "*"
-          activate-environment: regionmask-tests
-          auto-update-conda: false
-          python-version: ${{ matrix.python-version }}
-          use-only-tar-bz2: true
-
-      - name: Install conda dependencies
-        run: |
-          mamba env update -f $CONDA_ENV_FILE
+          cache-downloads: true
+          micromamba-version: 'latest'
+          environment-file: $CONDA_ENV_FILE
+          extra-specs: |
+            python=${{ matrix.python-version }}
 
       - name: Install regionmask
         run: |
@@ -102,13 +86,14 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags.
-      - uses: conda-incubator/setup-miniconda@v2
+
+      - name: Create conda environment
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          channels: conda-forge
-          channel-priority: strict
-          mamba-version: "*"
-          auto-update-conda: false
-          python-version: "3.8"
+          cache-downloads: true
+          micromamba-version: 'latest'
+          extra-specs: |
+            python="3.10"
 
       - name: minimum versions policy
         run: |
