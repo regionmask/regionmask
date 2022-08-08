@@ -28,17 +28,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags.
-      - name: Set environment variables
-        run: |
-          echo "CONDA_ENV_FILE=ci/requirements/environment.yml" >> $GITHUB_ENV
-          echo "PYTHON_VERSION=${{ matrix.python-version }}" >> $GITHUB_ENV
 
       - name: Create conda environment
         uses: mamba-org/provision-with-micromamba@main
         with:
           cache-downloads: true
           micromamba-version: 'latest'
-          environment-file: $CONDA_ENV_FILE
+          environment-file: ci/requirements/environment.yml
           extra-specs: |
             python=${{ matrix.python-version }}
 

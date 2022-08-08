@@ -45,7 +45,7 @@ jobs:
         with:
           cache-downloads: true
           micromamba-version: 'latest'
-          environment-file: $CONDA_ENV_FILE
+          environment-file: ${{ env.CONDA_ENV_FILE }}
           extra-specs: |
             python=${{ matrix.python-version }}
 
