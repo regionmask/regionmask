@@ -33,7 +33,6 @@ jobs:
         uses: mamba-org/provision-with-micromamba@main
         with:
           environment-name: regionmask-linting
-          environment-file: false
           cache-downloads: true
           micromamba-version: 'latest'
           environment-file: ci/requirements/environment.yml
@@ -42,9 +41,7 @@ jobs:
             black
             isort
             flake8
-          channels: |
-            - conda-forge
-            - nodefaults
+          channels: conda-forge
 
       - name: Install regionmask
         run: |

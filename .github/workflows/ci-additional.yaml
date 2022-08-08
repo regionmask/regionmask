@@ -100,8 +100,8 @@ jobs:
             conda
             python-dateutil
           channels: |
-            - conda-forge
-            - nodefaults
+            conda-forge
+            nodefaults
 
       - name: minimum versions policy
         run: |
