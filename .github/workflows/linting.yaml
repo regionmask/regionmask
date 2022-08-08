@@ -37,11 +37,12 @@ jobs:
           environment-file: ci/requirements/environment.yml
           extra-specs: |
             python=${{ matrix.python-version }}
-
-      - name: Install conda dependencies
-        run: |
-          mamba env update -f $CONDA_ENV_FILE
-          mamba install black isort flake8
+            black
+            isort
+            flake8
+          channels: |
+            - conda-forge
+            - nodefaults
 
       - name: Install regionmask
         run: |
@@ -49,8 +50,8 @@ jobs:
 
       - name: Version info
         run: |
-          conda info -a
-          conda list
+          micromamba info -a
+          micromamba list
       - name: Import regionmask
         run: |
           python -c "import regionmask"

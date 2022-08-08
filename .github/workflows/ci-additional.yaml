@@ -94,8 +94,13 @@ jobs:
           micromamba-version: 'latest'
           extra-specs: |
             python="3.10"
+            pyyaml
+            conda
+            python-dateutil
+          channels: |
+            - conda-forge
+            - nodefaults
 
       - name: minimum versions policy
         run: |
-          mamba install -y pyyaml conda python-dateutil
           python ci/min_deps_check.py ci/requirements/py37-min-all-deps.yml
