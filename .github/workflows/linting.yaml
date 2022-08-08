@@ -33,7 +33,6 @@ jobs:
         uses: mamba-org/provision-with-micromamba@main
         with:
           environment-name: regionmask-linting
-          cache-downloads: true
           micromamba-version: 'latest'
           environment-file: ci/requirements/environment.yml
           extra-specs: |

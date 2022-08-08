@@ -44,6 +44,7 @@ jobs:
         uses: mamba-org/provision-with-micromamba@main
         with:
           cache-downloads: true
+          cache-env-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}-${{hashFiles(env.CONDA_ENV_FILE)}}"
           micromamba-version: 'latest'
           environment-file: ${{ env.CONDA_ENV_FILE }}
           extra-specs: |
@@ -92,7 +93,6 @@ jobs:
         with:
           environment-name: min-version-policy
           environment-file: false
-          cache-downloads: true
           micromamba-version: 'latest'
           extra-specs: |
             python="3.10"
