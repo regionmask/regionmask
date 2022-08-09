@@ -539,7 +539,7 @@ def _mask_shapely2(
     points = shapely.points(LON, LAT)
 
     tree = shapely.STRtree(points)
-    a, b = tree.query_bulk(polygons, predicate="contains")
+    a, b = tree.query(polygons, predicate="contains")
 
     if as_3D:
         for i in range(len(numbers)):
