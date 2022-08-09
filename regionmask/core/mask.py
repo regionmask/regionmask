@@ -365,8 +365,7 @@ def _determine_method(lon, lat):
         else:
             return "rasterize_split"
 
-    # TODO: switch to Version("2.0") once it is out
-    if Version(shapely.__version__) > Version("1.9"):
+    if Version(shapely.__version__) > Version("2.0"):
         return "shapely2"
 
     if has_pygeos:
