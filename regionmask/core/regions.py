@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from shapely.geometry import MultiPolygon, Polygon
 
+from ._deprecate import _deprecate_positional_args
 from .formatting import _display
 from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .plot import _plot, _plot_regions
@@ -279,10 +280,12 @@ class Regions:
         """
         return _display(self, max_rows, max_width, max_colwidth)
 
+    @_deprecate_positional_args("0.10.0")
     def mask(
         self,
         lon_or_obj,
         lat=None,
+        *,
         lon_name="lon",
         lat_name="lat",
         method=None,
@@ -309,10 +312,12 @@ class Regions:
 
     mask.__doc__ = _inject_mask_docstring(is_3D=False, gp_method=False)
 
+    @_deprecate_positional_args("0.10.0")
     def mask_3D(
         self,
         lon_or_obj,
         lat=None,
+        *,
         drop=True,
         lon_name="lon",
         lat_name="lat",
