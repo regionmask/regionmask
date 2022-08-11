@@ -3,9 +3,9 @@ import warnings
 import numpy as np
 
 from ..defined_regions._natural_earth import _maybe_get_column
+from ._deprecate import _deprecate_positional_args
 from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .regions import Regions
-from ._deprecate import _deprecate_positional_args
 
 
 def _check_duplicates(data, name):
@@ -243,6 +243,7 @@ def mask_geopandas(
 
 
 mask_geopandas.__doc__ = _inject_mask_docstring(is_3D=False, gp_method=True)
+
 
 @_deprecate_positional_args("0.10.0")
 def mask_3D_geopandas(
