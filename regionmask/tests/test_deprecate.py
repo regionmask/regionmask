@@ -31,12 +31,15 @@ def test_deprecate_positional_args_warns_for_function():
     with pytest.warns(FutureWarning, match=r"Passing 'b' as positional"):
         f3(1, 2)
 
-    with pytest.raises(TypeError, match=r"Cannot handle positional-only params"):
+    # positional-only arguments not valid in python 3.7
+    try:
+        with pytest.raises(TypeError, match=r"Cannot handle positional-only params"):
 
-        @_deprecate_positional_args("v0.1")
-        def f4(a, /, *, b=2, **kwargs):
-            pass
-
+            @_deprecate_positional_args("v0.1")
+            def f4(a, /, *, b=2, **kwargs):
+                pass
+    except SyntaxError:
+        pass
 
 def test_deprecate_positional_args_warns_for_class():
     class A1:
@@ -72,9 +75,13 @@ def test_deprecate_positional_args_warns_for_class():
     with pytest.warns(FutureWarning, match=r"Passing 'b' as positional"):
         A3(1, 2)
 
-    with pytest.raises(TypeError, match=r"Cannot handle positional-only params"):
+    # positional-only arguments not valid in python 3.7
+    try:
+        with pytest.raises(TypeError, match=r"Cannot handle positional-only params"):
 
-        class A3:
-            @_deprecate_positional_args("v0.1")
-            def __init__(self, a, /, *, b=1, **kwargs):
-                pass
+            class A3:
+                @_deprecate_positional_args("v0.1")
+                def __init__(self, a, /, *, b=1, **kwargs):
+                    pass
+    except SyntaxError:
+        pass
