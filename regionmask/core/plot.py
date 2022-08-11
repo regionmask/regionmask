@@ -2,7 +2,8 @@ import warnings
 
 import numpy as np
 
-from .utils import _deprecate_positional, _flatten_polygons
+from ._deprecate import _deprecate_positional_args
+from .utils import _flatten_polygons
 
 
 def _polygons_coords(polygons):
@@ -116,9 +117,10 @@ def _maybe_gca(**kwargs):
     return plt.axes(**kwargs)
 
 
-@_deprecate_positional
+@_deprecate_positional_args("0.8.0")
 def _plot(
     self,
+    *,
     ax=None,
     projection=None,
     regions=None,
@@ -315,9 +317,10 @@ def _plot(
     return ax
 
 
-@_deprecate_positional
+@_deprecate_positional_args("0.8.0")
 def _plot_regions(
     self,
+    *,
     ax=None,
     regions=None,
     add_label=True,
