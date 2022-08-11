@@ -1,5 +1,5 @@
 # Adapted from scikit-learn https://github.com/scikit-learn/scikit-learn/pull/13311
-# For reference, here is a copy of the pandas copyright notice:
+# For reference, here is a copy of their copyright notice:
 
 # BSD 3-Clause License
 
