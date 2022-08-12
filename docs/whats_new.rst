@@ -16,6 +16,9 @@ v0.10.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Made more arguments keyword-only for several functions and methods, e.g., for
+  :py:meth:`Regions.mask`  (:pull:`368`).
+
 Enhancements
 ~~~~~~~~~~~~
 

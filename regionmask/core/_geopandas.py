@@ -3,6 +3,7 @@ import warnings
 import numpy as np
 
 from ..defined_regions._natural_earth import _maybe_get_column
+from ._deprecate import _deprecate_positional_args
 from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .regions import Regions
 
@@ -58,8 +59,10 @@ def _construct_abbrevs(geodataframe, names):
     return abbrevs
 
 
+@_deprecate_positional_args("0.10.0")
 def from_geopandas(
     geodataframe,
+    *,
     numbers=None,
     names=None,
     abbrevs=None,
@@ -209,10 +212,12 @@ def _prepare_gdf_for_mask(geodataframe, method, numbers):
     return polygons, lon_bounds, numbers
 
 
+@_deprecate_positional_args("0.10.0")
 def mask_geopandas(
     geodataframe,
     lon_or_obj,
     lat=None,
+    *,
     lon_name="lon",
     lat_name="lat",
     numbers=None,
@@ -240,10 +245,12 @@ def mask_geopandas(
 mask_geopandas.__doc__ = _inject_mask_docstring(is_3D=False, gp_method=True)
 
 
+@_deprecate_positional_args("0.10.0")
 def mask_3D_geopandas(
     geodataframe,
     lon_or_obj,
     lat=None,
+    *,
     drop=True,
     lon_name="lon",
     lat_name="lat",

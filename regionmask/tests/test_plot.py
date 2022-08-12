@@ -84,8 +84,8 @@ def figure_context(*args, **kwargs):
 
 
 PLOTFUNCS = [
-    pytest.param("plot", marks=requires_cartopy),
     "plot_regions",
+    pytest.param("plot", marks=requires_cartopy),
 ]
 
 
@@ -376,9 +376,7 @@ def test_plot_deprecate_args(plotfunc):
 
     func = getattr(r1, plotfunc)
 
-    with pytest.warns(
-        FutureWarning, match=f"'_{plotfunc}' now requires keyword arguments"
-    ):
+    with pytest.warns(FutureWarning, match="Passing 'ax' as positional"):
         with figure_context():
             func(None)
 

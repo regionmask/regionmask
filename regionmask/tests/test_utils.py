@@ -3,7 +3,6 @@ import pytest
 
 from regionmask.core.utils import (
     _create_dict_of_numbered_string,
-    _deprecate_positional,
     _equally_spaced_on_split_lon,
     _find_splitpoint,
     _is_180,
@@ -201,18 +200,6 @@ def test_find_splitpoint():
 
     with pytest.raises(ValueError, match="more or less than one split point found"):
         _find_splitpoint([0, 1, 3, 4, 6, 7])
-
-
-def test_deprecate_positional():
-    @_deprecate_positional
-    def func(self, a=1, b=2):
-        pass
-
-    with pytest.warns(FutureWarning, match="'func' now requires keyword arguments"):
-        func(1, 2, 3)
-
-    with pytest.warns(FutureWarning, match="'func' now requires keyword arguments"):
-        func(1, 2, b=3)
 
 
 def test_unpackbits():
