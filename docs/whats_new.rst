@@ -49,6 +49,8 @@ Internal Changes
 
   - using shapely, pygeos (:pull:`343`), and rasterio (:pull:`345`)
   - in the function to determine points at *exactly* -180°E (or 0°E) and -90°N (:pull:`341`)
+- Use importlib.metadata if available (i.e. for python > 3.7) - should lead to a faster
+  import time for regionmask (:pull:`369`).
 
 .. _whats-new.0.9.0:
 
