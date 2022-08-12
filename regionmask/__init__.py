@@ -10,6 +10,7 @@ try:
 except ImportError:
     # importlib.metadata not available in python 3.7
     import pkg_resources
+
     _get_version = lambda pkg: pkg_resources.get_distribution(pkg).version
 
 try:
