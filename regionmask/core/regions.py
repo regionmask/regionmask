@@ -290,6 +290,7 @@ class Regions:
         lat_name="lat",
         method=None,
         wrap_lon=None,
+        flag="abbrevs",
     ):
 
         if self.overlap:
@@ -298,7 +299,7 @@ class Regions:
                 "Set ``region.overlap = False`` to create a 2D mask anyway."
             )
 
-        return _mask_2D(
+        mask_2D = _mask_2D(
             outlines=self.polygons,
             lon_bounds=self.bounds_global[::2],
             numbers=self.numbers,
@@ -309,6 +310,28 @@ class Regions:
             method=method,
             wrap_lon=wrap_lon,
         )
+
+        if flag not in [None, "abbrevs", "names"]:
+            raise ValueError(
+                f"`flag` must be one of `None`, `'abbrevs'` and `'names'`, found {flag}"
+            )
+
+        if flag is not None:
+            # see http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#flags
+
+            # find detected regions (assign ALL regions?)
+            isnan = np.isnan(mask_2D.values)
+            numbers = np.unique(mask_2D.values[~isnan])
+            numbers = numbers.astype(int)
+
+            flag_meanings = getattr(self[numbers], flag)
+            # TODO: check for invalid characters
+            flag_meanings = " ".join(flag.replace(" ", "_") for flag in flag_meanings)
+
+            mask_2D.attrs["flag_values"] = numbers
+            mask_2D.attrs["flag_meanings"] = flag_meanings
+
+        return mask_2D
 
     mask.__doc__ = _inject_mask_docstring(is_3D=False, gp_method=False)
 

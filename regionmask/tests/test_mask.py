@@ -84,7 +84,7 @@ def test_mask(method):
 
     expected = expected_mask_2D()
     result = dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method=method)
-    xr.testing.assert_equal(result, expected)
+    xr.testing.assert_identical(result, expected)
 
 
 @pytest.mark.skipif(has_pygeos, reason="Only errors if pygeos is missing")
@@ -105,7 +105,7 @@ def test_mask_xr_keep_name(method):
 
     result = dummy_region.mask(ds.longitude, ds.latitude, method=method)
 
-    xr.testing.assert_equal(result, expected)
+    xr.testing.assert_identical(result, expected)
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
@@ -333,6 +333,42 @@ def test_mask_3D_overlap_empty(method):
     assert not result.any()
 
 
+def test_mask_flag():
+
+    expected = expected_mask_2D()
+    result = dummy_region.mask(dummy_ds)
+    xr.testing.assert_identical(result, expected)
+
+    result = dummy_region.mask(dummy_ds, flag="names")
+    expected.attrs["flag_meanings"] = "Region0 Region1"
+    xr.testing.assert_identical(result, expected)
+
+    result = dummy_region.mask(dummy_ds, flag=None)
+    del expected.attrs["flag_meanings"]
+    del expected.attrs["flag_values"]
+
+    xr.testing.assert_identical(result, expected)
+
+
+def test_mask_flag_space():
+
+    r = Regions(dummy_region.polygons, names=["name with space", "another", "last"])
+
+    expected = expected_mask_2D()
+    expected.attrs["flag_meanings"] = "name_with_space another"
+
+    result = r.mask(dummy_ds, flag="names")
+    xr.testing.assert_identical(result, expected)
+
+
+def test_mask_flag_only_found():
+
+    result = dummy_region.mask([0.5], [0.5])
+
+    assert result.attrs["flag_meanings"] == "r0"
+    np.testing.assert_equal(result.attrs["flag_values"], np.array([0]))
+
+
 # ======================================================================
 
 # test 2D array
@@ -456,7 +492,7 @@ def test_mask_3D(drop, method):
     expected = expected_mask_3D(drop)
     result = dummy_region.mask_3D(dummy_ds.lon, dummy_ds.lat, drop=drop, method=method)
 
-    xr.testing.assert_equal(result, expected)
+    xr.testing.assert_identical(result, expected)
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
@@ -826,6 +862,7 @@ def test_inject_mask_docstring():
     assert "drop :" in result
     assert "geodataframe" in result
     assert "overlap" in result
+    assert "flag" not in result
 
     result = _inject_mask_docstring(False, False)
 
@@ -834,3 +871,4 @@ def test_inject_mask_docstring():
     assert "drop :" not in result
     assert "geodataframe" not in result
     assert "overlap" not in result
+    assert "flag" in result
