@@ -150,7 +150,7 @@ def _mask(
     if lon_name is not None or lat_name is not None:
         warnings.warn(
             "Passing 'lon_name' and 'lat_name' is deprecated. Please pass the lon and "
-            "lat coordinates direcly, e.g. `mask*(ds[lon_name], ds[lat_name])`.",
+            "lat coordinates direcly, e.g., `mask*(ds[lon_name], ds[lat_name])`.",
             FutureWarning,
         )
 
