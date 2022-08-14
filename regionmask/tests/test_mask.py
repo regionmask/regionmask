@@ -167,7 +167,8 @@ def test_mask_obj(lon_name, lat_name, method):
     expected = expected_mask_2D().rename(lat=lat_name, lon=lon_name)
 
     obj = {lon_name: dummy_ds.lon.values, lat_name: dummy_ds.lat.values}
-    result = dummy_region.mask(obj, method=method, lon_name=lon_name, lat_name=lat_name)
+    with pytest.warns(FutureWarning, match="Passing 'lon_name' and 'lat_name' is deprecated"):
+        result = dummy_region.mask(obj, method=method, lon_name=lon_name, lat_name=lat_name)
 
     xr.testing.assert_equal(result, expected)
 
@@ -526,9 +527,10 @@ def test_mask_3D_obj(lon_name, lat_name, drop, method):
     expected = expected_mask_3D(drop).rename(lon=lon_name, lat=lat_name)
 
     obj = dummy_ds.rename(lon=lon_name, lat=lat_name)
-    result = dummy_region.mask_3D(
-        obj, method=method, drop=drop, lon_name=lon_name, lat_name=lat_name
-    )
+    with pytest.warns(FutureWarning, match="Passing 'lon_name' and 'lat_name' is deprecated"):
+        result = dummy_region.mask_3D(
+            obj, method=method, drop=drop, lon_name=lon_name, lat_name=lat_name
+        )
 
     xr.testing.assert_equal(result, expected)
 

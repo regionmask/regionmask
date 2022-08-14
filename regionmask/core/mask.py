@@ -35,9 +35,9 @@ lat : array_like, optional
     If ``lon_or_obj`` is a longitude array, the latitude needs to be
     specified here.
 {drop_doc}lon_name : str, optional
-    Name of longitude in ``lon_or_obj``, default: "lon".
+    Deprecated. Name of longitude in ``lon_or_obj``, default: "lon".
 lat_name : str, optional
-    Name of latgitude in ``lon_or_obj``, default: "lat"
+    Deprecated. Name of latgitude in ``lon_or_obj``, default: "lat"
 {numbers_doc}method : "rasterize" | "shapely" | "pygeos". Default: None
     Method used to determine whether a gridpoint lies in a region.
     All methods lead to the same mask. If None (default)
@@ -137,8 +137,8 @@ def _mask(
     numbers,
     lon_or_obj,
     lat=None,
-    lon_name="lon",
-    lat_name="lat",
+    lon_name=None,
+    lat_name=None,
     method=None,
     wrap_lon=None,
     as_3D=False,
@@ -146,6 +146,16 @@ def _mask(
     """
     internal function to create a mask
     """
+
+    if lon_name is not None or lat_name is not None:
+        warnings.warn(
+            "Passing 'lon_name' and 'lat_name' is deprecated. Please pass the lon and "
+            "lat coordinates direcly, e.g. `mask*(ds[lon_name], ds[lat_name])`.",
+            FutureWarning,
+        )
+
+    lon_name = "lon" if lon_name is None else lon_name
+    lat_name = "lat" if lat_name is None else lat_name
 
     if not _is_numeric(numbers):
         raise ValueError("'numbers' must be numeric")
@@ -235,8 +245,8 @@ def _mask_2D(
     numbers,
     lon_or_obj,
     lat=None,
-    lon_name="lon",
-    lat_name="lat",
+    lon_name=None,
+    lat_name=None,
     method=None,
     wrap_lon=None,
 ):
@@ -269,8 +279,8 @@ def _mask_3D(
     lon_or_obj,
     lat=None,
     drop=True,
-    lon_name="lon",
-    lat_name="lat",
+    lon_name=None,
+    lat_name=None,
     method=None,
     wrap_lon=None,
     as_3D=False,
