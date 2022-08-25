@@ -29,6 +29,7 @@ abbrevs_dict = {1: "uSq1", 2: "uSq2"}
 poly1 = Polygon(outl1)
 poly2 = Polygon(outl2)
 poly = {1: poly1, 2: poly2}
+multipoly = MultiPolygon([poly1, poly2])
 
 test_regions2 = Regions(poly, numbers2, names_dict, abbrevs_dict, name=name)
 
@@ -46,6 +47,13 @@ all_numbers = (numbers1, numbers2, numbers3)
 all_first_numbers = (0, 1, 2)
 
 # =============================================================================
+
+
+def test_regions_single_region():
+
+    for o in [np.array(outl1), poly1, multipoly]:
+        with pytest.raises(ValueError, match="Cannot pass a single"):
+            Regions(o)
 
 
 @pytest.mark.parametrize("test_regions", all_test_regions)

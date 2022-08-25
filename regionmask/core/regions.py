@@ -91,6 +91,12 @@ class Regions:
         overlap=False,
     ):
 
+        if isinstance(outlines, (np.ndarray, Polygon, MultiPolygon)):
+            klass = type(outlines).__name__
+            raise ValueError(
+                f"Cannot pass a single {klass} as region - please pass it as a list."
+            )
+
         if numbers is None:
             numbers = range(len(outlines))
 
@@ -548,12 +554,15 @@ class _OneRegion:
             outline = np.asarray(outline)
 
             if outline.ndim != 2:
-                raise ValueError("Outline must be 2D")
+                raise ValueError(
+                    "Outline must be 2D. Did you pass a single region and need to wrap "
+                    "it in a list?"
+                )
 
             if outline.shape[1] != 2:
                 raise ValueError("Outline must have Nx2 elements")
 
-            self._coords = np.array(outline)
+            self._coords = outline
 
     def __repr__(self):
 
