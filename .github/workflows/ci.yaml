@@ -33,29 +33,15 @@ jobs:
           echo "CONDA_ENV_FILE=ci/requirements/environment.yml" >> $GITHUB_ENV
           echo "PYTHON_VERSION=${{ matrix.python-version }}" >> $GITHUB_ENV
 
-      - name: Cache conda
-        uses: actions/cache@v3
+      - name: Create conda environment
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          path: |
-            ~/conda_pkgs_dir
-            ~/.cache/regionmask/
-          key: ${{ runner.os }}-conda-py${{ matrix.python-version }}-${{ hashFiles('ci/requirements/**.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-py${{ matrix.python-version }}-
-            ${{ runner.os }}-
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          channels: conda-forge
-          channel-priority: strict
-          mamba-version: "*"
-          activate-environment: regionmask-tests
-          auto-update-conda: false
-          python-version: ${{ matrix.python-version }}
-          use-only-tar-bz2: true
-
-      - name: Install conda dependencies
-        run: |
-          mamba env update -f $CONDA_ENV_FILE
+          cache-downloads: true
+          cache-downloads-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}-${{hashFiles(env.CONDA_ENV_FILE)}}"
+          micromamba-version: 'latest'
+          environment-file: ci/requirements/environment.yml
+          extra-specs: |
+            python=${{ matrix.python-version }}
 
       - name: Install regionmask
         run: |
@@ -65,22 +51,17 @@ jobs:
         run: |
           conda info -a
           conda list
+
       - name: Import regionmask
         run: |
           python -c "import regionmask"
+
       - name: Run tests
         timeout-minutes: 5
         run: python -u -m pytest
           --cov=regionmask
           --cov-report=xml
           --junitxml=test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: Test results for ${{ runner.os }}-${{ matrix.python-version }}
-          path: test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
 
       - name: Upload code coverage to Codecov
         uses: codecov/codecov-action@v3

@@ -16,16 +16,27 @@ v0.10.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Made more arguments keyword-only for several functions and methods, e.g., for
+  :py:meth:`Regions.mask`  (:pull:`368`).
+
 Enhancements
 ~~~~~~~~~~~~
 
+- 2D masks (e.g. :py:meth:`Regions.mask`) now contain `flag_values` and `flag_values` as
+  attributes (`attrs`). Together with `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/flags.html>`__
+  these can be leveraged to select single (``mask.cf == "CNA"``) or multiple (``mask.cf.isin``)
+  regions (:pull:`361`, :issue:`346`).
 - The masking functions (e.g. :py:meth:`Regions.mask`) now warn if the `units` of the
   coordinates(``lat.attrs["units"]`` ) are given as "radians" (:issue:`279`).
+- Better error when passing a single region without wrapping it into a list or tuple (:issue:`372`).
 
 Deprecations
 ~~~~~~~~~~~~
 
 - Added faster masking of regions with shapely v2.0.0 (:pull:`341`).
+- Passing `lon_name` and `lat_name` to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
+  is deprecated. Please pass the lon and lat coordinates direcly, e.g., `mask*(ds[lon_name], ds[lat_name])`
+  (:issue:`293` and :pull:`371`).
 
 New regions
 ~~~~~~~~~~~
@@ -48,6 +59,8 @@ Internal Changes
 
   - using shapely, pygeos (:pull:`343`), and rasterio (:pull:`345`)
   - in the function to determine points at *exactly* -180°E (or 0°E) and -90°N (:pull:`341`)
+- Use importlib.metadata if available (i.e. for python > 3.7) - should lead to a faster
+  import time for regionmask (:pull:`369`).
 
 .. _whats-new.0.9.0:
 

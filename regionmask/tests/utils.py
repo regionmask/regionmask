@@ -39,7 +39,15 @@ def expected_mask_2D(a=0, b=1, fill=np.NaN, flatten=False, coords=None, dims=Non
     if dims is None:
         dims = ("lat", "lon")
 
-    return xr.DataArray(mask, dims=dims, coords=coords, name="region")
+    flag_values = np.array([a, b])
+    flag_meanings = "r0 r1"
+
+    attrs = {"standard_name": "region"}
+
+    attrs["flag_values"] = flag_values
+    attrs["flag_meanings"] = flag_meanings
+
+    return xr.DataArray(mask, dims=dims, coords=coords, name="mask", attrs=attrs)
 
 
 def expected_mask_3D(drop, coords=None, overlap=False):
@@ -66,8 +74,9 @@ def expected_mask_3D(drop, coords=None, overlap=False):
         }
     )
     dims = ("region",) + ("lat", "lon")
+    attrs = {"standard_name": "region"}
 
-    expected = xr.DataArray(mask, coords=coords, dims=dims)
+    expected = xr.DataArray(mask, coords=coords, dims=dims, name="mask", attrs=attrs)
 
     return expected.drop_sel(region=numbers[-1]) if drop else expected
 

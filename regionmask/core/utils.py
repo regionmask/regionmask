@@ -1,6 +1,3 @@
-import warnings
-from functools import wraps
-
 import numpy as np
 import xarray as xr
 
@@ -210,27 +207,6 @@ def _find_splitpoint(lon):
         raise ValueError("more or less than one split point found")
 
     return split_point.squeeze() + 1
-
-
-def _deprecate_positional(func):
-    """deprecate all positional arguments (except self)"""
-
-    @wraps(func)
-    def _inner(*args, **kwargs):
-
-        name = func.__name__
-
-        # careful only use for class methods
-        if len(args) > 1:
-            warnings.warn(
-                f"'{name}' now requires keyword arguments. From v0.10.0 "
-                "passing positional arguments will result in an error",
-                FutureWarning,
-            )
-
-        return func(*args, **kwargs)
-
-    return _inner
 
 
 def unpackbits(numbers, num_bits):

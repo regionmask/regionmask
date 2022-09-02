@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from shapely.geometry import MultiPolygon, Polygon
 
+from ._deprecate import _deprecate_positional_args
 from .formatting import _display
 from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .plot import _plot, _plot_regions
@@ -89,6 +90,12 @@ class Regions:
         source=None,
         overlap=False,
     ):
+
+        if isinstance(outlines, (np.ndarray, Polygon, MultiPolygon)):
+            klass = type(outlines).__name__
+            raise ValueError(
+                f"Cannot pass a single {klass} as region - please pass it as a list."
+            )
 
         if numbers is None:
             numbers = range(len(outlines))
@@ -279,14 +286,17 @@ class Regions:
         """
         return _display(self, max_rows, max_width, max_colwidth)
 
+    @_deprecate_positional_args("0.10.0")
     def mask(
         self,
         lon_or_obj,
         lat=None,
-        lon_name="lon",
-        lat_name="lat",
+        *,
+        lon_name=None,
+        lat_name=None,
         method=None,
         wrap_lon=None,
+        flag="abbrevs",
     ):
 
         if self.overlap:
@@ -295,7 +305,7 @@ class Regions:
                 "Set ``region.overlap = False`` to create a 2D mask anyway."
             )
 
-        return _mask_2D(
+        mask_2D = _mask_2D(
             outlines=self.polygons,
             lon_bounds=self.bounds_global[::2],
             numbers=self.numbers,
@@ -307,15 +317,39 @@ class Regions:
             wrap_lon=wrap_lon,
         )
 
+        if flag not in [None, "abbrevs", "names"]:
+            raise ValueError(
+                f"`flag` must be one of `None`, `'abbrevs'` and `'names'`, found {flag}"
+            )
+
+        if flag is not None:
+            # see http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#flags
+
+            # find detected regions (assign ALL regions?)
+            isnan = np.isnan(mask_2D.values)
+            numbers = np.unique(mask_2D.values[~isnan])
+            numbers = numbers.astype(int)
+
+            flag_meanings = getattr(self[numbers], flag)
+            # TODO: check for invalid characters
+            flag_meanings = " ".join(flag.replace(" ", "_") for flag in flag_meanings)
+
+            mask_2D.attrs["flag_values"] = numbers
+            mask_2D.attrs["flag_meanings"] = flag_meanings
+
+        return mask_2D
+
     mask.__doc__ = _inject_mask_docstring(is_3D=False, gp_method=False)
 
+    @_deprecate_positional_args("0.10.0")
     def mask_3D(
         self,
         lon_or_obj,
         lat=None,
+        *,
         drop=True,
-        lon_name="lon",
-        lat_name="lat",
+        lon_name=None,
+        lat_name=None,
         method=None,
         wrap_lon=None,
     ):
@@ -520,12 +554,15 @@ class _OneRegion:
             outline = np.asarray(outline)
 
             if outline.ndim != 2:
-                raise ValueError("Outline must be 2D")
+                raise ValueError(
+                    "Outline must be 2D. Did you pass a single region and need to wrap "
+                    "it in a list?"
+                )
 
             if outline.shape[1] != 2:
                 raise ValueError("Outline must have Nx2 elements")
 
-            self._coords = np.array(outline)
+            self._coords = outline
 
     def __repr__(self):
 

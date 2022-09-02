@@ -37,9 +37,9 @@ lat : array_like, optional
     If ``lon_or_obj`` is a longitude array, the latitude needs to be
     specified here.
 {drop_doc}lon_name : str, optional
-    Name of longitude in ``lon_or_obj``, default: "lon".
+    Deprecated. Name of longitude in ``lon_or_obj``, default: "lon".
 lat_name : str, optional
-    Name of latgitude in ``lon_or_obj``, default: "lat"
+    Deprecated. Name of latgitude in ``lon_or_obj``, default: "lat"
 {numbers_doc}method : "rasterize" | "shapely" | "pygeos". Default: None
     Method used to determine whether a gridpoint lies in a region.
     All methods lead to the same mask. If None (default)
@@ -57,7 +57,8 @@ wrap_lon : bool | 180 | 360, optional
       and wrapped to `[-180, 180[` if its maximum is larger than 180.
     - ``180``: Wraps longitude coordinates to `[-180, 180[`
     - ``360``: Wraps longitude coordinates to `[0, 360[`
-{overlap}
+
+{overlap}{flags}
 
 Returns
 -------
@@ -99,6 +100,15 @@ overlap : bool, default: False
     There is (currently) no automatic detection of overlapping regions.
 """
 
+_FLAG_DOCSTRING = """\
+flag : str, default "abbrevs"
+    Indicates if the "abbrevs" (abbreviations) or "names" should be added as
+    `flag_values` and `flag_meanings` to the attributes (`attrs`) of the mask. If None
+    nothing is added. Using cf_xarray these can be used to select single
+    (``mask.cf == "CNA"``) or multiple (``mask.cf.isin``) regions. Note that spaces are
+    replaced by underscores.
+"""
+
 
 def _inject_mask_docstring(is_3D, gp_method):
 
@@ -108,6 +118,7 @@ def _inject_mask_docstring(is_3D, gp_method):
     numbers_doc = _NUMBERS_DOCSTRING if gp_method else ""
     gp_doc = _GP_DOCSTRING if gp_method else ""
     overlap = _OVERLAP_DOCSTRING if (gp_method and is_3D) else ""
+    flags = _FLAG_DOCSTRING if not (gp_method or is_3D) else ""
 
     mask_docstring = _MASK_DOCSTRING_TEMPLATE.format(
         dtype=dtype,
@@ -116,6 +127,7 @@ def _inject_mask_docstring(is_3D, gp_method):
         numbers_doc=numbers_doc,
         gp_doc=gp_doc,
         overlap=overlap,
+        flags=flags,
     )
 
     return mask_docstring
@@ -127,8 +139,8 @@ def _mask(
     numbers,
     lon_or_obj,
     lat=None,
-    lon_name="lon",
-    lat_name="lat",
+    lon_name=None,
+    lat_name=None,
     method=None,
     wrap_lon=None,
     as_3D=False,
@@ -136,6 +148,16 @@ def _mask(
     """
     internal function to create a mask
     """
+
+    if lon_name is not None or lat_name is not None:
+        warnings.warn(
+            "Passing 'lon_name' and 'lat_name' is deprecated. Please pass the lon and "
+            "lat coordinates direcly, e.g., `mask*(ds[lon_name], ds[lat_name])`.",
+            FutureWarning,
+        )
+
+    lon_name = "lon" if lon_name is None else lon_name
+    lat_name = "lat" if lat_name is None else lat_name
 
     if not _is_numeric(numbers):
         raise ValueError("'numbers' must be numeric")
@@ -228,8 +250,8 @@ def _mask_2D(
     numbers,
     lon_or_obj,
     lat=None,
-    lon_name="lon",
-    lat_name="lat",
+    lon_name=None,
+    lat_name=None,
     method=None,
     wrap_lon=None,
 ):
@@ -250,6 +272,8 @@ def _mask_2D(
         msg = "No gridpoint belongs to any region. Returning an all-NaN mask."
         warnings.warn(msg, UserWarning, stacklevel=3)
 
+    mask.attrs = {"standard_name": "region"}
+
     return mask
 
 
@@ -260,8 +284,8 @@ def _mask_3D(
     lon_or_obj,
     lat=None,
     drop=True,
-    lon_name="lon",
-    lat_name="lat",
+    lon_name=None,
+    lat_name=None,
     method=None,
     wrap_lon=None,
     as_3D=False,
@@ -284,6 +308,8 @@ def _mask_3D(
         mask_3D = _unpack_3D_mask(mask, numbers, drop)
     else:
         mask_3D = _unpack_2D_mask(mask, numbers, drop)
+
+    mask_3D.attrs = {"standard_name": "region"}
 
     return mask_3D
 
