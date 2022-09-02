@@ -14,7 +14,7 @@ from regionmask.core.mask import (
     _mask_rasterize,
     _mask_rasterize_no_offset,
     _mask_shapely,
-    _mask_shapely2,
+    _mask_shapely_v2,
     _transform_from_latlon,
 )
 from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
@@ -37,7 +37,7 @@ from .utils import (
 MASK_FUNCS = [
     _mask_rasterize,
     _mask_shapely,
-    pytest.param(_mask_shapely2, marks=requires_shapely_2),
+    pytest.param(_mask_shapely_v2, marks=requires_shapely_2),
     pytest.param(_mask_pygeos, marks=requires_pygeos),
 ]
 

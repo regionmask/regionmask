@@ -31,7 +31,7 @@ has_cartopy, requires_cartopy = _importorskip("cartopy")
 has_matplotlib, requires_matplotlib = _importorskip("matplotlib")
 has_pygeos, requires_pygeos = _importorskip("pygeos")
 # TODO: switch minversion to 2.0 once it is out
-has_shapely_2, requires_shapely_2 = _importorskip("shapely", minversion="1.9")
+has_shapely_2, requires_shapely_2 = _importorskip("shapely", minversion="2.0")
 
 
 has_geos_3_10 = False

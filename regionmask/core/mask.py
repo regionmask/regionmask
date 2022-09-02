@@ -201,7 +201,7 @@ def _mask(
         mask_func = _mask_shapely
         kwargs = {"is_unstructured": is_unstructured}
     elif method == "shapely2":
-        mask_func = _mask_shapely2
+        mask_func = _mask_shapely_v2
         kwargs = {"is_unstructured": is_unstructured}
 
     mask = mask_func(lon, lat, outlines, numbers=numbers, as_3D=as_3D, **kwargs)
@@ -365,8 +365,7 @@ def _determine_method(lon, lat):
         else:
             return "rasterize_split"
 
-    # TODO: switch to Version("2.0") once it is out
-    if Version(shapely.__version__) > Version("1.9"):
+    if Version(shapely.__version__) > Version("2.0"):
         return "shapely2"
 
     if has_pygeos:
@@ -519,7 +518,7 @@ def _mask_pygeos(
     return out.reshape(shape)
 
 
-def _mask_shapely2(
+def _mask_shapely_v2(
     lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False, as_3D=False
 ):
     """create a mask using pygeos.STRtree"""
@@ -539,7 +538,7 @@ def _mask_shapely2(
     points = shapely.points(LON, LAT)
 
     tree = shapely.STRtree(points)
-    a, b = tree.query_bulk(polygons, predicate="contains")
+    a, b = tree.query(polygons, predicate="contains")
 
     if as_3D:
         for i in range(len(numbers)):
