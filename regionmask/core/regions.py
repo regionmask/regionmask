@@ -284,7 +284,7 @@ class Regions:
         Used as the repr.
 
         """
-        return _display(self, max_rows, max_width, max_colwidth)
+        return _display(self, max_rows, max_width)
 
     @_deprecate_positional_args("0.10.0")
     def mask(
