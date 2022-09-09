@@ -31,17 +31,22 @@ class set_options:
     It is possible to use ``set_options`` either as a context manager:
 
     >>> srex = regionmask.defined_regions.srex
-    >>> with regionmask.set_options(display_max_rows=1):
+    >>> with regionmask.set_options(display_max_rows=2):
     ...     print(srex)
-    <xarray.Dataset>
-    Dimensions:  (x: 1000)
-    Coordinates:
-      * x        (x) int64 0 1 2 ... 998 999
-    Data variables:
-        *empty*
+    <regionmask.Regions 'SREX'>
+    Source:   Seneviratne et al., 2012 (https://www.ipcc.ch/site/assets/uploads/2...
+    overlap:  False
+
+    Regions:
+    1 ALA       Alaska/N.W. Canada
+    ..  ..                      ...
+    26 SAU S. Australia/New Zealand
+
+    [26 regions]
     Or to set global options:
-    >>> xr.set_options(display_width=80)  # doctest: +ELLIPSIS
-    <xarray.core.options.set_options object at 0x...>
+
+    >>> regionmask.set_options(display_max_rows=None)  # doctest: +ELLIPSIS
+    <regionmask.core.options.set_options at 0x...>
     """
 
     def __init__(self, **kwargs):
@@ -69,7 +74,8 @@ class set_options:
 
 def get_options():
     """
-    Get options for xarray.
+    Get options for regionmask.
+
     See Also
     ----------
     set_options

@@ -16,7 +16,8 @@ Top-level functions
    mask_3D_geopandas
    from_geopandas
    plot_3D_mask
-
+   set_options
+   get_options
 
 Regions
 =======
