@@ -29,6 +29,8 @@ Enhancements
 - The masking functions (e.g. :py:meth:`Regions.mask`) now warn if the `units` of the
   coordinates(``lat.attrs["units"]`` ) are given as "radians" (:issue:`279`).
 - Better error when passing a single region without wrapping it into a list or tuple (:issue:`372`).
+- Added :py:class:`set_options` to regionmask which can, currently, be used to control
+  the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
 
 Deprecations
 ~~~~~~~~~~~~

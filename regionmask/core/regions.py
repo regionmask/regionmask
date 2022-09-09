@@ -175,9 +175,6 @@ class Regions:
 
         return key
 
-    def __repr__(self):  # pragma: no cover
-        return self._display()
-
     def __iter__(self):
         for i in self.numbers:
             yield self[i]
@@ -261,7 +258,7 @@ class Regions:
         """if the regions extend from 0 to 360"""
         return not self.lon_180
 
-    def _display(self, max_rows=10, max_width=None, max_colwidth=50):
+    def _display(self, max_rows=10, max_width=None):
         """Render ``Regions`` object to a console-friendly tabular output.
 
         Parameters
@@ -271,8 +268,6 @@ class Regions:
             not affect the displayed metadata.
         max_width : int, optional
             Width to wrap a line in characters. If none uses console width.
-        max_colwidth : int, optional
-            Max width to truncate each column in characters. Default 50.
 
         Returns
         -------
@@ -285,6 +280,13 @@ class Regions:
 
         """
         return _display(self, max_rows, max_width)
+
+    def __repr__(self):  # pragma: no cover
+        from .options import OPTIONS
+
+        max_rows = OPTIONS["display_max_rows"]
+
+        return self._display(max_rows=max_rows)
 
     @_deprecate_positional_args("0.10.0")
     def mask(

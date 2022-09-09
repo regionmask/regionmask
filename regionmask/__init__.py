@@ -2,6 +2,7 @@
 
 from . import core, defined_regions
 from .core._geopandas import from_geopandas, mask_3D_geopandas, mask_geopandas
+from .core.options import get_options, set_options
 from .core.plot import plot_3D_mask
 from .core.regions import Regions, _OneRegion
 
