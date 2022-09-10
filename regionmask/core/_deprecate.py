@@ -50,19 +50,20 @@ def _deprecate_positional_args(version):
     ----------
     version : str
         version of the library when the positional arguments were deprecated
+
     Examples
     --------
     Deprecate passing `b` as positional argument:
-    def func(a, b=1):
-        pass
-    @_deprecate_positional_args("v0.1.0")
-    def func(a, *, b=2):
-        pass
-    func(1, 2)
+    >>> def func(a, b=1):
+    ...     pass
+    >>> @_deprecate_positional_args("v0.1.0")
+    ... def func(a, *, b=2):
+    ...     pass
+    >>> func(1, 2)
+
     Notes
     -----
     This function is adapted from scikit-learn under the terms of its license. See
-    licences/SCIKIT_LEARN_LICENSE
     """
 
     def _decorator(func):
