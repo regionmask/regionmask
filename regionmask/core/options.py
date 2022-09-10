@@ -30,23 +30,23 @@ class set_options:
     --------
     It is possible to use ``set_options`` either as a context manager:
 
+    >>> import regionmask
     >>> srex = regionmask.defined_regions.srex
     >>> with regionmask.set_options(display_max_rows=2):
     ...     print(srex)
     <regionmask.Regions 'SREX'>
     Source:   Seneviratne et al., 2012 (https://www.ipcc.ch/site/assets/uploads/2...
     overlap:  False
-
+    <BLANKLINE>
     Regions:
-    1 ALA       Alaska/N.W. Canada
+     1 ALA       Alaska/N.W. Canada
     ..  ..                      ...
     26 SAU S. Australia/New Zealand
-
+    <BLANKLINE>
     [26 regions]
-    Or to set global options:
 
     >>> regionmask.set_options(display_max_rows=None)  # doctest: +ELLIPSIS
-    <regionmask.core.options.set_options at 0x...>
+    <regionmask.core.options.set_options object at 0x...>
     """
 
     def __init__(self, **kwargs):
@@ -77,7 +77,7 @@ def get_options():
     Get options for regionmask.
 
     See Also
-    ----------
+    --------
     set_options
     """
     return OPTIONS
