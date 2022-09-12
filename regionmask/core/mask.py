@@ -2,8 +2,8 @@ import warnings
 
 import numpy as np
 import xarray as xr
-from .options import get_options
 
+from .options import get_options
 from .utils import (
     _equally_spaced_on_split_lon,
     _find_splitpoint,
