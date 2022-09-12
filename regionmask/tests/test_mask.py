@@ -755,7 +755,7 @@ def test_rasterize_on_split_lon_asymmetric():
     lat = np.arange(75, 13, -2)
     ds = xr.Dataset(coords=dict(lon=lon, lat=lat))
 
-    assert _determine_method(ds.lon, ds.lat) == "rasterize_flip"
+    assert _determine_method(ds.lon, ds.lat) == "rasterio_flip"
 
     result = r_US_180_cw.mask(ds, method="rasterize")
     expected = r_US_180_cw.mask(ds, method="shapely")
@@ -764,9 +764,9 @@ def test_rasterize_on_split_lon_asymmetric():
 
 METHOD_IRREGULAR = "pygeos" if has_pygeos else "shapely"
 METHODS = {
-    0: "rasterize",
-    1: "rasterize_flip",
-    2: "rasterize_split",
+    0: "rasterio",
+    1: "rasterio_flip",
+    2: "rasterio_split",
     3: METHOD_IRREGULAR,
 }
 

@@ -1,9 +1,7 @@
 # adapted from xarray under the terms of its license - see licences/XARRAY_LICENSE
 
 
-OPTIONS = {
-    "display_max_rows": 10,
-}
+OPTIONS = {"display_max_rows": 10, "backend": None}
 
 
 def _optional_positive_integer(name: str, value: int) -> bool:
@@ -12,8 +10,19 @@ def _optional_positive_integer(name: str, value: int) -> bool:
         raise ValueError(f"'{name}' must be a positive integer or None, got '{value}'")
 
 
+def _validate_backend(name: str, value: str):
+
+    if value == "rasterize":
+        raise ValueError("'rasterize' has been renamed to 'rasterio'.")
+
+    if value not in (None, "rasterio", "shapely", "pygeos"):
+        msg = "'backend' must be None or one of 'rasterio', 'shapely' and 'pygeos'."
+        raise ValueError(msg)
+
+
 _VALIDATORS = {
     "display_max_rows": _optional_positive_integer,
+    "backend": _validate_backend,
 }
 
 
@@ -25,6 +34,12 @@ class set_options:
     ----------
     display_max_rows : int, default: 10
         Maximum display rows.
+    backend : None | "rasterio" | "shapely" | "pygeos", default: None
+        Only for testing purposes. Which backend to use to determine if a grid point
+        belongs to a region. The different backends have the same behaviour but differ
+        in their speed and kind of coordinates the can handle. Regionmask selects the
+        fastest backend available. This options replaces the ``method`` keyword of the
+        ``mask*`` methods.
 
     Examples
     --------
