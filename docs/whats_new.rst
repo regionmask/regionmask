@@ -63,6 +63,7 @@ Internal Changes
 - Use importlib.metadata if available (i.e. for python > 3.7) - should lead to a faster
   import time for regionmask (:pull:`369`).
 - Small changes to the repr of :py:class:`Regions`  (:pull:`378`).
+- Reduce the memory requirements of :py:func:`core.utils.unpackbits` (:issue:`379`:).
 
 .. _whats-new.0.9.0:
 
