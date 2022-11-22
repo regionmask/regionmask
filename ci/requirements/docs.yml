@@ -5,7 +5,7 @@ channels:
   - nodefaults
 
 dependencies:
-  - python
+  - python=3.10
 # regionmask dependencies
   - cartopy
   - geopandas
