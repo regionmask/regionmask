@@ -1,22 +1,6 @@
 """String formatting routines for __repr__."""
 
-
 from pandas.io.formats import console
-
-
-def pretty_print(x, numchars, right=True):
-    """Given an object `x`, call `str(x)` and format the returned string so
-    that it is numchars long, padding with trailing spaces or truncating with
-    ellipses as necessary
-    """
-
-    # copied from xarray
-
-    s = maybe_truncate(x, numchars)
-    if right:
-        return s + " " * max(numchars - len(s), 0)
-
-    return " " * max(numchars - len(s), 0) + s
 
 
 def maybe_truncate(obj, maxlen=500):
@@ -25,27 +9,25 @@ def maybe_truncate(obj, maxlen=500):
 
     s = str(obj)
     if len(s) > maxlen:
-        s = s[: (maxlen - 3)] + "..."
+        s = s[: max(maxlen - 3, 0)] + "..."
     return s
 
 
-def _display_metadata(name, source, overlap, max_width=80):
-    pad = 10
+def _display_metadata(source, overlap, max_width=80):
 
-    name = pretty_print("Name:", pad) + maybe_truncate(name, max_width - pad)
-    summary = [name]
+    summary = []
 
     if source is not None:
-        source = pretty_print("Source:", pad) + maybe_truncate(source, max_width - pad)
+        source = maybe_truncate(f"Source:   {source}", max_width)
         summary.append(source)
 
-    overlap = pretty_print("overlap:", pad) + f"{overlap}"
+    overlap = f"overlap:  {overlap}"
     summary.append(overlap)
 
     return summary
 
 
-def _display_regions_gp(self, max_rows, max_width, max_colwidth):  # pragma: no cover
+def _display_regions_gp(self, max_rows, max_width):
     summary = ["Regions:"]
 
     # __repr__ of polygons can be slow -> use pd.DataFrame
@@ -67,21 +49,20 @@ def _display_regions_gp(self, max_rows, max_width, max_colwidth):  # pragma: no 
     return summary
 
 
-def _display(self, max_rows=10, max_width=None, max_colwidth=50):
-
-    summary = [f"<regionmask.{type(self).__name__}>"]
-
-    if max_rows is None:
-        max_rows = len(self)
+def _display(self, max_rows=10, max_width=None):
 
     if max_width is None:
         max_width, _ = console.get_console_size()
 
-    summary += _display_metadata(
-        self.name, self.source, self.overlap, max_width=max_width
-    )
+    title = f"<regionmask.{type(self).__name__} '{self.name}'>"
+    summary = [maybe_truncate(title, max_width)]
+
+    if max_rows is None:
+        max_rows = len(self)
+
+    summary += _display_metadata(self.source, self.overlap, max_width=max_width)
     summary.append("")
-    summary += _display_regions_gp(self, max_rows, max_width, max_colwidth)
+    summary += _display_regions_gp(self, max_rows, max_width)
 
     summary.append("")
     summary.append(f"[{len(self):d} regions]")

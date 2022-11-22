@@ -38,6 +38,7 @@ from functools import wraps
 POSITIONAL_OR_KEYWORD = inspect.Parameter.POSITIONAL_OR_KEYWORD
 KEYWORD_ONLY = inspect.Parameter.KEYWORD_ONLY
 POSITIONAL_ONLY = inspect.Parameter.POSITIONAL_ONLY
+EMPTY = inspect.Parameter.empty
 
 
 def _deprecate_positional_args(version):
@@ -49,40 +50,62 @@ def _deprecate_positional_args(version):
     ----------
     version : str
         version of the library when the positional arguments were deprecated
+
+    Examples
+    --------
+    Deprecate passing `b` as positional argument:
+    >>> def func(a, b=1):
+    ...     pass
+    >>> @_deprecate_positional_args("v0.1.0")
+    ... def func(a, *, b=2):
+    ...     pass
+    >>> func(1, 2)
+
+    Notes
+    -----
+    This function is adapted from scikit-learn under the terms of its license. See
     """
 
-    def _decorator(f):
+    def _decorator(func):
 
-        signature = inspect.signature(f)
+        signature = inspect.signature(func)
 
         pos_or_kw_args = []
         kwonly_args = []
         for name, param in signature.parameters.items():
-            if param.kind == POSITIONAL_OR_KEYWORD:
+            if param.kind in (POSITIONAL_OR_KEYWORD, POSITIONAL_ONLY):
                 pos_or_kw_args.append(name)
             elif param.kind == KEYWORD_ONLY:
                 kwonly_args.append(name)
-            elif param.kind == POSITIONAL_ONLY:
-                raise TypeError("Cannot handle positional-only params")
-                # because all args are coverted to kwargs below
+                if param.default is EMPTY:
+                    # IMHO `def f(a, *, b):` does not make sense -> disallow it
+                    # if removing this constraint -> need to add these to kwargs as well
+                    raise TypeError("Keyword-only param without default disallowed.")
 
-        @wraps(f)
+        @wraps(func)
         def inner(*args, **kwargs):
+
+            name = func.__name__
             n_extra_args = len(args) - len(pos_or_kw_args)
             if n_extra_args > 0:
 
                 extra_args = ", ".join(kwonly_args[:n_extra_args])
 
                 warnings.warn(
-                    f"Passing '{extra_args}' as positional argument(s) "
+                    f"Passing '{extra_args}' as positional argument(s) to {name} "
                     f"was deprecated in version {version} and will raise an error two "
                     "releases later. Please pass them as keyword arguments."
                     "",
                     FutureWarning,
+                    stacklevel=2,
                 )
 
-            kwargs.update({name: arg for name, arg in zip(pos_or_kw_args, args)})
-            return f(**kwargs)
+                zip_args = zip(kwonly_args[:n_extra_args], args[-n_extra_args:])
+                kwargs.update({name: arg for name, arg in zip_args})
+
+                return func(*args[:-n_extra_args], **kwargs)
+
+            return func(*args, **kwargs)
 
         return inner
 
