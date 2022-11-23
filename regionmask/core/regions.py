@@ -537,39 +537,39 @@ Regions.plot_regions = _plot_regions
 
 
 class _OneRegion:
-    """a single Region, used as member of 'Regions'"""
+    """a single Region, used as member of ``Regions``
+
+    Parameters
+    ----------
+    number : int
+        Number of this region.
+    name : string
+        Long name of this region.
+    abbrev : string
+        Abbreviation of this region.
+    outline : Nx2 array of vertices, Polygon or MultiPolygon
+        Coordinates/ outline of the region as shapely Polygon/
+        MultiPolygon or list.
+
+    Examples
+    --------
+    ``_OneRegion`` can be created with numpy-style outlines:
+
+    >>> outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
+    >>> r = _OneRegion(1, 'Unit Square', 'USq', outl)
+    >>> r
+    <regionmask._OneRegion: Unit Square (USq / 1)>
+
+    or by passing shapely Polygons:
+
+    >>> from shapely.geometry import Polygon
+    >>> poly = Polygon(outl)
+    >>> r = _OneRegion(1, 'Unit Square', 'USq', poly)
+    >>> r
+    <regionmask._OneRegion: Unit Square (USq / 1)>
+    """
 
     def __init__(self, number, name, abbrev, outline):
-        """
-        Parameters
-        ----------
-        number : int
-            Number of this region.
-        name : string
-            Long name of this region.
-        abbrev : string
-            Abbreviation of this region.
-        outline : Nx2 array of vertices, Polygon or MultiPolygon
-            Coordinates/ outline of the region as shapely Polygon/
-            MultiPolygon or list.
-
-        Examples
-        --------
-        ``_OneRegion`` can be created with numpy-style outlines::
-
-        >>> outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
-        >>> r = _OneRegion(1, 'Unit Square', 'USq', outl)
-        >>> r
-        <regionmask._OneRegion: Unit Square (USq / 1)>
-
-        or by passing shapely Polygons::
-
-        >>> from shapely.geometry import Polygon
-        >>> poly = Polygon(outl)
-        >>> r = _OneRegion(1, 'Unit Square', 'USq', poly)
-        >>> r
-        <regionmask._OneRegion: Unit Square (USq / 1)>
-        """
 
         self.number = number
         self.name = name
