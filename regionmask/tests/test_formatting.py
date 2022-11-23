@@ -4,16 +4,12 @@ from regionmask.core import formatting
 from regionmask.defined_regions import srex
 
 
-def test_pretty_print():
-    assert formatting.pretty_print("abcdefghij", 8) == "abcde..."
-    assert formatting.pretty_print("ß", 1) == "ß"
-    assert formatting.pretty_print("x", 3) == "x  "
-    assert formatting.pretty_print("x", 3, False) == "  x"
-
-
 def test_maybe_truncate():
     assert formatting.maybe_truncate("ß", 10) == "ß"
     assert formatting.maybe_truncate("abcdefghij", 8) == "abcde..."
+
+    for max_length in range(-1, 4):
+        assert formatting.maybe_truncate("abcdefghij", max_length) == "..."
 
 
 def test_repr_srex():
@@ -22,8 +18,7 @@ def test_repr_srex():
 
     result = srex.__repr__()
 
-    expected = """<regionmask.Regions>
-Name:     SREX
+    expected = """<regionmask.Regions 'SREX'>
 Source:   Seneviratne et al., 2012 (https://www.ipcc.ch/site/assets/uploads/2...
 overlap:  False
 
@@ -47,14 +42,14 @@ Regions:
 
 def test_display_metadata():
 
-    expected = ["Name:     name", "overlap:  False"]
-    result = formatting._display_metadata("name", None, False)
+    expected = ["overlap:  False"]
+    result = formatting._display_metadata(None, False)
     assert result == expected
 
-    expected = ["Name:     name", "Source:   source", "overlap:  True"]
-    result = formatting._display_metadata("name", "source", True)
+    expected = ["Source:   source", "overlap:  True"]
+    result = formatting._display_metadata("source", True)
     assert result == expected
 
-    expected = ["Name:     na...", "overlap:  None"]
-    result = formatting._display_metadata("name of regions", None, None, max_width=15)
+    expected = ["Source:   to...", "overlap:  None"]
+    result = formatting._display_metadata("to truncate", None, max_width=15)
     assert result == expected

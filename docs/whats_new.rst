@@ -29,6 +29,8 @@ Enhancements
 - The masking functions (e.g. :py:meth:`Regions.mask`) now warn if the `units` of the
   coordinates(``lat.attrs["units"]`` ) are given as "radians" (:issue:`279`).
 - Better error when passing a single region without wrapping it into a list or tuple (:issue:`372`).
+- Added :py:class:`set_options` to regionmask which can, currently, be used to control
+  the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
 
 Deprecations
 ~~~~~~~~~~~~
@@ -61,6 +63,8 @@ Internal Changes
   - in the function to determine points at *exactly* -180°E (or 0°E) and -90°N (:pull:`341`)
 - Use importlib.metadata if available (i.e. for python > 3.7) - should lead to a faster
   import time for regionmask (:pull:`369`).
+- Small changes to the repr of :py:class:`Regions`  (:pull:`378`).
+- Reduce the memory requirements of :py:func:`core.utils.unpackbits` (:issue:`379`:).
 
 .. _whats-new.0.9.0:
 

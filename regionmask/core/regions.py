@@ -51,33 +51,59 @@ class Regions:
     --------
     Create your own ``Regions``::
 
-        from regionmask import Regions
+    >>> from regionmask import Regions
 
-        name = 'Example'
-        numbers = [0, 1]
-        names = ['Unit Square1', 'Unit Square2']
-        abbrevs = ['uSq1', 'uSq2']
+    >>> name = 'Example'
+    >>> numbers = [0, 1]
+    >>> names = ['Unit Square1', 'Unit Square2']
+    >>> abbrevs = ['uSq1', 'uSq2']
 
-        outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
-        outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
-        outlines = [outl1, outl2]
+    >>> outl1 = ((0, 0), (0, 1), (1, 1.), (1, 0))
+    >>> outl2 = ((0, 1), (0, 2), (1, 2.), (1, 1))
+    >>> outlines = [outl1, outl2]
 
-        r = Regions(outlines, numbers, names, abbrevs, name)
+    >>> r = Regions(outlines, numbers, names, abbrevs, name)
+    >>> r
+    <regionmask.Regions 'Example'>
+    overlap:  False
+    <BLANKLINE>
+    Regions:
+    0 uSq1 Unit Square1
+    1 uSq2 Unit Square2
+    <BLANKLINE>
+    [2 regions]
 
     It's also possible to pass shapely Poylgons::
 
-        from shapely.geometry import Polygon
+    >>> from shapely.geometry import Polygon
 
-        numbers = [1, 2]
-        names = {1:'Unit Square1', 2: 'Unit Square2'}
-        abbrevs = {1:'uSq1', 2:'uSq2'}
-        poly = {1: Polygon(outl1), 2: Polygon(outl2)}
+    >>> numbers = [1, 2]
+    >>> names = {1:'Unit Square1', 2: 'Unit Square2'}
+    >>> abbrevs = {1:'uSq1', 2:'uSq2'}
+    >>> poly = {1: Polygon(outl1), 2: Polygon(outl2)}
 
-        r = Regions(outlines, numbers, names, abbrevs, name)
+    >>> r = Regions(outlines, numbers, names, abbrevs, name)
+    >>> r
+    <regionmask.Regions 'Example'>
+    overlap:  False
+    <BLANKLINE>
+    Regions:
+    1 uSq1 Unit Square1
+    2 uSq2 Unit Square2
+    <BLANKLINE>
+    [2 regions]
 
-        # arguments are now optional
-        r = Regions(outlines)
-
+    >>> # arguments are now optional
+    >>> r = Regions(outlines)
+    >>> r
+    <regionmask.Regions 'unnamed'>
+    overlap:  False
+    <BLANKLINE>
+    Regions:
+    0 r0 Region0
+    1 r1 Region1
+    <BLANKLINE>
+    [2 regions]
     """
 
     def __init__(
@@ -175,9 +201,6 @@ class Regions:
 
         return key
 
-    def __repr__(self):  # pragma: no cover
-        return self._display()
-
     def __iter__(self):
         for i in self.numbers:
             yield self[i]
@@ -261,7 +284,7 @@ class Regions:
         """if the regions extend from 0 to 360"""
         return not self.lon_180
 
-    def _display(self, max_rows=10, max_width=None, max_colwidth=50):
+    def _display(self, max_rows=10, max_width=None):
         """Render ``Regions`` object to a console-friendly tabular output.
 
         Parameters
@@ -271,8 +294,6 @@ class Regions:
             not affect the displayed metadata.
         max_width : int, optional
             Width to wrap a line in characters. If none uses console width.
-        max_colwidth : int, optional
-            Max width to truncate each column in characters. Default 50.
 
         Returns
         -------
@@ -284,7 +305,14 @@ class Regions:
         Used as the repr.
 
         """
-        return _display(self, max_rows, max_width, max_colwidth)
+        return _display(self, max_rows, max_width)
+
+    def __repr__(self):  # pragma: no cover
+        from .options import OPTIONS
+
+        max_rows = OPTIONS["display_max_rows"]
+
+        return self._display(max_rows=max_rows)
 
     @_deprecate_positional_args("0.10.0")
     def mask(
@@ -509,36 +537,39 @@ Regions.plot_regions = _plot_regions
 
 
 class _OneRegion:
-    """a single Region, used as member of 'Regions'"""
+    """a single Region, used as member of ``Regions``
+
+    Parameters
+    ----------
+    number : int
+        Number of this region.
+    name : string
+        Long name of this region.
+    abbrev : string
+        Abbreviation of this region.
+    outline : Nx2 array of vertices, Polygon or MultiPolygon
+        Coordinates/ outline of the region as shapely Polygon/
+        MultiPolygon or list.
+
+    Examples
+    --------
+    ``_OneRegion`` can be created with numpy-style outlines:
+
+    >>> outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
+    >>> r = _OneRegion(1, 'Unit Square', 'USq', outl)
+    >>> r
+    <regionmask._OneRegion: Unit Square (USq / 1)>
+
+    or by passing shapely Polygons:
+
+    >>> from shapely.geometry import Polygon
+    >>> poly = Polygon(outl)
+    >>> r = _OneRegion(1, 'Unit Square', 'USq', poly)
+    >>> r
+    <regionmask._OneRegion: Unit Square (USq / 1)>
+    """
 
     def __init__(self, number, name, abbrev, outline):
-        """
-        Parameters
-        ----------
-        number : int
-            Number of this region.
-        name : string
-            Long name of this region.
-        abbrev : string
-            Abbreviation of this region.
-        outline : Nx2 array of vertices, Polygon or MultiPolygon
-            Coordinates/ outline of the region as shapely Polygon/
-            MultiPolygon or list.
-
-        Examples
-        --------
-        ``_OneRegion`` can be created with numpy-style outlines::
-
-            outl = ((0, 0), (0, 1), (1, 1.), (1, 0))
-            r = _OneRegion(1, 'Unit Square', 'USq', outl)
-
-        or by passing shapely Polygons::
-
-            from shapely.geometry import Polygon
-
-            poly = Polygon(outl)
-            r = _OneRegion(1, 'Unit Square', 'USq', poly)
-        """
 
         self.number = number
         self.name = name

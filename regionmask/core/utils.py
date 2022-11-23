@@ -220,4 +220,7 @@ def unpackbits(numbers, num_bits):
 
     numbers = numbers.reshape([-1, 1])
     mask = 2 ** np.arange(num_bits, dtype=numbers.dtype).reshape([1, num_bits])
-    return (numbers & mask).astype(bool).reshape(shape)
+
+    # avoid casting to float64
+    out = np.empty(numbers.shape[0:1] + (num_bits,), dtype=bool)
+    return np.bitwise_and(numbers, mask, out=out, casting="unsafe").reshape(shape)
