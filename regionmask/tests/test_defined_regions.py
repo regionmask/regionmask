@@ -8,7 +8,7 @@ from regionmask.defined_regions._natural_earth import _maybe_get_column
 
 from . import has_cartopy, requires_cartopy
 from .utils import (
-    REGIONS,
+    REGIONS_ALL,
     REGIONS_DEPRECATED,
     REGIONS_REQUIRING_CARTOPY,
     download_naturalearth_region_or_skip,
@@ -28,7 +28,7 @@ def _test_region(defined_region):
     assert region.lon_180
 
 
-@pytest.mark.parametrize("defined_region", REGIONS, ids=str)
+@pytest.mark.parametrize("defined_region", REGIONS_ALL, ids=str)
 def test_defined_region(defined_region):
 
     _test_region(defined_region)

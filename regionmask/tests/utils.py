@@ -26,18 +26,22 @@ dummy_ds = xr.Dataset(coords={"lon": _dummy_lon, "lat": _dummy_lat})
 # | b fill |
 
 
-def expected_mask_2D(a=0, b=1, fill=np.NaN, flatten=False, coords=None, dims=None):
+def expected_mask_1D():
+    expected = expected_mask_2D()
+
+    return expected.stack(cells=("lat", "lon")).reset_index("cells")
+
+
+def expected_mask_2D(
+    a=0, b=1, fill=np.NaN, coords=None, lon_name="lon", lat_name="lat"
+):
 
     mask = np.array([[a, fill], [b, fill]])
 
-    if flatten:
-        mask = mask.flatten()
-
     if coords is None:
-        coords = {"lon": _dummy_lon, "lat": _dummy_lat}
+        coords = {lon_name: _dummy_lon, lat_name: _dummy_lat}
 
-    if dims is None:
-        dims = ("lat", "lon")
+    dims = (lat_name, lon_name)
 
     flag_values = np.array([a, b])
     flag_meanings = "r0 r1"
@@ -50,7 +54,7 @@ def expected_mask_2D(a=0, b=1, fill=np.NaN, flatten=False, coords=None, dims=Non
     return xr.DataArray(mask, dims=dims, coords=coords, name="mask", attrs=attrs)
 
 
-def expected_mask_3D(drop, coords=None, overlap=False):
+def expected_mask_3D(drop, coords=None, overlap=False, lon_name="lon", lat_name="lat"):
 
     a = [[True, False], [False, False]]
     b = [[False, False], [True, False]]
@@ -62,7 +66,7 @@ def expected_mask_3D(drop, coords=None, overlap=False):
         mask = np.array([a, b, c])
 
     if coords is None:
-        coords = {"lon": _dummy_lon, "lat": _dummy_lat}
+        coords = {lon_name: _dummy_lon, lat_name: _dummy_lat}
 
     numbers = list(range(4)) if overlap else list(range(3))
 
@@ -73,7 +77,7 @@ def expected_mask_3D(drop, coords=None, overlap=False):
             "names": ("region", [f"Region{i}" for i in numbers]),
         }
     )
-    dims = ("region",) + ("lat", "lon")
+    dims = ("region",) + (lat_name, lon_name)
     attrs = {"standard_name": "region"}
 
     expected = xr.DataArray(mask, coords=coords, dims=dims, name="mask", attrs=attrs)
@@ -102,8 +106,7 @@ REGIONS = [
     DefinedRegion("srex", 26),
 ]
 
-_REGIONS_NATURAL_EARTH = [
-    # v4.1.0
+_REGIONS_NATURAL_EARTH_v4_1_0 = [
     DefinedRegion("natural_earth_v4_1_0.countries_110", 177),
     DefinedRegion("natural_earth_v4_1_0.countries_50", 241),
     DefinedRegion("natural_earth_v4_1_0.us_states_50", 51),
@@ -112,7 +115,9 @@ _REGIONS_NATURAL_EARTH = [
     DefinedRegion("natural_earth_v4_1_0.land_50", 1),
     DefinedRegion("natural_earth_v4_1_0.land_10", 1),
     DefinedRegion("natural_earth_v4_1_0.ocean_basins_50", 119),
-    # v5.0.0
+]
+
+_REGIONS_NATURAL_EARTH_v5_0_0 = [
     DefinedRegion("natural_earth_v5_0_0.countries_110", 177),
     DefinedRegion("natural_earth_v5_0_0.countries_50", 242),
     DefinedRegion("natural_earth_v5_0_0.us_states_50", 51),
@@ -123,7 +128,10 @@ _REGIONS_NATURAL_EARTH = [
     DefinedRegion("natural_earth_v5_0_0.ocean_basins_50", 117),
 ]
 
-REGIONS += _REGIONS_NATURAL_EARTH
+REGIONS += _REGIONS_NATURAL_EARTH_v5_0_0
+
+REGIONS_ALL = REGIONS.copy()
+REGIONS_ALL += _REGIONS_NATURAL_EARTH_v4_1_0
 
 
 REGIONS_DEPRECATED = [
