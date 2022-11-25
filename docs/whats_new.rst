@@ -31,11 +31,11 @@ Enhancements
 - Better error when passing a single region without wrapping it into a list or tuple (:issue:`372`).
 - Added :py:class:`set_options` to regionmask which can, currently, be used to control
   the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
+- Create faster masks with shapely 2.0, which replaces pygeos (:pull:`#349`).
 
 Deprecations
 ~~~~~~~~~~~~
 
-- Added faster masking of regions with shapely v2.0.0 (:pull:`341`).
 - Passing `lon_name` and `lat_name` to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
   is deprecated. Please pass the lon and lat coordinates direcly, e.g., `mask*(ds[lon_name], ds[lat_name])`
   (:issue:`293` and :pull:`371`).
