@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: "ubuntu-latest"
+        os: ["ubuntu-latest"]
         env: ["bare-minimum", "min-all-deps"]
         python-version: ["3.7"]
         include:
