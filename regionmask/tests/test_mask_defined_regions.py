@@ -36,10 +36,12 @@ def _test_mask_equal_defined_regions(region, ds, mask_method):
         assert np.allclose(rasterize, pygeos, equal_nan=True)
 
 
-@pytest.mark.parametrize("defined_region", REGIONS)
+@pytest.mark.filterwarnings("ignore:pygeos is deprecated")
+@pytest.mark.parametrize("defined_region", REGIONS, ids=str)
 @pytest.mark.parametrize("ds", DATASETS)
 def test_mask_equal_defined_regions(defined_region, ds):
 
+    # a loop over DATASETS is not faster - due to caching of the regions
     region = attrgetter(defined_region.region_name)(defined_regions)
     mask_method = "mask_3D" if defined_region.overlap else "mask"
     _test_mask_equal_defined_regions(region, ds, mask_method)

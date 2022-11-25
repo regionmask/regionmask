@@ -31,6 +31,7 @@ Enhancements
 - Better error when passing a single region without wrapping it into a list or tuple (:issue:`372`).
 - Added :py:class:`set_options` to regionmask which can, currently, be used to control
   the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
+- Create faster masks with shapely 2.0, which replaces pygeos (:pull:`#349`).
 
 Deprecations
 ~~~~~~~~~~~~
