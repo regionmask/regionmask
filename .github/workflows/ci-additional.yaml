@@ -14,14 +14,13 @@ concurrency:
 jobs:
   test:
     name: py${{ matrix.python-version }}-${{ matrix.env }}
-    runs-on: ${{ matrix.os }}
+    runs-on: "ubuntu-latest"
     defaults:
       run:
         shell: bash -l {0}
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest"]
         include:
           - env: "bare-minimum"
             python-version: "3.7"
