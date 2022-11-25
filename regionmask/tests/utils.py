@@ -88,6 +88,10 @@ class DefinedRegion:
     n_regions: int
     overlap: bool = False
 
+    def __str__(self):
+        # used as name (`ids`) for parametrize
+        return self.region_name
+
 
 REGIONS = [
     DefinedRegion("ar6.all", 58),

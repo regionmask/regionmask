@@ -41,18 +41,17 @@ MASK_FUNCS = [
     pytest.param(_mask_pygeos, marks=requires_pygeos),
 ]
 
+no_pygeos_depr_warning = pytest.mark.filterwarnings("ignore:pygeos is deprecated")
 
 MASK_METHODS = [
     "rasterize",
     "shapely",
-    pytest.param("shapely2", marks=requires_shapely_2),
-    pytest.param("pygeos", marks=requires_pygeos),
+    pytest.param("pygeos", marks=[requires_pygeos, no_pygeos_depr_warning]),
 ]
 
 MASK_METHODS_IRREGULAR = [
     "shapely",
-    pytest.param("shapely2", marks=requires_shapely_2),
-    pytest.param("pygeos", marks=requires_pygeos),
+    pytest.param("pygeos", marks=[requires_pygeos, no_pygeos_depr_warning]),
 ]
 
 # =============================================================================
@@ -101,6 +100,15 @@ def test_mask(method):
 def test_missing_pygeos_error():
 
     with pytest.raises(ModuleNotFoundError, match="No module named 'pygeos'"):
+        dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method="pygeos")
+
+
+@pytest.mark.skipif(not has_pygeos and has_shapely_2, reason="depr pygeos if shapely 2")
+def test_deprecate_pygeos():
+
+    with pytest.warns(
+        FutureWarning, match="pygeos is deprecated in favour of shapely 2.0"
+    ):
         dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method="pygeos")
 
 
@@ -705,6 +713,7 @@ r_45_deg_ccw = Regions([outline_45_deg])
 r_45_deg_cw = Regions([outline_45_deg[::-1]])
 
 
+@no_pygeos_depr_warning
 @pytest.mark.parametrize("regions", [r_45_deg_ccw, r_45_deg_cw])
 def test_deg45_rasterize_shapely_equal(regions):
     # https://github.com/regionmask/regionmask/issues/80
@@ -775,7 +784,7 @@ def test_rasterize_on_split_lon_asymmetric():
 METHOD_IRREGULAR = "pygeos" if has_pygeos else "shapely"
 
 if has_shapely_2:
-    METHOD_IRREGULAR = "shapely2"
+    METHOD_IRREGULAR = "shapely_2"
 elif has_pygeos:
     METHOD_IRREGULAR = "pygeos"
 else:
