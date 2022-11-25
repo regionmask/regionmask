@@ -8,7 +8,7 @@ from shapely.geometry import Polygon
 
 from regionmask import Regions
 from regionmask.core.mask import (
-    _determine_method,
+    _determine_backend,
     _inject_mask_docstring,
     _mask_pygeos,
     _mask_rasterize,
@@ -776,7 +776,7 @@ def test_rasterize_on_split_lon_asymmetric():
     lat = np.arange(75, 13, -2)
     ds = xr.Dataset(coords=dict(lon=lon, lat=lat))
 
-    assert _determine_method(ds.lon, ds.lat) == "rasterio_flip"
+    assert _determine_backend(ds.lon, ds.lat) == "rasterio_flip"
 
     result = r_US_180_cw.mask(ds, method="rasterize")
     expected = r_US_180_cw.mask(ds, method="shapely")
@@ -826,7 +826,7 @@ def test_determine_method(lon, m_lon, lat, m_lat):
 
     expected = METHODS[max((m_lon, m_lat))]
 
-    assert _determine_method(lon, lat) == expected
+    assert _determine_backend(lon, lat) == expected
 
 
 # =============================================================================
