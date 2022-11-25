@@ -34,6 +34,10 @@ For parsing flag values
 For faster masking
 ~~~~~~~~~~~~~~~~~~
 
+.. note::
+   pygeos is being deprecated in favour if the upcoming release of shapely 2.0. As soon
+   as shapely 2.0 is released there is no longer an advantage in installing pygeos.
+
 - `pygeos <https://pygeos.readthedocs.io/en/stable/>`__ (0.9 or later) enables faster mask creations for
   irregular and 2D grids.
 

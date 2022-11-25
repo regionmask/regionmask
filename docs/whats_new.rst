@@ -31,6 +31,7 @@ Enhancements
 - Better error when passing a single region without wrapping it into a list or tuple (:issue:`372`).
 - Added :py:class:`set_options` to regionmask which can, currently, be used to control
   the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
+- Create faster masks with shapely 2.0, which replaces pygeos (:pull:`#349`).
 
 Deprecations
 ~~~~~~~~~~~~
@@ -63,6 +64,7 @@ Internal Changes
 - Use importlib.metadata if available (i.e. for python > 3.7) - should lead to a faster
   import time for regionmask (:pull:`369`).
 - Small changes to the repr of :py:class:`Regions`  (:pull:`378`).
+- Reduce the memory requirements of :py:func:`core.utils.unpackbits` (:issue:`379`:).
 
 .. _whats-new.0.9.0:
 

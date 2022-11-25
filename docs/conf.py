@@ -17,12 +17,21 @@ import sys  # NOQA
 import warnings
 from subprocess import call
 
+import regionmask
+
 # rtd does not activate the environment (needs to be before importing regionmask)
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 if on_rtd:
     os.environ["PROJ_LIB"] = f"{sys.prefix}/share/proj"
 
-import regionmask
+    print("python exec:", sys.executable)
+    print("sys.path:", sys.path)
+    print("os.getcwd():", os.getcwd())
+
+    # list conda packages
+    call("conda list", shell=True)
+
+    print(f"regionmask: {regionmask.__version__=}, {regionmask.__file__=}")
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -222,9 +231,6 @@ man_pages = [("index", "regionmask", "regionmask Documentation", ["Mathias Hause
 # If true, show URL addresses after external links.
 # man_show_urls = False
 
-# list conda packages
-call("conda list", shell=True)
-
 # disable warnings
 warnings.filterwarnings("ignore")
 
@@ -253,13 +259,12 @@ for nb in notebooks:
     except FileNotFoundError:
         pass
 
-    call(
-        (
-            "jupyter nbconvert"
-            " --to rst"
-            " --template-file notebooks/tutorial_rst.tpl"
-            " --ExecutePreprocessor.timeout=60"
-            " --execute " + nb
-        ),
-        shell=True,
+    cmd = (
+        "jupyter nbconvert"
+        " --to rst"
+        " --template-file notebooks/tutorial_rst.tpl"
+        " --ExecutePreprocessor.timeout=60"
+        " --execute " + nb
     )
+    print(cmd)
+    call(cmd, shell=True)
