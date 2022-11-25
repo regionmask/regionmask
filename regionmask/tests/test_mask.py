@@ -30,6 +30,7 @@ from .utils import (
     dummy_ds,
     dummy_region,
     dummy_region_overlap,
+    expected_mask_1D,
     expected_mask_2D,
     expected_mask_3D,
 )
@@ -121,7 +122,7 @@ def test_mask_xr_keep_name(method):
         coords={"longitude": dummy_ds.lon.values, "latitude": dummy_ds.lat.values}
     )
 
-    expected = expected_mask_2D().rename(lat="latitude", lon="longitude")
+    expected = expected_mask_2D(lat_name="latitude", lon_name="longitude")
 
     result = dummy_region.mask(ds.longitude, ds.latitude, method=method)
 
@@ -184,7 +185,7 @@ def test_mask_ndim_ne_1_2(ndim):
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_obj(lon_name, lat_name, method):
 
-    expected = expected_mask_2D().rename(lat=lat_name, lon=lon_name)
+    expected = expected_mask_2D(lat_name=lat_name, lon_name=lon_name)
 
     obj = {lon_name: dummy_ds.lon.values, lat_name: dummy_ds.lat.values}
     with pytest.warns(
@@ -405,9 +406,10 @@ lat_2D = [[0.5, 0.5], [1.5, 1.5]]
 def test_mask_2D(method):
 
     dims = ("lat_idx", "lon_idx")
+    lat_name, lon_name = dims
     coords = {"lat": (dims, lat_2D), "lon": (dims, lon_2D)}
 
-    expected = expected_mask_2D(coords=coords, dims=dims)
+    expected = expected_mask_2D(coords=coords, lat_name=lat_name, lon_name=lon_name)
     result = dummy_region.mask(lon_2D, lat_2D, method=method)
 
     xr.testing.assert_equal(result, expected)
@@ -425,16 +427,18 @@ def test_mask_rasterize_irregular(lon, lat):
 def test_mask_xarray_in_out_2D(method):
     # create xarray DataArray with 2D dims
 
+    dims = ("lat_1D", "lon_1D")
+    lat_name, lon_name = dims
     coords = {
         "lat_1D": [1, 2],
         "lon_1D": [1, 2],
-        "lat_2D": (("lat_1D", "lon_1D"), lat_2D),
-        "lon_2D": (("lat_1D", "lon_1D"), lon_2D),
+        "lat_2D": (dims, lat_2D),
+        "lon_2D": (dims, lon_2D),
     }
 
     data = xr.Dataset(coords=coords)
 
-    expected = expected_mask_2D(coords=coords, dims=("lat_1D", "lon_1D"))
+    expected = expected_mask_2D(coords=coords, lat_name=lat_name, lon_name=lon_name)
     result = dummy_region.mask(data.lon_2D, data.lat_2D, method=method)
 
     xr.testing.assert_equal(result, expected)
@@ -500,7 +504,7 @@ def test_mask_unstructured(method):
     grid = xr.Dataset(coords=coords)
 
     result = dummy_region.mask(grid, method=method)
-    expected = expected_mask_2D(flatten=True, coords=coords, dims="cells")
+    expected = expected_mask_1D()
 
     xr.testing.assert_equal(result, expected)
 
@@ -542,13 +546,14 @@ def test_mask_3D_empty(method):
     assert not result.any()
 
 
+@pytest.mark.filterwarnings("ignore:rename .* does not create an index")
 @pytest.mark.parametrize("lon_name", ["lon", "longitude"])
 @pytest.mark.parametrize("lat_name", ["lat", "latitude"])
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_3D_obj(lon_name, lat_name, drop, method):
 
-    expected = expected_mask_3D(drop).rename(lon=lon_name, lat=lat_name)
+    expected = expected_mask_3D(drop, lon_name=lon_name, lat_name=lat_name)
 
     obj = dummy_ds.rename(lon=lon_name, lat=lat_name)
     with pytest.warns(

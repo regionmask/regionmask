@@ -32,6 +32,7 @@ Enhancements
 - Added :py:class:`set_options` to regionmask which can, currently, be used to control
   the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
 - Create faster masks with shapely 2.0, which replaces pygeos (:pull:`#349`).
+- Add python 3.11 to list of supported versions (:pull:`390`).
 
 Deprecations
 ~~~~~~~~~~~~

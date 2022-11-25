@@ -8,7 +8,7 @@ from regionmask.defined_regions._natural_earth import _maybe_get_column
 
 from . import has_cartopy, requires_cartopy
 from .utils import (
-    REGIONS,
+    REGIONS_ALL,
     REGIONS_DEPRECATED,
     REGIONS_REQUIRING_CARTOPY,
     download_naturalearth_region_or_skip,
@@ -28,13 +28,13 @@ def _test_region(defined_region):
     assert region.lon_180
 
 
-@pytest.mark.parametrize("defined_region", REGIONS)
+@pytest.mark.parametrize("defined_region", REGIONS_ALL, ids=str)
 def test_defined_region(defined_region):
 
     _test_region(defined_region)
 
 
-@pytest.mark.parametrize("defined_region", REGIONS_DEPRECATED)
+@pytest.mark.parametrize("defined_region", REGIONS_DEPRECATED, ids=str)
 def test_defined_region_deprecated(defined_region):
 
     match = "The ``_ar6_pre_revisions`` regions are deprecated"
@@ -44,7 +44,7 @@ def test_defined_region_deprecated(defined_region):
 
 @requires_cartopy
 @pytest.mark.filterwarnings("ignore:Downloading")
-@pytest.mark.parametrize("defined_region", REGIONS_REQUIRING_CARTOPY)
+@pytest.mark.parametrize("defined_region", REGIONS_REQUIRING_CARTOPY, ids=str)
 def test_defined_regions_natural_earth(monkeypatch, defined_region):
     # TODO: remove this test once defined_regions.natural_earth is removed
 
@@ -99,7 +99,7 @@ def test_fix_ocean_basins_50():
 
 
 @requires_cartopy
-def test_natural_earth_loaded_as_utf8(monkeypatch):
+def test_natural_earth_loaded_as_utf8():
     # GH 95
 
     region = defined_regions.natural_earth_v5_0_0.ocean_basins_50
