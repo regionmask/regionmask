@@ -103,7 +103,9 @@ def test_missing_pygeos_error():
         dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method="pygeos")
 
 
-@pytest.mark.skipif(not has_pygeos and has_shapely_2, reason="depr pygeos if shapely 2")
+@pytest.mark.skipif(
+    not has_pygeos or not has_shapely_2, reason="depr pygeos if shapely 2"
+)
 def test_deprecate_pygeos():
 
     with pytest.warns(
