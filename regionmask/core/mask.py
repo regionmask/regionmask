@@ -114,8 +114,9 @@ flag : str, default: "abbrevs"
 
 _USE_CF_DOCSTRING = """\
 use_cf : bool, default: None
-    Whether to use ``cf_xarray`` to infer the names
-
+    Whether to use ``cf_xarray`` to infer the names of the x and y coordinates. If None
+    uses cf_xarray if the coord names are unambigous. If True uses cf_xarray in any case
+    if False does not use cf_xarray.
 """
 
 

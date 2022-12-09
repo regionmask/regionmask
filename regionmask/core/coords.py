@@ -1,7 +1,7 @@
 import xarray as xr
 
 try:
-    import cf_xarray
+    import cf_xarray  # noqa: F401
 
     has_cf_xarray = True
 except ImportError:
@@ -13,9 +13,14 @@ def _get_coords(lon_or_obj, lat, lon_name, lat_name, use_cf):
     if lat is not None:
         return lon_or_obj, lat
 
-    if has_cf_xarray and isinstance(lon_or_obj, (xr.Dataset, xr.DataArray)):
+    is_xr_object = isinstance(lon_or_obj, (xr.Dataset, xr.DataArray))
 
-        return _get_coords_da_ds(lon_or_obj, lon_name, lat_name, use_cf)
+    if use_cf is None and has_cf_xarray and is_xr_object:
+        return _get_coords_cf_or_name(lon_or_obj, lon_name, lat_name)
+
+    if use_cf:
+
+        return _get_coords_cf(lon_or_obj)
 
     return lon_or_obj[lon_name], lon_or_obj[lat_name]
 
@@ -30,32 +35,38 @@ def _get_cf_coords(obj, name, required=False):
         return None
 
     if len(coord_name) > 1:
-        raise ValueError(f"Found more than one candidate for {name}")
+        raise ValueError(
+            f"Found more than one candidate for '{name}'. Either pass the lon and lat "
+            "coords directly or only pass the DataArray (instead of Dataset) the mask "
+            "method."
+        )
 
     return coord_name[0]
 
 
-def _get_coords_da_ds(obj, lon_name, lat_name, use_cf):
+def _get_coords_cf_or_name(obj, lon_name, lat_name):
 
-    if use_cf is None:
+    x_name = _get_cf_coords(obj, "longitude", required=False) or lon_name
+    y_name = _get_cf_coords(obj, "latitude", required=False) or lat_name
 
-        x_name = _get_cf_coords(obj, "longitude", required=False) or lon_name
-        y_name = _get_cf_coords(obj, "latitude", required=False) or lat_name
+    if x_name != lon_name and lon_name in obj.coords:
+        raise ValueError("Ambigous name for lon coords")
 
-        if x_name != lon_name and lon_name in obj.coords:
-            raise ValueError("Ambigous name")
+    if y_name != lat_name and lat_name in obj.coords:
+        raise ValueError("Ambigous name for lat coords")
 
-        if y_name != lat_name and lat_name in obj.coords:
-            raise ValueError("Ambigous name")
+    return obj[x_name], obj[y_name]
 
-    elif use_cf is True:
-        x_name = _get_cf_coords(obj, "longitude", required=True)
-        y_name = _get_cf_coords(obj, "latitude", required=True)
 
-    elif use_cf is False:
-        x_name = lon_name
-        y_name = lat_name
-    else:
-        raise ValueError("")
+def _get_coords_cf(obj):
+
+    if not has_cf_xarray:
+        raise ImportError("``cf_xarray`` required")
+
+    if not isinstance(obj, (xr.Dataset, xr.DataArray)):
+        raise TypeError(f"Expected a ``Dataset`` or ``DataArray``, got {type(obj)}")
+
+    x_name = _get_cf_coords(obj, "longitude", required=True)
+    y_name = _get_cf_coords(obj, "latitude", required=True)
 
     return obj[x_name], obj[y_name]
