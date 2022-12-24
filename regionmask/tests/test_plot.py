@@ -83,6 +83,23 @@ def figure_context(*args, **kwargs):
         plt.close(fig)
 
 
+@pytest.fixture(scope="module", autouse=True)
+def assert_all_figures_closed():
+    """meta-test to ensure all figures are closed at the end of a test
+    Notes:  Scope is kept to module (only invoke this function once per test
+    module) else tests cannot be run in parallel (locally). Disadvantage: only
+    catches one open figure per run. May still give a false positive if tests
+    are run in parallel.
+    """
+    yield None
+
+    open_figs = len(plt.get_fignums())
+    if open_figs:
+        raise RuntimeError(
+            f"tests did not close all figures ({open_figs} figures open)"
+        )
+
+
 PLOTFUNCS = [
     "plot_regions",
     pytest.param("plot", marks=requires_cartopy),
@@ -159,9 +176,6 @@ def test_maybe_gca():
         assert ax.get_aspect() == 1
 
     with figure_context():
-
-        # create figure without axes
-        plt.figure()
         ax = _maybe_gca(aspect=1)
 
         assert isinstance(ax, mpl.axes.Axes)
@@ -775,8 +789,9 @@ def test_plot_3D_mask_overlap():
 
     mask_3D = region.mask_3D(lon, lat)
 
-    with pytest.warns(RuntimeWarning, match="overlapping regions"):
-        plot_3D_mask(mask_3D)
+    with figure_context():
+        with pytest.warns(RuntimeWarning, match="overlapping regions"):
+            plot_3D_mask(mask_3D)
 
 
 @requires_matplotlib
