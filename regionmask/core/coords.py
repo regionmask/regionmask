@@ -19,7 +19,6 @@ def _get_coords(lon_or_obj, lat, lon_name, lat_name, use_cf):
         return _get_coords_cf_or_name(lon_or_obj, lon_name, lat_name)
 
     if use_cf:
-
         return _get_coords_cf(lon_or_obj)
 
     return lon_or_obj[lon_name], lon_or_obj[lat_name]
@@ -49,13 +48,20 @@ def _get_coords_cf_or_name(obj, lon_name, lat_name):
     x_name = _get_cf_coords(obj, "longitude", required=False) or lon_name
     y_name = _get_cf_coords(obj, "latitude", required=False) or lat_name
 
-    if x_name != lon_name and lon_name in obj.coords:
-        raise ValueError("Ambigous name for lon coords")
-
-    if y_name != lat_name and lat_name in obj.coords:
-        raise ValueError("Ambigous name for lat coords")
+    _check_coords(obj, x_name, lon_name)
+    _check_coords(obj, y_name, lat_name)
 
     return obj[x_name], obj[y_name]
+
+
+def _check_coords(obj, cf_name, name):
+
+    if cf_name != name and name in obj.coords:
+        raise ValueError(
+            f"Ambigous name for coordinates: cf_xarray determined '{cf_name}' but "
+            f"'{name}' is also on the {type(obj).__name__}. Please set use_cf to "
+            "True or False to resolve this conflict."
+        )
 
 
 def _get_coords_cf(obj):
