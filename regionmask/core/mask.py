@@ -5,6 +5,7 @@ import shapely
 import xarray as xr
 from packaging.version import Version
 
+from .options import get_options
 from .utils import (
     _equally_spaced_on_split_lon,
     _find_splitpoint,
@@ -196,20 +197,18 @@ def _mask(
     if wrap_lon_:
         lon = _wrapAngle(lon, wrap_lon_, is_unstructured=is_unstructured)
 
-    if method not in (None, "rasterize", "shapely", "pygeos"):
-        msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
-        raise ValueError(msg)
+    backend = _get_selected_backend(method)
 
-    if method is None:
-        method = _determine_method(lon, lat)
-    elif method == "shapely" and has_shapely_2:
-        method = "shapely_2"
-    elif method == "rasterize":
-        method = _determine_method(lon, lat)
-        if "rasterize" not in method:
+    if backend is None:
+        backend = _determine_backend(lon, lat)
+    elif backend == "shapely" and has_shapely_2:
+        backend = "shapely_2"
+    elif backend == "rasterize":
+        backend = _determine_backend(lon, lat)
+        if "rasterio" not in backend:
             msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
             raise ValueError(msg)
-    elif method == "pygeos":
+    elif backend == "pygeos":
         if not has_pygeos:
             raise ModuleNotFoundError("No module named 'pygeos'")
         elif has_shapely_2:
@@ -218,16 +217,16 @@ def _mask(
             )
 
     kwargs = {}
-    if method == "rasterize":
+    if backend == "rasterio":
         mask_func = _mask_rasterize
-    elif method == "rasterize_flip":
+    elif backend == "rasterio_flip":
         mask_func = _mask_rasterize_flip
-    elif method == "rasterize_split":
+    elif backend == "rasterio_split":
         mask_func = _mask_rasterize_split
-    elif method == "pygeos":
+    elif backend == "pygeos":
         mask_func = _mask_pygeos
         kwargs = {"is_unstructured": is_unstructured}
-    elif method == "shapely":
+    elif backend == "shapely":
         mask_func = _mask_shapely
         kwargs = {"is_unstructured": is_unstructured}
     elif method == "shapely_2":
@@ -250,6 +249,31 @@ def _mask(
         )
 
     return mask_to_dataarray(mask, lon_or_obj, lat_orig, lon_name, lat_name)
+
+
+def _get_selected_backend(method):
+
+    backend = get_options()["backend"]
+    if method is not None:
+        if backend is not None:
+            raise TypeError(
+                "Cannot pass `method` to mask when `backend` is set via "
+                "`regionmask.set_options`."
+            )
+
+        if method not in (None, "rasterize", "shapely", "pygeos"):
+            msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
+            raise ValueError(msg)
+
+        if method == "rasterize":
+            method = "rasterio"
+
+        backend = method
+        warnings.warn(
+            "Passing `method` to `mask*` is deprecated.", FutureWarning, stacklevel=6
+        )
+
+    return backend
 
 
 def _mask_2D(
@@ -383,11 +407,11 @@ def _unpack_3D_mask(mask_3D, numbers, drop):
     return mask_3D
 
 
-def _determine_method(lon, lat):
+def _determine_backend(lon, lat):
     """find method to be used -> prefers faster methods"""
 
     if equally_spaced(lon, lat):
-        return "rasterize"
+        return "rasterio"
 
     if _equally_spaced_on_split_lon(lon) and equally_spaced(lat):
 
@@ -395,9 +419,9 @@ def _determine_method(lon, lat):
         flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
 
         if equally_spaced(flipped_lon):
-            return "rasterize_flip"
+            return "rasterio_flip"
         else:
-            return "rasterize_split"
+            return "rasterio_split"
 
     if has_shapely_2:
         return "shapely_2"
