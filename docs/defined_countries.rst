@@ -8,6 +8,7 @@ The following countries and regions are defined in regionmask.
 
 * Countries 1:110m
 * Countries 1:50m
+* Countries 1:10m
 * US States 1:50m
 * US States 1:10m
 
