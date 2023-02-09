@@ -50,7 +50,6 @@ all_first_numbers = (0, 1, 2)
 
 
 def test_regions_single_region():
-
     for o in [np.array(outl1), poly1, multipoly]:
         with pytest.raises(ValueError, match="Cannot pass a single"):
             Regions(o)
@@ -94,7 +93,6 @@ def test_coords():
 
 @pytest.mark.parametrize("test_regions", all_test_regions)
 def test_bounds(test_regions):
-
     expected = [(0, 0, 1, 1), (0, 1, 1, 2)]
 
     assert np.allclose(test_regions.bounds, expected)
@@ -102,7 +100,6 @@ def test_bounds(test_regions):
 
 @pytest.mark.parametrize("test_regions", all_test_regions)
 def test_bounds_global(test_regions):
-
     expected = [0, 0, 1, 2]
 
     assert np.allclose(test_regions.bounds_global, expected)
@@ -159,7 +156,6 @@ def test_map_keys_np_integer():
 
 @pytest.mark.parametrize("test_regions, numbers", zip(all_test_regions, all_numbers))
 def test_map_keys_several(test_regions, numbers):
-
     assert test_regions.map_keys(numbers) == numbers
     assert test_regions.map_keys(("uSq1", "uSq2")) == numbers
     assert test_regions.map_keys(("Unit Square1", "Unit Square2")) == numbers
@@ -209,7 +205,6 @@ def test_subset_to_Regions(test_regions, number):
 @pytest.mark.parametrize("abbrevs", [None, "abbrevs", abbrevs])
 @pytest.mark.parametrize("name", [None, "name"])
 def test_optional_arguments(numbers, names, abbrevs, name):
-
     if name is None:
         result = Regions(outlines, numbers, names, abbrevs)
     else:
@@ -245,12 +240,10 @@ def test_optional_arguments(numbers, names, abbrevs, name):
 
 
 def _create_expected_str_list(numbers, string):
-
     return [string + str(number) for number in numbers]
 
 
 def test_lon_extent():
-
     assert test_regions1.lon_180
     assert not test_regions1.lon_360
 
@@ -273,13 +266,11 @@ def test_lon_extent():
 
 @pytest.mark.parametrize("numbers", [["a", "b"], ["a", 2]])
 def test_error_on_non_numeric(numbers):
-
     with pytest.raises(ValueError, match="'numbers' must be numeric"):
         Regions(poly, numbers)
 
 
 def test_regions_sorted():
-
     numbers = [3, 1, 2]
     outl = [poly1, poly1, poly2]
     names = ["R3", "R1", "R2"]
@@ -298,7 +289,6 @@ def test_regions_sorted():
 
 @pytest.mark.parametrize("numbers", [[1, 3, 4, 9, 10], [10, 9, 4, 3, 1]])
 def test_getitem_sorted(numbers):
-
     r = Regions([outl1] * 20)[numbers]
 
     numbers_expected = sorted(numbers)
@@ -312,7 +302,6 @@ def test_getitem_sorted(numbers):
 
 @pytest.mark.parametrize("overlap", [None, True, False])
 def test_overlap(overlap):
-
     r = Regions([outl1], overlap=overlap)
 
     assert r.overlap is overlap
@@ -320,7 +309,6 @@ def test_overlap(overlap):
 
 @pytest.mark.parametrize("overlap", [None, True, False])
 def test_overlap_getitem(overlap):
-
     r = Regions(3 * [outl1], overlap=overlap)
     r_select = r[[0, 2]]
 
@@ -328,28 +316,24 @@ def test_overlap_getitem(overlap):
 
 
 def _check_dataframe(df, r):
-
     assert (df.index == r.numbers).all()
     assert (df.abbrevs == r.abbrevs).all()
     assert (df.names == r.names).all()
 
 
 def _check_attrs(df, r):
-
     assert df.attrs["name"] == r.name
     assert df.attrs["source"] == r.source
     assert df.attrs["overlap"] == r.overlap
 
 
 def _check_polygons(df, r):
-
     from geopandas import GeoSeries
 
     geopandas.testing.assert_geoseries_equal(df, GeoSeries(r.polygons, index=r.numbers))
 
 
 def test_to_geodataframe():
-
     r = test_regions1
 
     df = r.to_geodataframe()
@@ -361,7 +345,6 @@ def test_to_geodataframe():
 
 
 def test_to_series():
-
     r = test_regions1
 
     df = r.to_geoseries()
@@ -372,7 +355,6 @@ def test_to_series():
 
 
 def test_to_dataframe():
-
     r = test_regions1
 
     df = r.to_dataframe()
@@ -382,7 +364,6 @@ def test_to_dataframe():
 
 
 def test_from_geodataframe():
-
     import geopandas
 
     data = dict(names=names, abbrevs=abbrevs)
@@ -414,7 +395,6 @@ def test_from_geodataframe():
 
 
 def test_from_geodataframe_roundtrip():
-
     import geopandas
 
     data = dict(abbrevs=abbrevs, names=names)

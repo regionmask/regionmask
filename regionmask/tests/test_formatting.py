@@ -13,7 +13,6 @@ def test_maybe_truncate():
 
 
 def test_repr_srex():
-
     pytest.importorskip("pandas", minversion="1.2")
 
     result = srex.__repr__()
@@ -41,7 +40,6 @@ Regions:
 
 
 def test_display_metadata():
-
     expected = ["overlap:  False"]
     result = formatting._display_metadata(None, False)
     assert result == expected

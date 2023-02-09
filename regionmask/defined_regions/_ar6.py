@@ -20,7 +20,6 @@ class ar6_cls:
     """docstring for ar6"""
 
     def __init__(self):
-
         self._df = None
 
         self._all = None
@@ -32,7 +31,6 @@ class ar6_cls:
 
     @property
     def df(self):
-
         if self._df is None:
             self._df = read_remote_shapefile("IPCC-WGI-reference-regions-v4.zip")
 
@@ -55,7 +53,6 @@ class ar6_cls:
     @property
     def land(self):
         if self._land is None:
-
             land = self.df.Type.str.contains("Land")
 
             self._land = from_geopandas(
@@ -72,7 +69,6 @@ class ar6_cls:
     @property
     def ocean(self):
         if self._ocean is None:
-
             ocean = self.df.Type.str.contains("Ocean")
 
             self._ocean = from_geopandas(

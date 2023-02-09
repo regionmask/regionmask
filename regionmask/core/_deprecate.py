@@ -67,7 +67,6 @@ def _deprecate_positional_args(version):
     """
 
     def _decorator(func):
-
         signature = inspect.signature(func)
 
         pos_or_kw_args = []
@@ -84,11 +83,9 @@ def _deprecate_positional_args(version):
 
         @wraps(func)
         def inner(*args, **kwargs):
-
             name = func.__name__
             n_extra_args = len(args) - len(pos_or_kw_args)
             if n_extra_args > 0:
-
                 extra_args = ", ".join(kwonly_args[:n_extra_args])
 
                 warnings.warn(
