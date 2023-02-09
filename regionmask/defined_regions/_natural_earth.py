@@ -159,6 +159,11 @@ _countries_50 = _NaturalEarthFeature(
     category="cultural",
     name="admin_0_countries",
 )
+_countries_10 = _NaturalEarthFeature(
+    resolution="10m",
+    category="cultural",
+    name="admin_0_countries",
+)
 _us_states_50 = _NaturalEarthFeature(
     resolution="50m",
     category="cultural",
@@ -202,6 +207,7 @@ class NaturalEarth(ABC):
 
         self._countries_110 = None
         self._countries_50 = None
+        self._countries_10 = None
 
         self._us_states_50 = None
         self._us_states_10 = None
@@ -235,6 +241,16 @@ class NaturalEarth(ABC):
             self._countries_50 = self._obtain_ne(_countries_50, **opt)
 
         return self._countries_50
+
+    @property
+    def countries_10(self):
+        if self._countries_10 is None:
+
+            opt = dict(title="Natural Earth Countries: 10m")
+
+            self._countries_10 = self._obtain_ne(_countries_10, **opt)
+
+        return self._countries_10
 
     @property
     def us_states_50(self):
