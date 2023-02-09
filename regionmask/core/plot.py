@@ -7,7 +7,6 @@ from .utils import _flatten_polygons
 
 
 def _polygons_coords(polygons):
-
     coords = []
     for p in polygons:
         coords += [np.asarray(p.exterior.coords)[:, :2]] + [
@@ -18,7 +17,6 @@ def _polygons_coords(polygons):
 
 
 def _get_tolerance(coords):
-
     mx = np.max(np.abs(coords))
     return 1 if mx == 0 else max(10 ** (int(np.log10(mx)) - 2), 1)
 
@@ -103,7 +101,6 @@ def _check_unused_kws(add, kws, feature_name, kws_name):
 
 
 def _maybe_gca(**kwargs):
-
     import matplotlib.pyplot as plt
 
     # can call gcf unconditionally: either it exists or would be created by plt.axes
@@ -445,7 +442,6 @@ def _plot_regions(
     _draw_poly(ax, polygons, tolerance=tolerance, transform=trans, **line_kws)
 
     if add_label:
-
         va = text_kws.pop("va", "center")
         ha = text_kws.pop("ha", "center")
         col = text_kws.pop("backgroundcolor", "0.85")

@@ -247,7 +247,6 @@ notebooks = (
 
 print("\nBuilding notebooks:")
 for nb in notebooks:
-
     # only render notebooks if necessary
     f1 = os.path.getmtime(nb + ".ipynb")
     try:

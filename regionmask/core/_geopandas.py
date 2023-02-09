@@ -151,7 +151,6 @@ def _from_geopandas(
     source=None,
     overlap=False,
 ):
-
     if numbers is not None:
         # sort, otherwise breaks
         geodataframe = geodataframe.sort_values(numbers)
@@ -190,7 +189,6 @@ def _from_geopandas(
 
 
 def _prepare_gdf_for_mask(geodataframe, method, numbers):
-
     from geopandas import GeoDataFrame, GeoSeries
 
     if not isinstance(geodataframe, (GeoDataFrame, GeoSeries)):
@@ -224,7 +222,6 @@ def mask_geopandas(
     method=None,
     wrap_lon=None,
 ):
-
     polygons, lon_bounds, numbers = _prepare_gdf_for_mask(
         geodataframe, method=method, numbers=numbers
     )
@@ -259,7 +256,6 @@ def mask_3D_geopandas(
     wrap_lon=None,
     overlap=False,
 ):
-
     polygons, lon_bounds, numbers = _prepare_gdf_for_mask(
         geodataframe, method=method, numbers=numbers
     )

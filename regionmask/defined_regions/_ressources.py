@@ -23,7 +23,6 @@ def fetch_remote_shapefile(name):
 
 
 def read_remote_shapefile(name):
-
     fname = fetch_remote_shapefile(name)
 
     return gp.read_file("zip://" + fname)

@@ -3,7 +3,6 @@ import xarray as xr
 
 
 def _flatten_polygons(polygons, error="raise"):
-
     from shapely.geometry import MultiPolygon, Polygon
 
     if error not in ["raise", "skip"]:
@@ -33,12 +32,10 @@ def _maybe_to_dict(keys, values):
 
 
 def _create_dict_of_numbered_string(numbers, string):
-
     return {number: string + str(number) for number in numbers}
 
 
 def _sanitize_names_abbrevs(numbers, values, default):
-
     if isinstance(values, str):
         values = _create_dict_of_numbered_string(numbers, values)
     elif values is None:
@@ -99,7 +96,6 @@ def _wrapAngle(lon, wrap_lon=True, is_unstructured=False):
 
 
 def _is_180(lon_min, lon_max, msg_add=""):
-
     lon_min = np.round(lon_min, 6)
     lon_max = np.round(lon_max, 6)
 
@@ -160,13 +156,11 @@ def create_lon_lat_dataarray_from_bounds(
 
 
 def _is_numeric(numbers):
-
     numbers = np.asarray(numbers)
     return np.issubdtype(numbers.dtype, np.number)
 
 
 def equally_spaced(*args):
-
     args = [np.asarray(arg) for arg in args]
 
     if any(arg.ndim > 1 for arg in args):
@@ -181,7 +175,6 @@ def equally_spaced(*args):
 
 
 def _equally_spaced_on_split_lon(lon):
-
     lon = np.asarray(lon)
 
     if lon.ndim > 1 or lon.size < 2:
@@ -195,7 +188,6 @@ def _equally_spaced_on_split_lon(lon):
 
 
 def _find_splitpoint(lon):
-
     lon = np.asarray(lon)
     d_lon = np.diff(lon)
 

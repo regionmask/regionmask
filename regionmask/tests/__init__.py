@@ -21,7 +21,6 @@ def _importorskip(modname, minversion=None):
 
 @contextmanager
 def assert_no_warnings():
-
     with warnings.catch_warnings(record=True) as record:
         yield
         assert len(record) == 0, "got unexpected warning(s)"
