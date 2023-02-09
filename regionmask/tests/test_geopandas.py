@@ -23,7 +23,6 @@ from .utils import (
 
 @pytest.fixture
 def geodataframe_clean():
-
     numbers = [0, 1, 2]
     names = ["Unit Square1", "Unit Square2", "Unit Square3"]
     abbrevs = ["uSq1", "uSq2", "uSq3"]
@@ -37,7 +36,6 @@ def geodataframe_clean():
 
 @pytest.fixture
 def geodataframe_clean_overlap():
-
     d = dict(
         names=dummy_region_overlap.names,
         abbrevs=dummy_region_overlap.abbrevs,
@@ -50,7 +48,6 @@ def geodataframe_clean_overlap():
 
 @pytest.fixture
 def geodataframe_missing():
-
     numbers = [1, None, None]
     names = ["Unit Square1", None, None]
     abbrevs = ["uSq1", None, None]
@@ -64,7 +61,6 @@ def geodataframe_missing():
 
 @pytest.fixture
 def geodataframe_duplicates():
-
     numbers = [1, 1, 1]
     names = ["Unit Square", "Unit Square", "Unit Square"]
     abbrevs = ["uSq", "uSq", "uSq"]
@@ -84,7 +80,6 @@ def test_from_geopandas_wrong_input():
 
 
 def test_from_geopandas_use_columns(geodataframe_clean):
-
     result = from_geopandas(
         geodataframe_clean,
         numbers="numbers",
@@ -108,7 +103,6 @@ def test_from_geopandas_use_columns(geodataframe_clean):
 
 @pytest.mark.parametrize("attr", ["name", "source", "overlap"])
 def test_from_geopandas_not_roundtrip_warning(attr, geodataframe_clean):
-
     geodataframe_clean.attrs = {attr: "x"}
 
     with pytest.warns(
@@ -119,7 +113,6 @@ def test_from_geopandas_not_roundtrip_warning(attr, geodataframe_clean):
 
 
 def test_from_geopandas_default(geodataframe_clean):
-
     result = from_geopandas(geodataframe_clean)
 
     assert isinstance(result, Regions)
@@ -136,21 +129,18 @@ def test_from_geopandas_default(geodataframe_clean):
 
 @pytest.mark.parametrize("arg", ["names", "abbrevs", "numbers"])
 def test_from_geopandas_missing_error(geodataframe_missing, arg):
-
     with pytest.raises(ValueError, match=f"{arg} cannot contain missing values"):
         from_geopandas(geodataframe_missing, **{arg: arg})
 
 
 @pytest.mark.parametrize("arg", ["names", "abbrevs", "numbers"])
 def test_from_geopandas_duplicates_error(geodataframe_duplicates, arg):
-
     with pytest.raises(ValueError, match=f"{arg} cannot contain duplicate values"):
         from_geopandas(geodataframe_duplicates, **{arg: arg})
 
 
 @pytest.mark.parametrize("arg", ["names", "abbrevs", "numbers"])
 def test_from_geopandas_column_missing(geodataframe_clean, arg):
-
     with pytest.raises(KeyError):
         from_geopandas(geodataframe_clean, **{arg: "not_a_column"})
 
@@ -181,7 +171,6 @@ def test_construct_abbrevs_two_words(geodataframe_clean):
 
 
 def test_enumerate_duplicates():
-
     data = pd.Series(["a", "a", "b"])
 
     result = _enumerate_duplicates(data)
@@ -214,7 +203,6 @@ def test_construct_abbrevs():
 @pytest.mark.parametrize("lon_lat", [(dummy_ds.lon, dummy_ds.lat), (dummy_ds, None)])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_geopandas(geodataframe_clean, lon_lat, method):
-
     lon, lat = lon_lat
     result = mask_geopandas(geodataframe_clean, lon, lat, method=method)
     expected = expected_mask_2D()
@@ -226,7 +214,6 @@ def test_mask_geopandas(geodataframe_clean, lon_lat, method):
 @pytest.mark.parametrize("lon_lat", [(dummy_ds.lon, dummy_ds.lat), (dummy_ds, None)])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_3D_geopandas(geodataframe_clean, drop, lon_lat, method):
-
     lon, lat = lon_lat
     result = mask_3D_geopandas(geodataframe_clean, lon, lat, drop=drop, method=method)
     expected = expected_mask_3D(drop=drop).drop_vars(["names", "abbrevs"])
@@ -236,7 +223,6 @@ def test_mask_3D_geopandas(geodataframe_clean, drop, lon_lat, method):
 
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_geopandas_numbers(geodataframe_clean, method):
-
     result = mask_geopandas(
         geodataframe_clean, dummy_ds.lon, dummy_ds.lat, method=method, numbers="numbers"
     )
@@ -247,7 +233,6 @@ def test_mask_geopandas_numbers(geodataframe_clean, method):
 
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_geopandas_warns_empty(geodataframe_clean, method):
-
     lon = lat = [10, 11]
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
         result = mask_geopandas(
@@ -262,7 +247,6 @@ def test_mask_geopandas_warns_empty(geodataframe_clean, method):
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_3D_geopandas_numbers(geodataframe_clean, drop, method):
-
     expected = expected_mask_3D(drop).drop_vars(["names", "abbrevs"])
     result = mask_3D_geopandas(
         geodataframe_clean,
@@ -279,7 +263,6 @@ def test_mask_3D_geopandas_numbers(geodataframe_clean, drop, method):
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 def test_mask_3D_overlap_geopandas_numbers(geodataframe_clean_overlap, drop, method):
-
     expected = expected_mask_3D(drop, overlap=True).drop_vars(["names", "abbrevs"])
     result = mask_3D_geopandas(
         geodataframe_clean_overlap,
@@ -296,7 +279,6 @@ def test_mask_3D_overlap_geopandas_numbers(geodataframe_clean_overlap, drop, met
 
 @pytest.mark.parametrize("drop", [True, False])
 def test_mask_3D_geopandas_warns_empty(geodataframe_clean, drop):
-
     lon = lat = [10, 11]
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
         result = mask_3D_geopandas(geodataframe_clean, lon, lat, drop=drop)
@@ -310,7 +292,6 @@ def test_mask_3D_geopandas_warns_empty(geodataframe_clean, drop):
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_wrap_lon_maybe_error(func):
-
     # regions that exceed 360° longitude
     p = shapely.geometry.Polygon([[-180, 0], [-180, 10], [360, 10], [360, 0]])
     gs = gp.GeoSeries(p, index=[1])
@@ -331,34 +312,29 @@ def test_wrap_lon_maybe_error(func):
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_mask_geopandas_wrong_input(func):
-
     with pytest.raises(TypeError, match="'GeoDataFrame' or 'GeoSeries'"):
         func(None, dummy_ds.lon, dummy_ds.lat)
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_mask_geopandas_wrong_numbers(geodataframe_clean, func):
-
     with pytest.raises(KeyError):
         func(geodataframe_clean, dummy_ds.lon, dummy_ds.lat, numbers="not_a_column")
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_mask_geopandas_missing_error(geodataframe_missing, func):
-
     with pytest.raises(ValueError, match="cannot contain missing values"):
         func(geodataframe_missing, dummy_ds.lon, dummy_ds.lat, numbers="numbers")
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_mask_geopandas_duplicates_error(geodataframe_duplicates, func):
-
     with pytest.raises(ValueError, match="cannot contain duplicate values"):
         func(geodataframe_duplicates, dummy_ds.lon, dummy_ds.lat, numbers="numbers")
 
 
 @pytest.mark.parametrize("func", [mask_geopandas, mask_3D_geopandas])
 def test_raise_on_non_numeric_numbers(geodataframe_clean, func):
-
     with pytest.raises(ValueError, match="'numbers' must be numeric"):
         func(geodataframe_clean, dummy_ds.lon, dummy_ds.lat, numbers="abbrevs")

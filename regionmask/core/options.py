@@ -7,7 +7,6 @@ OPTIONS = {
 
 
 def _optional_positive_integer(name: str, value: int) -> bool:
-
     if not (value is None or isinstance(value, int) and value > 0):
         raise ValueError(f"'{name}' must be a positive integer or None, got '{value}'")
 

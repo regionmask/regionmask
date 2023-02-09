@@ -125,22 +125,18 @@ VERSIONS = ["v4.1.0", "v5.0.0"]
 
 @dataclass
 class _NaturalEarthFeature:
-
     resolution: str
     category: str
     name: str
 
     def fetch(self, version):
-
         if version not in VERSIONS:
-
             versions = ", ".join(VERSIONS)
             raise ValueError(f"version must be one of {versions}. Got {version}.")
 
         return _fetch_aws(version, self.resolution, self.category, self.name)
 
     def shapefilename(self, version):
-
         fNs = self.fetch(version)
 
         # the comma is required
@@ -204,7 +200,6 @@ class NaturalEarth(ABC):
     """
 
     def __init__(self):
-
         self._countries_110 = None
         self._countries_50 = None
         self._countries_10 = None
@@ -225,7 +220,6 @@ class NaturalEarth(ABC):
     @property
     def countries_110(self):
         if self._countries_110 is None:
-
             opt = dict(title="Natural Earth Countries: 110m")
 
             self._countries_110 = self._obtain_ne(_countries_110, **opt)
@@ -235,7 +229,6 @@ class NaturalEarth(ABC):
     @property
     def countries_50(self):
         if self._countries_50 is None:
-
             opt = dict(title="Natural Earth Countries: 50m")
 
             self._countries_50 = self._obtain_ne(_countries_50, **opt)
@@ -245,7 +238,6 @@ class NaturalEarth(ABC):
     @property
     def countries_10(self):
         if self._countries_10 is None:
-
             opt = dict(title="Natural Earth Countries: 10m")
 
             self._countries_10 = self._obtain_ne(_countries_10, **opt)
@@ -255,7 +247,6 @@ class NaturalEarth(ABC):
     @property
     def us_states_50(self):
         if self._us_states_50 is None:
-
             opt = dict(
                 title="Natural Earth: US States 50m",
                 query="admin == 'United States of America'",
@@ -267,7 +258,6 @@ class NaturalEarth(ABC):
     @property
     def us_states_10(self):
         if self._us_states_10 is None:
-
             opt = dict(
                 title="Natural Earth: US States 10m",
                 query="admin == 'United States of America'",
@@ -279,7 +269,6 @@ class NaturalEarth(ABC):
     @property
     def land_110(self):
         if self._land_110 is None:
-
             opt = dict(
                 title="Natural Earth: landmask 110m",
                 names=["land"],
@@ -294,7 +283,6 @@ class NaturalEarth(ABC):
     @property
     def land_50(self):
         if self._land_50 is None:
-
             opt = dict(
                 title="Natural Earth: landmask 50m",
                 names=["land"],
@@ -309,7 +297,6 @@ class NaturalEarth(ABC):
     @property
     def land_10(self):
         if self._land_10 is None:
-
             opt = dict(
                 title="Natural Earth: landmask 10m",
                 names=["land"],
@@ -324,7 +311,6 @@ class NaturalEarth(ABC):
     @property
     def ocean_basins_50(self):
         if self._ocean_basins_50 is None:
-
             opt = dict(
                 title="Natural Earth: ocean basins 50m",
                 names="name",
@@ -403,7 +389,6 @@ def _fix_ocean_basins_50_v4_1_0(self, df):
 
 
 def _unify__great_barrier_reef(df, idx1, idx2):
-
     p1 = df.loc[idx1].geometry
     p2 = df.loc[idx2].geometry
 
@@ -439,11 +424,9 @@ def _fix_ocean_basins_50_v5_1_2(self, df):
 
 
 class NaturalEarthCartopy(NaturalEarth):
-
     _fix_ocean_basins_50 = _fix_ocean_basins_50_cartopy
 
     def _obtain_ne(self, natural_earth_feature, **kwargs):
-
         shapefilename = _get_shapefilename_cartopy(
             natural_earth_feature.resolution,
             natural_earth_feature.category,
@@ -454,7 +437,6 @@ class NaturalEarthCartopy(NaturalEarth):
 
 
 class NaturalEarth_v4_1_0(NaturalEarth):
-
     _fix_ocean_basins_50 = _fix_ocean_basins_50_v4_1_0
     version = "v4.1.0"
 
@@ -464,7 +446,6 @@ class NaturalEarth_v4_1_0(NaturalEarth):
 
 
 class NaturalEarth_v5_0_0(NaturalEarth):
-
     _fix_ocean_basins_50 = _fix_ocean_basins_50_v5_0_0
     version = "v5.0.0"
 
@@ -480,7 +461,6 @@ natural_earth_v5_0_0 = NaturalEarth_v5_0_0()
 
 
 def _get_shapefilename_cartopy(resolution, category, name):
-
     try:
         import cartopy
     except ImportError as e:
@@ -520,7 +500,6 @@ CACHE_ROOT = pooch.os_cache("regionmask")
 
 @contextmanager
 def set_pooch_log_level():
-
     logger = pooch.get_logger()
     level = logger.level
     logger.setLevel("WARNING")
@@ -532,7 +511,6 @@ def set_pooch_log_level():
 
 
 def _fetch_aws(version, resolution, category, name):
-
     base_url = "https://naturalearth.s3.amazonaws.com"
 
     bname = f"ne_{resolution}_{name}"

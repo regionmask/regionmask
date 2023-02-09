@@ -4,7 +4,6 @@ from pandas.io.formats import console
 
 
 def maybe_truncate(obj, maxlen=500):
-
     # copied from xarray
 
     s = str(obj)
@@ -14,7 +13,6 @@ def maybe_truncate(obj, maxlen=500):
 
 
 def _display_metadata(source, overlap, max_width=80):
-
     summary = []
 
     if source is not None:
@@ -50,7 +48,6 @@ def _display_regions_gp(self, max_rows, max_width):
 
 
 def _display(self, max_rows=10, max_width=None):
-
     if max_width is None:
         max_width, _ = console.get_console_size()
 
