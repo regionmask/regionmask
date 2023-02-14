@@ -44,6 +44,8 @@ Deprecations
 New regions
 ~~~~~~~~~~~
 
+- Added :py:attr:`natural_earth.countries_10` regions from natural earth (:pull:`396`).
+
 Bug Fixes
 ~~~~~~~~~
 
