@@ -41,7 +41,7 @@ jobs:
             echo "CONDA_ENV_FILE=ci/requirements/py${PY}-${{ matrix.env }}.yml" >> $GITHUB_ENV
 
       - name: Create conda environment
-        uses: mamba-org/provision-with-micromamba@v13
+        uses: mamba-org/provision-with-micromamba@v15
         with:
           cache-downloads: true
           cache-downloads-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}-${{hashFiles(env.CONDA_ENV_FILE)}}"
@@ -89,7 +89,7 @@ jobs:
           fetch-depth: 0 # Fetch all history for all branches and tags.
 
       - name: Create conda environment
-        uses: mamba-org/provision-with-micromamba@v13
+        uses: mamba-org/provision-with-micromamba@v15
         with:
           environment-name: min-version-policy
           environment-file: false
