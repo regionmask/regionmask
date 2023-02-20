@@ -28,7 +28,7 @@ These instructions assume that `upstream` refers to the main repository
 1. Ensure the dependencies for building are installed:
    ```sh
    mamba update pip
-   python -m pip install setuptools setuptools-scm wheel twine check-manifest
+   python -m pip install build twine
    ```
 1. Build source and binary wheels for PyPI:
    ```sh
@@ -39,11 +39,11 @@ These instructions assume that `upstream` refers to the main repository
    git clean -xdf  # This removes any untracked files!
    git status # check for tracked files
    git restore -SW .  # This removes any tracked changes!
-   python setup.py bdist_wheel sdist
+   python -m build
    ```
 1. Use twine to check the package build:
    ```sh
-   twine check dist/regionmask*
+   twine check --strict dist/regionmask*
    ```
 1. Use twine to register and upload the release on PyPI. Be careful, you can't take this
    back!
