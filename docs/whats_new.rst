@@ -32,6 +32,9 @@ Enhancements
 - Added :py:class:`set_options` to regionmask which can, currently, be used to control
   the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
 - Create faster masks with shapely 2.0, which replaces pygeos (:pull:`#349`).
+- Allow setting the cache location manually: ``regionmask.set_options(cache_dir="~/.rmask")``.
+  The default location is given by ``pooch.os_cache("regionmask")``, i.e. `~/.cache/regionmask/`
+  on unix-like operating systems (:pull:`403`).
 - Add python 3.11 to list of supported versions (:pull:`390`).
 
 Deprecations
