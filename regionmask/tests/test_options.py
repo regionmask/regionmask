@@ -1,9 +1,9 @@
-import pytest
 import os
-import regionmask
-
 from pathlib import Path
 
+import pytest
+
+import regionmask
 from regionmask.defined_regions._ressources import _get_cache_dir
 
 

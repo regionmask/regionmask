@@ -9,9 +9,10 @@ import pooch
 from packaging.version import Version
 from shapely.geometry import MultiPolygon
 
+from regionmask.defined_regions._ressources import _get_cache_dir
+
 from ..core.regions import Regions
 from ..core.utils import _flatten_polygons
-from regionmask.defined_regions._ressources import _get_cache_dir
 
 # TODO: remove deprecated (v0.9.0) natural_earth class and instance & clean up
 

@@ -1,6 +1,8 @@
+from pathlib import Path
+
 import geopandas as gp
 import pooch
-from pathlib import Path
+
 from regionmask.core.options import OPTIONS
 
 
