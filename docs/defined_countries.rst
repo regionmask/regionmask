@@ -3,7 +3,7 @@ Countries/ States (NaturalEarth)
 
 The outline of the countries are obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
-They are automatically downloaded, cached and opened with geopandas.
+They are automatically downloaded, cached\ [#]_ and opened with geopandas.
 The following countries and regions are defined in regionmask.
 
 * Countries 1:110m
@@ -71,3 +71,6 @@ Also create a mask for a 1° grid over the US:
     states.plot(add_label=False);
     @savefig plotting_states_mask.png width=100%
     mask.plot(add_colorbar=False)
+
+
+.. [#] You can change the cache location using ``regionmask.set_options(cache_dir="~/.rmask")``.

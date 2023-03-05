@@ -3,7 +3,7 @@ Marine Areas/ Ocean Basins (NaturalEarth)
 
 The outline of the marine areas are obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
-They are automatically downloaded, cached and opened with geopandas.
+They are automatically downloaded, cached\ [#]_ and opened with geopandas.
 The following marine regions are defined in regionmask:
 
 * Marine Areas 1:50m
@@ -59,3 +59,5 @@ Also create a mask for a 1° grid globally:
 
     @savefig plotting_basins_mask.png width=100%
     mask.plot(add_colorbar=False);
+
+.. [#] You can change the cache location using ``regionmask.set_options(cache_dir="~/.rmask")``.

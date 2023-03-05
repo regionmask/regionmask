@@ -9,6 +9,8 @@ import pooch
 from packaging.version import Version
 from shapely.geometry import MultiPolygon
 
+from regionmask.defined_regions._ressources import _get_cache_dir
+
 from ..core.regions import Regions
 from ..core.utils import _flatten_polygons
 
@@ -495,9 +497,6 @@ def _get_shapefilename_cartopy(resolution, category, name):
     return cartopy_file
 
 
-CACHE_ROOT = pooch.os_cache("regionmask")
-
-
 @contextmanager
 def set_pooch_log_level():
     logger = pooch.get_logger()
@@ -522,7 +521,7 @@ def _fetch_aws(version, resolution, category, name):
 
     url = f"{base_url}/{aws_version}/{resolution}_{category}/{bname}.zip"
 
-    path = CACHE_ROOT / f"natural_earth/{version}"
+    path = _get_cache_dir() / f"natural_earth/{version}"
 
     if Version(pooch.__version__) < Version("1.4"):
         # extract_dir not available
