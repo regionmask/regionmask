@@ -1,6 +1,7 @@
 import os
 from operator import attrgetter
 
+import numpy as np
 import pytest
 
 from regionmask import Regions, defined_regions
@@ -25,6 +26,9 @@ def _test_region(defined_region):
 
     # currently all regions are -180..180
     assert region.lon_180
+
+    if defined_region.bounds is not None:
+        np.testing.assert_allclose(defined_region.bounds, region.bounds_global)
 
 
 @pytest.mark.parametrize("defined_region", REGIONS_ALL, ids=str)

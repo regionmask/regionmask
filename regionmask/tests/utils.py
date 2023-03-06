@@ -1,6 +1,7 @@
 import warnings
 from dataclasses import dataclass
 from functools import partial
+from typing import Optional
 
 import numpy as np
 import pytest
@@ -89,6 +90,7 @@ class DefinedRegion:
     n_regions: int
     overlap: bool = False
     skip_mask_test: bool = False
+    bounds: Optional[list[float]] = None
 
     def __str__(self):
         # used as name (`ids`) for parametrize
@@ -104,12 +106,28 @@ REGIONS = [
     DefinedRegion("srex", 26),
 ]
 
+
+states10_bounds = (
+    -179.1435033839999,
+    18.906117143000074,
+    179.78093509200005,
+    71.41250234600005,
+)
+
+us_states_50_bounds = (
+    -178.19451843993753,
+    18.963909185849403,
+    -66.98702205598455,
+    71.40768682118639,
+)
+
+
 _REGIONS_NATURAL_EARTH_v4_1_0 = [
     DefinedRegion("natural_earth_v4_1_0.countries_110", 177),
     DefinedRegion("natural_earth_v4_1_0.countries_50", 241),
     DefinedRegion("natural_earth_v4_1_0.countries_10", 258),
-    DefinedRegion("natural_earth_v4_1_0.us_states_50", 51),
-    DefinedRegion("natural_earth_v4_1_0.us_states_10", 51),
+    DefinedRegion("natural_earth_v4_1_0.us_states_50", 51, bounds=us_states_50_bounds),
+    DefinedRegion("natural_earth_v4_1_0.us_states_10", 51, bounds=states10_bounds),
     DefinedRegion("natural_earth_v4_1_0.land_110", 1),
     DefinedRegion("natural_earth_v4_1_0.land_50", 1),
     DefinedRegion("natural_earth_v4_1_0.land_10", 1),
@@ -120,8 +138,8 @@ _REGIONS_NATURAL_EARTH_v5_0_0 = [
     DefinedRegion("natural_earth_v5_0_0.countries_110", 177),
     DefinedRegion("natural_earth_v5_0_0.countries_50", 242),
     DefinedRegion("natural_earth_v5_0_0.countries_10", 258, skip_mask_test=True),
-    DefinedRegion("natural_earth_v5_0_0.us_states_50", 51),
-    DefinedRegion("natural_earth_v5_0_0.us_states_10", 51),
+    DefinedRegion("natural_earth_v5_0_0.us_states_50", 51, bounds=us_states_50_bounds),
+    DefinedRegion("natural_earth_v5_0_0.us_states_10", 51, bounds=states10_bounds),
     DefinedRegion("natural_earth_v5_0_0.land_110", 1),
     DefinedRegion("natural_earth_v5_0_0.land_50", 1),
     DefinedRegion("natural_earth_v5_0_0.land_10", 1),
