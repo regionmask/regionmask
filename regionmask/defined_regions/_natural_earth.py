@@ -14,6 +14,13 @@ from regionmask.defined_regions._ressources import _get_cache_dir
 from ..core.regions import Regions
 from ..core.utils import _flatten_polygons
 
+try:
+    import pyogrio  # noqa: F401
+
+    engine = "pyogrio"
+except ImportError:
+    engine = "fiona"
+
 # TODO: remove deprecated (v0.9.0) natural_earth class and instance & clean up
 
 ALTERNATIVE = (
@@ -91,7 +98,7 @@ def _obtain_ne(
     import geopandas
 
     # read the file with geopandas
-    df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox)
+    df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox, engine=engine)
 
     if query is not None:
         df = df.query(query).reset_index(drop=True)

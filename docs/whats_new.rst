@@ -36,6 +36,8 @@ Enhancements
   The default location is given by ``pooch.os_cache("regionmask")``, i.e. `~/.cache/regionmask/`
   on unix-like operating systems (:pull:`403`).
 - Add python 3.11 to list of supported versions (:pull:`390`).
+- Added `pyogrio <https://pyogrio.readthedocs.io>`__ as optional dependency. Natural earth
+  data shapefiles are now loaded faster, if pyogrio is installed (:pull:`406`).
 
 Deprecations
 ~~~~~~~~~~~~
