@@ -200,17 +200,24 @@ def fmt_version(major: int, minor: int, patch: int = None) -> str:
 
 
 def main() -> None:
-    fname = sys.argv[1]
-    rows = [
-        process_pkg(pkg, major, minor, patch)
-        for pkg, major, minor, patch in parse_requirements(fname)
-    ]
+    fnames = sys.argv[1:]
 
-    print("Package           Required             Policy               Status")
-    print("----------------- -------------------- -------------------- ------")
-    fmt = "{:17} {:7} ({:10}) {:7} ({:10}) {}"
-    for row in rows:
-        print(fmt.format(*row))
+    for fname in fnames:
+        print(f"{fname}")
+        print("=" * len(fname))
+
+        rows = [
+            process_pkg(pkg, major, minor, patch)
+            for pkg, major, minor, patch in parse_requirements(fname)
+        ]
+
+        print("Package           Required             Policy               Status")
+        print("----------------- -------------------- -------------------- ------")
+        fmt = "{:17} {:7} ({:10}) {:7} ({:10}) {}"
+        for row in rows:
+            print(fmt.format(*row))
+
+        print()
 
     assert not has_errors
 
