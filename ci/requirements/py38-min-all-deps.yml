@@ -14,7 +14,6 @@ dependencies:
   - pygeos=0.9
   - pyogrio=0.3 # requires py3.8+
   - rasterio=1.1
-  - setuptools=40.4
   - shapely=1.7
   - xarray=0.15
 # for testing
