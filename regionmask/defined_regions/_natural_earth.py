@@ -50,6 +50,7 @@ def _obtain_ne(
     query=None,
     combine_coords=False,
     preprocess=None,
+    bbox=None,
 ):
     """
     create Regions object from naturalearth data
@@ -82,12 +83,15 @@ def _obtain_ne(
         MultiPolygon (used to combine all land Polygons). Default: False.
     preprocess : callable, optional
         If provided, call this function on the geodataframe.
+    bbox : tuple | GeoDataFrame or GeoSeries | shapely Geometry, default None
+        Filter features by given bounding box, GeoSeries, GeoDataFrame or a shapely
+        geometry. See ``geopandas.read_file`` for defails.
     """
 
     import geopandas
 
     # read the file with geopandas
-    df = geopandas.read_file(shpfilename, encoding="utf8")
+    df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox)
 
     if query is not None:
         df = df.query(query).reset_index(drop=True)
@@ -252,6 +256,7 @@ class NaturalEarth(ABC):
             opt = dict(
                 title="Natural Earth: US States 50m",
                 query="admin == 'United States of America'",
+                bbox=(-180, 18, -45, 72),
             )
 
             self._us_states_50 = self._obtain_ne(_us_states_50, **opt)
@@ -263,6 +268,7 @@ class NaturalEarth(ABC):
             opt = dict(
                 title="Natural Earth: US States 10m",
                 query="admin == 'United States of America'",
+                bbox=(-180, 18, -45, 72),
             )
 
             self._us_states_10 = self._obtain_ne(_us_states_10, **opt)

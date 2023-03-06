@@ -69,8 +69,10 @@ Internal Changes
   - in the function to determine points at *exactly* -180°E (or 0°E) and -90°N (:pull:`341`)
 - Use importlib.metadata if available (i.e. for python > 3.7) - should lead to a faster
   import time for regionmask (:pull:`369`).
-- Small changes to the repr of :py:class:`Regions`  (:pull:`378`).
+- Small changes to the repr of :py:class:`Regions` (:pull:`378`).
 - Reduce the memory requirements of :py:func:`core.utils.unpackbits` (:issue:`379`:).
+- Speed up loading of `us_states_10` and `us_states_50` by defining a `bbox` which only
+  needs to load a subset of the data (:pull:`405`).
 
 .. _whats-new.0.9.0:
 
