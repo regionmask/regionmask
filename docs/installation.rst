@@ -30,6 +30,12 @@ For parsing flag values
   rich comparison of ``mask.cf`` for 2D masks with the abbreviations or names of the
   regions.
 
+For faster loading of shapefiles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- `pyogrio <https://pyogrio.readthedocs.io>`__ (0.3 or later) allows faster reading of
+  shapefiles. Currently only used for natural earth data (as the other data is loaded
+  reasonanbly fast with fiona).
 
 For faster masking
 ~~~~~~~~~~~~~~~~~~
