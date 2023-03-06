@@ -10,7 +10,7 @@ dependencies:
   - packaging
   - pooch
   - pygeos
-  - pyogrio
+  # - pyogrio # not available in py37
   - rasterio
   - setuptools
   - xarray
