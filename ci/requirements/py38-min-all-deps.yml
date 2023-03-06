@@ -5,7 +5,8 @@ channels:
 dependencies:
   - python=3.8
   - cartopy=0.17
-  - geopandas=0.7
+  # - geopandas=0.7 # not available in py38
+  - geopandas=0.9
   - matplotlib-base=3.2
   - numpy=1.17
   - packaging=21.3
