@@ -5,6 +5,7 @@ from regionmask.core.utils import _wrapAngle, _wrapAngle180, _wrapAngle360
 
 
 def test__wrapAngle360():
+
     assert _wrapAngle360(0) == 0
     assert _wrapAngle360(1) == 1
     assert _wrapAngle360(180) == 180
@@ -22,6 +23,7 @@ def test__wrapAngle360():
 
 
 def test__wrapAngle180():
+
     assert _wrapAngle180(0) == 0
     assert _wrapAngle180(1) == 1
     assert _wrapAngle180(180) == -180

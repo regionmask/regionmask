@@ -116,6 +116,7 @@ class Regions:
         source=None,
         overlap=False,
     ):
+
         if isinstance(outlines, (np.ndarray, Polygon, MultiPolygon)):
             klass = type(outlines).__name__
             raise ValueError(
@@ -325,6 +326,7 @@ class Regions:
         wrap_lon=None,
         flag="abbrevs",
     ):
+
         if self.overlap:
             raise ValueError(
                 "Creating a 2D mask with overlapping regions yields wrong results. "
@@ -379,6 +381,7 @@ class Regions:
         method=None,
         wrap_lon=None,
     ):
+
         mask_3D = _mask_3D(
             outlines=self.polygons,
             lon_bounds=self.bounds_global[::2],
@@ -567,6 +570,7 @@ class _OneRegion:
     """
 
     def __init__(self, number, name, abbrev, outline):
+
         self.number = number
         self.name = name
         self.abbrev = abbrev
@@ -592,11 +596,13 @@ class _OneRegion:
             self._coords = outline
 
     def __repr__(self):
+
         klass = type(self).__name__
         return f"<regionmask.{klass}: {self.name} ({self.abbrev} / {self.number})>"
 
     @property
     def centroid(self):
+
         # the Polygon Centroid is much stabler
         if self._centroid is None:
             poly = self.polygon
@@ -630,6 +636,7 @@ class _OneRegion:
         """numpy array of the region"""
 
         if self._coords is None:
+
             # make an array of polygons
             if isinstance(self._polygon, Polygon):
                 polys = [self._polygon]

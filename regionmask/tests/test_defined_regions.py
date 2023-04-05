@@ -17,6 +17,7 @@ from .utils import (
 
 
 def _test_region(defined_region):
+
     region = attrgetter(defined_region.region_name)(defined_regions)
 
     assert isinstance(region, Regions)
@@ -33,11 +34,13 @@ def _test_region(defined_region):
 
 @pytest.mark.parametrize("defined_region", REGIONS_ALL, ids=str)
 def test_defined_region(defined_region):
+
     _test_region(defined_region)
 
 
 @pytest.mark.parametrize("defined_region", REGIONS_DEPRECATED, ids=str)
 def test_defined_region_deprecated(defined_region):
+
     match = "The ``_ar6_pre_revisions`` regions are deprecated"
     with pytest.warns(FutureWarning, match=match):
         _test_region(defined_region)
@@ -89,6 +92,7 @@ def test_defined_regions_natural_earth(monkeypatch, defined_region):
 
 
 def test_fix_ocean_basins_50():
+
     region = defined_regions.natural_earth_v4_1_0.ocean_basins_50
     assert "Mediterranean Sea Eastern Basin" in region.names
     assert "Ross Sea Eastern Basin" in region.names
@@ -128,5 +132,6 @@ def test_maybe_get_column():
 
 @pytest.mark.skipif(has_cartopy, reason="should run if cartopy is _not_ installed")
 def test_natural_earth_raises_without_cartopy():
+
     with pytest.raises(ImportError, match="requires cartopy"):
         defined_regions.natural_earth.countries_110

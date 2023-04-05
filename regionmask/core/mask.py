@@ -112,6 +112,7 @@ flag : str, default "abbrevs"
 
 
 def _inject_mask_docstring(is_3D, gp_method):
+
     dtype = "float" if is_3D else "boolean"
     nd = "3D" if is_3D else "2D"
     drop_doc = _DROP_DOCSTRING if is_3D else ""
@@ -262,6 +263,7 @@ def _mask_2D(
     method=None,
     wrap_lon=None,
 ):
+
     mask = _mask(
         outlines=outlines,
         lon_bounds=lon_bounds,
@@ -296,6 +298,7 @@ def _mask_3D(
     wrap_lon=None,
     as_3D=False,
 ):
+
     mask = _mask(
         outlines=outlines,
         lon_bounds=lon_bounds,
@@ -320,6 +323,7 @@ def _mask_3D(
 
 
 def _unpack_2D_mask(mask, numbers, drop):
+
     isnan = np.isnan(mask.values)
 
     if drop:
@@ -352,6 +356,7 @@ def _unpack_2D_mask(mask, numbers, drop):
 
 
 def _unpack_3D_mask(mask_3D, numbers, drop):
+
     any_masked = mask_3D.any(mask_3D.dims[1:])
 
     if drop:
@@ -360,6 +365,7 @@ def _unpack_3D_mask(mask_3D, numbers, drop):
         numbers = np.asarray(numbers)[any_masked.values]
 
     if len(numbers) == 0:
+
         mask_3D = mask_3D.assign_coords(region=("region", numbers))
         msg = (
             "No gridpoint belongs to any region. Returning an empty mask"
@@ -384,6 +390,7 @@ def _determine_method(lon, lat):
         return "rasterize"
 
     if _equally_spaced_on_split_lon(lon) and equally_spaced(lat):
+
         split_point = _find_splitpoint(lon)
         flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
 
@@ -413,6 +420,7 @@ def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
 
 
 def mask_to_dataarray(mask, lon_or_obj, lat=None, lon_name="lon", lat_name="lat"):
+
     lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
 
     if sum(isinstance(c, xr.DataArray) for c in (lon, lat)) == 1:
@@ -457,6 +465,7 @@ def _mask_edgepoints_shapely(
     is_unstructured=False,
     as_3D=False,
 ):
+
     import shapely.vectorized as shp_vect
 
     LON, LAT, shape = _get_LON_LAT_shape(
@@ -607,6 +616,7 @@ def _mask_shapely(
 
 
 def _parse_input(lon, lat, coords, fill, numbers):
+
     lon = np.asarray(lon)
     lat = np.asarray(lat)
 
@@ -622,6 +632,7 @@ def _parse_input(lon, lat, coords, fill, numbers):
 
 
 def _get_LON_LAT_shape(lon, lat, numbers, is_unstructured=False, as_3D=False):
+
     if lon.ndim != lat.ndim:
         raise ValueError(
             f"Equal number of dimensions required, found "
@@ -687,6 +698,7 @@ def _transform_from_latlon(lon, lat):
 def _mask_rasterize_flip(
     lon, lat, polygons, numbers, fill=np.NaN, as_3D=False, **kwargs
 ):
+
     split_point = _find_splitpoint(lon)
     flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
 
@@ -701,6 +713,7 @@ def _mask_rasterize_flip(
 def _mask_rasterize_split(
     lon, lat, polygons, numbers, fill=np.NaN, as_3D=False, **kwargs
 ):
+
     split_point = _find_splitpoint(lon)
     lon_l, lon_r = lon[:split_point], lon[split_point:]
 
@@ -715,6 +728,7 @@ def _mask_rasterize_split(
 
 
 def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, as_3D=False, **kwargs):
+
     if as_3D:
         return _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs)
 
@@ -722,6 +736,7 @@ def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, as_3D=False, **kwa
 
 
 def _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs):
+
     # rasterize always returns a flat mask, so we use "bits" and MergeAlg.add to
     # determine overlapping regions. For three regions we use numbers 1, 2, 4 and then
     # 1 -> 1
@@ -738,6 +753,7 @@ def _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs):
 
     # rasterize only supports uint32 -> rasterize in batches of 32
     for i in range(np.ceil(n_polygons / 32).astype(int)):
+
         sel = slice(32 * i, 32 * (i + 1))
 
         result = _mask_rasterize_internal(
