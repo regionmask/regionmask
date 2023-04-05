@@ -22,6 +22,7 @@ DATASETS = [ds_glob_1, ds_glob_2, ds_glob_360_2, ds_glob_360_2_part]
 
 
 def _test_mask_equal_defined_regions(region, ds, mask_method):
+
     mask = getattr(region, mask_method)
 
     rasterize = mask(ds, method="rasterize")
@@ -39,6 +40,7 @@ def _test_mask_equal_defined_regions(region, ds, mask_method):
 @pytest.mark.parametrize("defined_region", REGIONS, ids=str)
 @pytest.mark.parametrize("ds", DATASETS)
 def test_mask_equal_defined_regions(defined_region, ds):
+
     if defined_region.skip_mask_test:
         pytest.skip(reason=f"Manally skipping {defined_region.region_name}")
 

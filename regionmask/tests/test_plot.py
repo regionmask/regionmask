@@ -145,6 +145,7 @@ def test_flatten_polygons():
 
 
 def test_polygons_coords():
+
     result = _polygons_coords([poly1, poly2])
     assert len(result) == 2
     assert np.allclose(outl1_closed, result[0])
@@ -167,6 +168,7 @@ def test_polygons_coords():
 
 @requires_matplotlib
 def test_maybe_gca():
+
     with figure_context():
         ax = _maybe_gca(aspect=1)
 
@@ -191,6 +193,7 @@ def test_maybe_gca():
 
 @requires_cartopy
 def test_plot_projection():
+
     # default is PlateCarree
     with figure_context():
         ax = r1.plot(tolerance=None)
@@ -210,6 +213,7 @@ def test_plot_projection():
 
 @requires_cartopy
 def test_plot_gca():
+
     with figure_context() as f:
         axs = f.subplots(1, 2, subplot_kw=dict(projection=ccrs.Robinson()))
 
@@ -233,6 +237,7 @@ def test_plot_gca():
 
 @requires_cartopy
 def test_plot_regions_gca():
+
     with figure_context() as f:
         axs = f.subplots(1, 2)
 
@@ -242,6 +247,7 @@ def test_plot_regions_gca():
 
 @requires_cartopy
 def test_plot_deprecated_proj():
+
     proj = ccrs.PlateCarree()
     with pytest.warns(FutureWarning, match="'proj' has been renamed to 'projection'"):
         with figure_context():
@@ -254,6 +260,7 @@ def test_plot_deprecated_proj():
 
 @requires_cartopy
 def test_plot_regions_projection():
+
     # if none is given -> no projection
     with figure_context():
         ax = r1.plot_regions(tolerance=None)
@@ -272,6 +279,7 @@ def test_plot_regions_projection():
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines(plotfunc):
+
     func = getattr(r1, plotfunc)
 
     with figure_context():
@@ -308,6 +316,7 @@ def test_plot_lines_multipoly(plotfunc):
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 @pytest.mark.filterwarnings("ignore:The 'regions' keyword has been deprecated")
 def test_plot_lines_selection(plotfunc):
+
     func = getattr(r1, plotfunc)
 
     with figure_context():
@@ -349,6 +358,7 @@ def test_plot_lines_selection(plotfunc):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_regions_kw_deprecated(plotfunc):
+
     func = getattr(r1, plotfunc)
 
     with pytest.warns(FutureWarning, match="The 'regions' keyword has been deprecated"):
@@ -377,6 +387,7 @@ def test_error_extra_kwarg():
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_deprecate_args(plotfunc):
+
     func = getattr(r1, plotfunc)
 
     with pytest.warns(FutureWarning, match="Passing 'ax' as positional"):
@@ -387,6 +398,7 @@ def test_plot_deprecate_args(plotfunc):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_tolerance(plotfunc):
+
     func = getattr(r1, plotfunc)
 
     with figure_context():
@@ -400,6 +412,7 @@ def test_plot_lines_tolerance(plotfunc):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_tolerance_None(plotfunc):
+
     func = getattr(r_large, plotfunc)
 
     with figure_context():
@@ -414,6 +427,7 @@ def test_plot_lines_tolerance_None(plotfunc):
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 @pytest.mark.parametrize("kwargs", ({}, {"tolerance": "auto"}))
 def test_plot_lines_tolerance_auto(plotfunc, kwargs):
+
     func = getattr(r_large, plotfunc)
 
     expected = (41, 2) if plotfunc == "plot" else (5, 2)
@@ -428,6 +442,7 @@ def test_plot_lines_tolerance_auto(plotfunc, kwargs):
 
 @requires_cartopy
 def test_plot_regions_lines_tolerance_cartopy_axes():
+
     expected = (41, 2)
 
     # when passing GeoAxes -> auto segmentizes lines
@@ -443,6 +458,7 @@ def test_plot_regions_lines_tolerance_cartopy_axes():
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 @pytest.mark.parametrize("subsample", [True, False])
 def test_plot_lines_subsample_deprecated(plotfunc, subsample):
+
     func = getattr(r1, plotfunc)
 
     with pytest.warns(
@@ -458,6 +474,7 @@ def test_plot_lines_subsample_deprecated(plotfunc, subsample):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_from_poly(plotfunc):
+
     func = getattr(r2, plotfunc)
 
     # subsample is False if polygon is given
@@ -475,6 +492,7 @@ def test_plot_lines_from_poly(plotfunc):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_line_prop(plotfunc):
+
     func = getattr(r1, plotfunc)
 
     with figure_context():
@@ -492,6 +510,7 @@ def test_plot_line_prop(plotfunc):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_label_defaults(plotfunc):
+
     func = getattr(r1, plotfunc)
 
     with figure_context():
@@ -503,6 +522,7 @@ def test_plot_label_defaults(plotfunc):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_label(plotfunc):
+
     func = getattr(r1, plotfunc)
 
     with figure_context():
@@ -546,6 +566,7 @@ def test_plot_label(plotfunc):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_label_multipolygon(plotfunc):
+
     func = getattr(r3, plotfunc)
 
     with pytest.raises(
@@ -572,9 +593,11 @@ def test_plot_label_multipolygon(plotfunc):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_text_prop(plotfunc):
+
     func = getattr(r1, plotfunc)
 
     with figure_context():
+
         ax = func(tolerance=None, add_label=True, text_kws=dict(fontsize=15))
 
         texts = ax.texts
@@ -596,6 +619,7 @@ def test_plot_text_clip(plotfunc):
     func = getattr(r1, plotfunc)
 
     with figure_context():
+
         ax = func(tolerance=None, add_label=True)
 
         texts = ax.texts
@@ -605,6 +629,7 @@ def test_plot_text_clip(plotfunc):
             assert text.get_clip_box() == ax.bbox
 
     with figure_context():
+
         ax = func(tolerance=None, add_label=True, text_kws=dict(clip_on=False))
 
         texts = ax.texts
@@ -616,6 +641,7 @@ def test_plot_text_clip(plotfunc):
 @requires_matplotlib
 @requires_cartopy
 def test_plot_ocean():
+
     kwargs = dict(tolerance=None, add_label=False, add_coastlines=False)
 
     # no ocean per default
@@ -649,6 +675,7 @@ def test_plot_ocean():
 @requires_matplotlib
 @requires_cartopy
 def test_plot_land():
+
     kwargs = dict(tolerance=None, add_label=False, add_coastlines=False)
 
     # no land per default
@@ -680,6 +707,7 @@ def test_plot_land():
 @requires_matplotlib
 @requires_cartopy
 def test_plot_add_coastlines():
+
     kwargs = dict(tolerance=None, add_label=False)
 
     # coastlines are added per default
@@ -707,6 +735,7 @@ def test_plot_add_coastlines():
 @requires_matplotlib
 @requires_cartopy
 def test_plot_coastlines_deprecated():
+
     kwargs = dict(tolerance=None, add_label=False)
 
     with pytest.warns(FutureWarning, match="'coastlines' has been renamed"):
@@ -720,6 +749,7 @@ def test_plot_coastlines_deprecated():
 
 @requires_matplotlib
 def test_plot_3D_mask_wrong_input():
+
     lon = np.arange(-180, 180, 2)
     lat = np.arange(90, -91, -2)
     srex = regionmask.defined_regions.srex
@@ -748,6 +778,7 @@ def test_plot_3D_mask_wrong_input():
 
 @requires_matplotlib
 def test_plot_3D_mask_overlap():
+
     lon = np.arange(-180, 180, 2)
     lat = np.arange(90, -91, -2)
 
@@ -766,6 +797,7 @@ def test_plot_3D_mask_overlap():
 @requires_matplotlib
 @requires_cartopy
 def test_check_unused_kws():
+
     # ensure no warning is raised
     with assert_no_warnings():
         _check_unused_kws(True, None, "feature_name", "kws_name")
@@ -797,6 +829,7 @@ def test_plot_no_warning_default(plotfunc):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_unused_text_kws(plotfunc):
+
     func = getattr(r1, plotfunc)
 
     with figure_context():
@@ -817,6 +850,7 @@ def test_plot_unused_text_kws(plotfunc):
     ],
 )
 def test_plot_unused_kws(feature_name, kws_name):
+
     with figure_context():
         with pytest.warns(
             RuntimeWarning,

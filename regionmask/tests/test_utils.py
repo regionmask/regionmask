@@ -25,6 +25,7 @@ from regionmask.core.utils import (
     ],
 )
 def test_create_dict_of_numbered_string(numbers, string, expected):
+
     result = _create_dict_of_numbered_string(numbers, string)
 
     assert isinstance(result, dict)
@@ -41,6 +42,7 @@ def test_create_dict_of_numbered_string(numbers, string, expected):
     ],
 )
 def test_maybe_to_dict(keys, values, expected):
+
     result = _maybe_to_dict(keys, values)
 
     assert isinstance(result, dict)
@@ -58,6 +60,7 @@ def test_maybe_to_dict(keys, values, expected):
     ],
 )
 def test_sanitize_names_abbrevs(numbers, values, default, expected):
+
     result = _sanitize_names_abbrevs(numbers, values, default)
 
     assert isinstance(result, dict)
@@ -66,11 +69,13 @@ def test_sanitize_names_abbrevs(numbers, values, default, expected):
 
 
 def test_sanitize_names_abbrevs_unequal_length():
+
     with pytest.raises(ValueError, match="not have the same length"):
         _sanitize_names_abbrevs([0, 1], ["A"], "default")
 
 
 def test_is_180():
+
     assert _is_180(-180, 180)
     assert not _is_180(0, 180.1)
     assert not _is_180(0, 180.01)
@@ -88,6 +93,7 @@ def test_is_180():
 @pytest.mark.parametrize("lon_vals", [(-161, -29, 2), (-180, 181, 2)])
 @pytest.mark.parametrize("lat_vals", [(75, 13, -2), (90, -91, -2)])
 def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
+
     # use "+" because x(*a, *b) is not valid in python 2.7
     result = create_lon_lat_dataarray_from_bounds(*lon_vals + lat_vals)
 
@@ -95,6 +101,7 @@ def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
         assert coord in result.coords
 
     def _check_coords(vals, name):
+
         bnds_expected = np.arange(*vals)
         expected = (bnds_expected[:-1] + bnds_expected[1:]) / 2
 
@@ -112,11 +119,13 @@ def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
 
 
 def test_is_numeric():
+
     assert _is_numeric([1, 2, 3])
     assert not _is_numeric(["a"])
 
 
 def test_equally_spaced():
+
     np.random.seed(0)
 
     equal = np.arange(10)
@@ -178,6 +187,7 @@ def test__equally_spaced_on_split_lon():
 
 
 def test_find_splitpoint():
+
     np.random.seed(0)
     equal_split = np.asarray([5, 6, 7, 8, 9, 10, 1, 2, 3, 4])
     close_to_equal_split = equal_split + np.random.randn(*equal_split.shape) * 10**-6
@@ -193,6 +203,7 @@ def test_find_splitpoint():
 
 
 def test_unpackbits():
+
     numbers = np.array([0, 1, 3, 254, 255])
     result = unpackbits(numbers, 8)
     expected = [
@@ -209,6 +220,7 @@ def test_unpackbits():
 
 @pytest.mark.parametrize("num_bits", np.arange(1, 33))
 def test_unpackbits_num_bits(num_bits):
+
     # zero -> all zeros
     result = unpackbits(np.array([0]), num_bits)
     expected = np.zeros((1, num_bits))
@@ -233,6 +245,7 @@ def test_unpackbits_num_bits(num_bits):
 @pytest.mark.parametrize("shape", ((2, 3), (3, 2), (2, 2), (2, 3, 4)))
 @pytest.mark.parametrize("num_bits", [1, 2, 4, 8, 16, 32])
 def test_unpackbits_shape(shape, num_bits):
+
     numbers = np.ones(shape=shape, dtype=np.uint32)
     result = unpackbits(numbers, num_bits)
 
@@ -257,6 +270,7 @@ def test_unpackbits_numpy():
 
 
 def test_unpackbits_wrong_dtype():
+
     with pytest.raises(ValueError, match="needs to be int-like"):
         unpackbits(np.array(0, dtype=float), 8)
 
@@ -265,6 +279,7 @@ def test_unpackbits_wrong_dtype():
     "numbers, n_bits", ((np.array([1, 3, 0, 255]), 8), (np.arange(2**4), 4))
 )
 def test_unpackbits_roundtrip(numbers, n_bits):
+
     numbers = 2 ** np.arange(n_bits)
 
     result = (unpackbits(np.array(numbers), n_bits) * numbers).sum(axis=1)

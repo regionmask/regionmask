@@ -8,6 +8,7 @@ from regionmask.defined_regions._ressources import _get_cache_dir
 
 
 def test_options_display_max_rows_errors():
+
     default = regionmask.core.options.OPTIONS["display_max_rows"]
     assert default == 10
 

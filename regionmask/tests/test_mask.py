@@ -60,6 +60,7 @@ MASK_METHODS_IRREGULAR = [
 
 @pytest.mark.parametrize("func", MASK_FUNCS)
 def test_mask_func(func):
+
     # standard
     result = func(dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[0, 1, 2])
     expected = expected_mask_2D()
@@ -78,6 +79,7 @@ def test_mask_func(func):
 
 @pytest.mark.parametrize("func", MASK_FUNCS)
 def test_mask_wrong_number_fill(func):
+
     with pytest.raises(ValueError, match="The fill value should not"):
         func(
             dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[0, 1, 2], fill=0
@@ -89,6 +91,7 @@ def test_mask_wrong_number_fill(func):
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask(method):
+
     expected = expected_mask_2D()
     result = dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method=method)
     xr.testing.assert_identical(result, expected)
@@ -96,6 +99,7 @@ def test_mask(method):
 
 @pytest.mark.skipif(has_pygeos, reason="Only errors if pygeos is missing")
 def test_missing_pygeos_error():
+
     with pytest.raises(ModuleNotFoundError, match="No module named 'pygeos'"):
         dummy_region.mask(dummy_ds.lon, dummy_ds.lat, method="pygeos")
 
@@ -104,6 +108,7 @@ def test_missing_pygeos_error():
     not has_pygeos or not has_shapely_2, reason="depr pygeos if shapely 2"
 )
 def test_deprecate_pygeos():
+
     with pytest.warns(
         FutureWarning, match="pygeos is deprecated in favour of shapely 2.0"
     ):
@@ -112,6 +117,7 @@ def test_deprecate_pygeos():
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_xr_keep_name(method):
+
     ds = xr.Dataset(
         coords={"longitude": dummy_ds.lon.values, "latitude": dummy_ds.lat.values}
     )
@@ -125,6 +131,7 @@ def test_mask_xr_keep_name(method):
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_poly_z_value(method):
+
     outl1 = Polygon(((0, 0, 1), (0, 1, 1), (1, 1.0, 1), (1, 0, 1)))
     outl2 = Polygon(((0, 1, 1), (0, 2, 1), (1, 2.0, 1), (1, 1, 1)))
     r_z = Regions([outl1, outl2])
@@ -137,12 +144,14 @@ def test_mask_poly_z_value(method):
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_xarray_name(method):
+
     msk = dummy_region.mask(dummy_ds, method=method)
     assert msk.name == "mask"
 
 
 @pytest.mark.parametrize("ndims", [(2, 1), (1, 2)])
 def test_mask_unequal_ndim(ndims):
+
     lon = np.arange(ndims[0] * 2).reshape(ndims[0] * (2,))
     lat = np.arange(ndims[1] * 2).reshape(ndims[1] * (2,))
 
@@ -151,6 +160,7 @@ def test_mask_unequal_ndim(ndims):
 
 
 def test_mask_unequal_2D_shapes():
+
     lon = np.zeros(shape=(2, 3))
     lat = np.zeros(shape=(2, 4))
 
@@ -162,6 +172,7 @@ def test_mask_unequal_2D_shapes():
 
 @pytest.mark.parametrize("ndim", [0, 3, 4])
 def test_mask_ndim_ne_1_2(ndim):
+
     lon = np.zeros(shape=ndim * (2,))
     lat = np.zeros(shape=ndim * (2,))
 
@@ -173,6 +184,7 @@ def test_mask_ndim_ne_1_2(ndim):
 @pytest.mark.parametrize("lat_name", ["lat", "latitude"])
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_obj(lon_name, lat_name, method):
+
     expected = expected_mask_2D(lat_name=lat_name, lon_name=lon_name)
 
     obj = {lon_name: dummy_ds.lon.values, lat_name: dummy_ds.lat.values}
@@ -189,6 +201,7 @@ def test_mask_obj(lon_name, lat_name, method):
 @pytest.mark.filterwarnings("ignore:No gridpoint belongs to any region.")
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_wrap(method):
+
     # create a test case where the outlines and the lon coordinates
     # are different
 
@@ -224,6 +237,7 @@ def test_mask_wrap(method):
 @pytest.mark.filterwarnings("ignore:No gridpoint belongs to any region.")
 @pytest.mark.parametrize("meth", ["mask", "mask_3D"])
 def test_wrap_lon_no_error_wrap_lon_false(meth):
+
     # regions that exceed 360° longitude
     r = Regions([[[-180, 0], [-180, 10], [360, 10], [360, 0]]], numbers=[1])
 
@@ -248,6 +262,7 @@ def test_wrap_lon_no_error_wrap_lon_false(meth):
 
 @pytest.mark.parametrize("meth", ["mask", "mask_3D"])
 def test_wrap_lon_error_wrap_lon(meth):
+
     # regions that exceed 360° longitude
     r = Regions([[[-180, 0], [-180, 10], [360, 10], [360, 0]]])
 
@@ -270,6 +285,7 @@ def test_wrap_lon_error_wrap_lon(meth):
     ),
 )
 def test_mask_autowrap(method, lon, extent):
+
     # outlines and lon are different - or the same - should work either way
 
     lat = [0.5, 1.5]
@@ -286,6 +302,7 @@ def test_mask_autowrap(method, lon, extent):
 
 
 def test_mask_wrong_method():
+
     msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
     with pytest.raises(ValueError, match=msg):
         dummy_region.mask(dummy_ds, method="wrong")
@@ -293,6 +310,7 @@ def test_mask_wrong_method():
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_2D_overlap_error(method):
+
     # make a copy to ensure dummy_region_overlap.overlap is not overwritten
     region = copy.copy(dummy_region_overlap)
     expected = expected_mask_2D(a=1, b=2)
@@ -310,6 +328,7 @@ def test_mask_2D_overlap_error(method):
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_3D_overlap(drop, method):
+
     expected = expected_mask_3D(drop=drop, overlap=True)
     result = dummy_region_overlap.mask_3D(dummy_ds, drop=drop, method=method)
 
@@ -318,6 +337,7 @@ def test_mask_3D_overlap(drop, method):
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_3D_overlap_empty(method):
+
     match = "No gridpoint belongs to any region. "
 
     lon = lat = [10, 11]
@@ -340,6 +360,7 @@ def test_mask_3D_overlap_empty(method):
 
 
 def test_mask_flag():
+
     expected = expected_mask_2D()
     result = dummy_region.mask(dummy_ds)
     xr.testing.assert_identical(result, expected)
@@ -356,6 +377,7 @@ def test_mask_flag():
 
 
 def test_mask_flag_space():
+
     r = Regions(dummy_region.polygons, names=["name with space", "another", "last"])
 
     expected = expected_mask_2D()
@@ -366,6 +388,7 @@ def test_mask_flag_space():
 
 
 def test_mask_flag_only_found():
+
     result = dummy_region.mask([0.5], [0.5])
 
     assert result.attrs["flag_meanings"] == "r0"
@@ -381,6 +404,7 @@ lat_2D = [[0.5, 0.5], [1.5, 1.5]]
 
 @pytest.mark.parametrize("method", MASK_METHODS_IRREGULAR)
 def test_mask_2D(method):
+
     dims = ("lat_idx", "lon_idx")
     lat_name, lon_name = dims
     coords = {"lat": (dims, lat_2D), "lon": (dims, lon_2D)}
@@ -394,6 +418,7 @@ def test_mask_2D(method):
 @pytest.mark.parametrize("lon", [lon_2D, [0, 1, 3], 0])
 @pytest.mark.parametrize("lat", [lat_2D, [0, 1, 3], 0])
 def test_mask_rasterize_irregular(lon, lat):
+
     with pytest.raises(ValueError, match="`lat` and `lon` must be equally spaced"):
         dummy_region.mask(lon, lat, method="rasterize")
 
@@ -424,6 +449,7 @@ def test_mask_xarray_in_out_2D(method):
 @pytest.mark.parametrize("lat_start", [0, 1, -5])
 @pytest.mark.parametrize("dlat", [1, 2])
 def test_transform_from_latlon(lon_start, dlon, lat_start, dlat):
+
     lon = np.arange(lon_start, 20, dlon)
     lat = np.arange(lat_start, 20, dlat)
 
@@ -441,6 +467,7 @@ def test_transform_from_latlon(lon_start, dlon, lat_start, dlat):
 @pytest.mark.parametrize("a, b", [(0, 1), (4, 5)])
 @pytest.mark.parametrize("fill", [np.NaN, 3])
 def test_rasterize(a, b, fill):
+
     expected = expected_mask_2D(a=a, b=b, fill=fill)
 
     result = _mask_rasterize(
@@ -452,6 +479,7 @@ def test_rasterize(a, b, fill):
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_empty(method):
+
     lon = lat = [10, 11]
     with pytest.warns(UserWarning, match="No gridpoint belongs to any region."):
         result = dummy_region.mask(lon, lat, method=method)
@@ -489,6 +517,7 @@ def test_mask_unstructured(method):
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_3D(drop, method):
+
     expected = expected_mask_3D(drop)
     result = dummy_region.mask_3D(dummy_ds.lon, dummy_ds.lat, drop=drop, method=method)
 
@@ -497,6 +526,7 @@ def test_mask_3D(drop, method):
 
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_3D_empty(method):
+
     match = "No gridpoint belongs to any region. "
 
     lon = lat = [10, 11]
@@ -522,6 +552,7 @@ def test_mask_3D_empty(method):
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_3D_obj(lon_name, lat_name, drop, method):
+
     expected = expected_mask_3D(drop, lon_name=lon_name, lat_name=lat_name)
 
     obj = dummy_ds.rename(lon=lon_name, lat=lat_name)
@@ -537,6 +568,7 @@ def test_mask_3D_obj(lon_name, lat_name, drop, method):
 
 @pytest.mark.parametrize("meth", ["mask", "mask_3D"])
 def test_mask_warn_radian(meth):
+
     lon = dummy_ds.lon.copy()
     lat = dummy_ds.lat.copy()
     mask_func = getattr(dummy_region, meth)
@@ -597,6 +629,7 @@ r_US_hole_360_ccw = Regions([poly])  # counter clockwise
 
 
 def _expected_rectangle(ds, lon_min, lon_max, lat_min, lat_max, is_360):
+
     if is_360:
         lon_min += 360
         lon_max += 360
@@ -609,6 +642,7 @@ def _expected_rectangle(ds, lon_min, lon_max, lat_min, lat_max, is_360):
 
 
 def expected_mask_edge(ds, is_360, number=0, fill=np.NaN):
+
     expected = _expected_rectangle(ds, -100, -80, 28, 50, is_360)
 
     # set number and fill value
@@ -621,6 +655,7 @@ def expected_mask_edge(ds, is_360, number=0, fill=np.NaN):
 
 
 def expected_mask_interior_and_edge(ds, is_360, number=0, fill=np.NaN):
+
     expected_outerior = _expected_rectangle(ds, -100, -80, 28, 50, is_360)
     expected_interior = _expected_rectangle(ds, -94, -86, 34, 44, is_360)
 
@@ -641,6 +676,7 @@ def expected_mask_interior_and_edge(ds, is_360, number=0, fill=np.NaN):
 )
 @pytest.mark.parametrize("ds_US, is_360", [(ds_US_180, False), (ds_US_360, True)])
 def test_mask_edge(method, regions, ds_US, is_360):
+
     expected = expected_mask_edge(ds_US, is_360)
     result = regions.mask(ds_US, method=method)
 
@@ -654,6 +690,7 @@ def test_mask_edge(method, regions, ds_US, is_360):
 )
 @pytest.mark.parametrize("ds_US, is_360", [(ds_US_180, False), (ds_US_360, True)])
 def test_mask_interior_and_edge(method, regions, ds_US, is_360):
+
     expected = expected_mask_interior_and_edge(ds_US, is_360)
     result = regions.mask(ds_US, method=method)
 
@@ -664,6 +701,7 @@ def test_mask_interior_and_edge(method, regions, ds_US, is_360):
     raises=AssertionError, reason="https://github.com/mapbox/rasterio/issues/1844"
 )
 def test_rasterize_edge():
+
     lon = ds_US_180.lon
     lat = ds_US_180.lat
 
@@ -790,6 +828,7 @@ close_to_equal = equal + np.random.randn(*equal.shape) * 10**-6
     [(equal, 0), (close_to_equal, 0), ([1], 3), (grid_2D, 3), (un_equal, 3)],
 )
 def test_determine_method(lon, m_lon, lat, m_lat):
+
     expected = METHODS[max((m_lon, m_lat))]
 
     assert _determine_method(lon, lat) == expected
@@ -818,6 +857,7 @@ lon360 = np.arange(0, 360, 10)
 @pytest.mark.parametrize("regions", [r_GLOB_180, r_GLOB_360])
 @pytest.mark.parametrize("lon", [lon180, lon360])
 def test_mask_whole_grid(method, regions, lon):
+
     lat = np.arange(90, -91, -10)
     mask = regions.mask(lon, lat, method=method)
 
@@ -844,6 +884,7 @@ def test_mask_whole_grid_unusual_lon(method, regions):
 @pytest.mark.parametrize("outline", [outline_GLOB_180, outline_GLOB_360])
 @pytest.mark.parametrize("lon", [lon180, lon360])
 def test_mask_whole_grid_overlap(method, outline, lon):
+
     regions = Regions([outline, outline], overlap=True)
 
     lat = np.arange(90, -91, -10)
@@ -856,6 +897,7 @@ def test_mask_whole_grid_overlap(method, outline, lon):
 
 
 def test_inject_mask_docstring():
+
     result = _inject_mask_docstring(True, True)
 
     assert "3D" in result

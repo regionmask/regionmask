@@ -6,6 +6,7 @@ from regionmask.core.mask import _numpy_coords_to_dataarray, mask_to_dataarray
 
 
 def test_mask_to_dataarray_mixed_types():
+
     ds = xr.Dataset(coords={"lon": [0], "lat": [0]})
 
     with pytest.raises(ValueError, match="Cannot handle coordinates with mixed types!"):
@@ -16,6 +17,7 @@ def test_mask_to_dataarray_mixed_types():
 
 
 def create_test_datasets():
+
     mask = np.arange(6).reshape(2, 3)
     mask1D = np.arange(2)
 
@@ -66,6 +68,7 @@ def create_test_datasets():
 
 @pytest.mark.parametrize("ds, lon_name, lat_name, mask", create_test_datasets())
 def test_mask_to_dataarray_ds_name(ds, lon_name, lat_name, mask):
+
     actual = mask_to_dataarray(mask, ds, None, lon_name, lat_name)
     expected = ds.coords.to_dataset()
     xr.testing.assert_equal(expected, actual.coords.to_dataset())
@@ -74,6 +77,7 @@ def test_mask_to_dataarray_ds_name(ds, lon_name, lat_name, mask):
 
 @pytest.mark.parametrize("ds, lon_name, lat_name, mask", create_test_datasets())
 def test_mask_to_dataarray_ds_indiv(ds, lon_name, lat_name, mask):
+
     actual = mask_to_dataarray(mask, ds[lon_name], ds[lat_name])
     expected = ds.coords.to_dataset()
     xr.testing.assert_equal(expected, actual.coords.to_dataset())
@@ -83,6 +87,7 @@ def test_mask_to_dataarray_ds_indiv(ds, lon_name, lat_name, mask):
 @pytest.mark.parametrize("n_regions", [1, 2, 3])
 @pytest.mark.parametrize("ds, lon_name, lat_name, mask", create_test_datasets())
 def test_mask_to_dataarray_3D_mask(n_regions, ds, lon_name, lat_name, mask):
+
     mask_3D = np.stack([mask] * n_regions, 0)
     actual = mask_to_dataarray(mask_3D, ds[lon_name], ds[lat_name])
     expected = ds.coords.to_dataset()
@@ -97,6 +102,7 @@ def test_mask_to_dataarray_3D_mask(n_regions, ds, lon_name, lat_name, mask):
 @pytest.mark.parametrize("lon_name", ("lon", "longitude"))
 @pytest.mark.parametrize("lat_name", ("lat", "latitude"))
 def test_mask_to_dataarray_numpy_1D(lon, lat, lon_name, lat_name):
+
     mask = np.arange(4).reshape(2, 2)
     actual = mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
     expected = xr.DataArray(
@@ -108,6 +114,7 @@ def test_mask_to_dataarray_numpy_1D(lon, lat, lon_name, lat_name):
 @pytest.mark.parametrize("lon_name", ("lon", "longitude", "x"))
 @pytest.mark.parametrize("lat_name", ("lat", "latitude", "y"))
 def test_mask_to_dataarray_numpy_2D(lon_name, lat_name):
+
     lon = [[0, 1], [0, 1]]
     lat = [[1, 1], [0, 0]]
 
@@ -123,6 +130,7 @@ def test_mask_to_dataarray_numpy_2D(lon_name, lat_name):
 @pytest.mark.parametrize("lon_name", ("lon", "longitude", "x"))
 @pytest.mark.parametrize("lat_name", ("lat", "latitude", "y"))
 def test_numpy_coords_to_dataarray_1D(lon_name, lat_name):
+
     lon = [0, 1]
     lat = [0, 1]
 
@@ -138,6 +146,7 @@ def test_numpy_coords_to_dataarray_1D(lon_name, lat_name):
 @pytest.mark.parametrize("lon_name", ("lon", "longitude", "x"))
 @pytest.mark.parametrize("lat_name", ("lat", "latitude", "y"))
 def test_numpy_coords_to_dataarray_2D(lon_name, lat_name):
+
     lon = [[0, 1]]
     lat = [[0, 1]]
 

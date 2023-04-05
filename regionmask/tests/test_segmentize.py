@@ -7,6 +7,7 @@ from . import requires_geos_3_10
 
 
 def test_get_tolerance():
+
     assert _get_tolerance(0) == 1
     assert _get_tolerance(-1) == 1
     assert _get_tolerance(360) == 1
@@ -19,6 +20,7 @@ def test_get_tolerance():
 
 
 def test_segmentize():
+
     zeros = np.zeros(51)
 
     result = segmentize([[0, 0], [1, 0]], tolerance=1 / 50)
@@ -63,6 +65,7 @@ def test_segmentize_mixed_length():
 
 @pytest.mark.parametrize("number", [1, 2, 5, 20, 100])
 def test_segmentize_n_segments(number):
+
     zeros = np.zeros(number + 1)
 
     result = segmentize([[0, 0], [1, 0]], tolerance=1 / number)
@@ -71,6 +74,7 @@ def test_segmentize_n_segments(number):
 
 
 def test_segmentize_smaller():
+
     result = segmentize([[0, 0], [0, 1]], tolerance=0.3)
     expected = [
         [0, 0.0],
@@ -95,6 +99,7 @@ COORDS = (
 @pytest.mark.parametrize("coords", COORDS)
 @pytest.mark.parametrize("tolerance", [0.3, 1.0, 2.7852])
 def test_segmentize_pygeos(coords, tolerance):
+
     import pygeos
     import pygeos.testing
 

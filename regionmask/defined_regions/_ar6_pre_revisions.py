@@ -47,6 +47,7 @@ DEPRECATION = (
 
 
 def _combine_to_multipolygon(df, column, *names):
+
     all_poly = [df[df[column] == name].geometry.values[0] for name in names]
 
     combined_poly = geometry.MultiPolygon(all_poly)
@@ -126,6 +127,7 @@ class ar6_pre_revisions_cls:
     """docstring for ar6"""
 
     def __init__(self):
+
         self.__df = None
         self.__df_combined = None
 
@@ -139,6 +141,7 @@ class ar6_pre_revisions_cls:
 
     @property
     def _df(self):
+
         if self.__df is None:
             self.__df = read_remote_shapefile("IPCC-WGI-reference-regions-v1.zip")
 
@@ -146,6 +149,7 @@ class ar6_pre_revisions_cls:
 
     @property
     def _df_combined(self):
+
         if self.__df_combined is None:
             _df_combined = self._df.copy()
 
@@ -164,6 +168,7 @@ class ar6_pre_revisions_cls:
     def all(self):
         warnings.warn(DEPRECATION, FutureWarning)
         if self._all is None:
+
             self._all = from_geopandas(
                 self._df_combined,
                 names="V2",
