@@ -37,7 +37,7 @@ jobs:
           environment-file: ci/requirements/environment.yml
           extra-specs: |
             python=${{ matrix.python-version }}
-            black
+            black<23
             isort
             flake8
           channels: conda-forge
