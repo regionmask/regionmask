@@ -43,13 +43,12 @@ jobs:
             echo "CONDA_ENV_FILE=ci/requirements/py${PY}-${{ matrix.env }}.yml" >> $GITHUB_ENV
 
       - name: Create conda environment
-        uses: mamba-org/provision-with-micromamba@v15
+        uses: mamba-org/setup-micromamba@v1
         with:
           cache-downloads: true
-          cache-downloads-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}-${{hashFiles(env.CONDA_ENV_FILE)}}"
-          micromamba-version: 'latest'
+          cache-downloads-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}"
           environment-file: ${{ env.CONDA_ENV_FILE }}
-          extra-specs: |
+          create-args: >-
             python=${{ matrix.python-version }}
 
       - name: Install regionmask
@@ -91,13 +90,12 @@ jobs:
           fetch-depth: 0 # Fetch all history for all branches and tags.
 
       - name: Create conda environment
-        uses: mamba-org/provision-with-micromamba@v15
+        uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: min-version-policy
-          environment-file: false
           micromamba-version: 'latest'
-          extra-specs: |
-            python="3.10"
+          create-args: >-
+            python=3.10
             pyyaml
             conda
             python-dateutil
