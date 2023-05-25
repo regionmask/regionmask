@@ -2,12 +2,7 @@ import pytest
 import xarray as xr
 
 from . import has_cf_xarray, requires_cf_xarray
-from .utils import (
-    dummy_ds,
-    dummy_region,
-    expected_mask_2D,
-    expected_mask_3D,
-)
+from .utils import dummy_ds, dummy_region, expected_mask_2D, expected_mask_3D
 
 MASK_METHODS = ["mask", "mask_3D"]
 
