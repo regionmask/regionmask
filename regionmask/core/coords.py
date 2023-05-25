@@ -36,8 +36,8 @@ def _get_cf_coords(obj, name, required=False):
     if len(coord_name) > 1:
         raise ValueError(
             f"Found more than one candidate for '{name}'. Either pass the lon and lat "
-            "coords directly or only pass the DataArray (instead of Dataset) the mask "
-            "method."
+            "coords directly or only pass a DataArray (instead of a Dataset) to the "
+            "mask method."
         )
 
     return coord_name[0]
@@ -48,18 +48,18 @@ def _get_coords_cf_or_name(obj, lon_name, lat_name):
     x_name = _get_cf_coords(obj, "longitude", required=False) or lon_name
     y_name = _get_cf_coords(obj, "latitude", required=False) or lat_name
 
-    _check_coords(obj, x_name, lon_name)
-    _check_coords(obj, y_name, lat_name)
+    _assert_unambigous_coord_names(obj, x_name, lon_name)
+    _assert_unambigous_coord_names(obj, y_name, lat_name)
 
     return obj[x_name], obj[y_name]
 
 
-def _check_coords(obj, cf_name, name):
+def _assert_unambigous_coord_names(obj, cf_name, name):
 
     if cf_name != name and name in obj.coords:
         raise ValueError(
             f"Ambigous name for coordinates: cf_xarray determined '{cf_name}' but "
-            f"'{name}' is also on the {type(obj).__name__}. Please set use_cf to "
+            f"'{name}' is also on the {type(obj).__name__}. Please set ``use_cf`` to "
             "True or False to resolve this conflict."
         )
 
@@ -67,10 +67,12 @@ def _check_coords(obj, cf_name, name):
 def _get_coords_cf(obj):
 
     if not has_cf_xarray:
-        raise ImportError("``cf_xarray`` required")
+        raise ImportError("cf_xarray required")
 
     if not isinstance(obj, (xr.Dataset, xr.DataArray)):
-        raise TypeError(f"Expected a ``Dataset`` or ``DataArray``, got {type(obj)}")
+        raise TypeError(
+            f"Expected a ``Dataset`` or ``DataArray`` for ``use_cf=True``, got {type(obj)}"
+        )
 
     x_name = _get_cf_coords(obj, "longitude", required=True)
     y_name = _get_cf_coords(obj, "latitude", required=True)
