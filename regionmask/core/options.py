@@ -3,17 +3,25 @@
 
 OPTIONS = {
     "display_max_rows": 10,
+    "cache_dir": None,
 }
 
 
-def _optional_positive_integer(name: str, value: int) -> bool:
-
+def _optional_positive_integer(name: str, value) -> bool:
     if not (value is None or isinstance(value, int) and value > 0):
         raise ValueError(f"'{name}' must be a positive integer or None, got '{value}'")
 
 
+def _optional_str_or_path(name: str, value) -> bool:
+    from pathlib import Path
+
+    if not (value is None or isinstance(value, (str, Path))):
+        raise ValueError(f"'{name}' must be a string or pathlib.Path, got '{value}'")
+
+
 _VALIDATORS = {
     "display_max_rows": _optional_positive_integer,
+    "cache_dir": _optional_str_or_path,
 }
 
 
@@ -25,6 +33,9 @@ class set_options:
     ----------
     display_max_rows : int, default: 10
         Maximum display rows.
+    cache_dir : str | pathlib.Path
+        Location of the cache directory. If None uses the default cache location of
+        your operating system. For unix-like this would be '~/.cache/regionmask'.
 
     Examples
     --------

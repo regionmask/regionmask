@@ -3,7 +3,7 @@ Landmask (NaturalEarth)
 
 The outline of the landmask is obtained from
 `Natural Earth <http://www.naturalearthdata.com/>`_.
-It is automatically downloaded, cached and opened with geopandas.
+It is automatically downloaded, cached\ [#]_ and opened with geopandas.
 The following landmasks are currently available:
 
 * Land 1:110m
@@ -44,3 +44,5 @@ Landmask
 
     @savefig plotting_landmask.png width=100%
     land.plot(add_label=False)
+
+.. [#] You can change the cache location using ``regionmask.set_options(cache_dir="~/.rmask")``.

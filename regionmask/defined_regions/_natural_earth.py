@@ -9,8 +9,17 @@ import pooch
 from packaging.version import Version
 from shapely.geometry import MultiPolygon
 
+from regionmask.defined_regions._ressources import _get_cache_dir
+
 from ..core.regions import Regions
 from ..core.utils import _flatten_polygons
+
+try:
+    import pyogrio  # noqa: F401
+
+    engine = "pyogrio"
+except ImportError:
+    engine = "fiona"
 
 # TODO: remove deprecated (v0.9.0) natural_earth class and instance & clean up
 
@@ -48,6 +57,7 @@ def _obtain_ne(
     query=None,
     combine_coords=False,
     preprocess=None,
+    bbox=None,
 ):
     """
     create Regions object from naturalearth data
@@ -80,12 +90,15 @@ def _obtain_ne(
         MultiPolygon (used to combine all land Polygons). Default: False.
     preprocess : callable, optional
         If provided, call this function on the geodataframe.
+    bbox : tuple | GeoDataFrame or GeoSeries | shapely Geometry, default None
+        Filter features by given bounding box, GeoSeries, GeoDataFrame or a shapely
+        geometry. See ``geopandas.read_file`` for defails.
     """
 
     import geopandas
 
     # read the file with geopandas
-    df = geopandas.read_file(shpfilename, encoding="utf8")
+    df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox, engine=engine)
 
     if query is not None:
         df = df.query(query).reset_index(drop=True)
@@ -159,6 +172,11 @@ _countries_50 = _NaturalEarthFeature(
     category="cultural",
     name="admin_0_countries",
 )
+_countries_10 = _NaturalEarthFeature(
+    resolution="10m",
+    category="cultural",
+    name="admin_0_countries",
+)
 _us_states_50 = _NaturalEarthFeature(
     resolution="50m",
     category="cultural",
@@ -202,6 +220,7 @@ class NaturalEarth(ABC):
 
         self._countries_110 = None
         self._countries_50 = None
+        self._countries_10 = None
 
         self._us_states_50 = None
         self._us_states_10 = None
@@ -237,12 +256,22 @@ class NaturalEarth(ABC):
         return self._countries_50
 
     @property
+    def countries_10(self):
+        if self._countries_10 is None:
+            opt = dict(title="Natural Earth Countries: 10m")
+
+            self._countries_10 = self._obtain_ne(_countries_10, **opt)
+
+        return self._countries_10
+
+    @property
     def us_states_50(self):
         if self._us_states_50 is None:
 
             opt = dict(
                 title="Natural Earth: US States 50m",
                 query="admin == 'United States of America'",
+                bbox=(-180, 18, -45, 72),
             )
 
             self._us_states_50 = self._obtain_ne(_us_states_50, **opt)
@@ -255,6 +284,7 @@ class NaturalEarth(ABC):
             opt = dict(
                 title="Natural Earth: US States 10m",
                 query="admin == 'United States of America'",
+                bbox=(-180, 18, -45, 72),
             )
 
             self._us_states_10 = self._obtain_ne(_us_states_10, **opt)
@@ -499,9 +529,6 @@ def _get_shapefilename_cartopy(resolution, category, name):
     return cartopy_file
 
 
-CACHE_ROOT = pooch.os_cache("regionmask")
-
-
 @contextmanager
 def set_pooch_log_level():
 
@@ -528,7 +555,7 @@ def _fetch_aws(version, resolution, category, name):
 
     url = f"{base_url}/{aws_version}/{resolution}_{category}/{bname}.zip"
 
-    path = CACHE_ROOT / f"natural_earth/{version}"
+    path = _get_cache_dir() / f"natural_earth/{version}"
 
     if Version(pooch.__version__) < Version("1.4"):
         # extract_dir not available

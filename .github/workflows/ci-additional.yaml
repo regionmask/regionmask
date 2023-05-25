@@ -26,6 +26,8 @@ jobs:
             python-version: "3.7"
           - env: "min-all-deps"
             python-version: "3.7"
+          - env: "min-all-deps"
+            python-version: "3.8"
           - env: "shapely-2"
             python-version: "3.10"
     steps:
@@ -41,13 +43,12 @@ jobs:
             echo "CONDA_ENV_FILE=ci/requirements/py${PY}-${{ matrix.env }}.yml" >> $GITHUB_ENV
 
       - name: Create conda environment
-        uses: mamba-org/provision-with-micromamba@main
+        uses: mamba-org/setup-micromamba@v1
         with:
           cache-downloads: true
-          cache-downloads-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}-${{hashFiles(env.CONDA_ENV_FILE)}}"
-          micromamba-version: 'latest'
+          cache-downloads-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}"
           environment-file: ${{ env.CONDA_ENV_FILE }}
-          extra-specs: |
+          create-args: >-
             python=${{ matrix.python-version }}
 
       - name: Install regionmask
@@ -89,13 +90,12 @@ jobs:
           fetch-depth: 0 # Fetch all history for all branches and tags.
 
       - name: Create conda environment
-        uses: mamba-org/provision-with-micromamba@main
+        uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: min-version-policy
-          environment-file: false
           micromamba-version: 'latest'
-          extra-specs: |
-            python="3.10"
+          create-args: >-
+            python=3.10
             pyyaml
             conda
             python-dateutil
@@ -103,4 +103,4 @@ jobs:
 
       - name: minimum versions policy
         run: |
-          python ci/min_deps_check.py ci/requirements/py37-min-all-deps.yml
+          python ci/min_deps_check.py ci/requirements/py37-min-all-deps.yml ci/requirements/py38-min-all-deps.yml

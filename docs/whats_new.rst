@@ -32,7 +32,12 @@ Enhancements
 - Added :py:class:`set_options` to regionmask which can, currently, be used to control
   the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
 - Create faster masks with shapely 2.0, which replaces pygeos (:pull:`#349`).
+- Allow setting the cache location manually: ``regionmask.set_options(cache_dir="~/.rmask")``.
+  The default location is given by ``pooch.os_cache("regionmask")``, i.e. `~/.cache/regionmask/`
+  on unix-like operating systems (:pull:`403`).
 - Add python 3.11 to list of supported versions (:pull:`390`).
+- Added `pyogrio <https://pyogrio.readthedocs.io>`__ as optional dependency. Natural earth
+  data shapefiles are now loaded faster, if pyogrio is installed (:pull:`406`).
 
 Deprecations
 ~~~~~~~~~~~~
@@ -43,6 +48,8 @@ Deprecations
 
 New regions
 ~~~~~~~~~~~
+
+- Added :py:attr:`natural_earth.countries_10` regions from natural earth (:pull:`396`).
 
 Bug Fixes
 ~~~~~~~~~
@@ -64,8 +71,10 @@ Internal Changes
   - in the function to determine points at *exactly* -180°E (or 0°E) and -90°N (:pull:`341`)
 - Use importlib.metadata if available (i.e. for python > 3.7) - should lead to a faster
   import time for regionmask (:pull:`369`).
-- Small changes to the repr of :py:class:`Regions`  (:pull:`378`).
+- Small changes to the repr of :py:class:`Regions` (:pull:`378`).
 - Reduce the memory requirements of :py:func:`core.utils.unpackbits` (:issue:`379`:).
+- Speed up loading of `us_states_10` and `us_states_50` by defining a `bbox` which only
+  needs to load a subset of the data (:pull:`405`).
 
 .. _whats-new.0.9.0:
 

@@ -11,14 +11,15 @@ dependencies:
   - geopandas
   - matplotlib-base
   - numpy
-  - pooch
   - packaging
+  - pooch
   - pygeos
+  - pyogrio
   - rasterio
   - xarray
 # dependencies for the examples
-  - cftime
   - cf_xarray
+  - cftime
   - netcdf4
 # for regionmask intake example
   - aiohttp
@@ -31,8 +32,8 @@ dependencies:
   - numpydoc
   - pillow
   - pip
-  - sphinx_rtd_theme
   - sphinx
+  - sphinx_rtd_theme
 # for regionmask intake example
   - pip:
     - intake_geopandas>=0.2.4

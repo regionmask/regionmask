@@ -1,0 +1,23 @@
+name: regionmask-tests
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.8
+  - cartopy=0.20
+  - geopandas=0.8
+  - matplotlib-base=3.5
+  - numpy=1.21
+  - packaging=21.3
+  - pandas=1.2
+  - pooch=1.2
+  - pygeos=0.12
+  # pyogrio makes environment solving difficult
+  - pyogrio=0.3
+  - rasterio=1.2
+  - shapely=1.8
+  - xarray=0.15
+# for testing
+  - pytest
+  - pytest-cov
+  - pytest-env
