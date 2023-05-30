@@ -1,6 +1,5 @@
 name: regionmask-tests
 channels:
-  - conda-forge/label/shapely_dev
   - conda-forge
   - nodefaults
 dependencies:
@@ -12,6 +11,7 @@ dependencies:
   - pooch
   - pygeos
   - rasterio
+  - shapely<2
   - setuptools
   - xarray
 # for testing
