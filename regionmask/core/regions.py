@@ -325,6 +325,7 @@ class Regions:
         method=None,
         wrap_lon=None,
         flag="abbrevs",
+        use_cf=None,
     ):
 
         if self.overlap:
@@ -343,6 +344,7 @@ class Regions:
             lat_name=lat_name,
             method=method,
             wrap_lon=wrap_lon,
+            use_cf=use_cf,
         )
 
         if flag not in [None, "abbrevs", "names"]:
@@ -380,6 +382,7 @@ class Regions:
         lat_name=None,
         method=None,
         wrap_lon=None,
+        use_cf=None,
     ):
 
         mask_3D = _mask_3D(
@@ -394,6 +397,7 @@ class Regions:
             method=method,
             wrap_lon=wrap_lon,
             as_3D=self.overlap,
+            use_cf=use_cf,
         )
 
         numbers = mask_3D.region.values

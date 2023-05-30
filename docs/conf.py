@@ -240,6 +240,7 @@ notebooks = (
     "notebooks/plotting",
     "notebooks/mask_2D",
     "notebooks/mask_3D",
+    "notebooks/detect_coords",
     "notebooks/geopandas",
     "notebooks/overlap",
     "notebooks/create_own_regions",
@@ -264,6 +265,7 @@ for nb in notebooks:
         " --to rst"
         " --template-file notebooks/tutorial_rst.tpl"
         " --ExecutePreprocessor.timeout=60"
+        " --ExecutePreprocessor.kernel_name=python3"
         " --execute " + nb
     )
     print(cmd)

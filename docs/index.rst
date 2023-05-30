@@ -71,6 +71,7 @@ Documentation
    notebooks/plotting
    notebooks/mask_2D
    notebooks/mask_3D
+   notebooks/detect_coords
    notebooks/geopandas
    notebooks/create_own_regions
    notebooks/overlap

@@ -4,6 +4,7 @@ channels:
   - nodefaults
 dependencies:
   - cartopy
+  - cf_xarray
   - geopandas
   - matplotlib-base
   - numpy

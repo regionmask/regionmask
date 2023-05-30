@@ -5,6 +5,7 @@ channels:
 dependencies:
   - python=3.7
   - cartopy=0.17
+  - cf_xarray=0.6 # v0.7 not available for py37
   - geopandas=0.7
   - matplotlib-base=3.2
   - numpy=1.17

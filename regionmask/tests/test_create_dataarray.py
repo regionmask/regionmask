@@ -67,15 +67,6 @@ def create_test_datasets():
 
 
 @pytest.mark.parametrize("ds, lon_name, lat_name, mask", create_test_datasets())
-def test_mask_to_dataarray_ds_name(ds, lon_name, lat_name, mask):
-
-    actual = mask_to_dataarray(mask, ds, None, lon_name, lat_name)
-    expected = ds.coords.to_dataset()
-    xr.testing.assert_equal(expected, actual.coords.to_dataset())
-    np.testing.assert_equal(mask, actual.values)
-
-
-@pytest.mark.parametrize("ds, lon_name, lat_name, mask", create_test_datasets())
 def test_mask_to_dataarray_ds_indiv(ds, lon_name, lat_name, mask):
 
     actual = mask_to_dataarray(mask, ds[lon_name], ds[lat_name])

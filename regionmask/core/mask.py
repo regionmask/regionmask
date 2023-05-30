@@ -5,6 +5,8 @@ import shapely
 import xarray as xr
 from packaging.version import Version
 
+from regionmask.core.coords import _get_coords
+
 from .utils import (
     _equally_spaced_on_split_lon,
     _find_splitpoint,
@@ -32,11 +34,11 @@ Parameters
 {gp_doc}lon_or_obj : object or array_like
     Can either be a longitude array and then ``lat`` needs to be
     given. Or an object where the longitude and latitude can be
-    retrieved as: ``lon = lon_or_obj[lon_name]`` and
-    ``lat = lon_or_obj[lat_name]``.
+    retrieved from, either using cf_xarray or by the names "lon"
+    and "lat". See also ``use_cf``.
 lat : array_like, optional
     If ``lon_or_obj`` is a longitude array, the latitude needs to be
-    specified here.
+    passed.
 {drop_doc}lon_name : str, optional
     Deprecated. Name of longitude in ``lon_or_obj``, default: "lon".
 lat_name : str, optional
@@ -59,7 +61,7 @@ wrap_lon : bool | 180 | 360, optional
     - ``180``: Wraps longitude coordinates to `[-180, 180[`
     - ``360``: Wraps longitude coordinates to `[0, 360[`
 
-{overlap}{flags}
+{overlap}{flags}{use_cf}
 
 Returns
 -------
@@ -102,12 +104,19 @@ overlap : bool, default: False
 """
 
 _FLAG_DOCSTRING = """\
-flag : str, default "abbrevs"
+flag : str, default: "abbrevs"
     Indicates if the "abbrevs" (abbreviations) or "names" should be added as
     `flag_values` and `flag_meanings` to the attributes (`attrs`) of the mask. If None
     nothing is added. Using cf_xarray these can be used to select single
     (``mask.cf == "CNA"``) or multiple (``mask.cf.isin``) regions. Note that spaces are
     replaced by underscores.
+"""
+
+_USE_CF_DOCSTRING = """\
+use_cf : bool, default: None
+    Whether to use ``cf_xarray`` to infer the names of the x and y coordinates. If None
+    uses cf_xarray if the coord names are unambigous. If True requires cf_xarray if
+    False does not use cf_xarray.
 """
 
 
@@ -120,6 +129,7 @@ def _inject_mask_docstring(is_3D, gp_method):
     gp_doc = _GP_DOCSTRING if gp_method else ""
     overlap = _OVERLAP_DOCSTRING if (gp_method and is_3D) else ""
     flags = _FLAG_DOCSTRING if not (gp_method or is_3D) else ""
+    use_cf = _USE_CF_DOCSTRING if not gp_method else ""
 
     mask_docstring = _MASK_DOCSTRING_TEMPLATE.format(
         dtype=dtype,
@@ -129,6 +139,7 @@ def _inject_mask_docstring(is_3D, gp_method):
         gp_doc=gp_doc,
         overlap=overlap,
         flags=flags,
+        use_cf=use_cf,
     )
 
     return mask_docstring
@@ -145,6 +156,7 @@ def _mask(
     method=None,
     wrap_lon=None,
     as_3D=False,
+    use_cf=None,
 ):
     """
     internal function to create a mask
@@ -163,8 +175,7 @@ def _mask(
     if not _is_numeric(numbers):
         raise ValueError("'numbers' must be numeric")
 
-    lat_orig = lat
-    lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
+    lon, lat = _get_coords(lon_or_obj, lat, lon_name, lat_name, use_cf)
 
     # determine whether unstructured grid
     # have to do this before np.asarray
@@ -181,8 +192,8 @@ def _mask(
                 "be converted to degree?"
             )
 
-    lon = np.asarray(lon)
-    lat = np.asarray(lat)
+    lon_arr = np.asarray(lon)
+    lat_arr = np.asarray(lat)
 
     # automatically detect whether wrapping is necessary
     if wrap_lon is None:
@@ -194,18 +205,18 @@ def _mask(
         wrap_lon_ = wrap_lon
 
     if wrap_lon_:
-        lon = _wrapAngle(lon, wrap_lon_, is_unstructured=is_unstructured)
+        lon_arr = _wrapAngle(lon_arr, wrap_lon_, is_unstructured=is_unstructured)
 
     if method not in (None, "rasterize", "shapely", "pygeos"):
         msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
         raise ValueError(msg)
 
     if method is None:
-        method = _determine_method(lon, lat)
+        method = _determine_method(lon_arr, lat_arr)
     elif method == "shapely" and has_shapely_2:
         method = "shapely_2"
     elif method == "rasterize":
-        method = _determine_method(lon, lat)
+        method = _determine_method(lon_arr, lat_arr)
         if "rasterize" not in method:
             msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
             raise ValueError(msg)
@@ -234,22 +245,22 @@ def _mask(
         mask_func = _mask_shapely_v2
         kwargs = {"is_unstructured": is_unstructured}
 
-    mask = mask_func(lon, lat, outlines, numbers=numbers, as_3D=as_3D, **kwargs)
+    mask = mask_func(lon_arr, lat_arr, outlines, numbers=numbers, as_3D=as_3D, **kwargs)
 
     # not False required
     if wrap_lon is not False:
         # treat the points at -180°E/0°E and -90°N
         mask = _mask_edgepoints_shapely(
             mask,
-            lon,
-            lat,
+            lon_arr,
+            lat_arr,
             outlines,
             numbers,
             is_unstructured=is_unstructured,
             as_3D=as_3D,
         )
 
-    return mask_to_dataarray(mask, lon_or_obj, lat_orig, lon_name, lat_name)
+    return mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
 
 
 def _mask_2D(
@@ -262,6 +273,7 @@ def _mask_2D(
     lat_name=None,
     method=None,
     wrap_lon=None,
+    use_cf=None,
 ):
 
     mask = _mask(
@@ -274,6 +286,7 @@ def _mask_2D(
         lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
+        use_cf=use_cf,
     )
 
     if np.all(np.isnan(mask)):
@@ -297,6 +310,7 @@ def _mask_3D(
     method=None,
     wrap_lon=None,
     as_3D=False,
+    use_cf=None,
 ):
 
     mask = _mask(
@@ -310,6 +324,7 @@ def _mask_3D(
         method=method,
         wrap_lon=wrap_lon,
         as_3D=as_3D,
+        use_cf=use_cf,
     )
 
     if as_3D:
@@ -408,20 +423,7 @@ def _determine_method(lon, lat):
     return "shapely"
 
 
-def _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name):
-    # extract lon/ lat via __getitem__
-    if lat is None:
-        lon = lon_or_obj[lon_name]
-        lat = lon_or_obj[lat_name]
-    else:
-        lon = lon_or_obj
-
-    return lon, lat
-
-
-def mask_to_dataarray(mask, lon_or_obj, lat=None, lon_name="lon", lat_name="lat"):
-
-    lon, lat = _extract_lon_lat(lon_or_obj, lat, lon_name, lat_name)
+def mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat"):
 
     if sum(isinstance(c, xr.DataArray) for c in (lon, lat)) == 1:
         raise ValueError("Cannot handle coordinates with mixed types!")
