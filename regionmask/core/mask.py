@@ -34,11 +34,11 @@ Parameters
 {gp_doc}lon_or_obj : object or array_like
     Can either be a longitude array and then ``lat`` needs to be
     given. Or an object where the longitude and latitude can be
-    retrieved as: ``lon = lon_or_obj[lon_name]`` and
-    ``lat = lon_or_obj[lat_name]``.
+    retrieved from, either using cf_xarray or by the names "lon"
+    and "lat". See also ``use_cf``.
 lat : array_like, optional
     If ``lon_or_obj`` is a longitude array, the latitude needs to be
-    specified here.
+    passed.
 {drop_doc}lon_name : str, optional
     Deprecated. Name of longitude in ``lon_or_obj``, default: "lon".
 lat_name : str, optional
@@ -115,8 +115,8 @@ flag : str, default: "abbrevs"
 _USE_CF_DOCSTRING = """\
 use_cf : bool, default: None
     Whether to use ``cf_xarray`` to infer the names of the x and y coordinates. If None
-    uses cf_xarray if the coord names are unambigous. If True uses cf_xarray in any case
-    if False does not use cf_xarray.
+    uses cf_xarray if the coord names are unambigous. If True requires cf_xarray if
+    False does not use cf_xarray.
 """
 
 

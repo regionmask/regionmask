@@ -23,7 +23,7 @@ Enhancements
 ~~~~~~~~~~~~
 
 - Can now autodetect longitude and latitude coordinates from `cf metadata <http://cfconventions.org/>`__`
-  if the optional dependency `cf_xarray <https://cf-xarray.readthed  ocs.io/en/latest/flags.html>`__
+  if the optional dependency `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/coord_axes.html>`__
   is installed  (:pull:`393`, :issue:`364`).
 - 2D masks (e.g. :py:meth:`Regions.mask`) now contain `flag_values` and `flag_values` as
   attributes (`attrs`). Together with `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/flags.html>`__
