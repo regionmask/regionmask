@@ -21,7 +21,23 @@ def _get_coords(lon_or_obj, lat, lon_name, lat_name, use_cf):
     if use_cf:
         return _get_coords_cf(lon_or_obj)
 
-    return lon_or_obj[lon_name], lon_or_obj[lat_name]
+    return _from_mapping(lon_or_obj, lon_name), _from_mapping(lon_or_obj, lat_name)
+
+
+def _from_mapping(lon_or_obj, name):
+
+    try:
+        return lon_or_obj[name]
+    except KeyError:
+
+        msg = (
+            f"Could not get ``{name}`` from ``lon_or_obj``. Please pass lon and lat "
+            "directly"
+        )
+
+        msg += "." if has_cf_xarray else "or try installing cf_xarray."
+
+        raise KeyError(msg)
 
 
 def _get_cf_coords(obj, name, required=False):
