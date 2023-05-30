@@ -15,6 +15,7 @@ Top-level functions
    mask_geopandas
    mask_3D_geopandas
    from_geopandas
+   flatten_3D_mask
    plot_3D_mask
    set_options
    get_options

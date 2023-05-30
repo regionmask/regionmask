@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 
 from ._deprecate import _deprecate_positional_args
-from .utils import _flatten_polygons
+from .utils import _flatten_polygons, flatten_3D_mask
 
 
 def _polygons_coords(polygons):
@@ -496,27 +496,6 @@ def plot_3D_mask(mask_3D, **kwargs):
 
     """
 
-    import xarray as xr
-
-    if not isinstance(mask_3D, xr.DataArray):
-        raise ValueError("expected a xarray.DataArray")
-
-    if not mask_3D.ndim == 3:
-        raise ValueError(f"``mask_3D`` must have 3 dimensions, found {mask_3D.ndim}")
-
-    if "region" not in mask_3D.coords:
-        raise ValueError("``mask_3D`` must contain the dimension 'region'")
-
-    if (mask_3D.sum("region") > 1).any():
-        warnings.warn(
-            "Found overlapping regions which cannot correctly be displayed on a 2D map",
-            RuntimeWarning,
-        )
-
-    # flatten the mask
-    mask_2D = (mask_3D * mask_3D.region).sum("region")
-
-    # mask all gridpoints not belonging to any region
-    mask_2D = mask_2D.where(mask_3D.any("region"))
+    mask_2D = flatten_3D_mask(mask_3D)
 
     return mask_2D.plot.pcolormesh(**kwargs)

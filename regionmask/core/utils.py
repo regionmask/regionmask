@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import xarray as xr
 
@@ -224,3 +226,42 @@ def unpackbits(numbers, num_bits):
     # avoid casting to float64
     out = np.empty(numbers.shape[0:1] + (num_bits,), dtype=bool)
     return np.bitwise_and(numbers, mask, out=out, casting="unsafe").reshape(shape)
+
+
+def flatten_3D_mask(mask_3D):
+    """flatten 3D masks
+
+    Parameters
+    ----------
+    mask_3D : xr.DataArray
+        3D mask to flatten and plot. Should be the result of
+        `Regions.mask_3D(...)`.
+    **kwargs : keyword arguments
+        Keyword arguments passed to xr.plot.pcolormesh.
+
+    Returns
+    -------
+    mesh : ``matplotlib.collections.QuadMesh``
+
+    """
+
+    if not isinstance(mask_3D, xr.DataArray):
+        raise ValueError("expected a xarray.DataArray")
+
+    if not mask_3D.ndim == 3:
+        raise ValueError(f"``mask_3D`` must have 3 dimensions, found {mask_3D.ndim}")
+
+    if "region" not in mask_3D.coords:
+        raise ValueError("``mask_3D`` must contain the dimension 'region'")
+
+    if (mask_3D.sum("region") > 1).any():
+        warnings.warn(
+            "Found overlapping regions which cannot correctly be reduced to a 2D mask",
+            RuntimeWarning,
+        )
+
+    # flatten the mask
+    mask_2D = (mask_3D * mask_3D.region).sum("region")
+
+    # mask all gridpoints not belonging to any region
+    return mask_2D.where(mask_3D.any("region"))
