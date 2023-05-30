@@ -37,16 +37,6 @@ For faster loading of shapefiles
   shapefiles. Currently only used for natural earth data (as the other data is loaded
   reasonanbly fast with fiona).
 
-For faster masking
-~~~~~~~~~~~~~~~~~~
-
-.. note::
-   pygeos is being deprecated in favour if the upcoming release of shapely 2.0. As soon
-   as shapely 2.0 is released there is no longer an advantage in installing pygeos.
-
-- `pygeos <https://pygeos.readthedocs.io/en/stable/>`__ (0.9 or later) enables faster mask creations for
-  irregular and 2D grids.
-
 Instructions
 ------------
 
@@ -56,7 +46,7 @@ on the conda-forge channel.
 
 .. code-block:: bash
 
-    conda install -c conda-forge regionmask cartopy pygeos
+    conda install -c conda-forge regionmask cartopy
 
 All required dependencies can be installed with pip. You can thus install regionmask
 directly:

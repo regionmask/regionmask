@@ -13,7 +13,6 @@ dependencies:
   - numpy
   - packaging
   - pooch
-  - pygeos
   - pyogrio
   - rasterio
   - xarray
