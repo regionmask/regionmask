@@ -211,6 +211,15 @@ def _mask(
         msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
         raise ValueError(msg)
 
+    if method is not None:
+        warnings.warn(
+            "The ``method`` argument is internal and  will be removed in the future."
+            " Setting the ``method`` (i.e. backend) should not be necessary. Please"
+            " raise an issue if you require it.",
+            FutureWarning,
+            stacklevel=5,
+        )
+
     if method is None:
         method = _determine_method(lon_arr, lat_arr)
     elif method == "shapely" and has_shapely_2:

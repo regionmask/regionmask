@@ -97,6 +97,14 @@ def test_mask(method):
     xr.testing.assert_identical(result, expected)
 
 
+# @pytest.mark.filterwarnings("error:The ``method`` argument is internal")
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_method_internal(method):
+
+    with pytest.warns(FutureWarning, match="The ``method`` argument is internal"):
+        dummy_region.mask(dummy_ds, method=method)
+
+
 @pytest.mark.skipif(has_pygeos, reason="Only errors if pygeos is missing")
 def test_missing_pygeos_error():
 
