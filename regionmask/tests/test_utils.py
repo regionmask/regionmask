@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+import regionmask
 from regionmask.core.utils import (
     _create_dict_of_numbered_string,
     _equally_spaced_on_split_lon,
@@ -11,6 +12,7 @@ from regionmask.core.utils import (
     _sanitize_names_abbrevs,
     create_lon_lat_dataarray_from_bounds,
     equally_spaced,
+    flatten_3D_mask,
     unpackbits,
 )
 
@@ -285,3 +287,43 @@ def test_unpackbits_roundtrip(numbers, n_bits):
     result = (unpackbits(np.array(numbers), n_bits) * numbers).sum(axis=1)
 
     np.testing.assert_equal(result, numbers)
+
+
+def test_flatten_3D_mask_wrong_input():
+
+    lon = np.arange(-180, 180, 2)
+    lat = np.arange(90, -91, -2)
+    srex = regionmask.defined_regions.srex
+
+    mask_2D = srex.mask(lon, lat)
+    mask_3D = srex.mask_3D(lon, lat)
+
+    with pytest.raises(ValueError, match="expected a xarray.DataArray"):
+        flatten_3D_mask(None)
+
+    with pytest.raises(ValueError, match="``mask_3D`` must have 3 dimensions"):
+        flatten_3D_mask(mask_2D)
+
+    with pytest.raises(ValueError, match="must contain the dimension 'region'"):
+        flatten_3D_mask(mask_2D.expand_dims("foo"))
+
+    expected = mask_2D.values
+    result = flatten_3D_mask(mask_3D)
+
+    np.testing.assert_equal(result, expected)
+
+
+def test_flatten_3D_mask_overlap():
+
+    lon = np.arange(-180, 180, 2)
+    lat = np.arange(90, -91, -2)
+
+    outline_GLOB = np.array(
+        [[-180.0, 90.0], [-180.0, -90.0], [180.0, -90.0], [180.0, 90.0]]
+    )
+    region = regionmask.Regions([outline_GLOB, outline_GLOB], overlap=True)
+
+    mask_3D = region.mask_3D(lon, lat)
+
+    with pytest.warns(RuntimeWarning, match="overlapping regions"):
+        flatten_3D_mask(mask_3D)
