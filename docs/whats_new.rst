@@ -19,8 +19,8 @@ v0.11.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
-- Removed support for Python 3.7 (:pull:`288`).
-- The minimum versions of some dependencies were changed (:pull:`311`):
+- Removed support for Python 3.7 (:pull:`424`).
+- The minimum versions of some dependencies were changed (:pull:`424`):
 
   ============ ===== =====
   Package      Old   New
