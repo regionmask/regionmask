@@ -21,9 +21,9 @@ These instructions assume that `upstream` refers to the main repository
    git pull upstream main
    ```
 1. Check that the tests and ReadTheDocs build is passing!
-1. Tag the release (remove the curly braces):
+1. Tag the release:
    ```sh
-   git tag -a v{0.X.Y} -m 'v{0.X.Y}'
+   git tag -a v0.X.Y -m 'v0.X.Y'
    ```
 1. Ensure the dependencies for building are installed:
    ```sh
@@ -48,7 +48,7 @@ These instructions assume that `upstream` refers to the main repository
 1. Use twine to register and upload the release on PyPI. Be careful, you can't take this
    back!
    ```sh
-   twine upload dist/regionmask-{0.X.Y}*
+   twine upload dist/*
    ```
    You will need to be listed as a package owner at <https://pypi.python.org/pypi/regionmask>
    for this to work.
@@ -57,12 +57,11 @@ These instructions assume that `upstream` refers to the main repository
    git push upstream main
    git push upstream --tags
    ```
-1. Add a section for the next release {0.X.Y+1} to doc/whats-new.rst:
+1. Add a section for the next release to doc/whats-new.rst:
    ```rst
-   .. _whats-new.{0.X.Y+1}:
 
-   v{0.X.Y+1} (unreleased)
-   -----------------------
+   v0.X.Y (unreleased)
+   --------------------
 
    Breaking Changes
    ~~~~~~~~~~~~~~~~
