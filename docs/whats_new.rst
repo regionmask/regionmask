@@ -10,8 +10,8 @@ What's New
 
 .. _whats-new.0.10.0:
 
-v0.10.0 (unreleased)
-----------------------
+v0.10.0 (31.05.2023)
+--------------------
 
 regionmask v0.10.0 brings support for `cf_xarray <https://cf-xarray.readthedocs.io>`__,
 which allows to auto-detect coordinate names using and handling of region names in 2D
@@ -32,7 +32,7 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
-- Can now autodetect longitude and latitude coordinates from `cf metadata <http://cfconventions.org/>`__`
+- Can now autodetect longitude and latitude coordinates from `cf metadata <http://cfconventions.org/>`__
   if the optional dependency `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/coord_axes.html>`__
   is installed  (:pull:`393`, :issue:`364`).
 - 2D masks (e.g. :py:meth:`Regions.mask`) now contain `flag_values` and `flag_meanings` as
@@ -46,7 +46,7 @@ Enhancements
 - Better error when passing a single region without wrapping it into a list or tuple (:issue:`372`).
 - Added :py:class:`set_options` to regionmask which can, currently, be used to control
   the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
-- Create faster masks with shapely 2.0, which replaces pygeos (:pull:`#349`).
+- Create faster masks with shapely 2.0, which replaces pygeos (:pull:`349`).
 - Allow setting the cache location manually: ``regionmask.set_options(cache_dir="~/.rmask")``.
   The default location is given by ``pooch.os_cache("regionmask")``, i.e. `~/.cache/regionmask/`
   on unix-like operating systems (:pull:`403`).
@@ -63,8 +63,8 @@ Docs
 ~~~~
 
 - The version number should now be displayed correctly again on readthedocs. Formerly
-  regionmask was installed from a dirty git archive, thus setuptools_scm did not
-  report the correct version number (:pull:`348`, see also `readthedocs/readthedocs.org#8201
+  regionmask was installed from a dirty and shallow git archive, thus setuptools_scm did not
+  report the correct version number (:pull:`348`, :pull:`421` see also `readthedocs/readthedocs.org#8201
   <https://github.com/readthedocs/readthedocs.org/issues/8201>`_).
 
 Internal Changes
