@@ -13,11 +13,21 @@ What's New
 v0.10.0 (unreleased)
 ----------------------
 
+regionmask v0.10.0 brings support for `cf_xarray <https://cf-xarray.readthedocs.io>`__,
+which allows to auto-detect coordinate names using and handling of region names in 2D
+masks. It also supports shapely 2.0 and creating overlapping 3D masks has become faster.
+
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Made more arguments keyword-only for several functions and methods, e.g., for
   :py:meth:`Regions.mask`  (:pull:`368`).
+- Passing `lon_name` and `lat_name` to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
+  is deprecated. Please pass the lon and lat coordinates direcly, e.g., `mask*(ds[lon_name], ds[lat_name])`
+  (:issue:`293` and :pull:`371`).
+- Marked the `method` keyword to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
+  as internal and flagged it for removal in a future version. Passing this argument should only
+  be necessary for testing (:pull:`417`).
 
 Enhancements
 ~~~~~~~~~~~~
@@ -25,7 +35,7 @@ Enhancements
 - Can now autodetect longitude and latitude coordinates from `cf metadata <http://cfconventions.org/>`__`
   if the optional dependency `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/coord_axes.html>`__
   is installed  (:pull:`393`, :issue:`364`).
-- 2D masks (e.g. :py:meth:`Regions.mask`) now contain `flag_values` and `flag_values` as
+- 2D masks (e.g. :py:meth:`Regions.mask`) now contain `flag_values` and `flag_meanings` as
   attributes (`attrs`). Together with `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/flags.html>`__
   these can be leveraged to select single (``mask.cf == "CNA"``) or multiple (``mask.cf.isin``)
   regions (:pull:`361`, :issue:`346`).
@@ -44,23 +54,10 @@ Enhancements
 - Added `pyogrio <https://pyogrio.readthedocs.io>`__ as optional dependency. Natural earth
   data shapefiles are now loaded faster, if pyogrio is installed (:pull:`406`).
 
-Deprecations
-~~~~~~~~~~~~
-
-- Passing `lon_name` and `lat_name` to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
-  is deprecated. Please pass the lon and lat coordinates direcly, e.g., `mask*(ds[lon_name], ds[lat_name])`
-  (:issue:`293` and :pull:`371`).
-- Marked the `method` keyword to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
-  as internal and flagged it for removal in a future version. Passing this argument should only
-  be necessary for testing (:pull:`417`).
-
 New regions
 ~~~~~~~~~~~
 
 - Added :py:attr:`natural_earth.countries_10` regions from natural earth (:pull:`396`).
-
-Bug Fixes
-~~~~~~~~~
 
 Docs
 ~~~~
