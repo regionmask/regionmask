@@ -16,10 +16,8 @@ plotting and creation of masks of spatial regions
    :target: https://pypi.python.org/pypi/regionmask/
 .. image:: https://anaconda.org/conda-forge/regionmask/badges/version.svg
    :target: https://anaconda.org/conda-forge/regionmask
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/ambv/black
-.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.6324240.svg
-   :target: https://doi.org/10.5281/zenodo.6324240
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.7990210.svg
+   :target: https://doi.org/10.5281/zenodo.7990210
 
 Create *masks* of geographical *regions* for arbitrary longitude and latitude grids.
 
