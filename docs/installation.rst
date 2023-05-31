@@ -4,14 +4,14 @@ Installation
 Required dependencies
 ---------------------
 
-- Python (3.7 or later)
-- `geopandas <http://geopandas.org/>`__ (0.7 or later)
-- `numpy <http://www.numpy.org/>`__ (1.17 or later)
-- `packaging <https://packaging.pypa.io/en/latest/>`__ (20.0 or later)
-- `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.2 or later)
-- `rasterio <https://rasterio.readthedocs.io/>`__ (1.1 or later)
-- `shapely <http://toblerity.org/shapely/>`__ (1.7 or later)
-- `xarray <http://xarray.pydata.org/>`__ (0.15 or later)
+- Python (3.8 or later)
+- `geopandas <http://geopandas.org/>`__ (0.10 or later)
+- `numpy <http://www.numpy.org/>`__ (1.21 or later)
+- `packaging <https://packaging.pypa.io/en/latest/>`__ (21.3 or later)
+- `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.4 or later)
+- `rasterio <https://rasterio.readthedocs.io/>`__ (1.2 or later)
+- `shapely <http://toblerity.org/shapely/>`__ (1.8 or later)
+- `xarray <http://xarray.pydata.org/>`__ (0.20 or later)
 
 Optional dependencies
 ---------------------
@@ -19,14 +19,14 @@ Optional dependencies
 For plotting
 ~~~~~~~~~~~~
 
-- `matplotlib <http://matplotlib.org/>`__ (3.2 or later) is required to create any plots.
-- `cartopy <http://scitools.org.uk/cartopy/>`__ (0.17 or later) for plotting on
+- `matplotlib <http://matplotlib.org/>`__ (3.5 or later) is required to create any plots.
+- `cartopy <http://scitools.org.uk/cartopy/>`__ (0.20 or later) for plotting on
   geographical maps.
 
 For detecting coords and parsing flag values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/>`__ (0.6.1 or later) allows
+- `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/>`__ (0.7 or later) allows
   to autodetect coordidate names and rich comparison of abbreviations or names of regions
   for 2D masks via ``mask.cf``.
 

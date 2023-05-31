@@ -10,9 +10,8 @@ dependencies:
   - numpy
   - packaging
   - pooch
-  # - pyogrio # not available in py37
+  - pyogrio
   - rasterio
-  - setuptools
   - xarray
 # for testing
   - pytest

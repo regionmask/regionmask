@@ -23,9 +23,7 @@ jobs:
       matrix:
         include:
           - env: "bare-minimum"
-            python-version: "3.7"
-          - env: "min-all-deps"
-            python-version: "3.7"
+            python-version: "3.8"
           - env: "min-all-deps"
             python-version: "3.8"
           - env: "shapely_lt_2"
@@ -103,4 +101,4 @@ jobs:
 
       - name: minimum versions policy
         run: |
-          python ci/min_deps_check.py ci/requirements/py37-min-all-deps.yml ci/requirements/py38-min-all-deps.yml
+          python ci/min_deps_check.py ci/requirements/py38-min-all-deps.yml
