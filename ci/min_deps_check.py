@@ -1,5 +1,6 @@
+#!/usr/bin/env python
 """Fetch from conda database all available versions of the xarray dependencies and their
-publication date. Compare it against requirements/py37-min-all-deps.yml to verify the
+publication date. Compare it against requirements/*-min-all-deps.yml to verify the
 policy on obsolete dependencies is being followed. Print a pretty report :)
 """
 
@@ -10,7 +11,7 @@ policy on obsolete dependencies is being followed. Print a pretty report :)
 import itertools
 import sys
 from datetime import datetime
-from typing import Dict, Iterator, Optional, Tuple
+from typing import Iterator
 
 import conda.api  # type: ignore[import]
 import yaml
@@ -22,33 +23,24 @@ IGNORE_DEPS = {
     "coveralls",
     "flake8",
     "hypothesis",
-    "isort",
+    "isort" "setuptools",
     "mypy",
     "pip",
-    "pytest",
     "pytest-cov",
     "pytest-env",
     "pytest-xdist",
+    "pytest",
 }
 
-POLICY_MONTHS = {"python": 24, "numpy": 18, "setuptools": 42}
+POLICY_MONTHS = {"python": 30, "numpy": 18}
 POLICY_MONTHS_DEFAULT = 12
-POLICY_OVERRIDE = {
-    # setuptools-scm doesn't work with setuptools < 36.7 (Nov 2017).
-    # The conda metadata is malformed for setuptools < 38.4 (Jan 2018)
-    # (it's missing a timestamp which prevents this tool from working).
-    # setuptools < 40.4 (Sep 2018) from conda-forge cannot be installed into a py37
-    # environment
-    # TODO remove this special case and the matching note in installing.rst
-    #      after March 2022.
-    "setuptools": (40, 4),
-}
-has_errors = False
+POLICY_OVERRIDE: dict[str, tuple[int, int]] = {}
+errors = []
 
 
 def error(msg: str) -> None:
-    global has_errors
-    has_errors = True
+    global errors
+    errors.append(msg)
     print("ERROR:", msg)
 
 
@@ -56,12 +48,12 @@ def warning(msg: str) -> None:
     print("WARNING:", msg)
 
 
-def parse_requirements(fname) -> Iterator[Tuple[str, int, int, Optional[int]]]:
+def parse_requirements(fname) -> Iterator[tuple[str, int, int, int | None]]:
     """Load requirements/py*-min-all-deps.yml
 
     Yield (package name, major version, minor version, [patch version])
     """
-    global has_errors
+    global errors
 
     with open(fname) as fh:
         contents = yaml.safe_load(fh)
@@ -88,7 +80,7 @@ def parse_requirements(fname) -> Iterator[Tuple[str, int, int, Optional[int]]]:
             raise ValueError("expected major.minor or major.minor.patch: " + row)
 
 
-def query_conda(pkg: str) -> Dict[Tuple[int, int], datetime]:
+def query_conda(pkg: str) -> dict[tuple[int, int], datetime]:
     """Query the conda repository for a specific package
 
     Return map of {(major version, minor version): publication date}
@@ -120,6 +112,9 @@ def query_conda(pkg: str) -> Dict[Tuple[int, int], datetime]:
                 (3, 6): datetime(2016, 12, 23),
                 (3, 7): datetime(2018, 6, 27),
                 (3, 8): datetime(2019, 10, 14),
+                (3, 9): datetime(2020, 10, 5),
+                (3, 10): datetime(2021, 10, 4),
+                (3, 11): datetime(2022, 10, 24),
             }
         )
 
@@ -127,8 +122,8 @@ def query_conda(pkg: str) -> Dict[Tuple[int, int], datetime]:
 
 
 def process_pkg(
-    pkg: str, req_major: int, req_minor: int, req_patch: Optional[int]
-) -> Tuple[str, str, str, str, str, str]:
+    pkg: str, req_major: int, req_minor: int, req_patch: int | None
+) -> tuple[str, str, str, str, str, str]:
     """Compare package version from requirements file to available versions in conda.
     Return row to build pandas dataframe:
 
@@ -170,9 +165,9 @@ def process_pkg(
         status = "> (!)"
         delta = relativedelta(datetime.now(), policy_published_actual).normalized()
         n_months = delta.years * 12 + delta.months
-        error(
-            f"Package is too new: {pkg}={req_major}.{req_minor} was "
-            f"published on {versions[req_major, req_minor]:%Y-%m-%d} "
+        warning(
+            f"Package is too new: {pkg}={policy_major}.{policy_minor} was "
+            f"published on {versions[policy_major, policy_minor]:%Y-%m-%d} "
             f"which was {n_months} months ago (policy is {policy_months} months)"
         )
     else:
@@ -199,28 +194,28 @@ def fmt_version(major: int, minor: int, patch: int = None) -> str:
         return f"{major}.{minor}.{patch}"
 
 
-def main() -> None:
-    fnames = sys.argv[1:]
+def main(fname) -> None:
+    rows = [
+        process_pkg(pkg, major, minor, patch)
+        for pkg, major, minor, patch in parse_requirements(fname)
+    ]
 
-    for fname in fnames:
-        print(f"{fname}")
-        print("=" * len(fname))
+    print("\nPackage           Required             Policy               Status")
+    print("----------------- -------------------- -------------------- ------")
+    fmt = "{:17} {:7} ({:10}) {:7} ({:10}) {}"
+    for row in rows:
+        print(fmt.format(*row))
 
-        rows = [
-            process_pkg(pkg, major, minor, patch)
-            for pkg, major, minor, patch in parse_requirements(fname)
-        ]
-
-        print("Package           Required             Policy               Status")
-        print("----------------- -------------------- -------------------- ------")
-        fmt = "{:17} {:7} ({:10}) {:7} ({:10}) {}"
-        for row in rows:
-            print(fmt.format(*row))
-
-        print()
-
-    assert not has_errors
+    if errors:
+        print("\nErrors:")
+        print("-------")
+        for i, e in enumerate(errors):
+            print(f"{i+1}. {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    main()
+    fnames = sys.argv[1:]
+
+    for fname in fnames:
+        main(fname)

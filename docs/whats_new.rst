@@ -13,11 +13,29 @@ What's New
 
 .. _whats-new.{0.11.0}:
 
-v{0.11.0} (unreleased)
-----------------------
+v0.11.0 (unreleased)
+--------------------
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
+
+- Removed support for Python 3.7 (:pull:`288`).
+- The minimum versions of some dependencies were changed (:pull:`311`):
+
+  ============ ===== =====
+  Package      Old   New
+  ============ ===== =====
+  cartopy*     0.17  0.20
+  cf_xarray*   0.6   0.7
+  geopandas    0.7   0.10
+  matplotlib*  3.2   3.5
+  numpy        1.17  1.21
+  pandas       1.2   1.3
+  pooch        1.2   1.4
+  rasterio     1.1   1.2
+  shapely      1.7   1.8
+  xarray       0.15  0.20
+  ============ ===== =====
 
 Enhancements
 ~~~~~~~~~~~~

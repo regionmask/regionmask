@@ -6,14 +6,8 @@ from .core.options import get_options, set_options
 from .core.plot import plot_3D_mask
 from .core.regions import Regions, _OneRegion
 from .core.utils import flatten_3D_mask
+from importlib.metadata import version as _get_version
 
-try:
-    from importlib.metadata import version as _get_version
-except ImportError:
-    # importlib.metadata not available in python 3.7
-    import pkg_resources
-
-    _get_version = lambda pkg: pkg_resources.get_distribution(pkg).version
 
 try:
     __version__ = _get_version("regionmask")

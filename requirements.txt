@@ -2,10 +2,10 @@
 # it exists to let GitHub build the repository dependency graph
 # https://help.github.com/en/github/visualizing-repository-data-with-graphs/listing-the-packages-that-a-repository-depends-on
 
-geopandas >= 0.7
-numpy >= 1.17
+geopandas >= 0.10
+numpy >= 1.21
 packaging >= 21.3
-pooch >= 1.2
-rasterio >= 1.1
-shapely >= 1.7
-xarray >= 0.15
+pooch >= 1.4
+rasterio >= 1.2
+shapely >= 1.8
+xarray >= 0.20
