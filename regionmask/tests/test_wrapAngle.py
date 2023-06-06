@@ -93,11 +93,3 @@ def test_wrapAngle_nan(wrap_lon, lon):
     expected = _wrapAngle(lon, wrap_lon=wrap_lon)
 
     np.testing.assert_equal(result, expected)
-
-
-# def test_wrapAngle_nan(lon):
-
-#     result = _wrapAngle(lon + [np.NaN], wrap_lon=True)[:-1]
-#     expected = _wrapAngle(lon, wrap_lon=)
-
-#     np.testing.assert_equal(result, expected)
