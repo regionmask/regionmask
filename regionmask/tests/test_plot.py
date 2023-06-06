@@ -246,19 +246,6 @@ def test_plot_regions_gca():
 
 
 @requires_cartopy
-def test_plot_deprecated_proj():
-
-    proj = ccrs.PlateCarree()
-    with pytest.warns(FutureWarning, match="'proj' has been renamed to 'projection'"):
-        with figure_context():
-            ax = r1.plot(tolerance=None, proj=proj)
-            assert isinstance(ax.projection, ccrs.PlateCarree)
-
-    with pytest.raises(TypeError, match="Cannot set 'proj' and 'projection'"):
-        r1.plot(tolerance=None, proj=proj, projection=proj)
-
-
-@requires_cartopy
 def test_plot_regions_projection():
 
     # if none is given -> no projection
@@ -314,60 +301,16 @@ def test_plot_lines_multipoly(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-@pytest.mark.filterwarnings("ignore:The 'regions' keyword has been deprecated")
 def test_plot_lines_selection(plotfunc):
 
-    func = getattr(r1, plotfunc)
-
     with figure_context():
-        ax = func(tolerance=None, regions=[0, 1])
+        func = getattr(r1[0, 1], plotfunc)
+
+        ax = func(tolerance=None)
         lines = ax.collections[0].get_segments()
         assert len(lines) == 2
         assert np.allclose(lines[0], outl1_closed)
         assert np.allclose(lines[1], outl2_closed)
-
-    # select a single number
-    with figure_context():
-        ax = func(tolerance=None, regions=0)
-        lines = ax.collections[0].get_segments()
-        assert len(lines) == 1
-        assert np.allclose(lines[0], outl1_closed)
-
-    # select by number
-    with figure_context():
-        ax = func(tolerance=None, regions=[0])
-        lines = ax.collections[0].get_segments()
-        assert len(lines) == 1
-        assert np.allclose(lines[0], outl1_closed)
-
-    # select by long_name
-    with figure_context():
-        ax = func(tolerance=None, regions=["Unit Square1"])
-        lines = ax.collections[0].get_segments()
-        assert len(lines) == 1
-        assert np.allclose(lines[0], outl1_closed)
-
-    # select by abbreviation
-    with figure_context():
-        ax = func(tolerance=None, regions=["uSq1"])
-        lines = ax.collections[0].get_segments()
-        assert len(lines) == 1
-        assert np.allclose(lines[0], outl1_closed)
-
-
-@requires_matplotlib
-@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_regions_kw_deprecated(plotfunc):
-
-    func = getattr(r1, plotfunc)
-
-    with pytest.warns(FutureWarning, match="The 'regions' keyword has been deprecated"):
-        with figure_context():
-            func(tolerance=None, regions=[0, 1])
-
-    with pytest.warns(FutureWarning, match="The 'regions' keyword has been deprecated"):
-        with figure_context():
-            func(tolerance=None, regions="all")
 
 
 @requires_matplotlib
@@ -382,17 +325,6 @@ def test_error_extra_kwarg():
 
 
 # -----------------------------------------------------------------------------
-
-
-@requires_matplotlib
-@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_deprecate_args(plotfunc):
-
-    func = getattr(r1, plotfunc)
-
-    with pytest.warns(FutureWarning, match="Passing 'ax' as positional"):
-        with figure_context():
-            func(None)
 
 
 @requires_matplotlib
@@ -452,20 +384,6 @@ def test_plot_regions_lines_tolerance_cartopy_axes():
         lines = ax.collections[0].get_paths()
         np.testing.assert_allclose(lines[0].vertices.shape, expected)
         np.testing.assert_allclose(lines[1].vertices.shape, expected)
-
-
-@requires_matplotlib
-@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-@pytest.mark.parametrize("subsample", [True, False])
-def test_plot_lines_subsample_deprecated(plotfunc, subsample):
-
-    func = getattr(r1, plotfunc)
-
-    with pytest.warns(
-        FutureWarning, match="The 'subsample' keyword has been deprecated."
-    ):
-        with figure_context():
-            func(subsample=subsample)
 
 
 # -----------------------------------------------------------------------------
@@ -730,21 +648,6 @@ def test_plot_add_coastlines():
         assert len(ax.artists) == 1
         art = ax.artists[0]
         assert art._kwargs == {"edgecolor": "black", "facecolor": "none"}
-
-
-@requires_matplotlib
-@requires_cartopy
-def test_plot_coastlines_deprecated():
-
-    kwargs = dict(tolerance=None, add_label=False)
-
-    with pytest.warns(FutureWarning, match="'coastlines' has been renamed"):
-        with figure_context():
-            ax = r1.plot(coastlines=True, **kwargs)
-            assert len(ax.artists) == 1
-
-    with pytest.raises(TypeError, match="Cannot set 'coastlines' and 'add_coastlines'"):
-        ax = r1.plot(add_coastlines=False, coastlines=True, **kwargs)
 
 
 @requires_matplotlib
