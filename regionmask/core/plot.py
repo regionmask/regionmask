@@ -128,6 +128,7 @@ def _plot(
     line_kws=None,
     text_kws=None,
     resolution="110m",
+    subsample=None,
     add_land=False,
     coastline_kws=None,
     ocean_kws=None,
@@ -269,6 +270,7 @@ def _plot(
         label=label,
         line_kws=line_kws,
         text_kws=text_kws,
+        subsample=subsample,
         label_multipolygon=label_multipolygon,
         tolerance=tolerance,
     )
@@ -334,7 +336,8 @@ def _plot_regions(
 
     if subsample is not None:
         warnings.warn(
-            "The 'subsample' keyword has been deprecated in v0.9.0. Use ``tolerance`` instead.",
+            "The 'subsample' keyword has been deprecated in v0.9.0. Use "
+            "``tolerance`` instead.",
             FutureWarning,
         )
 
