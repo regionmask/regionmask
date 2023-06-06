@@ -40,6 +40,10 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- Can now pass the ``use_cf`` parameter to :py:func:`mask_geopandas` and :py:func:`mask_3D_geopandas`.
+  This could also be counted as a bug fix as these functions could not control the behavior
+  of finding the coords otherwise(:pull:`427`).
+
 New regions
 ~~~~~~~~~~~
 
@@ -69,10 +73,10 @@ Breaking Changes
 
 - Made more arguments keyword-only for several functions and methods, e.g., for
   :py:meth:`Regions.mask`  (:pull:`368`).
-- Passing `lon_name` and `lat_name` to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
-  is deprecated. Please pass the lon and lat coordinates direcly, e.g., `mask*(ds[lon_name], ds[lat_name])`
+- Passing ``lon_name`` and ``lat_name`` to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
+  is deprecated. Please pass the lon and lat coordinates direcly, e.g., ``mask*(ds[lon_name], ds[lat_name])``
   (:issue:`293` and :pull:`371`).
-- Marked the `method` keyword to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
+- Marked the ``method`` keyword to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
   as internal and flagged it for removal in a future version. Passing this argument should only
   be necessary for testing (:pull:`417`).
 
