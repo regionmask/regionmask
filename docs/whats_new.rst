@@ -64,6 +64,8 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- The target url of the remote resources now uses the version (:pull:`431`).
+
 
 v0.10.0 (31.05.2023)
 --------------------
@@ -76,7 +78,7 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Made more arguments keyword-only for several functions and methods, e.g., for
-  :py:meth:`Regions.mask`  (:pull:`368`).
+  :py:meth:`Regions.mask` (:pull:`368`).
 - Passing ``lon_name`` and ``lat_name`` to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
   is deprecated. Please pass the lon and lat coordinates direcly, e.g., ``mask*(ds[lon_name], ds[lat_name])``
   (:issue:`293` and :pull:`371`).
@@ -89,7 +91,7 @@ Enhancements
 
 - Can now autodetect longitude and latitude coordinates from `cf metadata <http://cfconventions.org/>`__
   if the optional dependency `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/coord_axes.html>`__
-  is installed  (:pull:`393`, :issue:`364`).
+  is installed (:pull:`393`, :issue:`364`).
 - 2D masks (e.g. :py:meth:`Regions.mask`) now contain `flag_values` and `flag_meanings` as
   attributes (`attrs`). Together with `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/flags.html>`__
   these can be leveraged to select single (``mask.cf == "CNA"``) or multiple (``mask.cf.isin``)
@@ -413,7 +415,7 @@ Docs
 - Mentioned how to calculate regional medians (:issue:`170`).
 - Mentioned how to open regions specified in a yaml file using intake and fsspec
   (:issue:`93`, :pull:`205`). By `Aaron Spring <https://github.com/aaronspring>`_.
-- Fixed the docstrings using `velin  <https://github.com/Carreau/velin>`__  (:pull:`231`).
+- Fixed the docstrings using `velin <https://github.com/Carreau/velin>`__ (:pull:`231`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -612,7 +614,7 @@ Bug Fixes
 ~~~~~~~~~
 
  - Regions were missing a line when the coords were not closed and
-   :code:`subsample=False`  (:issue:`46`).
+   :code:`subsample=False` (:issue:`46`).
  - Fix a regression introduced by :pull:`47`: when plotting regions containing
    multipolygons :code:`_draw_poly` closed the region again and introduced a spurious
    line (closes :issue:`54`).
