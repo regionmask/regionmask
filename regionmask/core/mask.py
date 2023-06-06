@@ -173,8 +173,8 @@ def _mask(
 
     if lon_name is not None or lat_name is not None:
         warnings.warn(
-            "Passing 'lon_name' and 'lat_name' is deprecated. Please pass the lon and "
-            "lat coordinates direcly, e.g., `mask*(ds[lon_name], ds[lat_name])`.",
+            "Passing 'lon_name' and 'lat_name' was deprecated in v0.10.0. Please pass "
+            "the coordinates direcly, e.g., `mask*(ds[lon_name], ds[lat_name])`.",
             FutureWarning,
         )
 
@@ -221,6 +221,7 @@ def _mask(
         raise ValueError(msg)
 
     if method is not None:
+        # warn private v0.10.0
         warnings.warn(
             "The ``method`` argument is internal and  will be removed in the future."
             " Setting the ``method`` (i.e. backend) should not be necessary. Please"

@@ -40,9 +40,9 @@ region numbers for ``separate_pacific`` and all others are not.
 
 """
 
-DEPRECATION = (
-    "The ``_ar6_pre_revisions`` regions are deprecated and will be removed in a future "
-    "release."
+DEPRECATION_NOTICE = (
+    "The ``_ar6_pre_revisions`` regions have been deprecated in v0.9.0 and will be "
+    "removed in a future release."
 )
 
 
@@ -166,7 +166,7 @@ class ar6_pre_revisions_cls:
 
     @property
     def all(self):
-        warnings.warn(DEPRECATION, FutureWarning)
+        warnings.warn(DEPRECATION_NOTICE, FutureWarning)
         if self._all is None:
 
             self._all = from_geopandas(
@@ -187,7 +187,7 @@ class ar6_pre_revisions_cls:
             r.name = self._name + " (land only)"
             self._land = r
         else:
-            warnings.warn(DEPRECATION, FutureWarning)
+            warnings.warn(DEPRECATION_NOTICE, FutureWarning)
 
         return self._land
 
@@ -198,12 +198,12 @@ class ar6_pre_revisions_cls:
             r.name = self._name + " (ocean only)"
             self._ocean = r
         else:
-            warnings.warn(DEPRECATION, FutureWarning)
+            warnings.warn(DEPRECATION_NOTICE, FutureWarning)
         return self._ocean
 
     @property
     def separate_pacific(self):
-        warnings.warn(DEPRECATION, FutureWarning)
+        warnings.warn(DEPRECATION_NOTICE, FutureWarning)
         if self._separate_pacific is None:
             # need to fix the duplicates
             df = self._df.copy()
