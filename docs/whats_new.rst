@@ -50,6 +50,8 @@ New regions
 Bug Fixes
 ~~~~~~~~~
 
+- Fix the detection of edge points at -180°E or 0°E if longitude values contain ``NA``
+  values (:issue:`426`).
 - Fix the wrapping of longitudes that contain ``NA`` values and simplify the ``_wrapAngle``
   function. Note the wrapping does not dependend on the longitude coordinates since
   :pull:`271` and thus this bug did not affect users since v0.8.0 (:pull:`425`).

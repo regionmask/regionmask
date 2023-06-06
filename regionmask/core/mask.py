@@ -501,7 +501,7 @@ def _mask_edgepoints_shapely(
         mask_unassigned = np.isnan(mask)
 
     # find points at -180°E/0°E
-    if lon.min() < 0:
+    if np.nanmin(lon) < 0:
         LON_180W_or_0E = np.isclose(LON, -180.0) & mask_unassigned
     else:
         LON_180W_or_0E = np.isclose(LON, 0.0) & mask_unassigned

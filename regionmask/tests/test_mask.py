@@ -876,6 +876,20 @@ def test_mask_whole_grid(method, regions, lon):
     assert mask.sel(lat=-90).isnull().all()
 
 
+@pytest.mark.parametrize("regions", [r_GLOB_180, r_GLOB_360])
+@pytest.mark.parametrize("lon", [lon180, lon360])
+def test_mask_whole_grid_nan_lon(regions, lon):
+    # https://github.com/regionmask/regionmask/issues/426
+
+    lat = np.arange(90, -91, -10)
+    lon = np.concatenate([lon, [np.NaN]])
+    mask = regions.mask(lon, lat)
+
+    assert mask.isel(lon=-1).isnull().all()
+
+    assert (mask.isel(lon=slice(None, -1)) == 0).all()
+
+
 @pytest.mark.parametrize("method", MASK_METHODS)
 @pytest.mark.parametrize("regions", [r_GLOB_180, r_GLOB_360])
 def test_mask_whole_grid_unusual_lon(method, regions):
