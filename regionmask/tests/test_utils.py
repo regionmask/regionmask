@@ -85,7 +85,7 @@ def test_is_180():
     # allow for small rounding errors
     assert _is_180(-180.0000002, 180.0000002)
 
-    with pytest.raises(ValueError, match="lon has both data that is larger than 180"):
+    with pytest.raises(ValueError, match="lon has data that is larger than 180"):
         _is_180(-1, 181)
 
     with pytest.raises(ValueError, match="and smaller than 0. Additional text."):

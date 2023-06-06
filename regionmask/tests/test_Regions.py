@@ -264,10 +264,10 @@ def test_lon_extent():
     outl_ = ((-1, 0), (-1, 1), (360, 1.0), (360, 0))
     test_regions_ = Regions([outl_])
 
-    with pytest.raises(ValueError, match="lon has both data that is larger than 180 "):
+    with pytest.raises(ValueError, match="lon has data that is larger than 180 "):
         test_regions_.lon_180
 
-    with pytest.raises(ValueError, match="lon has both data that is larger than 180 "):
+    with pytest.raises(ValueError, match="lon has data that is larger than 180 "):
         test_regions_.lon_360
 
 

@@ -79,25 +79,24 @@ def _wrapAngle(lon, wrap_lon=True, is_unstructured=False):
         lon = [lon]
 
     lon = np.array(lon)
-    new_lon = lon
 
     if wrap_lon is True:
-        _is_180(lon.min(), lon.max(), msg_add="Cannot infer the transformation.")
+        mn, mx = np.nanmin(lon), np.nanmax(lon)
+        msg = "Cannot infer the transformation."
+        wrap_lon = 360 if _is_180(mn, mx, msg_add=msg) else 180
 
-    wl = int(wrap_lon)
+    if wrap_lon == 180:
+        lon = _wrapAngle180(lon)
 
-    if wl == 180 or (wl != 360 and lon.max() > 180):
-        new_lon = _wrapAngle180(lon.copy())
-
-    if wl == 360 or (wl != 180 and lon.min() < 0):
-        new_lon = _wrapAngle360(lon.copy())
+    if wrap_lon == 360:
+        lon = _wrapAngle360(lon)
 
     # check if they are still unique
-    if new_lon.ndim == 1 and not is_unstructured:
-        if new_lon.shape != np.unique(new_lon).shape:
+    if lon.ndim == 1 and not is_unstructured:
+        if lon.shape != np.unique(lon).shape:
             raise ValueError("There are equal longitude coordinates (when wrapped)!")
 
-    return new_lon
+    return lon
 
 
 def _is_180(lon_min, lon_max, msg_add=""):
@@ -106,7 +105,7 @@ def _is_180(lon_min, lon_max, msg_add=""):
     lon_max = np.round(lon_max, 6)
 
     if (lon_min < 0) and (lon_max > 180):
-        msg = "lon has both data that is larger than 180 and smaller than 0. " + msg_add
+        msg = f"lon has data that is larger than 180 and smaller than 0. {msg_add}"
         raise ValueError(msg)
 
     return lon_max <= 180
