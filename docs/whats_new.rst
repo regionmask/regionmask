@@ -46,6 +46,10 @@ New regions
 Bug Fixes
 ~~~~~~~~~
 
+- Fix the wrapping of longitudes that contain ``NA`` values and simplify the ``_wrapAngle``
+  function. Note the wrapping does not dependend on the longitude coordinates since
+  :pull:`271` and thus this bug did not affect users since v0.8.0 (:pull:`425`).
+
 Docs
 ~~~~
 
