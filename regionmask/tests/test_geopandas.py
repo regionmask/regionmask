@@ -12,8 +12,10 @@ from regionmask.core._geopandas import (
     _enumerate_duplicates,
 )
 
+from . import requires_cf_xarray
 from .utils import (
     dummy_ds,
+    dummy_ds_cf,
     dummy_region,
     dummy_region_overlap,
     expected_mask_2D,
@@ -362,3 +364,24 @@ def test_raise_on_non_numeric_numbers(geodataframe_clean, func):
 
     with pytest.raises(ValueError, match="'numbers' must be numeric"):
         func(geodataframe_clean, dummy_ds.lon, dummy_ds.lat, numbers="abbrevs")
+
+
+@requires_cf_xarray
+@pytest.mark.parametrize("use_cf", (True, None))
+def test_mask_use_cf_mask_2D(geodataframe_clean, use_cf):
+
+    result = mask_geopandas(geodataframe_clean, dummy_ds_cf, use_cf=use_cf)
+
+    expected = expected_mask_2D(lon_name="longitude", lat_name="latitude")
+    xr.testing.assert_equal(result, expected)
+
+
+@requires_cf_xarray
+@pytest.mark.parametrize("use_cf", (True, None))
+def test_mask_use_cf_mask_3D(geodataframe_clean, use_cf):
+
+    result = mask_3D_geopandas(geodataframe_clean, dummy_ds_cf, use_cf=use_cf)
+
+    expected = expected_mask_3D(drop=True, lon_name="longitude", lat_name="latitude")
+    expected = expected.drop_vars(["names", "abbrevs"])
+    xr.testing.assert_equal(result, expected)

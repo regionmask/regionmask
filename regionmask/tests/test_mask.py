@@ -910,6 +910,7 @@ def test_inject_mask_docstring():
 
     assert "3D" in result
     assert "2D" not in result
+    assert "boolean" in result
     assert "drop :" in result
     assert "geodataframe" in result
     assert "overlap" in result
@@ -918,7 +919,7 @@ def test_inject_mask_docstring():
     result = _inject_mask_docstring(False, False)
 
     assert "2D" in result
-    assert "3D" not in result
+    assert "float" in result
     assert "drop :" not in result
     assert "geodataframe" not in result
     assert "overlap" not in result

@@ -36,17 +36,21 @@ Parameters
     given. Or an object where the longitude and latitude can be
     retrieved from, either using cf_xarray or by the names "lon"
     and "lat". See also ``use_cf``.
+
 lat : array_like, optional
     If ``lon_or_obj`` is a longitude array, the latitude needs to be
     passed.
+
 {drop_doc}lon_name : str, optional
     Deprecated. Name of longitude in ``lon_or_obj``, default: "lon".
+
 lat_name : str, optional
     Deprecated. Name of latgitude in ``lon_or_obj``, default: "lat"
+
 {numbers_doc}method : "rasterize" | "shapely" | "pygeos". Default: None
-    Method used to determine whether a gridpoint lies in a region.
-    All methods lead to the same mask. If None (default)
-    autoselects the method.
+    Deprecated. Backend used to determine whether a gridpoint lies in a region.
+    All backends lead to the same mask. If None autoselects the backend.
+
 wrap_lon : bool | 180 | 360, optional
     Whether to wrap the longitude around, inferred automatically.
     If the regions and the provided longitude do not have the same
@@ -61,11 +65,18 @@ wrap_lon : bool | 180 | 360, optional
     - ``180``: Wraps longitude coordinates to `[-180, 180[`
     - ``360``: Wraps longitude coordinates to `[0, 360[`
 
-{overlap}{flags}{use_cf}
+{overlap}{flags}use_cf : bool, default: None
+    Whether to use ``cf_xarray`` to infer the names of the x and y coordinates. If None
+    uses cf_xarray if the coord names are unambigous. If True requires cf_xarray if
+    False does not use cf_xarray.
 
 Returns
 -------
 mask_{nd} : {dtype} xarray.DataArray
+
+See Also
+--------
+Regions.{see_also}
 
 References
 ----------
@@ -75,6 +86,7 @@ See https://regionmask.readthedocs.io/en/stable/notebooks/method.html
 _GP_DOCSTRING = """\
 geodataframe : GeoDataFrame or GeoSeries
     Object providing the region definitions (polygons).
+
 """
 
 _NUMBERS_DOCSTRING = """\
@@ -82,6 +94,7 @@ numbers : str, optional
     Name of the column to use for numbering the regions.
     This column must not have duplicates. If None (default),
     takes ``geodataframe.index.values``.
+
 """
 
 
@@ -90,6 +103,7 @@ drop : boolean, default: True
     If True (default) drops slices where all elements are False (i.e no
     gridpoints are contained in a region). If False returns one slice per
     region.
+
 """
 
 _OVERLAP_DOCSTRING = """\
@@ -101,6 +115,7 @@ overlap : bool, default: False
     assigned to the region with the higher number (this may change in a future version).
 
     There is (currently) no automatic detection of overlapping regions.
+
 """
 
 _FLAG_DOCSTRING = """\
@@ -110,26 +125,20 @@ flag : str, default: "abbrevs"
     nothing is added. Using cf_xarray these can be used to select single
     (``mask.cf == "CNA"``) or multiple (``mask.cf.isin``) regions. Note that spaces are
     replaced by underscores.
-"""
 
-_USE_CF_DOCSTRING = """\
-use_cf : bool, default: None
-    Whether to use ``cf_xarray`` to infer the names of the x and y coordinates. If None
-    uses cf_xarray if the coord names are unambigous. If True requires cf_xarray if
-    False does not use cf_xarray.
 """
 
 
 def _inject_mask_docstring(is_3D, gp_method):
 
-    dtype = "float" if is_3D else "boolean"
+    dtype = "boolean" if is_3D else "float"
     nd = "3D" if is_3D else "2D"
     drop_doc = _DROP_DOCSTRING if is_3D else ""
     numbers_doc = _NUMBERS_DOCSTRING if gp_method else ""
     gp_doc = _GP_DOCSTRING if gp_method else ""
     overlap = _OVERLAP_DOCSTRING if (gp_method and is_3D) else ""
     flags = _FLAG_DOCSTRING if not (gp_method or is_3D) else ""
-    use_cf = _USE_CF_DOCSTRING if not gp_method else ""
+    see_also = "mask" if is_3D else "mask_3D"
 
     mask_docstring = _MASK_DOCSTRING_TEMPLATE.format(
         dtype=dtype,
@@ -139,7 +148,7 @@ def _inject_mask_docstring(is_3D, gp_method):
         gp_doc=gp_doc,
         overlap=overlap,
         flags=flags,
-        use_cf=use_cf,
+        see_also=see_also,
     )
 
     return mask_docstring

@@ -223,6 +223,7 @@ def mask_geopandas(
     numbers=None,
     method=None,
     wrap_lon=None,
+    use_cf=None,
 ):
 
     polygons, lon_bounds, numbers = _prepare_gdf_for_mask(
@@ -239,6 +240,7 @@ def mask_geopandas(
         lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
+        use_cf=use_cf,
     )
 
 
@@ -258,6 +260,7 @@ def mask_3D_geopandas(
     method=None,
     wrap_lon=None,
     overlap=False,
+    use_cf=None,
 ):
 
     polygons, lon_bounds, numbers = _prepare_gdf_for_mask(
@@ -276,6 +279,7 @@ def mask_3D_geopandas(
         method=method,
         wrap_lon=wrap_lon,
         as_3D=overlap,
+        use_cf=use_cf,
     )
 
     return mask_3D
