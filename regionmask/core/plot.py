@@ -2,7 +2,6 @@ import warnings
 
 import numpy as np
 
-from ._deprecate import _deprecate_positional_args
 from .utils import _flatten_polygons, flatten_3D_mask
 
 
@@ -117,16 +116,14 @@ def _maybe_gca(**kwargs):
     return plt.axes(**kwargs)
 
 
-@_deprecate_positional_args("0.8.0")
 def _plot(
     self,
     *,
     ax=None,
     projection=None,
-    regions=None,
     add_label=True,
     label="number",
-    add_coastlines=None,
+    add_coastlines=True,
     add_ocean=False,
     line_kws=None,
     text_kws=None,
@@ -138,7 +135,6 @@ def _plot(
     land_kws=None,
     label_multipolygon="largest",
     tolerance="auto",
-    **kwargs,
 ):
     """
     plot map with with region outlines
@@ -152,12 +148,6 @@ def _plot(
     projection : cartopy projection, default: None
         Defines the projection of the map. If None uses 'PlateCarree'.
         See cartopy home page.
-
-    regions : list of int or str | 'all', default: 'all'
-        Deprecated - subset regions before plotting, i.e. use `r[regions].plot()`
-        instead of `r.plot(regions=regions)`.
-        Select the regions (by number, abbrev or name, can be mixed)
-        that should be drawn.
 
     add_label : bool, default: True
         If true labels the regions.
@@ -182,9 +172,6 @@ def _plot(
     resolution : '110m' | '50m' | '10m', default: '110m'
         Specify the resolution of the coastline and the ocean dataset.
         See cartopy for details.
-
-    subsample : None or bool, default: None
-        Deprecated, use tolerance.
 
     add_land : bool, default: False
         If true adds the land feature. See land_kws.
@@ -223,31 +210,6 @@ def _plot(
     plot internally calls :py:func:`Regions.plot_regions`.
 
     """
-
-    proj = kwargs.pop("proj", None)
-    if proj is not None:
-        if projection is not None:
-            raise TypeError("Cannot set 'proj' and 'projection'.")
-        projection = proj
-        warnings.warn("'proj' has been renamed to 'projection'", FutureWarning)
-
-    coastlines = kwargs.pop("coastlines", None)
-    if coastlines is not None:
-        if add_coastlines is not None:
-            raise TypeError("Cannot set 'coastlines' and 'add_coastlines'.")
-        add_coastlines = coastlines
-        warnings.warn(
-            "'coastlines' has been renamed to 'add_coastlines'", FutureWarning
-        )
-
-    # part of the deprecation
-    if kwargs:
-        key = list(kwargs.keys())[0]
-        raise TypeError(f"_plot() got an unexpected keyword argument '{key}'")
-
-    # set add_coastlines=True in the fcn signature after the deprecation period
-    if add_coastlines is None:
-        add_coastlines = True
 
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
@@ -304,7 +266,6 @@ def _plot(
 
     self.plot_regions(
         ax=ax,
-        regions=regions,
         add_label=add_label,
         label=label,
         line_kws=line_kws,
@@ -317,12 +278,10 @@ def _plot(
     return ax
 
 
-@_deprecate_positional_args("0.8.0")
 def _plot_regions(
     self,
     *,
     ax=None,
-    regions=None,
     add_label=True,
     label="number",
     line_kws=None,
@@ -340,12 +299,6 @@ def _plot_regions(
         If given, uses existing axes. If not given, uses the current axes or creates new
         axes. In contrast to plot this does not create a cartopy axes.
 
-    regions : list of int or str | 'all', default: "all"
-        Deprecated - subset regions before plotting, i.e. use `r[regions].plot()`
-        instead of `r.plot(regions=regions)`.
-        Select the regions (by number, abbrev or name, can be mixed)
-        that should be drawn.
-
     add_label : bool
         If true labels the regions. Optional, default True.
 
@@ -359,9 +312,6 @@ def _plot_regions(
 
     text_kws : dict, optional
         Arguments passed to the labels (ax.text).
-
-    subsample : None or bool, optional
-        Deprecated, use tolerance.
 
     label_multipolygon : 'largest' | 'all', optional
         If 'largest' only adds a text label for the largest Polygon of a
@@ -384,18 +334,10 @@ def _plot_regions(
 
     """
 
-    if regions is not None:
-        warnings.warn(
-            "The 'regions' keyword has been deprecated. Subset regions before plotting,"
-            " i.e. use `r[regions].plot()` instead of `r.plot(regions=regions)`.",
-            FutureWarning,
-        )
-    else:
-        regions = "all"
-
     if subsample is not None:
         warnings.warn(
-            "The 'subsample' keyword has been deprecated. Use ``tolerance`` instead.",
+            "The 'subsample' keyword has been deprecated in v0.9.0. Use "
+            "``tolerance`` instead.",
             FutureWarning,
         )
 
@@ -423,14 +365,6 @@ def _plot_regions(
     else:
         trans = ax.transData
 
-    if regions == "all":
-        regions = self.numbers
-    else:
-        regions = self.map_keys(regions)
-
-    if np.isscalar(regions):
-        regions = [regions]
-
     if line_kws is None:
         line_kws = dict()
 
@@ -441,7 +375,7 @@ def _plot_regions(
         tolerance = None
 
     # draw the outlines
-    polygons = [self[i].polygon for i in regions]
+    polygons = [self[i].polygon for i in self.numbers]
     _draw_poly(ax, polygons, tolerance=tolerance, transform=trans, **line_kws)
 
     if add_label:
@@ -451,7 +385,7 @@ def _plot_regions(
         col = text_kws.pop("backgroundcolor", "0.85")
         clip_on = text_kws.pop("clip_on", True)
 
-        for i in regions:
+        for i in self.numbers:
             r = self[i]
             txt = str(getattr(r, label))
 

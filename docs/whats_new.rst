@@ -37,6 +37,8 @@ Breaking Changes
   xarray       0.15  0.20
   ============ ===== =====
 
+- Finalize the deprecations for the plot methods from v0.8.0 (:pull:`429`).
+
 Enhancements
 ~~~~~~~~~~~~
 
