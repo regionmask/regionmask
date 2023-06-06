@@ -64,7 +64,7 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- The target url of the remote resources now uses the version its url (:pull:`431`).
+- The target url of the remote resources now uses the version (:pull:`431`).
 
 
 v0.10.0 (31.05.2023)
