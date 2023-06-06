@@ -41,7 +41,7 @@ def test_defined_region(defined_region):
 @pytest.mark.parametrize("defined_region", REGIONS_DEPRECATED, ids=str)
 def test_defined_region_deprecated(defined_region):
 
-    match = "The ``_ar6_pre_revisions`` regions are deprecated"
+    match = "The ``_ar6_pre_revisions`` regions have been deprecated in v0.9.0"
     with pytest.warns(FutureWarning, match=match):
         _test_region(defined_region)
 
