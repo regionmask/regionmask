@@ -21,6 +21,10 @@ _dummy_lon = [0.5, 1.5]
 _dummy_lat = [0.5, 1.5]
 dummy_ds = xr.Dataset(coords={"lon": _dummy_lon, "lat": _dummy_lat})
 
+dummy_ds_cf = dummy_ds.rename(lat="latitude", lon="longitude")
+dummy_ds_cf.latitude.attrs["standard_name"] = "latitude"
+dummy_ds_cf.longitude.attrs["standard_name"] = "longitude"
+
 
 # in this example the result looks:
 # | a fill |

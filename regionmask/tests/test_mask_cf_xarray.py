@@ -2,13 +2,15 @@ import pytest
 import xarray as xr
 
 from . import has_cf_xarray, requires_cf_xarray
-from .utils import dummy_ds, dummy_region, expected_mask_2D, expected_mask_3D
+from .utils import (
+    dummy_ds,
+    dummy_ds_cf,
+    dummy_region,
+    expected_mask_2D,
+    expected_mask_3D,
+)
 
 MASK_METHODS = ["mask", "mask_3D"]
-
-dummy_ds_cf = dummy_ds.rename(lat="latitude", lon="longitude")
-dummy_ds_cf.latitude.attrs["standard_name"] = "latitude"
-dummy_ds_cf.longitude.attrs["standard_name"] = "longitude"
 
 
 @pytest.mark.skipif(has_cf_xarray, reason="must not have cf_xarray")
