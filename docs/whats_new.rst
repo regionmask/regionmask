@@ -65,6 +65,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - The target url of the remote resources now uses the version (:pull:`431`).
+- Better error message when trying to create 2D overlapping mask (:issue:`432`).
 
 
 v0.10.0 (31.05.2023)

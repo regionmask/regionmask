@@ -331,7 +331,8 @@ class Regions:
         if self.overlap:
             raise ValueError(
                 "Creating a 2D mask with overlapping regions yields wrong results. "
-                "Set ``region.overlap = False`` to create a 2D mask anyway."
+                "Please use ``region.mask_3D(...)`` instead. "
+                "To create a 2D mask anyway, set ``region.overlap = False``."
             )
 
         mask_2D = _mask_2D(
