@@ -196,10 +196,6 @@ def _prepare_gdf_for_mask(geodataframe, method, numbers):
     if not isinstance(geodataframe, (GeoDataFrame, GeoSeries)):
         raise TypeError("input must be a geopandas 'GeoDataFrame' or 'GeoSeries'")
 
-    lon_min = geodataframe.bounds["minx"].min()
-    lon_max = geodataframe.bounds["maxx"].max()
-    lon_bounds = [lon_min, lon_max]
-
     polygons = geodataframe.geometry.tolist()
 
     if numbers is not None:
@@ -209,7 +205,7 @@ def _prepare_gdf_for_mask(geodataframe, method, numbers):
     else:
         numbers = geodataframe.index.values
 
-    return polygons, lon_bounds, numbers
+    return polygons, numbers
 
 
 @_deprecate_positional_args("0.10.0")
@@ -226,13 +222,12 @@ def mask_geopandas(
     use_cf=None,
 ):
 
-    polygons, lon_bounds, numbers = _prepare_gdf_for_mask(
+    polygons, numbers = _prepare_gdf_for_mask(
         geodataframe, method=method, numbers=numbers
     )
 
     return _mask_2D(
-        outlines=polygons,
-        lon_bounds=lon_bounds,
+        polygons=polygons,
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,
@@ -263,13 +258,12 @@ def mask_3D_geopandas(
     use_cf=None,
 ):
 
-    polygons, lon_bounds, numbers = _prepare_gdf_for_mask(
+    polygons, numbers = _prepare_gdf_for_mask(
         geodataframe, method=method, numbers=numbers
     )
 
     mask_3D = _mask_3D(
-        outlines=polygons,
-        lon_bounds=lon_bounds,
+        polygons=polygons,
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,

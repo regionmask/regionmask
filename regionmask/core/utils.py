@@ -1,7 +1,27 @@
 import warnings
 
 import numpy as np
+import shapely
 import xarray as xr
+from packaging.version import Version
+
+
+def _total_bounds(polygons):
+
+    if Version(shapely.__version__) > Version("2.0b1"):
+
+        return shapely.total_bounds(polygons)
+
+    bounds = np.array([p.bounds for p in polygons])
+
+    bounds[:, 0].min()
+
+    xmin = bounds[:, 0].min()
+    ymin = bounds[:, 1].min()
+    xmax = bounds[:, 2].max()
+    ymax = bounds[:, 3].max()
+
+    return [xmin, ymin, xmax, ymax]
 
 
 def _flatten_polygons(polygons, error="raise"):
