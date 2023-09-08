@@ -12,6 +12,7 @@ from .utils import (
     _find_splitpoint,
     _is_180,
     _is_numeric,
+    _total_bounds,
     _wrapAngle,
     equally_spaced,
     unpackbits,
@@ -155,8 +156,7 @@ def _inject_mask_docstring(is_3D, gp_method):
 
 
 def _mask(
-    outlines,
-    lon_bounds,
+    polygons,
     numbers,
     lon_or_obj,
     lat=None,
@@ -206,8 +206,12 @@ def _mask(
 
     # automatically detect whether wrapping is necessary
     if wrap_lon is None:
-        msg_add = "Set `wrap_lon=False` to skip this check."
-        regions_is_180 = _is_180(*lon_bounds, msg_add=msg_add)
+
+        lon_bounds = _total_bounds(polygons)[::2]
+
+        regions_is_180 = _is_180(
+            *lon_bounds, msg_add="Set `wrap_lon=False` to skip this check."
+        )
 
         wrap_lon_ = 180 if regions_is_180 else 360
     else:
@@ -264,7 +268,7 @@ def _mask(
         mask_func = _mask_shapely_v2
         kwargs = {"is_unstructured": is_unstructured}
 
-    mask = mask_func(lon_arr, lat_arr, outlines, numbers=numbers, as_3D=as_3D, **kwargs)
+    mask = mask_func(lon_arr, lat_arr, polygons, numbers=numbers, as_3D=as_3D, **kwargs)
 
     # not False required
     if wrap_lon is not False:
@@ -273,7 +277,7 @@ def _mask(
             mask,
             lon_arr,
             lat_arr,
-            outlines,
+            polygons,
             numbers,
             is_unstructured=is_unstructured,
             as_3D=as_3D,
@@ -283,8 +287,7 @@ def _mask(
 
 
 def _mask_2D(
-    outlines,
-    lon_bounds,
+    polygons,
     numbers,
     lon_or_obj,
     lat=None,
@@ -296,8 +299,7 @@ def _mask_2D(
 ):
 
     mask = _mask(
-        outlines=outlines,
-        lon_bounds=lon_bounds,
+        polygons=polygons,
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,
@@ -318,8 +320,7 @@ def _mask_2D(
 
 
 def _mask_3D(
-    outlines,
-    lon_bounds,
+    polygons,
     numbers,
     lon_or_obj,
     lat=None,
@@ -333,8 +334,7 @@ def _mask_3D(
 ):
 
     mask = _mask(
-        outlines=outlines,
-        lon_bounds=lon_bounds,
+        polygons=polygons,
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,

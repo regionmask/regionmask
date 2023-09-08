@@ -264,10 +264,10 @@ class Regions:
 
         bounds = self.bounds
 
-        xmin = min(p[0] for p in bounds)
-        ymin = min(p[1] for p in bounds)
-        xmax = max(p[2] for p in bounds)
-        ymax = max(p[3] for p in bounds)
+        xmin = np.min([p[0] for p in bounds])
+        ymin = np.min([p[1] for p in bounds])
+        xmax = np.max([p[2] for p in bounds])
+        ymax = np.max([p[3] for p in bounds])
 
         return [xmin, ymin, xmax, ymax]
 
@@ -336,8 +336,7 @@ class Regions:
             )
 
         mask_2D = _mask_2D(
-            outlines=self.polygons,
-            lon_bounds=self.bounds_global[::2],
+            polygons=self.polygons,
             numbers=self.numbers,
             lon_or_obj=lon_or_obj,
             lat=lat,
@@ -387,8 +386,7 @@ class Regions:
     ):
 
         mask_3D = _mask_3D(
-            outlines=self.polygons,
-            lon_bounds=self.bounds_global[::2],
+            polygons=self.polygons,
             numbers=self.numbers,
             lon_or_obj=lon_or_obj,
             lat=lat,
