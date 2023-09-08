@@ -296,7 +296,20 @@ def _mask_2D(
     method=None,
     wrap_lon=None,
     use_cf=None,
+    overlap=None,
 ):
+
+    # NOTE: this is already checked in Regions.mask, double check here if this method is
+    # ever made public
+    # if overlap:
+    #     raise ValueError(
+    #         "Creating a 2D mask with overlapping regions yields wrong results. "
+    #         "Please use ``region.mask_3D(...)`` instead. "
+    #         "To create a 2D mask anyway, set ``overlap=False``."
+    #     )
+
+    # if as_3D is not explicitely given - set it to True
+    as_3D = overlap is None
 
     mask = _mask(
         polygons=polygons,
@@ -308,7 +321,11 @@ def _mask_2D(
         method=method,
         wrap_lon=wrap_lon,
         use_cf=use_cf,
+        as_3D=as_3D,
     )
+
+    if as_3D:
+        mask = _3D_to_2D_mask(mask, numbers)
 
     if np.all(np.isnan(mask)):
         msg = "No gridpoint belongs to any region. Returning an all-NaN mask."
@@ -333,6 +350,8 @@ def _mask_3D(
     use_cf=None,
 ):
 
+    as_3D = as_3D or as_3D is None
+
     mask = _mask(
         polygons=polygons,
         numbers=numbers,
@@ -347,16 +366,16 @@ def _mask_3D(
     )
 
     if as_3D:
-        mask_3D = _unpack_3D_mask(mask, numbers, drop)
+        mask_3D = _3D_to_3D_mask(mask, numbers, drop)
     else:
-        mask_3D = _unpack_2D_mask(mask, numbers, drop)
+        mask_3D = _2D_to_3D_mask(mask, numbers, drop)
 
     mask_3D.attrs = {"standard_name": "region"}
 
     return mask_3D
 
 
-def _unpack_2D_mask(mask, numbers, drop):
+def _2D_to_3D_mask(mask, numbers, drop):
 
     isnan = np.isnan(mask.values)
 
@@ -392,7 +411,7 @@ def _unpack_2D_mask(mask, numbers, drop):
     return mask_3D
 
 
-def _unpack_3D_mask(mask_3D, numbers, drop):
+def _3D_to_3D_mask(mask_3D, numbers, drop):
 
     any_masked = mask_3D.any(mask_3D.dims[1:])
 
@@ -423,6 +442,29 @@ def _unpack_3D_mask(mask_3D, numbers, drop):
         )
 
     return mask_3D
+
+
+def _3D_to_2D_mask(mask_3D, numbers):
+
+    # NOTE: very similar to regionmask.core.utils.flatten_3D_mask
+
+    is_masked = mask_3D.sum("region")
+
+    if (is_masked > 1).any():
+        raise ValueError(
+            "Found overlapping regions for ``overlap=None``. Please create a 3D mask. "
+            "You may want to explicitely set ``overlap`` to ``True`` or ``False``."
+        )
+
+    # flatten the mask
+    mask_2D = (mask_3D * mask_3D.region).sum("region")
+
+    # # mask all gridpoints not belonging to any region
+    # mask_2D = xr.where(is_masked, mask_2D, np.nan, keep_attrs=True)
+
+    mask_2D.values = np.where(is_masked.values, mask_2D, np.nan)
+
+    return mask_2D
 
 
 def _determine_method(lon, lat):

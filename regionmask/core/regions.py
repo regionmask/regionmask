@@ -36,7 +36,7 @@ class Regions:
         Name of the collection of regions. Default: "unnamed"
     source : string, optional
         Source of the region definitions. Default: "".
-    overlap : bool, default: False
+    overlap : bool, default: None
         Indicates if (some of) the regions overlap. If True ``mask_3D`` will ensure
         overlapping regions are correctly assigned to grid points while ``mask`` will
         error (because overlapping regions cannot be represented by a 2D mask).
@@ -65,7 +65,7 @@ class Regions:
     >>> r = Regions(outlines, numbers, names, abbrevs, name)
     >>> r
     <regionmask.Regions 'Example'>
-    overlap:  False
+    overlap:  None
     <BLANKLINE>
     Regions:
     0 uSq1 Unit Square1
@@ -85,7 +85,7 @@ class Regions:
     >>> r = Regions(outlines, numbers, names, abbrevs, name)
     >>> r
     <regionmask.Regions 'Example'>
-    overlap:  False
+    overlap:  None
     <BLANKLINE>
     Regions:
     1 uSq1 Unit Square1
@@ -97,7 +97,7 @@ class Regions:
     >>> r = Regions(outlines)
     >>> r
     <regionmask.Regions 'unnamed'>
-    overlap:  False
+    overlap:  None
     <BLANKLINE>
     Regions:
     0 r0 Region0
@@ -114,7 +114,7 @@ class Regions:
         abbrevs=None,
         name="unnamed",
         source=None,
-        overlap=False,
+        overlap=None,
     ):
 
         if isinstance(outlines, (np.ndarray, Polygon, MultiPolygon)):
@@ -345,6 +345,7 @@ class Regions:
             method=method,
             wrap_lon=wrap_lon,
             use_cf=use_cf,
+            overlap=self.overlap,
         )
 
         if flag not in [None, "abbrevs", "names"]:
