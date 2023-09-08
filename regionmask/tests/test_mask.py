@@ -367,6 +367,24 @@ def test_mask_3D_overlap_empty(method):
     assert not result.any()
 
 
+@pytest.mark.parametrize("drop", [True, False])
+@pytest.mark.parametrize("method", MASK_METHODS_IRREGULAR)
+def test_mask_overlap_unstructured(drop, method):
+    """Test for unstructured output."""
+    lat = [0.5, 0.5, 1.5, 1.5]
+    lon = [0.5, 1.5, 0.5, 1.5]
+
+    coords = {"lon": ("cells", lon), "lat": ("cells", lat)}
+    grid = xr.Dataset(coords=coords)
+
+    result = dummy_region_overlap.mask_3D(grid, drop=drop, method=method)
+
+    expected = expected_mask_3D(drop=drop, overlap=True)
+    expected = expected.stack(cells=("lat", "lon")).reset_index("cells")
+
+    xr.testing.assert_equal(result, expected)
+
+
 def test_mask_flag():
 
     expected = expected_mask_2D()

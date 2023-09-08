@@ -743,7 +743,7 @@ def _get_LON_LAT_shape(lon, lat, numbers, is_unstructured=False, as_3D=False):
 def _get_out(shape, fill, as_3D):
     # create flattened output variable
     if as_3D:
-        out = np.full(shape[:1] + (np.prod(shape[-2:]).item(),), False, bool)
+        out = np.full(shape[:1] + (np.prod(shape[1:]).item(),), False, bool)
     else:
         out = np.full(np.prod(shape), fill, float)
 
