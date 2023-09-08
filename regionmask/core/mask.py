@@ -456,10 +456,16 @@ def _3D_to_2D_mask(mask_3D, numbers):
             "You may want to explicitely set ``overlap`` to ``True`` or ``False``."
         )
 
-    # flatten the mask
-    mask_2D = (mask_3D * mask_3D.region).sum("region")
+    # reshape because region is the first dim
+    numbers = np.asarray(numbers)
 
-    # # mask all gridpoints not belonging to any region
+    # I transform so it broadcasts (mask_3D can acually be 2D for unstructured grids,
+    # so reshape would need some logic)
+    mask_2D = (mask_3D.T * numbers).T.sum("region")
+
+    # mask all gridpoints not belonging to any region
+
+    # older xarray versions do not have `keep_attrs` argument (needed to keep the name)
     # mask_2D = xr.where(is_masked, mask_2D, np.nan, keep_attrs=True)
 
     mask_2D.values = np.where(is_masked.values, mask_2D, np.nan)
