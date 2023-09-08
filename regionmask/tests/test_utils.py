@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from shapely.geometry import MultiPolygon, box
 
 import regionmask
 from regionmask.core.utils import (
@@ -10,6 +11,7 @@ from regionmask.core.utils import (
     _is_numeric,
     _maybe_to_dict,
     _sanitize_names_abbrevs,
+    _total_bounds,
     create_lon_lat_dataarray_from_bounds,
     equally_spaced,
     flatten_3D_mask,
@@ -327,3 +329,24 @@ def test_flatten_3D_mask_overlap():
 
     with pytest.warns(RuntimeWarning, match="overlapping regions"):
         flatten_3D_mask(mask_3D)
+
+
+def test_total_bounds():
+
+    p1 = box(0, 2, 5, 3)
+    p2 = box(5, 2, 7, 9)
+    p3 = box(7, 8, 9, 12)
+
+    mp = MultiPolygon([p2, p3])
+
+    result = _total_bounds([p1])
+    expected = [0.0, 2, 5, 3]
+    np.testing.assert_equal(result, expected)
+
+    result = _total_bounds([p1, p2])
+    expected = [0.0, 2, 7, 9]
+    np.testing.assert_equal(result, expected)
+
+    result = _total_bounds([p1, mp])
+    expected = [0.0, 2, 9, 12]
+    np.testing.assert_equal(result, expected)
