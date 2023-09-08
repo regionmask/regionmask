@@ -364,27 +364,30 @@ def _unpack_2D_mask(mask, numbers, drop):
         numbers = np.unique(mask.values[~isnan])
         numbers = numbers.astype(int)
 
-    # if no regions are found return a 0 x lat x lon mask
+    # if no regions are found return a `0 x lat x lon` mask
     if len(numbers) == 0:
         mask_3D = mask.expand_dims("region", axis=0).sel(region=slice(0, 0))
         mask_3D = mask_3D.assign_coords(region=("region", numbers))
-        msg = (
+
+        warnings.warn(
             "No gridpoint belongs to any region. Returning an empty mask"
-            f" with shape {mask.shape}"
+            f" with shape {mask.shape}",
+            UserWarning,
+            stacklevel=3,
         )
-        warnings.warn(msg, UserWarning, stacklevel=3)
+
         return mask_3D
 
-    mask_3D = list()
-    for num in numbers:
-        mask_3D.append(mask == num)
-
+    mask_3D = [(mask == num) for num in numbers]
     mask_3D = xr.concat(mask_3D, dim="region", compat="override", coords="minimal")
     mask_3D = mask_3D.assign_coords(region=("region", numbers))
 
     if np.all(isnan):
-        msg = "No gridpoint belongs to any region. Returning an all-False mask."
-        warnings.warn(msg, UserWarning, stacklevel=3)
+        warnings.warn(
+            "No gridpoint belongs to any region. Returning an all-False mask.",
+            UserWarning,
+            stacklevel=3,
+        )
 
     return mask_3D
 
@@ -401,18 +404,23 @@ def _unpack_3D_mask(mask_3D, numbers, drop):
     if len(numbers) == 0:
 
         mask_3D = mask_3D.assign_coords(region=("region", numbers))
-        msg = (
+
+        warnings.warn(
             "No gridpoint belongs to any region. Returning an empty mask"
-            f" with shape {mask_3D.shape}"
+            f" with shape {mask_3D.shape}",
+            UserWarning,
+            stacklevel=3,
         )
-        warnings.warn(msg, UserWarning, stacklevel=3)
         return mask_3D
 
     mask_3D = mask_3D.assign_coords(region=("region", numbers))
 
     if not np.any(any_masked):
-        msg = "No gridpoint belongs to any region. Returning an all-False mask."
-        warnings.warn(msg, UserWarning, stacklevel=3)
+        warnings.warn(
+            "No gridpoint belongs to any region. Returning an all-False mask.",
+            UserWarning,
+            stacklevel=3,
+        )
 
     return mask_3D
 

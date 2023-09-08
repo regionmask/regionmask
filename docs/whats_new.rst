@@ -44,7 +44,7 @@ Enhancements
 
 - Can now pass the ``use_cf`` parameter to :py:func:`mask_geopandas` and :py:func:`mask_3D_geopandas`.
   This could also be counted as a bug fix as these functions could not control the behavior
-  of finding the coords otherwise(:pull:`427`).
+  of finding the coords otherwise (:pull:`427`).
 
 New regions
 ~~~~~~~~~~~
