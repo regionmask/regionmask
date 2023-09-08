@@ -373,12 +373,12 @@ def _unpack_2D_mask(mask, numbers, drop):
             "No gridpoint belongs to any region. Returning an empty mask"
             f" with shape {mask.shape}",
             UserWarning,
-            stacklevel=3
+            stacklevel=3,
         )
 
         return mask_3D
 
-    mask_3D = [mask_3D.append(mask == num) for num in numbers]
+    mask_3D = [(mask == num) for num in numbers]
     mask_3D = xr.concat(mask_3D, dim="region", compat="override", coords="minimal")
     mask_3D = mask_3D.assign_coords(region=("region", numbers))
 
@@ -386,7 +386,7 @@ def _unpack_2D_mask(mask, numbers, drop):
         warnings.warn(
             "No gridpoint belongs to any region. Returning an all-False mask.",
             UserWarning,
-            stacklevel=3
+            stacklevel=3,
         )
 
     return mask_3D
@@ -409,7 +409,7 @@ def _unpack_3D_mask(mask_3D, numbers, drop):
             "No gridpoint belongs to any region. Returning an empty mask"
             f" with shape {mask_3D.shape}",
             UserWarning,
-            stacklevel=3
+            stacklevel=3,
         )
         return mask_3D
 
@@ -419,7 +419,7 @@ def _unpack_3D_mask(mask_3D, numbers, drop):
         warnings.warn(
             "No gridpoint belongs to any region. Returning an all-False mask.",
             UserWarning,
-            stacklevel=3
+            stacklevel=3,
         )
 
     return mask_3D
