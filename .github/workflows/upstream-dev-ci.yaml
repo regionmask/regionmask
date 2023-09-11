@@ -8,7 +8,9 @@ on:
       - main
     types: [opened, reopened, synchronize, labeled]
   schedule:
-    - cron: "0 17 * * 1" # “At 17:00 on Monday” UTC
+    - cron: "0 0 * * *" # Daily “At 00:00” UTC
+    # TODO: switch to weekly once I know this works
+    # - cron: "0 17 * * 1" # “At 17:00 on Monday” UTC
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
