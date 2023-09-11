@@ -258,7 +258,7 @@ def test_mask_geopandas_warns_empty(geodataframe_clean, method):
 
     expected = expected_mask_2D(coords={"lon": lon, "lat": lat})
 
-    xr.testing.assert_equal(result, expected * np.NaN)
+    xr.testing.assert_equal(result, expected * np.nan)
 
 
 @pytest.mark.parametrize("drop", [True, False])

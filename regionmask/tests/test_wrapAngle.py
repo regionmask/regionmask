@@ -89,7 +89,7 @@ def test_wrapAngle():
 @pytest.mark.parametrize("lon", ([180.0, 190], [-180, 170]))
 def test_wrapAngle_nan(wrap_lon, lon):
 
-    result = _wrapAngle(lon + [np.NaN], wrap_lon=wrap_lon)[:-1]
+    result = _wrapAngle(lon + [np.nan], wrap_lon=wrap_lon)[:-1]
     expected = _wrapAngle(lon, wrap_lon=wrap_lon)
 
     np.testing.assert_equal(result, expected)

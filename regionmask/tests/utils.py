@@ -38,7 +38,7 @@ def expected_mask_1D():
 
 
 def expected_mask_2D(
-    a=0, b=1, fill=np.NaN, coords=None, lon_name="lon", lat_name="lat"
+    a=0, b=1, fill=np.nan, coords=None, lon_name="lon", lat_name="lat"
 ):
 
     mask = np.array([[a, fill], [b, fill]])
