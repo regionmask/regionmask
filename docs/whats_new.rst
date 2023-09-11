@@ -70,6 +70,8 @@ Internal Changes
 - Better error message when trying to create 2D overlapping mask (:issue:`432`).
 - Update the signature of the *internal* mask functions. No longer require ``bounds``
   as input (:issue:`434`).
+- Add upstream-dev CI check to ensure regionmask works with the developmen version of
+  its dependencies (:pull:`444`).
 
 
 v0.10.0 (31.05.2023)
