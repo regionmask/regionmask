@@ -108,14 +108,16 @@ drop : boolean, default: True
 """
 
 _OVERLAP_DOCSTRING = """\
-overlap : bool, default: False
-    Indicates if (some of) the regions overlap. If True ``mask_3D_geopandas`` will
-    ensure overlapping regions are correctly assigned to grid points.
+overlap : bool, default: None
+    Indicates if (some of) the regions overlap.
 
-    If False (default) assumes non-overlapping regions. Grid points will silently be
-    assigned to the region with the higher number (this may change in a future version).
-
-    There is (currently) no automatic detection of overlapping regions.
+    - If True ``mask_3D_geopandas`` ensures overlapping regions are correctly assigned
+      to grid points, while ``mask_geopandas`` raises an Error.
+    - If False assumes non-overlapping regions. Grid points are silently assigned to the
+      region with the higher number.
+    - If None (default) checks if any gridpoint belongs to more than one region.
+      If this is the case ``mask_3D_geopandas`` correctly assigns them and ``mask_geopandas``
+      raises an Error.
 
 """
 
@@ -137,7 +139,7 @@ def _inject_mask_docstring(is_3D, gp_method):
     drop_doc = _DROP_DOCSTRING if is_3D else ""
     numbers_doc = _NUMBERS_DOCSTRING if gp_method else ""
     gp_doc = _GP_DOCSTRING if gp_method else ""
-    overlap = _OVERLAP_DOCSTRING if (gp_method and is_3D) else ""
+    overlap = _OVERLAP_DOCSTRING if gp_method else ""
     flags = _FLAG_DOCSTRING if not (gp_method or is_3D) else ""
     see_also = "mask" if is_3D else "mask_3D"
 
@@ -299,8 +301,8 @@ def _mask_2D(
     overlap=None,
 ):
 
-    # NOTE: this is already checked in Regions.mask, double check here if this method is
-    # ever made public
+    # NOTE: this is already checked in Regions.mask, and mask_geopandas
+    # double check here if this method is ever made public
     # if overlap:
     #     raise ValueError(
     #         "Creating a 2D mask with overlapping regions yields wrong results. "
@@ -376,6 +378,7 @@ def _mask_3D(
 
 
 def _2D_to_3D_mask(mask, numbers, drop):
+    # TODO: unify with _3D_to_3D_mask
 
     isnan = np.isnan(mask.values)
 
@@ -412,6 +415,7 @@ def _2D_to_3D_mask(mask, numbers, drop):
 
 
 def _3D_to_3D_mask(mask_3D, numbers, drop):
+    # TODO: unify with _2D_to_3D_mask
 
     any_masked = mask_3D.any(mask_3D.dims[1:])
 

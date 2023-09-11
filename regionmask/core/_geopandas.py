@@ -189,7 +189,7 @@ def _from_geopandas(
     )
 
 
-def _prepare_gdf_for_mask(geodataframe, method, numbers):
+def _prepare_gdf_for_mask(geodataframe, numbers):
 
     from geopandas import GeoDataFrame, GeoSeries
 
@@ -208,6 +208,9 @@ def _prepare_gdf_for_mask(geodataframe, method, numbers):
     return polygons, numbers
 
 
+# TODO: switch order of use_cf and overlap once the deprecation is finished
+
+
 @_deprecate_positional_args("0.10.0")
 def mask_geopandas(
     geodataframe,
@@ -220,11 +223,17 @@ def mask_geopandas(
     method=None,
     wrap_lon=None,
     use_cf=None,
+    overlap=None,
 ):
 
-    polygons, numbers = _prepare_gdf_for_mask(
-        geodataframe, method=method, numbers=numbers
-    )
+    if overlap:
+        raise ValueError(
+            "Creating a 2D mask with overlapping regions yields wrong results. "
+            "Please use ``mask_3D_geopandas(...)`` instead. "
+            "To create a 2D mask anyway, set ``overlap=False``."
+        )
+
+    polygons, numbers = _prepare_gdf_for_mask(geodataframe, numbers=numbers)
 
     return _mask_2D(
         polygons=polygons,
@@ -235,6 +244,7 @@ def mask_geopandas(
         lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
+        overlap=overlap,
         use_cf=use_cf,
     )
 
@@ -254,13 +264,11 @@ def mask_3D_geopandas(
     numbers=None,
     method=None,
     wrap_lon=None,
-    overlap=False,
     use_cf=None,
+    overlap=None,
 ):
 
-    polygons, numbers = _prepare_gdf_for_mask(
-        geodataframe, method=method, numbers=numbers
-    )
+    polygons, numbers = _prepare_gdf_for_mask(geodataframe, numbers=numbers)
 
     mask_3D = _mask_3D(
         polygons=polygons,
