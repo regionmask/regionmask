@@ -112,7 +112,8 @@ overlap : bool, default: None
     Indicates if (some of) the regions overlap.
 
     - If True ``mask_3D_geopandas`` ensures overlapping regions are correctly assigned
-      to grid points, while ``mask_geopandas`` raises an Error.
+      to grid points, while ``mask_geopandas`` raises an Error (because overlapping
+      regions cannot be represented by a 2 dimensional mask).
     - If False assumes non-overlapping regions. Grid points are silently assigned to the
       region with the higher number.
     - If None (default) checks if any gridpoint belongs to more than one region.
@@ -132,15 +133,15 @@ flag : str, default: "abbrevs"
 """
 
 
-def _inject_mask_docstring(is_3D, gp_method):
+def _inject_mask_docstring(*, is_3D, is_gpd):
 
     dtype = "boolean" if is_3D else "float"
     nd = "3D" if is_3D else "2D"
     drop_doc = _DROP_DOCSTRING if is_3D else ""
-    numbers_doc = _NUMBERS_DOCSTRING if gp_method else ""
-    gp_doc = _GP_DOCSTRING if gp_method else ""
-    overlap = _OVERLAP_DOCSTRING if gp_method else ""
-    flags = _FLAG_DOCSTRING if not (gp_method or is_3D) else ""
+    numbers_doc = _NUMBERS_DOCSTRING if is_gpd else ""
+    gp_doc = _GP_DOCSTRING if is_gpd else ""
+    overlap = _OVERLAP_DOCSTRING if is_gpd else ""
+    flags = _FLAG_DOCSTRING if not (is_gpd or is_3D) else ""
     see_also = "mask" if is_3D else "mask_3D"
 
     mask_docstring = _MASK_DOCSTRING_TEMPLATE.format(

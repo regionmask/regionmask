@@ -249,7 +249,7 @@ def mask_geopandas(
     )
 
 
-mask_geopandas.__doc__ = _inject_mask_docstring(is_3D=False, gp_method=True)
+mask_geopandas.__doc__ = _inject_mask_docstring(is_3D=False, is_gpd=True)
 
 
 @_deprecate_positional_args("0.10.0")
@@ -287,4 +287,4 @@ def mask_3D_geopandas(
     return mask_3D
 
 
-mask_3D_geopandas.__doc__ = _inject_mask_docstring(is_3D=True, gp_method=True)
+mask_3D_geopandas.__doc__ = _inject_mask_docstring(is_3D=True, is_gpd=True)

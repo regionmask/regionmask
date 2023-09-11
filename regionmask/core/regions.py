@@ -371,7 +371,7 @@ class Regions:
 
         return mask_2D
 
-    mask.__doc__ = _inject_mask_docstring(is_3D=False, gp_method=False)
+    mask.__doc__ = _inject_mask_docstring(is_3D=False, is_gpd=False)
 
     @_deprecate_positional_args("0.10.0")
     def mask_3D(
@@ -411,7 +411,7 @@ class Regions:
 
         return mask_3D
 
-    mask_3D.__doc__ = _inject_mask_docstring(is_3D=True, gp_method=False)
+    mask_3D.__doc__ = _inject_mask_docstring(is_3D=True, is_gpd=False)
 
     def to_dataframe(self):
         """Convert this region into a pandas.DataFrame, excluding polygons.

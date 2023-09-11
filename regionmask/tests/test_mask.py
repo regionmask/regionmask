@@ -994,7 +994,7 @@ def test_mask_whole_grid_overlap(method, outline, lon):
 
 def test_inject_mask_docstring():
 
-    result = _inject_mask_docstring(True, True)
+    result = _inject_mask_docstring(is_3D=True, is_gpd=True)
 
     assert "3D" in result
     assert "2D" not in result
@@ -1004,7 +1004,7 @@ def test_inject_mask_docstring():
     assert "overlap" in result
     assert "flag" not in result
 
-    result = _inject_mask_docstring(False, False)
+    result = _inject_mask_docstring(is_3D=False, is_gpd=False)
 
     assert "2D" in result
     assert "float" in result
