@@ -280,7 +280,8 @@ def test_mask_3D_geopandas_numbers(geodataframe_clean, drop, method):
 
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
-def test_mask_3D_overlap_geopandas_numbers(geodataframe_clean_overlap, drop, method):
+@pytest.mark.parametrize("overlap", [True, None])
+def test_mask_3D_geopandas_overlap(geodataframe_clean_overlap, drop, method, overlap):
 
     expected = expected_mask_3D(drop, overlap=True).drop_vars(["names", "abbrevs"])
     result = mask_3D_geopandas(
@@ -290,10 +291,50 @@ def test_mask_3D_overlap_geopandas_numbers(geodataframe_clean_overlap, drop, met
         drop=drop,
         method=method,
         numbers="numbers",
-        overlap=True,
+        overlap=overlap,
     )
 
     xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("drop", [True, False])
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+def test_mask_3D_geopandas_overlap_false(geodataframe_clean_overlap, drop, method):
+
+    # NOTE: we need to adapt the expected da
+    expected = expected_mask_3D(drop, overlap=True).drop_vars(["names", "abbrevs"])
+    result = mask_3D_geopandas(
+        geodataframe_clean_overlap,
+        dummy_ds.lon,
+        dummy_ds.lat,
+        drop=drop,
+        method=method,
+        numbers="numbers",
+        overlap=False,
+    )
+
+    if drop:
+        expected = expected.drop_isel(region=0)
+    else:
+        expected[{"region": 0}] = False
+
+    xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("method", ["rasterize", "shapely"])
+@pytest.mark.parametrize("overlap", [None, True])
+def test_mask_2D_geopandas_overlap(geodataframe_clean_overlap, method, overlap):
+
+    # overlap None / True raises a different error
+    with pytest.raises(ValueError):
+        mask_geopandas(
+            geodataframe_clean_overlap,
+            dummy_ds.lon,
+            dummy_ds.lat,
+            method=method,
+            numbers="numbers",
+            overlap=overlap,
+        )
 
 
 @pytest.mark.parametrize("drop", [True, False])
