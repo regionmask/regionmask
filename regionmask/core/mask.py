@@ -327,6 +327,7 @@ def _mask_2D(
         as_3D=as_3D,
     )
 
+    # only happens for (overlap == None)
     if as_3D:
         mask = _3D_to_2D_mask(mask, numbers)
 
