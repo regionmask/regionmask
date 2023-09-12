@@ -549,7 +549,7 @@ def _mask_edgepoints_shapely(
 
 
 def _mask_pygeos(
-    lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False, as_3D=False
+    lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
 ):
     """create a mask using pygeos.STRtree"""
 
@@ -582,7 +582,7 @@ def _mask_pygeos(
 
 
 def _mask_shapely_v2(
-    lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False, as_3D=False
+    lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
 ):
     """create a mask using pygeos.STRtree"""
 
@@ -614,7 +614,7 @@ def _mask_shapely_v2(
 
 
 def _mask_shapely(
-    lon, lat, polygons, numbers, fill=np.NaN, is_unstructured=False, as_3D=False
+    lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
 ):
     """create a mask using shapely.vectorized.contains"""
 
@@ -725,7 +725,7 @@ def _transform_from_latlon(lon, lat):
 
 
 def _mask_rasterize_flip(
-    lon, lat, polygons, numbers, fill=np.NaN, as_3D=False, **kwargs
+    lon, lat, polygons, numbers, fill=np.nan, as_3D=False, **kwargs
 ):
 
     split_point = _find_splitpoint(lon)
@@ -740,7 +740,7 @@ def _mask_rasterize_flip(
 
 
 def _mask_rasterize_split(
-    lon, lat, polygons, numbers, fill=np.NaN, as_3D=False, **kwargs
+    lon, lat, polygons, numbers, fill=np.nan, as_3D=False, **kwargs
 ):
 
     split_point = _find_splitpoint(lon)
@@ -756,7 +756,7 @@ def _mask_rasterize_split(
     return np.concatenate((mask_l, mask_r), axis=-1)
 
 
-def _mask_rasterize(lon, lat, polygons, numbers, fill=np.NaN, as_3D=False, **kwargs):
+def _mask_rasterize(lon, lat, polygons, numbers, fill=np.nan, as_3D=False, **kwargs):
 
     if as_3D:
         return _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs)
@@ -806,7 +806,7 @@ def _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs):
     return np.concatenate(out, axis=2)[:n_polygons, ...]
 
 
-def _mask_rasterize_internal(lon, lat, polygons, numbers, fill=np.NaN, **kwargs):
+def _mask_rasterize_internal(lon, lat, polygons, numbers, fill=np.nan, **kwargs):
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
     This only works for regularly spaced 1D lat and lon arrays.
@@ -822,7 +822,7 @@ def _mask_rasterize_internal(lon, lat, polygons, numbers, fill=np.NaN, **kwargs)
 
 
 def _mask_rasterize_no_offset(
-    lon, lat, polygons, numbers, fill=np.NaN, dtype=float, **kwargs
+    lon, lat, polygons, numbers, fill=np.nan, dtype=float, **kwargs
 ):
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
