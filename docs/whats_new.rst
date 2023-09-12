@@ -42,6 +42,8 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- regionmask now checks if regions are overlapping (unless ``overlap=False`` is explicitly set) - check
+  the documentation on :doc:`overlapping regions<notebooks/overlap>` for details (:pull:`439`).
 - Can now pass the ``use_cf`` parameter to :py:func:`mask_geopandas` and :py:func:`mask_3D_geopandas`.
   This could also be counted as a bug fix as these functions could not control the behavior
   of finding the coords otherwise (:pull:`427`).
