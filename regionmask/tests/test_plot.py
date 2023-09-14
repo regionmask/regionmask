@@ -687,7 +687,7 @@ def test_plot_3D_mask_wrong_input():
 
     expected = np.ma.masked_invalid(mask_2D.values)
 
-    if Version(mpl.__version__) <= Version("3.8"):
+    if Version(mpl.__version__) > Version("3.7"):
         expected = expected.ravel()
 
     with figure_context():
