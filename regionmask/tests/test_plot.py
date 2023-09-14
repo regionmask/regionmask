@@ -1,6 +1,6 @@
+import contextlib
 
 from packaging.version import Version
-import contextlib
 
 try:
     import cartopy.crs as ccrs
