@@ -1,5 +1,7 @@
 import contextlib
 
+from packaging.version import Version
+
 try:
     import cartopy.crs as ccrs
 except ImportError:  # pragma: no cover
@@ -683,7 +685,11 @@ def test_plot_3D_mask_wrong_input():
     with pytest.raises(ValueError, match="must contain the dimension 'region'"):
         plot_3D_mask(mask_2D.expand_dims("foo"))
 
-    expected = np.ma.masked_invalid(mask_2D.values).flatten()
+    expected = np.ma.masked_invalid(mask_2D.values)
+
+    if Version(mpl.__version__) < Version("3.7.99"):
+        expected = expected.ravel()
+
     with figure_context():
         h = plot_3D_mask(mask_3D, zorder=3)
 
