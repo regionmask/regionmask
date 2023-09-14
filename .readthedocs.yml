@@ -12,10 +12,14 @@ build:
       # install regionmask, needs to be editable
       - pip install -e .
   tools:
-    python: mambaforge-4.10
+    python: "3.11"
+
 sphinx:
   configuration: docs/conf.py
   fail_on_warning: true
-conda:
-  environment: ci/requirements/docs.yml
+
+python:
+  install:
+    - requirements: docs/requirements.txt
+
 formats: []

@@ -1,0 +1,34 @@
+# note pandoc required, either via conda or sudo apt-get install pandoc
+# regionmask dependencies
+cartopy
+geopandas
+matplotlib
+numpy
+packaging
+pooch
+pyogrio
+rasterio
+xarray
+# dependencies for the examples
+cf_xarray
+cftime
+netcdf4
+# for regionmask intake example
+aiohttp
+fsspec==0.8.7
+intake
+requests
+# dependencies to build the docu
+ipykernel
+nbconvert
+numpydoc
+pandoc
+pillow
+pip
+sphinx
+sphinx_rtd_theme
+# for regionmask intake example
+intake_geopandas>=0.2.4
+msgpack
+# install regionmask relative to this file. Needs to be editable to be accepted.
+# - -e ../.. -> is now done in readthedocs.yml pre_install
