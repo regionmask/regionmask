@@ -280,7 +280,7 @@ def mask_3D_geopandas(
         lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
-        as_3D=overlap,
+        overlap=overlap,
         use_cf=use_cf,
     )
 

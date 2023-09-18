@@ -394,7 +394,9 @@ def test_mask_3D_overlap_default(drop, method):
     region = Regions(dummy_region_overlap.polygons)
 
     expected = expected_mask_3D(drop=drop, overlap=True)
-    result = region.mask_3D(dummy_ds, drop=drop, method=method)
+
+    with pytest.warns(UserWarning, match="Detected overlapping regions"):
+        result = region.mask_3D(dummy_ds, drop=drop, method=method)
 
     xr.testing.assert_equal(result, expected)
 

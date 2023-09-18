@@ -278,6 +278,7 @@ def test_mask_3D_geopandas_numbers(geodataframe_clean, drop, method):
     xr.testing.assert_equal(result, expected)
 
 
+@pytest.mark.filterwarnings("ignore:Detected overlapping regions")
 @pytest.mark.parametrize("drop", [True, False])
 @pytest.mark.parametrize("method", ["rasterize", "shapely"])
 @pytest.mark.parametrize("overlap", [True, None])

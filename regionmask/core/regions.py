@@ -397,7 +397,7 @@ class Regions:
             lat_name=lat_name,
             method=method,
             wrap_lon=wrap_lon,
-            as_3D=self.overlap,
+            overlap=self.overlap,
             use_cf=use_cf,
         )
 

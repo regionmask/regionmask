@@ -350,11 +350,11 @@ def _mask_3D(
     lat_name=None,
     method=None,
     wrap_lon=None,
-    as_3D=False,
+    overlap=False,
     use_cf=None,
 ):
 
-    as_3D = as_3D or as_3D is None
+    as_3D = overlap or overlap is None
 
     mask = _mask(
         polygons=polygons,
@@ -373,6 +373,14 @@ def _mask_3D(
         mask_3D = _3D_to_3D_mask(mask, numbers, drop)
     else:
         mask_3D = _2D_to_3D_mask(mask, numbers, drop)
+
+    if overlap is None and (mask_3D.sum("region") > 1).any():
+        warnings.warn(
+            "Detected overlapping regions. As of v0.11.0 these are correctly taken into "
+            "account. Note, however, that a different mask is returned than with older "
+            "versions of regionmask. To suppress this warning, set `overlap=True` (to "
+            "restore the old, incorrect, behaviour, set `overlap=False`)."
+        )
 
     mask_3D.attrs = {"standard_name": "region"}
 
