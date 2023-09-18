@@ -547,7 +547,7 @@ def test_transform_from_latlon(lon_start, dlon, lat_start, dlat):
 
 
 @pytest.mark.parametrize("a, b", [(0, 1), (4, 5)])
-@pytest.mark.parametrize("fill", [np.NaN, 3])
+@pytest.mark.parametrize("fill", [np.nan, 3])
 def test_rasterize(a, b, fill):
 
     expected = expected_mask_2D(a=a, b=b, fill=fill)
@@ -568,7 +568,7 @@ def test_mask_empty(method):
 
     expected = expected_mask_2D(coords={"lon": lon, "lat": lat})
 
-    xr.testing.assert_equal(result, expected * np.NaN)
+    xr.testing.assert_equal(result, expected * np.nan)
 
 
 # =============================================================================
@@ -723,7 +723,7 @@ def _expected_rectangle(ds, lon_min, lon_max, lat_min, lat_max, is_360):
     return expected & (LON > lon_min) & (LON <= lon_max)
 
 
-def expected_mask_edge(ds, is_360, number=0, fill=np.NaN):
+def expected_mask_edge(ds, is_360, number=0, fill=np.nan):
 
     expected = _expected_rectangle(ds, -100, -80, 28, 50, is_360)
 
@@ -736,7 +736,7 @@ def expected_mask_edge(ds, is_360, number=0, fill=np.NaN):
     return expected
 
 
-def expected_mask_interior_and_edge(ds, is_360, number=0, fill=np.NaN):
+def expected_mask_interior_and_edge(ds, is_360, number=0, fill=np.nan):
 
     expected_outerior = _expected_rectangle(ds, -100, -80, 28, 50, is_360)
     expected_interior = _expected_rectangle(ds, -94, -86, 34, 44, is_360)
@@ -956,7 +956,7 @@ def test_mask_whole_grid_nan_lon(regions, lon):
     # https://github.com/regionmask/regionmask/issues/426
 
     lat = np.arange(90, -91, -10)
-    lon = np.concatenate([lon, [np.NaN]])
+    lon = np.concatenate([lon, [np.nan]])
     mask = regions.mask(lon, lat)
 
     assert mask.isel(lon=-1).isnull().all()
