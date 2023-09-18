@@ -108,7 +108,7 @@ drop : boolean, default: True
 """
 
 _OVERLAP_DOCSTRING = """\
-overlap : bool, default: None
+overlap : bool | None, default: None
     Indicates if (some of) the regions overlap.
 
     - If True ``mask_3D_geopandas`` ensures overlapping regions are correctly assigned
@@ -350,7 +350,7 @@ def _mask_3D(
     lat_name=None,
     method=None,
     wrap_lon=None,
-    overlap=False,
+    overlap=None,
     use_cf=None,
 ):
 

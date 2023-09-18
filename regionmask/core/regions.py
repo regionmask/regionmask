@@ -36,17 +36,17 @@ class Regions:
         Name of the collection of regions. Default: "unnamed"
     source : string, optional
         Source of the region definitions. Default: "".
-    overlap : bool, default: None
+    overlap : bool | None, default: None
         Indicates if (some of) the regions overlap.
 
-        - If True ``mask_3D`` ensures overlapping regions are correctly assigned
-          to grid points, while ``mask_geopandas`` raises an Error  (because overlapping
+        - If True ``Regions.mask_3D`` ensures overlapping regions are correctly assigned
+          to grid points, while ``Regionsmask`` raises an Error  (because overlapping
           regions cannot be represented by a 2D mask).
         - If False assumes non-overlapping regions. Grid points are silently assigned to
           the region with the higher number.
         - If None (default) checks if any gridpoint belongs to more than one region.
-          If this is the case ``mask_3D`` correctly assigns them and ``mask`` raises an
-          Error.
+          If this is the case ``Regions.mask_3D`` correctly assigns them and
+          ``Regions.mask`` raises an Error.
 
     Examples
     --------
