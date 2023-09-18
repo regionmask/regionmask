@@ -108,14 +108,17 @@ drop : boolean, default: True
 """
 
 _OVERLAP_DOCSTRING = """\
-overlap : bool, default: False
-    Indicates if (some of) the regions overlap. If True ``mask_3D_geopandas`` will
-    ensure overlapping regions are correctly assigned to grid points.
+overlap : bool | None, default: None
+    Indicates if (some of) the regions overlap.
 
-    If False (default) assumes non-overlapping regions. Grid points will silently be
-    assigned to the region with the higher number (this may change in a future version).
-
-    There is (currently) no automatic detection of overlapping regions.
+    - If True ``mask_3D_geopandas`` ensures overlapping regions are correctly assigned
+      to grid points, while ``mask_geopandas`` raises an Error (because overlapping
+      regions cannot be represented by a 2 dimensional mask).
+    - If False assumes non-overlapping regions. Grid points are silently assigned to the
+      region with the higher number.
+    - If None (default) checks if any gridpoint belongs to more than one region.
+      If this is the case ``mask_3D_geopandas`` correctly assigns them and ``mask_geopandas``
+      raises an Error.
 
 """
 
@@ -130,15 +133,15 @@ flag : str, default: "abbrevs"
 """
 
 
-def _inject_mask_docstring(is_3D, gp_method):
+def _inject_mask_docstring(*, is_3D, is_gpd):
 
     dtype = "boolean" if is_3D else "float"
     nd = "3D" if is_3D else "2D"
     drop_doc = _DROP_DOCSTRING if is_3D else ""
-    numbers_doc = _NUMBERS_DOCSTRING if gp_method else ""
-    gp_doc = _GP_DOCSTRING if gp_method else ""
-    overlap = _OVERLAP_DOCSTRING if (gp_method and is_3D) else ""
-    flags = _FLAG_DOCSTRING if not (gp_method or is_3D) else ""
+    numbers_doc = _NUMBERS_DOCSTRING if is_gpd else ""
+    gp_doc = _GP_DOCSTRING if is_gpd else ""
+    overlap = _OVERLAP_DOCSTRING if is_gpd else ""
+    flags = _FLAG_DOCSTRING if not (is_gpd or is_3D) else ""
     see_also = "mask" if is_3D else "mask_3D"
 
     mask_docstring = _MASK_DOCSTRING_TEMPLATE.format(
@@ -296,7 +299,20 @@ def _mask_2D(
     method=None,
     wrap_lon=None,
     use_cf=None,
+    overlap=None,
 ):
+
+    # NOTE: this is already checked in Regions.mask, and mask_geopandas
+    # double check here if this method is ever made public
+    # if overlap:
+    #     raise ValueError(
+    #         "Creating a 2D mask with overlapping regions yields wrong results. "
+    #         "Please use ``region.mask_3D(...)`` instead. "
+    #         "To create a 2D mask anyway, set ``overlap=False``."
+    #     )
+
+    # if as_3D is not explicitely given - set it to True
+    as_3D = overlap is None
 
     mask = _mask(
         polygons=polygons,
@@ -308,7 +324,12 @@ def _mask_2D(
         method=method,
         wrap_lon=wrap_lon,
         use_cf=use_cf,
+        as_3D=as_3D,
     )
+
+    # only happens for (overlap == None)
+    if as_3D:
+        mask = _3D_to_2D_mask(mask, numbers)
 
     if np.all(np.isnan(mask)):
         msg = "No gridpoint belongs to any region. Returning an all-NaN mask."
@@ -329,9 +350,11 @@ def _mask_3D(
     lat_name=None,
     method=None,
     wrap_lon=None,
-    as_3D=False,
+    overlap=None,
     use_cf=None,
 ):
+
+    as_3D = overlap or overlap is None
 
     mask = _mask(
         polygons=polygons,
@@ -347,16 +370,25 @@ def _mask_3D(
     )
 
     if as_3D:
-        mask_3D = _unpack_3D_mask(mask, numbers, drop)
+        mask_3D = _3D_to_3D_mask(mask, numbers, drop)
     else:
-        mask_3D = _unpack_2D_mask(mask, numbers, drop)
+        mask_3D = _2D_to_3D_mask(mask, numbers, drop)
+
+    if overlap is None and (mask_3D.sum("region") > 1).any():
+        warnings.warn(
+            "Detected overlapping regions. As of v0.11.0 these are correctly taken into "
+            "account. Note, however, that a different mask is returned than with older "
+            "versions of regionmask. To suppress this warning, set `overlap=True` (to "
+            "restore the old, incorrect, behaviour, set `overlap=False`)."
+        )
 
     mask_3D.attrs = {"standard_name": "region"}
 
     return mask_3D
 
 
-def _unpack_2D_mask(mask, numbers, drop):
+def _2D_to_3D_mask(mask, numbers, drop):
+    # TODO: unify with _3D_to_3D_mask
 
     isnan = np.isnan(mask.values)
 
@@ -392,7 +424,8 @@ def _unpack_2D_mask(mask, numbers, drop):
     return mask_3D
 
 
-def _unpack_3D_mask(mask_3D, numbers, drop):
+def _3D_to_3D_mask(mask_3D, numbers, drop):
+    # TODO: unify with _2D_to_3D_mask
 
     any_masked = mask_3D.any(mask_3D.dims[1:])
 
@@ -423,6 +456,35 @@ def _unpack_3D_mask(mask_3D, numbers, drop):
         )
 
     return mask_3D
+
+
+def _3D_to_2D_mask(mask_3D, numbers):
+
+    # NOTE: very similar to regionmask.core.utils.flatten_3D_mask
+
+    is_masked = mask_3D.sum("region")
+
+    if (is_masked > 1).any():
+        raise ValueError(
+            "Found overlapping regions for ``overlap=None``. Please create a 3D mask. "
+            "You may want to explicitely set ``overlap`` to ``True`` or ``False``."
+        )
+
+    # reshape because region is the first dim
+    numbers = np.asarray(numbers)
+
+    # I transform so it broadcasts (mask_3D can acually be 2D for unstructured grids,
+    # so reshape would need some logic)
+    mask_2D = (mask_3D.T * numbers).T.sum("region")
+
+    # mask all gridpoints not belonging to any region
+
+    # older xarray versions do not have `keep_attrs` argument (needed to keep the name)
+    # mask_2D = xr.where(is_masked, mask_2D, np.nan, keep_attrs=True)
+
+    mask_2D.values = np.where(is_masked.values, mask_2D, np.nan)
+
+    return mask_2D
 
 
 def _determine_method(lon, lat):

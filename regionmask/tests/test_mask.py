@@ -319,18 +319,47 @@ def test_mask_wrong_method():
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_2D_overlap_error(method):
 
+    match = "Creating a 2D mask with overlapping regions yields wrong results"
+    with pytest.raises(ValueError, match=match):
+        dummy_region_overlap.mask(dummy_ds, method=method)
+
+
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_2D_overlap_false(method):
+
     # make a copy to ensure dummy_region_overlap.overlap is not overwritten
     region = copy.copy(dummy_region_overlap)
     expected = expected_mask_2D(a=1, b=2)
-
-    match = "Creating a 2D mask with overlapping regions yields wrong results"
-    with pytest.raises(ValueError, match=match):
-        region.mask(dummy_ds, method=method)
 
     region.overlap = False
     result = region.mask(dummy_ds, method=method)
 
     xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_2D_overlap_none(method):
+
+    # make a copy to ensure dummy_region_overlap.overlap is not overwritten
+    region = copy.copy(dummy_region_overlap)
+
+    region.overlap = None
+
+    with pytest.raises(
+        ValueError, match="Found overlapping regions for ``overlap=None``"
+    ):
+        region.mask(dummy_ds, method=method)
+
+
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_2D_overlap_default(method):
+
+    region = Regions(dummy_region_overlap.polygons)
+
+    with pytest.raises(
+        ValueError, match="Found overlapping regions for ``overlap=None``"
+    ):
+        region.mask(dummy_ds, method=method)
 
 
 @pytest.mark.parametrize("drop", [True, False])
@@ -339,6 +368,35 @@ def test_mask_3D_overlap(drop, method):
 
     expected = expected_mask_3D(drop=drop, overlap=True)
     result = dummy_region_overlap.mask_3D(dummy_ds, drop=drop, method=method)
+
+    xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("drop", [True, False])
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_3D_overlap_one(drop, method):
+
+    # make a copy to ensure dummy_region_overlap.overlap is not overwritten
+    region = copy.copy(dummy_region_overlap)
+
+    region.overlap = None
+
+    expected = expected_mask_3D(drop=drop, overlap=True)
+    result = dummy_region_overlap.mask_3D(dummy_ds, drop=drop, method=method)
+
+    xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("drop", [True, False])
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_3D_overlap_default(drop, method):
+
+    region = Regions(dummy_region_overlap.polygons)
+
+    expected = expected_mask_3D(drop=drop, overlap=True)
+
+    with pytest.warns(UserWarning, match="Detected overlapping regions"):
+        result = region.mask_3D(dummy_ds, drop=drop, method=method)
 
     xr.testing.assert_equal(result, expected)
 
@@ -938,7 +996,7 @@ def test_mask_whole_grid_overlap(method, outline, lon):
 
 def test_inject_mask_docstring():
 
-    result = _inject_mask_docstring(True, True)
+    result = _inject_mask_docstring(is_3D=True, is_gpd=True)
 
     assert "3D" in result
     assert "2D" not in result
@@ -948,7 +1006,7 @@ def test_inject_mask_docstring():
     assert "overlap" in result
     assert "flag" not in result
 
-    result = _inject_mask_docstring(False, False)
+    result = _inject_mask_docstring(is_3D=False, is_gpd=False)
 
     assert "2D" in result
     assert "float" in result
