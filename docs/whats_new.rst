@@ -54,8 +54,11 @@ New regions
 Bug Fixes
 ~~~~~~~~~
 
-- Fix a bug which raises an error when trying to creating a mask for overlapping regions
-  and unstructured coordinates (:issue:`438`).
+- Fixed two bugs, which would raise an error when creating a mask for overlapping regions if:
+
+  - the coordinates were unstructured (:issue:`438`)
+  - there were more than 32 regions and equally-spaced coordinates (:issue:`453`).
+
 - Fix the detection of edge points at -180°E or 0°E if longitude values contain ``NA``
   values (:issue:`426`).
 - Fix the wrapping of longitudes that contain ``NA`` values and simplify the ``_wrapAngle``
