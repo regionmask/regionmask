@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import xarray as xr
 from affine import Affine
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, box
 
 from regionmask import Regions
 from regionmask.core.mask import (
@@ -385,6 +385,24 @@ def test_mask_3D_overlap_one(drop, method):
     result = dummy_region_overlap.mask_3D(dummy_ds, drop=drop, method=method)
 
     xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("wrap_lon", [None, True, False])
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_3D_overlap_more_than_64(wrap_lon, method):
+
+    polygon = box(0, 0, 5, 5)
+
+    lon = np.arange(0.5, 5)
+    lat = np.arange(0.5, 5)
+
+    region = Regions([polygon] * 65, overlap=True)
+
+    result = region.mask_3D(lon, lat, wrap_lon=wrap_lon, method=method)
+
+    expected = xr.ones_like(result, dtype=bool)
+
+    xr.testing.assert_identical(expected, result)
 
 
 @pytest.mark.parametrize("drop", [True, False])

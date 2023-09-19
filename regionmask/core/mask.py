@@ -865,7 +865,7 @@ def _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs):
         result = result.transpose([2, 0, 1])
         out.append(result)
 
-    return np.concatenate(out, axis=2)[:n_polygons, ...]
+    return np.concatenate(out, axis=0)[:n_polygons, ...]
 
 
 def _mask_rasterize_internal(lon, lat, polygons, numbers, fill=np.nan, **kwargs):
