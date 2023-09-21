@@ -169,6 +169,7 @@ def _mask(
     wrap_lon=None,
     as_3D=False,
     use_cf=None,
+    all_touched=False,
 ):
     """
     internal function to create a mask
@@ -254,13 +255,25 @@ def _mask(
                 "pygeos is deprecated in favour of shapely 2.0", FutureWarning
             )
 
+    if all_touched:
+        if "rasterize" not in method:
+            raise ValueError(
+                "regularly-spaced coordinates are required to use ``all_touched``"
+            )
+
+        # the regions most likely will overlap
+        as_3D = True
+
     kwargs = {}
     if method == "rasterize":
         mask_func = _mask_rasterize
+        kwargs = {"all_touched": all_touched}
     elif method == "rasterize_flip":
         mask_func = _mask_rasterize_flip
+        kwargs = {"all_touched": all_touched}
     elif method == "rasterize_split":
         mask_func = _mask_rasterize_split
+        kwargs = {"all_touched": all_touched}
     elif method == "pygeos":
         mask_func = _mask_pygeos
         kwargs = {"is_unstructured": is_unstructured}
@@ -352,9 +365,10 @@ def _mask_3D(
     wrap_lon=None,
     overlap=None,
     use_cf=None,
+    all_touched=False,
 ):
 
-    as_3D = overlap or overlap is None
+    as_3D = overlap or overlap is None or all_touched
 
     mask = _mask(
         polygons=polygons,
@@ -367,6 +381,7 @@ def _mask_3D(
         wrap_lon=wrap_lon,
         as_3D=as_3D,
         use_cf=use_cf,
+        all_touched=all_touched,
     )
 
     if as_3D:

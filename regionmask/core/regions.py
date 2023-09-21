@@ -385,6 +385,7 @@ class Regions:
         method=None,
         wrap_lon=None,
         use_cf=None,
+        all_touched=False,
     ):
 
         mask_3D = _mask_3D(
@@ -399,6 +400,7 @@ class Regions:
             wrap_lon=wrap_lon,
             overlap=self.overlap,
             use_cf=use_cf,
+            all_touched=all_touched,
         )
 
         numbers = mask_3D.region.values
