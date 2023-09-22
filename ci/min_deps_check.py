@@ -27,7 +27,6 @@ IGNORE_DEPS = {
     "mypy",
     "pip",
     "pytest-cov",
-    "pytest-env",
     "pytest-xdist",
     "pytest",
 }
