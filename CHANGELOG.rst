@@ -8,10 +8,7 @@ Changelog
 
     import regionmask
 
-.. _whats-new.0.11.0:
-
-
-.. _whats-new.{0.11.0}:
+.. _changelog.0.11.0:
 
 v0.11.0 (unreleased)
 --------------------
@@ -56,7 +53,7 @@ Bug Fixes
 
 - Fixed two bugs, which would raise an error when creating a mask for overlapping regions if:
 
-  - the coordinates were unstructured (:issue:`438`)
+  - the coordinates were unstructured (:issue:`438`) or
   - there were more than 32 regions and equally-spaced coordinates (:issue:`453`).
 
 - Fix the detection of edge points at -180°E or 0°E if longitude values contain ``NA``
@@ -77,6 +74,7 @@ Internal Changes
   as input (:issue:`434`).
 - Add upstream-dev CI check to ensure regionmask works with the developmen version of
   its dependencies (:pull:`444`).
+- Rename docs/whats_new.rst to CHANGELOG.rst (:pull:`457`).
 
 
 v0.10.0 (31.05.2023)
