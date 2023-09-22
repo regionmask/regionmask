@@ -53,7 +53,6 @@ Bug Fixes
   - the coordinates were unstructured (:issue:`438`) or
   - there were more than 32 regions and equally-spaced coordinates (:issue:`453`).
 
-
 - Can now pass the ``use_cf`` parameter to :py:func:`mask_geopandas` and :py:func:`mask_3D_geopandas`.
   Previously these two functions could not control the behavior of finding the coords
   (:pull:`427`).
