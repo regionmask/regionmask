@@ -10,8 +10,11 @@ Changelog
 
 .. _changelog.0.11.0:
 
-v0.11.0 (unreleased)
+v0.11.0 (22.09.2023)
 --------------------
+
+regionmask v0.11.0 checks if regions are overlapping per default. It also fixes some minor
+bugs and bumps the supported versions.
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
@@ -41,12 +44,6 @@ Enhancements
 
 - regionmask now checks if regions are overlapping (unless ``overlap=False`` is explicitly set) - check
   the documentation on :doc:`overlapping regions<notebooks/overlap>` for details (:pull:`439`).
-- Can now pass the ``use_cf`` parameter to :py:func:`mask_geopandas` and :py:func:`mask_3D_geopandas`.
-  This could also be counted as a bug fix as these functions could not control the behavior
-  of finding the coords otherwise (:pull:`427`).
-
-New regions
-~~~~~~~~~~~
 
 Bug Fixes
 ~~~~~~~~~
@@ -56,6 +53,10 @@ Bug Fixes
   - the coordinates were unstructured (:issue:`438`) or
   - there were more than 32 regions and equally-spaced coordinates (:issue:`453`).
 
+
+- Can now pass the ``use_cf`` parameter to :py:func:`mask_geopandas` and :py:func:`mask_3D_geopandas`.
+  Previously these two functions could not control the behavior of finding the coords
+  (:pull:`427`).
 - Fix the detection of edge points at -180°E or 0°E if longitude values contain ``NA``
   values (:issue:`426`).
 - Fix the wrapping of longitudes that contain ``NA`` values and simplify the ``_wrapAngle``
@@ -64,6 +65,7 @@ Bug Fixes
 
 Docs
 ~~~~
+- Rename docs/whats_new.rst to CHANGELOG.rst (:pull:`457`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -74,7 +76,6 @@ Internal Changes
   as input (:issue:`434`).
 - Add upstream-dev CI check to ensure regionmask works with the developmen version of
   its dependencies (:pull:`444`).
-- Rename docs/whats_new.rst to CHANGELOG.rst (:pull:`457`).
 
 
 v0.10.0 (31.05.2023)
@@ -112,7 +113,7 @@ Enhancements
   coordinates(``lat.attrs["units"]`` ) are given as "radians" (:issue:`279`).
 - Better error when passing a single region without wrapping it into a list or tuple (:issue:`372`).
 - Added :py:class:`set_options` to regionmask which can, currently, be used to control
-  the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
+  the number of displayed rows of :py:class:`Regions` (:issue:`376`).
 - Create faster masks with shapely 2.0, which replaces pygeos (:pull:`349`).
 - Allow setting the cache location manually: ``regionmask.set_options(cache_dir="~/.rmask")``.
   The default location is given by ``pooch.os_cache("regionmask")``, i.e. `~/.cache/regionmask/`
