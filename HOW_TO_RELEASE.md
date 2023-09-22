@@ -57,7 +57,7 @@ These instructions assume that `upstream` refers to the main repository
    git push upstream main
    git push upstream --tags
    ```
-1. Add a section for the next release to doc/whats-new.rst:
+1. Add a section for the next release to CHANGELOG.rst:
    ```rst
 
    v0.X.Y (unreleased)
@@ -91,7 +91,7 @@ These instructions assume that `upstream` refers to the main repository
 1. Update zenodo link.
 1. Commit your changes and push to main again:
    ```sh
-   git commit -am 'New whatsnew section'
+   git commit -am 'New changelog section'
    git push upstream main
    ```
    You're done pushing to main!
