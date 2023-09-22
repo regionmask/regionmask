@@ -92,7 +92,7 @@ Documentation
    :hidden:
    :caption: API Reference
 
-   whats_new
+   changelog
    api
 
 

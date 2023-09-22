@@ -1,7 +1,7 @@
 .. currentmodule:: regionmask
 
-What's New
-==========
+Changelog
+=========
 
 .. ipython:: python
    :suppress:
