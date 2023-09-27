@@ -19,9 +19,9 @@ Optional dependencies
 For plotting
 ~~~~~~~~~~~~
 
-- `matplotlib <http://matplotlib.org/>`__ (3.5 or later) is required to create any plots.
-- `cartopy <http://scitools.org.uk/cartopy/>`__ (0.20 or later) for plotting on
-  geographical maps.
+- `matplotlib <http://matplotlib.org>`__ (3.5 or later) is required to create any plots.
+- `cartopy <https://scitools.org.uk/cartopy/docs/latest>`__ (0.20 or later) for plotting on
+  maps.
 
 For detecting coords and parsing flag values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
