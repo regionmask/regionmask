@@ -1,6 +1,7 @@
 .. image:: docs/logo/logo.png
    :align: center
 
+==================================
 create masks of geospatial regions
 ==================================
 
@@ -18,7 +19,6 @@ create masks of geospatial regions
    :target: https://doi.org/10.5281/zenodo.7990210
 
 Create *masks* of geospatial *regions* for arbitrary grids
-
 
 Why regionmask?
 ---------------
