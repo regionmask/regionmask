@@ -14,8 +14,6 @@ def _total_bounds(polygons):
 
     bounds = np.array([p.bounds for p in polygons])
 
-    bounds[:, 0].min()
-
     xmin = bounds[:, 0].min()
     ymin = bounds[:, 1].min()
     xmax = bounds[:, 2].max()
