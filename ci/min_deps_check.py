@@ -10,8 +10,8 @@ policy on obsolete dependencies is being followed. Print a pretty report :)
 
 import itertools
 import sys
-from datetime import datetime
 from collections.abc import Iterator
+from datetime import datetime
 
 import conda.api  # type: ignore[import]
 import yaml
