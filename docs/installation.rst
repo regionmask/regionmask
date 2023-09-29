@@ -4,7 +4,7 @@ Installation
 Required dependencies
 ---------------------
 
-- Python (3.8 or later)
+- Python (3.9 or later)
 - `geopandas <http://geopandas.org/>`__ (0.10 or later)
 - `numpy <http://www.numpy.org/>`__ (1.21 or later)
 - `packaging <https://packaging.pypa.io/en/latest/>`__ (21.3 or later)

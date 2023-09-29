@@ -11,7 +11,7 @@ policy on obsolete dependencies is being followed. Print a pretty report :)
 import itertools
 import sys
 from datetime import datetime
-from typing import Iterator
+from collections.abc import Iterator
 
 import conda.api  # type: ignore[import]
 import yaml
