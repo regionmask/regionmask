@@ -16,6 +16,8 @@ v0.12.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Removed support for Python 3.8 (:pull:`465`).
+
 Enhancements
 ~~~~~~~~~~~~
 

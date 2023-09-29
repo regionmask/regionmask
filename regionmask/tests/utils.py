@@ -1,7 +1,7 @@
 import warnings
 from dataclasses import dataclass
 from functools import partial
-from typing import List, Optional
+from typing import Optional
 
 import numpy as np
 import pytest
@@ -97,7 +97,7 @@ class DefinedRegion:
     n_regions: int
     overlap: bool = False
     skip_mask_test: bool = False
-    bounds: Optional[List[float]] = None
+    bounds: Optional[list[float]] = None
 
     def __str__(self):
         # used as name (`ids`) for parametrize
