@@ -388,18 +388,7 @@ def test_plot_regions_lines_tolerance_cartopy_axes():
         np.testing.assert_allclose(lines[1].vertices.shape, expected)
 
 
-@requires_matplotlib
-@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-@pytest.mark.parametrize("subsample", [True, False])
-def test_plot_lines_subsample_deprecated(plotfunc, subsample):
 
-    func = getattr(r1, plotfunc)
-
-    with pytest.warns(
-        FutureWarning, match="The 'subsample' keyword has been deprecated."
-    ):
-        with figure_context():
-            func(subsample=subsample)
 
 
 # -----------------------------------------------------------------------------
@@ -411,7 +400,6 @@ def test_plot_lines_from_poly(plotfunc):
 
     func = getattr(r2, plotfunc)
 
-    # subsample is False if polygon is given
     with figure_context():
         ax = func()
         lines = ax.collections[0].get_segments()
