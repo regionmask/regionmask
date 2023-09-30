@@ -6,7 +6,6 @@ from dataclasses import dataclass
 
 import numpy as np
 import pooch
-from packaging.version import Version
 from shapely.geometry import MultiPolygon
 
 from regionmask.defined_regions._ressources import _get_cache_dir
@@ -556,12 +555,7 @@ def _fetch_aws(version, resolution, category, name):
     url = f"{base_url}/{aws_version}/{resolution}_{category}/{bname}.zip"
 
     path = _get_cache_dir() / f"natural_earth/{version}"
-
-    if Version(pooch.__version__) < Version("1.4"):
-        # extract_dir not available
-        unzipper = pooch.Unzip()
-    else:
-        unzipper = pooch.Unzip(extract_dir=bname)
+    unzipper = pooch.Unzip(extract_dir=bname)
 
     with set_pooch_log_level():
         fNs = pooch.retrieve(

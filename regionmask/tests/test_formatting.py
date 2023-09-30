@@ -1,5 +1,3 @@
-import pytest
-
 from regionmask.core import formatting
 from regionmask.defined_regions import srex
 
@@ -13,8 +11,6 @@ def test_maybe_truncate():
 
 
 def test_repr_srex():
-
-    pytest.importorskip("pandas", minversion="1.2")
 
     result = srex.__repr__()
 
