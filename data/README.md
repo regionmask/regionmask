@@ -4,7 +4,7 @@ This folder contains additional data for regionmask. They are downloaded on dema
 
 ## AR6 regions
 
-As described in [Iturbide et al., [2020](https://doi.org/10.5194/essd-12-2959-2020). Please cite the paper when using the regions.
+As described in Iturbide et al., [2020](https://doi.org/10.5194/essd-12-2959-2020). Please cite the paper when using the regions.
 
 * reference_regions.zip (`regiomask.defined_regions.ar6`)
 
