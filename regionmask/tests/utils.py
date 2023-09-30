@@ -158,14 +158,6 @@ REGIONS += _REGIONS_NATURAL_EARTH_v5_0_0
 REGIONS_ALL = REGIONS.copy()
 REGIONS_ALL += _REGIONS_NATURAL_EARTH_v4_1_0
 
-
-REGIONS_DEPRECATED = [
-    DefinedRegion("_ar6_pre_revisions.all", 55),
-    DefinedRegion("_ar6_pre_revisions.land", 43),
-    DefinedRegion("_ar6_pre_revisions.ocean", 12),
-    DefinedRegion("_ar6_pre_revisions.separate_pacific", 58),
-]
-
 REGIONS_REQUIRING_CARTOPY = [
     DefinedRegion("natural_earth.countries_110", 177),
     DefinedRegion("natural_earth.countries_50", 242),

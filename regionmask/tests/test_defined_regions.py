@@ -10,7 +10,6 @@ from regionmask.defined_regions._natural_earth import _maybe_get_column
 from . import has_cartopy, requires_cartopy
 from .utils import (
     REGIONS_ALL,
-    REGIONS_DEPRECATED,
     REGIONS_REQUIRING_CARTOPY,
     download_naturalearth_region_or_skip,
 )
@@ -36,14 +35,6 @@ def _test_region(defined_region):
 def test_defined_region(defined_region):
 
     _test_region(defined_region)
-
-
-@pytest.mark.parametrize("defined_region", REGIONS_DEPRECATED, ids=str)
-def test_defined_region_deprecated(defined_region):
-
-    match = "The ``_ar6_pre_revisions`` regions have been deprecated in v0.9.0"
-    with pytest.warns(FutureWarning, match=match):
-        _test_region(defined_region)
 
 
 @requires_cartopy
