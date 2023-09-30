@@ -25,7 +25,6 @@ def fetch_remote_shapefile(name):
         base_url="https://github.com/regionmask/regionmask/raw/{version}/data/",
         registry={
             "IPCC-WGI-reference-regions-v4.zip": "c83881a18e74912385ad578282de721cc8e866b62cbbc75446e52e7041c81cff",
-            "IPCC-WGI-reference-regions-v1.zip": "8507cef52057785117cabc83d6e03414b5994745bf7f297c179eb50507f7ee89",
         },
         version=f"v{regionmask.__version__}",
         version_dev="main",
