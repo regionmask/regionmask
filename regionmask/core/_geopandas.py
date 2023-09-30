@@ -48,7 +48,7 @@ def _construct_abbrevs(geodataframe, names):
     if names is None:
         raise ValueError(
             "names is None, but should be a valid column name of"
-            "geodataframe, choose from {}".format(geodataframe.columns)
+            f"geodataframe, choose from {geodataframe.columns}"
         )
     abbrevs = []
     names = _maybe_get_column(geodataframe, names)

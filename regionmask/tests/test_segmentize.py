@@ -3,7 +3,7 @@ import pytest
 
 from regionmask.core.plot import _get_tolerance, segmentize
 
-from . import requires_geos_3_10
+from . import requires_shapely_2
 
 
 def test_get_tolerance():
@@ -95,16 +95,16 @@ COORDS = (
 )
 
 
-@requires_geos_3_10
+@requires_shapely_2
 @pytest.mark.parametrize("coords", COORDS)
 @pytest.mark.parametrize("tolerance", [0.3, 1.0, 2.7852])
-def test_segmentize_pygeos(coords, tolerance):
+def test_segmentize_shapely(coords, tolerance):
 
-    import pygeos
-    import pygeos.testing
+    import shapely
+    import shapely.testing
 
-    expected = pygeos.segmentize(pygeos.linestrings(coords), tolerance)
+    expected = shapely.segmentize(shapely.linestrings(coords), tolerance)
     result = segmentize(coords, tolerance)
-    result = pygeos.linestrings(result)
+    result = shapely.linestrings(result)
 
-    pygeos.testing.assert_geometries_equal(result, expected)
+    shapely.testing.assert_geometries_equal(result, expected)
