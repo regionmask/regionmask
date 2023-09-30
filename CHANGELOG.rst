@@ -17,6 +17,7 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Removed support for Python 3.8 (:pull:`465`).
+- Removed the deprecated ``_ar6_pre_revisions`` regions (:pull:`#466`).
 
 Enhancements
 ~~~~~~~~~~~~
