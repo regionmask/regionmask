@@ -13,6 +13,10 @@ land : Regions
 ocean : Regions
     Ocean regions only
 
+Notes
+-----
+See https://doi.org/10.5194/essd-12-2959-2020
+
 """
 
 
@@ -28,7 +32,7 @@ class ar6_cls:
         self._ocean = None
 
         self._name = "AR6 reference regions"
-        self._source = "Iturbide et al., 2020 (Earth Syst. Sci. Data)"
+        self._source = "Iturbide et al., 2020 (ESSD)"
 
     @property
     def df(self):
