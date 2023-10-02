@@ -17,6 +17,7 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Removed support for Python 3.8 (:pull:`465`).
+- Removed the deprecated ``subsample`` keyword from the plotting methods (:pull:`468`).
 
 Enhancements
 ~~~~~~~~~~~~
