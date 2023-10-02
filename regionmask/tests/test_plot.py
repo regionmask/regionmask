@@ -388,9 +388,6 @@ def test_plot_regions_lines_tolerance_cartopy_axes():
         np.testing.assert_allclose(lines[1].vertices.shape, expected)
 
 
-
-
-
 # -----------------------------------------------------------------------------
 
 
