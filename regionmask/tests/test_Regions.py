@@ -410,10 +410,11 @@ def test_from_geodataframe():
     r = Regions.from_geodataframe(df)
     assert r.name == "unnamed"
     assert r.source is None
-    assert r.overlap is False
+    assert r.overlap is None
 
 
-def test_from_geodataframe_roundtrip():
+@pytest.mark.parametrize("overlap", [True, False, None])
+def test_from_geodataframe_roundtrip(overlap):
 
     import geopandas
 
@@ -421,7 +422,7 @@ def test_from_geodataframe_roundtrip():
 
     df = geopandas.GeoDataFrame(data=data, geometry=[poly1, poly2], index=numbers2)
     df.index.name = "numbers"
-    df.attrs = dict(source="source", name=name, overlap=True)
+    df.attrs = dict(source="source", name=name, overlap=overlap)
 
     r = Regions.from_geodataframe(df)
 

@@ -37,10 +37,11 @@ class Regions:
     source : string, optional
         Source of the region definitions. Default: "".
     overlap : bool | None, default: None
-        Indicates if (some of) the regions overlap.
+        Indicates if (some of) the regions overlap  and determines the behaviour of the
+        ``mask`` methods.
 
         - If True ``Regions.mask_3D`` ensures overlapping regions are correctly assigned
-          to grid points, while ``Regionsmask`` raises an Error  (because overlapping
+          to grid points, while ``Regions.mask`` raises an Error  (because overlapping
           regions cannot be represented by a 2D mask).
         - If False assumes non-overlapping regions. Grid points are silently assigned to
           the region with the higher number.
@@ -490,17 +491,18 @@ class Regions:
         source : str, optional
             Source of the shapefile.  If None uses ``df.attrs.get("source")``.
 
-        overlap : bool, default: None
-            Indicates if (some of) the regions overlap. If None uses
-            ``df.attrs.get("overlap")``. If True ``mask_3D`` will ensure
-            overlapping regions are correctly assigned to grid points while ``mask``
-            will error (because overlapping regions cannot be represented by a 2D mask).
+        overlap : bool | None, default: None
+            Indicates if (some of) the regions overlap and determines the behaviour of the
+            ``mask`` methods.
 
-            If False assumes non-overlapping regions. Grid points will silently be
-            assigned to the region with the higher number (this may change in a future
-            version).
-
-            There is (currently) no automatic detection of overlapping regions.
+            - If True ``mask_3D`` ensures overlapping regions are correctly assigned
+            to grid points, while ``mask`` raises an Error (because overlapping
+            regions cannot be represented by a 2 dimensional mask).
+            - If False assumes non-overlapping regions. Grid points are silently assigned to the
+            region with the higher number.
+            - If None (default) checks if any gridpoint belongs to more than one region.
+            If this is the case ``mask_3D`` correctly assigns them and ``mask``
+            raises an Error.
 
         Returns
         -------
@@ -520,7 +522,7 @@ class Regions:
             source = df.attrs.get("source")
 
         if overlap is None:
-            overlap = df.attrs.get("overlap", False)
+            overlap = df.attrs.get("overlap", None)
 
         return _from_geopandas(
             df,
