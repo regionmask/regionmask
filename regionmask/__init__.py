@@ -23,7 +23,7 @@ __all__ = [
 
 try:
     __version__ = _get_version("regionmask")
-except Exception:
+except Exception:  # pragma: no cover
     # Local copy or not installed with setuptools.
     # Disable minimum version checks on downstream libraries.
     __version__ = "999"
