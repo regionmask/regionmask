@@ -29,7 +29,7 @@ sources:
         http://maps.tnc.org/files/metadata/MEOW.xml
     driver: intake_geopandas.regionmask.RegionmaskSource
     args:
-      urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
+      urlpath: simplecache::https://www.arcgis.com/sharing/rest/content/items/903c3ae05b264c00a3b5e58a4561b7e6/data
       use_fsspec: true
       storage_options:
         simplecache:
