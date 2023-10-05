@@ -496,13 +496,13 @@ class Regions:
             ``mask`` methods.
 
             - If True ``mask_3D`` ensures overlapping regions are correctly assigned
-            to grid points, while ``mask`` raises an Error (because overlapping
-            regions cannot be represented by a 2 dimensional mask).
+              to grid points, while ``mask`` raises an Error (because overlapping
+              regions cannot be represented by a 2 dimensional mask).
             - If False assumes non-overlapping regions. Grid points are silently assigned to the
-            region with the higher number.
+              region with the higher number.
             - If None (default) checks if any gridpoint belongs to more than one region.
-            If this is the case ``mask_3D`` correctly assigns them and ``mask``
-            raises an Error.
+              If this is the case ``mask_3D`` correctly assigns them and ``mask``
+              raises an Error.
 
         Returns
         -------
