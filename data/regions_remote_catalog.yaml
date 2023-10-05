@@ -25,11 +25,10 @@ sources:
       broader biogeographic tiers of Realms and Provinces.
     metadata:
       url:
-        http://maps.tnc.org/gis_data.html
-        http://maps.tnc.org/files/metadata/MEOW.xml
+        https://geospatial.tnc.org/datasets/903c3ae05b264c00a3b5e58a4561b7e6/about
     driver: intake_geopandas.regionmask.RegionmaskSource
     args:
-      urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
+      urlpath: simplecache::https://www.arcgis.com/sharing/rest/content/items/903c3ae05b264c00a3b5e58a4561b7e6/data
       use_fsspec: true
       storage_options:
         simplecache:
