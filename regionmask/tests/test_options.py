@@ -7,6 +7,14 @@ import regionmask
 from regionmask.defined_regions._ressources import _get_cache_dir
 
 
+@pytest.mark.parametrize("invalid_option", [None, "None", "__foo__"])
+def test_option_invalid_error(invalid_option):
+
+    with pytest.raises(ValueError, match="not in the set of valid options"):
+
+        regionmask.set_options(invalid_option=5)
+
+
 def test_options_display_max_rows_errors():
 
     default = regionmask.core.options.OPTIONS["display_max_rows"]
@@ -35,6 +43,19 @@ def test_options_display_max_rows(n, expected):
         assert result == expected + 6 + 1
 
 
+class A:
+    pass
+
+
+@pytest.mark.parametrize("cache_dir", [5, str, A()])
+def test_set_cache_dir_error(cache_dir):
+
+    with pytest.raises(
+        ValueError, match="cache_dir' must be None, a string or pathlib.Path"
+    ):
+        regionmask.set_options(cache_dir=cache_dir)
+
+
 def test_get_cache_dir():
     import pooch
 
@@ -49,3 +70,12 @@ def test_get_cache_dir():
         assert _get_cache_dir() == Path("/any/other/location")
 
     assert _get_cache_dir() == default_cache_dir
+
+
+def test_get_options():
+
+    options = regionmask.get_options()
+
+    assert isinstance(options, dict)
+
+    assert options == {"display_max_rows": 10, "cache_dir": None}
