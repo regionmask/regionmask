@@ -27,6 +27,10 @@ except ModuleNotFoundError:
 
 has_shapely_2 = Version(shapely.__version__) > Version("2.0b1")
 
+# a tiny offset to get a consistent edge behaviour
+# LAT_OFFSET or LON_OFFSET: could be positive to enlarge the mask or be negative to tighten the mask
+# TOL_TINY is tolerance value to feed the np.close to compare LON/LAT with the edge.
+# TOL_TINY needs to be order of the magitude of LON_OFFSET/180 or LAT_OFFSET/90
 LON_OFFSET = 1e-8
 LAT_OFFSET = 1e-10
 TOL_TINY   = 1e-10
