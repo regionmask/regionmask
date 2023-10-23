@@ -14,7 +14,13 @@ from ._deprecate import _deprecate_positional_args
 from .formatting import _display
 from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .plot import _plot, _plot_regions
-from .utils import _is_180, _is_numeric, _maybe_to_dict, _sanitize_names_abbrevs
+from .utils import (
+    _is_180,
+    _is_numeric,
+    _maybe_to_dict,
+    _sanitize_names_abbrevs,
+    _total_bounds,
+)
 
 
 class Regions:
@@ -164,7 +170,7 @@ class Regions:
         """
 
         key = self.map_keys(key)
-        if isinstance(key, (int, np.integer)):
+        if np.ndim(key) == 0:
             return self.regions[key]
         else:
             # subsample the regions
@@ -174,7 +180,7 @@ class Regions:
             return new_self
 
     def __len__(self):
-        return len(self.numbers)
+        return len(self.regions)
 
     def map_keys(self, key):
         """map from names and abbrevs of the regions to numbers
@@ -193,7 +199,7 @@ class Regions:
         """
 
         # a single key
-        if isinstance(key, (int, np.integer, str)):
+        if np.ndim(key) == 0:
             key = self.region_ids[key]
         # a list of keys
         else:
@@ -204,13 +210,7 @@ class Regions:
         return key
 
     def __iter__(self):
-        for i in self.numbers:
-            yield self[i]
-
-    def combiner(self, prop):
-        """combines attributes from single regions"""
-
-        return [getattr(r, prop) for r in self.regions.values()]
+        yield from self.regions.values()
 
     @property
     def region_ids(self):
@@ -228,56 +228,48 @@ class Regions:
     @property
     def abbrevs(self):
         """list of abbreviations of the regions"""
-        return self.combiner("abbrev")
+        return [r.abbrev for r in self.regions.values()]
 
     @property
     def names(self):
         """list of names of the regions"""
-        return self.combiner("name")
+        return [r.name for r in self.regions.values()]
 
     @property
     def numbers(self):
         """list of the numbers of the regions"""
-        return self.combiner("number")
+        return [r.number for r in self.regions.values()]
 
     @property
     def coords(self):
         """list of coordinates of the region vertices as numpy array"""
-        return self.combiner("coords")
+        return [r.coords for r in self.regions.values()]
 
     @property
     def polygons(self):
         """list of shapely Polygon/ MultiPolygon of the regions"""
-        return self.combiner("polygon")
+        return [r.polygon for r in self.regions.values()]
 
     @property
     def centroids(self):
         """list of the center of mass of the regions"""
-        return self.combiner("centroid")
+        return [r.centroid for r in self.regions.values()]
 
     @property
     def bounds(self):
         """list of the bounds of the regions (min_lon, min_lat, max_lon, max_lat)"""
-        return self.combiner("bounds")
+        return [r.bounds for r in self.regions.values()]
 
     @property
     def bounds_global(self):
         """global bounds over all regions (min_lon, min_lat, max_lon, max_lat)"""
 
-        bounds = self.bounds
-
-        xmin = np.min([p[0] for p in bounds])
-        ymin = np.min([p[1] for p in bounds])
-        xmax = np.max([p[2] for p in bounds])
-        ymax = np.max([p[3] for p in bounds])
-
-        return [xmin, ymin, xmax, ymax]
+        return _total_bounds(self.polygons)
 
     @property
     def lon_180(self):
         """if the regions extend from -180 to 180"""
-        lon_min = self.bounds_global[0]
-        lon_max = self.bounds_global[2]
+        lon_min, __, lon_max, __ = self.bounds_global
 
         return _is_180(lon_min, lon_max)
 
@@ -585,10 +577,10 @@ class _OneRegion:
         self._bounds = None
 
         if isinstance(outline, (Polygon, MultiPolygon)):
-            self._polygon = outline
+            self.polygon = outline
             self._coords = None
         else:
-            self._polygon = None
+
             outline = np.asarray(outline)
 
             if outline.ndim != 2:
@@ -600,6 +592,7 @@ class _OneRegion:
             if outline.shape[1] != 2:
                 raise ValueError("Outline must have Nx2 elements")
 
+            self.polygon = Polygon(outline)
             self._coords = outline
 
     def __repr__(self):
@@ -614,7 +607,7 @@ class _OneRegion:
         if self._centroid is None:
             poly = self.polygon
             if isinstance(poly, MultiPolygon):
-                # find the polygon with the largest area and assig as centroid
+                # find the polygon with the largest area and assign as centroid
                 area = 0
                 for p in poly.geoms:
                     if p.area > area:
@@ -631,37 +624,31 @@ class _OneRegion:
         return self._centroid
 
     @property
-    def polygon(self):
-        """shapely Polygon or MultiPolygon of the region"""
-
-        if self._polygon is None:
-            self._polygon = Polygon(self.coords)
-        return self._polygon
-
-    @property
     def coords(self):
         """numpy array of the region"""
 
         if self._coords is None:
 
-            # make an array of polygons
-            if isinstance(self._polygon, Polygon):
-                polys = [self._polygon]
+            if isinstance(self.polygon, Polygon):
+                coords = np.array(self.polygon.exterior.coords)
             else:
-                polys = list(self._polygon.geoms)
+                polys = self.polygon.geoms
 
-            # separate the single polygons with NaNs
-            nan = np.full((1, 2), np.nan)
-            lst = [np.vstack((np.array(poly.exterior.coords), nan)) for poly in polys]
+                # separate the single polygons with nans
+                nan = np.full((1, 2), np.nan)
+                coords = [c for poly in polys for c in (poly.exterior.coords, nan)]
+                # remove the last nan and stack
+                coords = np.vstack(coords[:-1])
 
-            # remove the very last NaN
-            self._coords = np.vstack(lst)[:-1, :]
+            self._coords = coords
 
         return self._coords
 
     @property
     def bounds(self):
-        """bounds of the regions ((Multi)Polygon.bounds (min_lon, min_lat, max_lon, max_lat)"""
+        """
+        bounds of the regions (Multi)Polygon.bounds (min_lon, min_lat, max_lon, max_lat)
+        """
         if self._bounds is None:
             self._bounds = self.polygon.bounds
         return self._bounds

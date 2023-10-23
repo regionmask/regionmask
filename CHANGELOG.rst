@@ -35,8 +35,13 @@ Bug Fixes
 Docs
 ~~~~
 
+- Updated the "Using regionmask with intake" example (:pull:`477`).
+- Fixed the url to the MEOW dataset in the intake example (:pull:`474` and :pull:`477`).
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
+
+- Small optimizations for :py:class:`Regions` (:pull:`#478`).
 
 
 v0.11.0 (22.09.2023)
