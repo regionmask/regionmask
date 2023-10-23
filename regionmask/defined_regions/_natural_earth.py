@@ -1,6 +1,3 @@
-import os
-import warnings
-from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass
 
@@ -19,13 +16,6 @@ try:
     engine = "pyogrio"
 except ImportError:
     engine = "fiona"
-
-# TODO: remove deprecated (v0.9.0) natural_earth class and instance & clean up
-
-ALTERNATIVE = (
-    "Please use ``regionmask.defined_regions.natural_earth_v4_1_0`` or "
-    "``regionmask.defined_regions.natural_earth_v5_0_0`` instead"
-)
 
 
 def _maybe_get_column(df, colname):
@@ -208,7 +198,7 @@ _ocean_basins_50 = _NaturalEarthFeature(
 )
 
 
-class NaturalEarth(ABC):
+class NaturalEarth:
     """class combining all natural_earth features/ geometries
 
     Because data must be downloaded, we organise it as a class so that
@@ -230,9 +220,9 @@ class NaturalEarth(ABC):
 
         self._ocean_basins_50 = None
 
-    @abstractmethod
     def _obtain_ne(self, natural_earth_feature, **kwargs):
-        ...
+        shapefilename = natural_earth_feature.shapefilename(self.version)
+        return _obtain_ne(shapefilename, **kwargs)
 
     @property
     def countries_110(self):
@@ -355,67 +345,7 @@ class NaturalEarth(ABC):
         return "Region Definitions from 'http://www.naturalearthdata.com'."
 
 
-def _fix_ocean_basins_50_cartopy(self, df):
-    """ocean basins 50 has duplicate entries"""
-
-    names_v4_1_0 = {
-        14: "Mediterranean Sea",
-        30: "Mediterranean Sea",
-        26: "Ross Sea",
-        29: "Ross Sea",
-    }
-
-    names_v5_0_0 = {
-        74: "Great Barrier Reef",
-        114: "Great Barrier Reef",
-    }
-
-    names_v5_1_2 = {
-        74: "Great Barrier Reef",
-        113: "Great Barrier Reef",
-    }
-
-    is_v4_1_0 = all(df.loc[idx]["name"] == name for idx, name in names_v4_1_0.items())
-    is_v5_0_0 = all(df.loc[idx]["name"] == name for idx, name in names_v5_0_0.items())
-    is_v5_1_2 = all(df.loc[idx]["name"] == name for idx, name in names_v5_1_2.items())
-
-    if is_v4_1_0:
-        df = _fix_ocean_basins_50_v4_1_0(self, df)
-    elif is_v5_0_0:
-        df = _fix_ocean_basins_50_v5_0_0(self, df)
-    elif is_v5_1_2:
-        df = _fix_ocean_basins_50_v5_1_2(self, df)
-    else:
-        raise ValueError(
-            "Unknown version of the ocean basins 50m data from naturalearth. "
-            f"{ALTERNATIVE}."
-        )
-
-    return df
-
-
-def _fix_ocean_basins_50_v4_1_0(self, df):
-    """fix ocean basins 50 for naturalearth v4.1.0
-
-    - Mediterranean Sea and Ross Sea have two parts: renamed to Eastern and Western
-      Basin
-    """
-
-    new_names = {
-        14: "Mediterranean Sea Eastern Basin",
-        30: "Mediterranean Sea Western Basin",
-        26: "Ross Sea Eastern Basin",
-        29: "Ross Sea Western Basin",
-    }
-
-    # rename duplicated regions
-    for idx, new_name in new_names.items():
-        df.loc[idx, "name"] = new_name
-
-    return df
-
-
-def _unify__great_barrier_reef(df, idx1, idx2):
+def _unify_great_barrier_reef(df, idx1, idx2):
 
     p1 = df.loc[idx1].geometry
     p2 = df.loc[idx2].geometry
@@ -429,103 +359,50 @@ def _unify__great_barrier_reef(df, idx1, idx2):
     return df
 
 
-def _fix_ocean_basins_50_v5_0_0(self, df):
-    """fix ocean basins 50 for naturalearth v5.0.0
-
-    - Mediterranean Sea and Ross Sea is **no longer** split in two.
-    - There are two regions named Great Barrier Reef - these are now merged
-    - The numbers/ indices are different from Version 4.0!
-    """
-
-    return _unify__great_barrier_reef(df, 74, 114)
-
-
-def _fix_ocean_basins_50_v5_1_2(self, df):
-    """fix ocean basins 50 for naturalearth v5.1.2
-
-    - Sea of Japan & Korea Strait geometries are different
-    - the rest (including the split of the Great Barrier Reef) is as in v5.0.0
-    - but the regions are ordered different
-    """
-
-    return _unify__great_barrier_reef(df, 74, 113)
-
-
-class NaturalEarthCartopy(NaturalEarth):
-
-    _fix_ocean_basins_50 = _fix_ocean_basins_50_cartopy
-
-    def _obtain_ne(self, natural_earth_feature, **kwargs):
-
-        shapefilename = _get_shapefilename_cartopy(
-            natural_earth_feature.resolution,
-            natural_earth_feature.category,
-            natural_earth_feature.name,
-        )
-
-        return _obtain_ne(shapefilename, **kwargs)
-
-
 class NaturalEarth_v4_1_0(NaturalEarth):
 
-    _fix_ocean_basins_50 = _fix_ocean_basins_50_v4_1_0
     version = "v4.1.0"
 
-    def _obtain_ne(self, natural_earth_feature, **kwargs):
-        shapefilename = natural_earth_feature.shapefilename(self.version)
-        return _obtain_ne(shapefilename, **kwargs)
+    @staticmethod
+    def _fix_ocean_basins_50(df):
+        """fix ocean basins 50 for naturalearth v4.1.0
+
+        - Mediterranean Sea and Ross Sea have two parts: renamed to Eastern and Western
+        Basin
+        """
+
+        new_names = {
+            14: "Mediterranean Sea Eastern Basin",
+            30: "Mediterranean Sea Western Basin",
+            26: "Ross Sea Eastern Basin",
+            29: "Ross Sea Western Basin",
+        }
+
+        # rename duplicated regions
+        for idx, new_name in new_names.items():
+            df.loc[idx, "name"] = new_name
+
+        return df
 
 
 class NaturalEarth_v5_0_0(NaturalEarth):
 
-    _fix_ocean_basins_50 = _fix_ocean_basins_50_v5_0_0
     version = "v5.0.0"
 
-    def _obtain_ne(self, natural_earth_feature, **kwargs):
-        shapefilename = natural_earth_feature.shapefilename(self.version)
-        return _obtain_ne(shapefilename, **kwargs)
+    @staticmethod
+    def _fix_ocean_basins_50(df):
+        """fix ocean basins 50 for naturalearth v5.0.0
 
+        - Mediterranean Sea and Ross Sea is **no longer** split in two.
+        - There are two regions named Great Barrier Reef - these are now merged
+        - The numbers/ indices are different from Version 4.0!
+        """
 
-natural_earth = NaturalEarthCartopy()
+        return _unify_great_barrier_reef(df, 74, 114)
+
 
 natural_earth_v4_1_0 = NaturalEarth_v4_1_0()
 natural_earth_v5_0_0 = NaturalEarth_v5_0_0()
-
-
-def _get_shapefilename_cartopy(resolution, category, name):
-
-    try:
-        import cartopy
-    except ImportError as e:
-        msg = (
-            "``regionmask.defined_regions.natural_earth`` requires cartopy and is "
-            f"deprecated.\n{ALTERNATIVE} (which do not require cartopy)."
-        )
-        raise ImportError(msg) from e
-
-    _cartopy_data_dir = cartopy.config["data_dir"]
-
-    # check if cartopy has already downloaded the file
-    cartopy_file = os.path.join(
-        _cartopy_data_dir,
-        "shapefiles",
-        "natural_earth",
-        f"{category}",
-        f"ne_{resolution}_{name}.shp",
-    )
-
-    if not os.path.exists(cartopy_file):
-        raise ValueError(
-            "``regionmask.defined_regions.natural_earth`` is deprecated. Will not "
-            f"download new files via this interface. {ALTERNATIVE}."
-        )
-
-    warnings.warn(
-        f"``regionmask.defined_regions.natural_earth`` is deprecated. {ALTERNATIVE}.",
-        FutureWarning,
-    )
-
-    return cartopy_file
 
 
 @contextmanager
