@@ -637,20 +637,21 @@ class _OneRegion:
             else:
                 polys = self.polygon.geoms
 
-                # separate the single polygons with NaNs
+                # separate the single polygons with nans
                 nan = np.full((1, 2), np.nan)
-
                 coords = [c for poly in polys for c in (poly.exterior.coords, nan)]
+                # remove the last nan and stack
                 coords = np.vstack(coords[:-1])
 
-            # remove the very last nan and stack
             self._coords = coords
 
         return self._coords
 
     @property
     def bounds(self):
-        """bounds of the regions ((Multi)Polygon.bounds (min_lon, min_lat, max_lon, max_lat)"""
+        """
+        bounds of the regions (Multi)Polygon.bounds (min_lon, min_lat, max_lon, max_lat)
+        """
         if self._bounds is None:
             self._bounds = self.polygon.bounds
         return self._bounds
