@@ -365,8 +365,7 @@ def _plot_regions(
         tolerance = None
 
     # draw the outlines
-    polygons = [self[i].polygon for i in self.numbers]
-    _draw_poly(ax, polygons, tolerance=tolerance, transform=trans, **line_kws)
+    _draw_poly(ax, self.polygons, tolerance=tolerance, transform=trans, **line_kws)
 
     if add_label:
 

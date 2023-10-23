@@ -37,14 +37,17 @@ test_regions2 = Regions(poly, numbers2, names_dict, abbrevs_dict, name=name)
 numbers3 = [2, 3]
 test_regions3 = Regions(outlines, np.array(numbers3), names, abbrevs, name=name)
 
+# float numbers
+numbers4 = [0.0, 1.0]
+test_regions4 = Regions(outlines, np.array(numbers4), names, abbrevs, name=name)
 
 # =============================================================================
 
-all_test_regions = (test_regions1, test_regions2, test_regions3)
+all_test_regions = (test_regions1, test_regions2, test_regions3, test_regions4)
 
-all_numbers = (numbers1, numbers2, numbers3)
+all_numbers = (numbers1, numbers2, numbers3, numbers4)
 
-all_first_numbers = (0, 1, 2)
+all_first_numbers = tuple(num[0] for num in all_numbers)
 
 # =============================================================================
 
@@ -177,7 +180,7 @@ def test_map_keys_unique():
 @pytest.mark.parametrize(
     "test_regions, number", zip(all_test_regions, all_first_numbers)
 )
-def test_subset_to_Region(test_regions, number):
+def test_subset_to_OneRegion(test_regions, number):
     s1 = test_regions[number]
     assert isinstance(s1, _OneRegion)
     assert s1.number == number
@@ -192,6 +195,13 @@ def test_subset_to_Region(test_regions, number):
     assert isinstance(s1, _OneRegion)
     assert s1.number == number
     assert s1.abbrev == "uSq1"
+
+
+@pytest.mark.parametrize("test_region", all_test_regions)
+def test_Regions_iter(test_region):
+
+    for result, expected in zip(test_region, test_region.regions.values()):
+        assert result is expected
 
 
 @pytest.mark.parametrize(
