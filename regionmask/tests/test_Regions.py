@@ -69,9 +69,7 @@ def test_name(test_regions):
     assert test_regions.name == name
 
 
-@pytest.mark.parametrize(
-    "test_regions, numbers", zip(all_test_regions, all_numbers, strict=True)
-)
+@pytest.mark.parametrize("test_regions, numbers", zip(all_test_regions, all_numbers))
 def test_numbers(test_regions, numbers):
     assert np.allclose(test_regions.numbers, numbers)
 
@@ -145,7 +143,7 @@ def test_centroid_multipolygon():
 
 
 @pytest.mark.parametrize(
-    "test_regions, number", zip(all_test_regions, all_first_numbers, strict=True)
+    "test_regions, number", zip(all_test_regions, all_first_numbers)
 )
 def test_map_keys_one(test_regions, number):
     pytest.raises(KeyError, test_regions1.__getitem__, "")
@@ -180,7 +178,7 @@ def test_map_keys_unique():
 
 
 @pytest.mark.parametrize(
-    "test_regions, number", zip(all_test_regions, all_first_numbers, strict=True)
+    "test_regions, number", zip(all_test_regions, all_first_numbers)
 )
 def test_subset_to_Region(test_regions, number):
     s1 = test_regions[number]
@@ -200,7 +198,7 @@ def test_subset_to_Region(test_regions, number):
 
 
 @pytest.mark.parametrize(
-    "test_regions, number", zip(all_test_regions, all_first_numbers, strict=True)
+    "test_regions, number", zip(all_test_regions, all_first_numbers)
 )
 def test_subset_to_Regions(test_regions, number):
     s1 = test_regions[[number]]
