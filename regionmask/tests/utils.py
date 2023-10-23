@@ -1,10 +1,7 @@
-import warnings
 from dataclasses import dataclass
-from functools import partial
 from typing import Optional
 
 import numpy as np
-import pytest
 import xarray as xr
 
 from regionmask import Regions
@@ -157,36 +154,3 @@ REGIONS += _REGIONS_NATURAL_EARTH_v5_0_0
 
 REGIONS_ALL = REGIONS.copy()
 REGIONS_ALL += _REGIONS_NATURAL_EARTH_v4_1_0
-
-REGIONS_REQUIRING_CARTOPY = [
-    DefinedRegion("natural_earth.countries_110", 177),
-    DefinedRegion("natural_earth.countries_50", 242),
-    DefinedRegion("natural_earth.us_states_50", 51),
-    DefinedRegion("natural_earth.us_states_10", 51),
-    DefinedRegion("natural_earth.land_110", 1),
-    DefinedRegion("natural_earth.land_50", 1),
-    DefinedRegion("natural_earth.land_10", 1),
-    DefinedRegion("natural_earth.ocean_basins_50", 117),
-]
-
-
-def download_naturalearth_region_or_skip(monkeypatch, natural_earth_feature):
-
-    from urllib.request import URLError, urlopen
-
-    import cartopy
-    from cartopy.io import shapereader
-
-    # add a timeout to cartopy.io.urlopen else it can run indefinitely
-    monkeypatch.setattr(cartopy.io, "urlopen", partial(urlopen, timeout=5))
-
-    try:
-        shapereader.natural_earth(
-            natural_earth_feature.resolution,
-            natural_earth_feature.category,
-            natural_earth_feature.name,
-        )
-    except URLError as e:
-        warnings.warn(str(e))
-        warnings.warn("naturalearth download timeout - test not run!")
-        pytest.skip()
