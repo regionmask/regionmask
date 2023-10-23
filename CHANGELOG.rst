@@ -38,6 +38,8 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Small optimizations for :py:class:`Regions` (:pull:`#478`).
+
 
 v0.11.0 (22.09.2023)
 --------------------
