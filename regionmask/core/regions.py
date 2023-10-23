@@ -14,7 +14,13 @@ from ._deprecate import _deprecate_positional_args
 from .formatting import _display
 from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from .plot import _plot, _plot_regions
-from .utils import _is_180, _is_numeric, _maybe_to_dict, _sanitize_names_abbrevs, _total_bounds
+from .utils import (
+    _is_180,
+    _is_numeric,
+    _maybe_to_dict,
+    _sanitize_names_abbrevs,
+    _total_bounds,
+)
 
 
 class Regions:
@@ -625,7 +631,6 @@ class _OneRegion:
         """numpy array of the region"""
 
         if self._coords is None:
-
 
             if isinstance(self.polygon, Polygon):
                 coords = np.array(self.polygon.exterior.coords)
