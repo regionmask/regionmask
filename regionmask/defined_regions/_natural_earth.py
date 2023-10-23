@@ -205,7 +205,9 @@ class NaturalEarth:
     we only download it on demand.
     """
 
-    def __init__(self):
+    def __init__(self, version, fix_ocean_basins_50):
+        self.version = version
+        self._fix_ocean_basins_50 = fix_ocean_basins_50
 
         self._countries_110 = None
         self._countries_50 = None
@@ -342,7 +344,7 @@ class NaturalEarth:
         return self._ocean_basins_50
 
     def __repr__(self):
-        return "Region Definitions from 'http://www.naturalearthdata.com'."
+        return f"Region definitions from 'http://www.naturalearthdata.com' - {self.version}"
 
 
 def _unify_great_barrier_reef(df, idx1, idx2):
@@ -359,50 +361,40 @@ def _unify_great_barrier_reef(df, idx1, idx2):
     return df
 
 
-class NaturalEarth_v4_1_0(NaturalEarth):
+def _fix_ocean_basins_50_v4_1_0(df):
+    """fix ocean basins 50 for naturalearth v4.1.0
 
-    version = "v4.1.0"
+    - Mediterranean Sea and Ross Sea have two parts: renamed to Eastern and Western
+    Basin
+    """
 
-    @staticmethod
-    def _fix_ocean_basins_50(df):
-        """fix ocean basins 50 for naturalearth v4.1.0
+    new_names = {
+        14: "Mediterranean Sea Eastern Basin",
+        30: "Mediterranean Sea Western Basin",
+        26: "Ross Sea Eastern Basin",
+        29: "Ross Sea Western Basin",
+    }
 
-        - Mediterranean Sea and Ross Sea have two parts: renamed to Eastern and Western
-        Basin
-        """
+    # rename duplicated regions
+    for idx, new_name in new_names.items():
+        df.loc[idx, "name"] = new_name
 
-        new_names = {
-            14: "Mediterranean Sea Eastern Basin",
-            30: "Mediterranean Sea Western Basin",
-            26: "Ross Sea Eastern Basin",
-            29: "Ross Sea Western Basin",
-        }
-
-        # rename duplicated regions
-        for idx, new_name in new_names.items():
-            df.loc[idx, "name"] = new_name
-
-        return df
+    return df
 
 
-class NaturalEarth_v5_0_0(NaturalEarth):
+def _fix_ocean_basins_50_v5_0_0(df):
+    """fix ocean basins 50 for naturalearth v5.0.0
 
-    version = "v5.0.0"
+    - Mediterranean Sea and Ross Sea is **no longer** split in two.
+    - There are two regions named Great Barrier Reef - these are now merged
+    - The numbers/ indices are different from Version 4.0!
+    """
 
-    @staticmethod
-    def _fix_ocean_basins_50(df):
-        """fix ocean basins 50 for naturalearth v5.0.0
-
-        - Mediterranean Sea and Ross Sea is **no longer** split in two.
-        - There are two regions named Great Barrier Reef - these are now merged
-        - The numbers/ indices are different from Version 4.0!
-        """
-
-        return _unify_great_barrier_reef(df, 74, 114)
+    return _unify_great_barrier_reef(df, 74, 114)
 
 
-natural_earth_v4_1_0 = NaturalEarth_v4_1_0()
-natural_earth_v5_0_0 = NaturalEarth_v5_0_0()
+natural_earth_v4_1_0 = NaturalEarth("v4.1.0", _fix_ocean_basins_50_v4_1_0)
+natural_earth_v5_0_0 = NaturalEarth("v5.0.0", _fix_ocean_basins_50_v5_0_0)
 
 
 @contextmanager
