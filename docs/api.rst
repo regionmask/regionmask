@@ -116,7 +116,6 @@ Attributes
    :toctree: generated/
 
    _OneRegion.coords
-   _OneRegion.polygon
    _OneRegion.bounds
 
 
