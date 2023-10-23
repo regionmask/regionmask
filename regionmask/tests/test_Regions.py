@@ -180,7 +180,7 @@ def test_map_keys_unique():
 @pytest.mark.parametrize(
     "test_regions, number", zip(all_test_regions, all_first_numbers)
 )
-def test_subset_to_Region(test_regions, number):
+def test_subset_to_OneRegion(test_regions, number):
     s1 = test_regions[number]
     assert isinstance(s1, _OneRegion)
     assert s1.number == number
@@ -195,6 +195,13 @@ def test_subset_to_Region(test_regions, number):
     assert isinstance(s1, _OneRegion)
     assert s1.number == number
     assert s1.abbrev == "uSq1"
+
+
+@pytest.mark.parametrize("test_region", all_test_regions)
+def test_Regions_iter(test_region):
+
+    for result, expected in zip(test_region, test_region.regions.values()):
+        assert result is expected
 
 
 @pytest.mark.parametrize(
