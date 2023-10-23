@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from regionmask import Regions, defined_regions
-from regionmask.defined_regions._natural_earth import _maybe_get_column
+from regionmask.defined_regions._natural_earth import NaturalEarth, _maybe_get_column
 
 from . import requires_cartopy
 from .utils import REGIONS_ALL
@@ -49,8 +49,24 @@ def test_defined_regions_attribute_error():
         defined_regions.attr
 
 
-def test_fix_ocean_basins_50():
+def test_natural_earth_wrong_version():
+    ne_wrong_version = NaturalEarth("v0.3.0", None)
 
+    with pytest.raises(ValueError, match="version must"):
+        ne_wrong_version.land_110
+
+
+def test_natural_earth_repr():
+    actual = repr(defined_regions.natural_earth_v4_1_0)
+    expected = "Region definitions from 'http://www.naturalearthdata.com' - v4.1.0"
+    assert actual == expected
+
+    actual = repr(defined_regions.natural_earth_v5_0_0)
+    expected = "Region definitions from 'http://www.naturalearthdata.com' - v5.0.0"
+    assert actual == expected
+
+
+def test_fix_ocean_basins_50():
     region = defined_regions.natural_earth_v4_1_0.ocean_basins_50
     assert "Mediterranean Sea Eastern Basin" in region.names
     assert "Ross Sea Eastern Basin" in region.names
