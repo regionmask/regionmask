@@ -17,6 +17,7 @@ sources:
       regionmask_kwargs:
         names: NAME_EN
         abbrevs: _from_name
+        source: https://www.naturalearthdata.com
 
   MEOW:
     description: >-
@@ -33,8 +34,12 @@ sources:
       storage_options:
         simplecache:
           same_names: true
-    regionmask_kwargs:
-      name: MEOW
-      names: ECOREGION
-      numbers: ECO_CODE_X
-      abbrevs: construct
+          cache_storage: cache/MEOW-TNC/
+      regionmask_kwargs:
+        name: MEOW
+        names: ECOREGION
+        numbers: ECO_CODE_X
+        abbrevs: _from_name
+        source: https://geospatial.tnc.org/datasets/903c3ae05b264c00a3b5e58a4561b7e6/about
+
+

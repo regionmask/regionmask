@@ -37,6 +37,9 @@ Bug Fixes
 Docs
 ~~~~
 
+- Updated the "Using regionmask with intake" example (:pull:`477`).
+- Fixed the url to the MEOW dataset in the intake example (:pull:`474` and :pull:`477`).
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
