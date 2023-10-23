@@ -61,6 +61,15 @@ r2 = Regions(name=name, numbers=numbers, names=names, abbrevs=abbrevs, outlines=
 multipoly = MultiPolygon([poly1, poly2])
 r3 = Regions([multipoly])
 
+# float numbers
+r4 = Regions(
+    outlines,
+    numbers=[
+        0.0,
+        1,
+    ],
+)
+
 # a region with segments longer than 1, use Polygon to close the coords
 r_large = regionmask.Regions([Polygon(c * 10) for c in r1.coords])
 
@@ -270,6 +279,22 @@ def test_plot_regions_projection():
 def test_plot_lines(plotfunc):
 
     func = getattr(r1, plotfunc)
+
+    with figure_context():
+        ax = func(tolerance=None)
+
+        lines = ax.collections[0].get_segments()
+
+        assert len(lines) == 2
+        assert np.allclose(lines[0], outl1_closed)
+        assert np.allclose(lines[1], outl2_closed)
+
+
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
+def test_plot_lines_float_numbers(plotfunc):
+
+    func = getattr(r4, plotfunc)
 
     with figure_context():
         ax = func(tolerance=None)

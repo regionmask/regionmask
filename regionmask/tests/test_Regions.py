@@ -37,14 +37,17 @@ test_regions2 = Regions(poly, numbers2, names_dict, abbrevs_dict, name=name)
 numbers3 = [2, 3]
 test_regions3 = Regions(outlines, np.array(numbers3), names, abbrevs, name=name)
 
+# float numbers
+numbers4 = [0.0, 1.0]
+test_regions4 = Regions(outlines, np.array(numbers4), names, abbrevs, name=name)
 
 # =============================================================================
 
-all_test_regions = (test_regions1, test_regions2, test_regions3)
+all_test_regions = (test_regions1, test_regions2, test_regions3, test_regions4)
 
-all_numbers = (numbers1, numbers2, numbers3)
+all_numbers = (numbers1, numbers2, numbers3, numbers4)
 
-all_first_numbers = (0, 1, 2)
+all_first_numbers = (0, 1, 2, 0.0)
 
 # =============================================================================
 
@@ -66,7 +69,9 @@ def test_name(test_regions):
     assert test_regions.name == name
 
 
-@pytest.mark.parametrize("test_regions, numbers", zip(all_test_regions, all_numbers))
+@pytest.mark.parametrize(
+    "test_regions, numbers", zip(all_test_regions, all_numbers), strict=True
+)
 def test_numbers(test_regions, numbers):
     assert np.allclose(test_regions.numbers, numbers)
 
@@ -140,7 +145,7 @@ def test_centroid_multipolygon():
 
 
 @pytest.mark.parametrize(
-    "test_regions, number", zip(all_test_regions, all_first_numbers)
+    "test_regions, number", zip(all_test_regions, all_first_numbers, strict=True)
 )
 def test_map_keys_one(test_regions, number):
     pytest.raises(KeyError, test_regions1.__getitem__, "")
@@ -175,7 +180,7 @@ def test_map_keys_unique():
 
 
 @pytest.mark.parametrize(
-    "test_regions, number", zip(all_test_regions, all_first_numbers)
+    "test_regions, number", zip(all_test_regions, all_first_numbers, strict=True)
 )
 def test_subset_to_Region(test_regions, number):
     s1 = test_regions[number]
@@ -195,7 +200,7 @@ def test_subset_to_Region(test_regions, number):
 
 
 @pytest.mark.parametrize(
-    "test_regions, number", zip(all_test_regions, all_first_numbers)
+    "test_regions, number", zip(all_test_regions, all_first_numbers, strict=True)
 )
 def test_subset_to_Regions(test_regions, number):
     s1 = test_regions[[number]]
