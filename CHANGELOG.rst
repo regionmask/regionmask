@@ -32,11 +32,14 @@ New regions
 Bug Fixes
 ~~~~~~~~~
 
+- Fixed the default value of ``overlap`` of :py:func:`from_geopandas` to ``None`` (:issue:`453`, :pull:`470`).
+
 Docs
 ~~~~
 
 - Updated the "Using regionmask with intake" example (:pull:`477`).
 - Fixed the url to the MEOW dataset in the intake example (:pull:`474` and :pull:`477`).
+- Fixed the docstring for ``overlap`` of :py:func:`from_geopandas` and :py:class:`Regions` (:issue:`453`, :pull:`470`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
