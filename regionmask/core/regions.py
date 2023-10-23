@@ -211,11 +211,6 @@ class Regions:
     def __iter__(self):
         yield from self.regions.values()
 
-    def combiner(self, prop):
-        """combines attributes from single regions"""
-
-        return [getattr(r, prop) for r in self.regions.values()]
-
     @property
     def region_ids(self):
         """dictionary that maps all names and abbrevs to the region number"""
