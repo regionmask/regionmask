@@ -47,7 +47,7 @@ all_test_regions = (test_regions1, test_regions2, test_regions3, test_regions4)
 
 all_numbers = (numbers1, numbers2, numbers3, numbers4)
 
-all_first_numbers = (0, 1, 2, 0.0)
+all_first_numbers = tuple(num[0] for num in all_numbers)
 
 # =============================================================================
 
@@ -70,7 +70,7 @@ def test_name(test_regions):
 
 
 @pytest.mark.parametrize(
-    "test_regions, numbers", zip(all_test_regions, all_numbers), strict=True
+    "test_regions, numbers", zip(all_test_regions, all_numbers, strict=True)
 )
 def test_numbers(test_regions, numbers):
     assert np.allclose(test_regions.numbers, numbers)

@@ -62,13 +62,7 @@ multipoly = MultiPolygon([poly1, poly2])
 r3 = Regions([multipoly])
 
 # float numbers
-r4 = Regions(
-    outlines,
-    numbers=[
-        0.0,
-        1,
-    ],
-)
+r4 = Regions(outlines, numbers=[0.0, 1.0])
 
 # a region with segments longer than 1, use Polygon to close the coords
 r_large = regionmask.Regions([Polygon(c * 10) for c in r1.coords])
