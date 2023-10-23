@@ -5,8 +5,6 @@ Using regionmask with intake
 Regions from geopandas shapefiles can be pre-defined in a yaml file, which can be
 easily shared. This relies on ``intake_geopandas`` and accepts ``regionmask_kwargs``,
 which are passed to ``regionmask.from_geopandas``.
-If you set ``use_fsspec=True`` and use ``simplecache::`` in the url, the shapefile is
-cached locally.
 
 .. ipython:: python
     :suppress:
@@ -22,13 +20,18 @@ cached locally.
 You need to install intake_geopandas, which combines geopandas and intake, see
 https://intake.readthedocs.io/en/latest/.
 
+Let's explore the Marine Ecoregions Of the World (MEOW) data set, which is a
+biogeographic classification of the world's coasts and shelves.
+
 .. ipython:: python
 
-    import intake_geopandas
     import intake
-    # open a pre-defined remote or local catalog yaml file
-    url = 'https://raw.githubusercontent.com/regionmask/regionmask/main/data/regions_remote_catalog.yaml'
-    cat = intake.open_catalog(url)
+    import intake_geopandas
+
+    # open a pre-defined remote or local catalog yaml file, containing the MEOW regions
+    path = "../data/regions_remote_catalog.yaml"
+    cat = intake.open_catalog(path)
+
     # access data from remote source
     meow_regions = cat.MEOW.read()
     print(meow_regions)
@@ -36,54 +39,35 @@ https://intake.readthedocs.io/en/latest/.
     @savefig plotting_MEOW.png width=100%
     meow_regions.plot(add_label=False)
 
+Remote catalogs can also be used:
+
+.. code-block:: python
+
+    url = 'https://raw.githubusercontent.com/regionmask/regionmask/main/data/regions_remote_catalog.yaml'
+    cat = intake.open_catalog(path)
+
+Because the catalog sets ``use_fsspec=True`` and uses ``simplecache::`` in the url, the shapefile is
+cached locally:
+
+.. ipython:: python
+
+    import os
+    import zipfile
+
+    file = "cache/MEOW-TNC/data"
+
+    assert os.path.exists(file)
+    assert zipfile.is_zipfile(file)
+
 
 Find more such pre-defined regions in `remote_climate_data <https://github.com/aaronspring/remote_climate_data/blob/master/catalogs/regionmask.yaml>`_.
 
 Build your own catalog
 ======================
 
-To create a catalog we use the syntax described in
-`intake <https://intake.readthedocs.io/en/latest/catalog.html#yaml-format>`_.
-Let's explore the Marine Ecoregions Of the World (MEOW) data set, which is a
-biogeographic classification of the world's coasts and shelves.
+To create a catalog we use the syntax described in `intake <https://intake.readthedocs.io/en/latest/catalog.html#yaml-format>`_.
+Below we show the catalog used above, which contains two example datasets (the second is the MEOW regions):
 
-.. ipython:: python
+.. literalinclude:: ../data/regions_remote_catalog.yaml
+   :language: yaml
 
-    with open('regions_my_local_catalog.yml', 'w') as f:
-        f.write("""
-    plugins:
-      source:
-        - module: intake_geopandas
-    sources:
-      MEOW:
-        description: MEOW for regionmask and cache
-        driver: intake_geopandas.regionmask.RegionmaskSource
-        args:
-          urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
-          use_fsspec: true  # optional for caching
-          storage_options:  # optional for caching
-            simplecache:
-              same_names: true
-              cache_storage: cache
-          regionmask_kwargs:
-            names: ECOREGION
-            abbrevs: _from_name
-            source: http://maps.tnc.org
-            numbers: ECO_CODE_X
-            name: MEOW
-    """)
-
-.. ipython:: python
-
-    cat = intake.open_catalog('regions_my_local_catalog.yml')
-    meow_regions = cat.MEOW.read()
-    print(meow_regions)
-
-
-Because ``simplecache::`` was added to the urlpath and ``use_fsspec=True``, the zip file was
-downloaded to the folder specified in cache_storage. The file access is now local.
-
-.. ipython:: python
-
-    import os
-    assert os.path.exists('cache/MEOW-TNC.zip')
