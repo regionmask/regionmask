@@ -17,6 +17,8 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Removed support for Python 3.8 (:pull:`465`).
+- Removed the ``regionmask.defined_regions.natural_earth`` regions which were deprecated
+  in v0.9.0 (:pull:`479`)
 - Removed the deprecated ``subsample`` keyword from the plotting methods (:pull:`468`).
 - Removed the deprecated ``_ar6_pre_revisions`` regions (:pull:`#466`).
 
