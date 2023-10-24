@@ -106,6 +106,7 @@ def test_from_geopandas_use_columns(geodataframe_clean):
     assert result.abbrevs == ["uSq1", "uSq2", "uSq3"]
     assert result.name == "name"
     assert result.source == "source"
+    assert result.overlap is None
 
 
 @pytest.mark.parametrize("attr", ["name", "source", "overlap"])
@@ -133,7 +134,10 @@ def test_from_geopandas_default(geodataframe_clean):
     assert result.names == ["Region0", "Region1", "Region2"]
     assert result.abbrevs == ["r0", "r1", "r2"]
     assert result.name == "unnamed"
-    assert result.source is None
+    assert result.overlap is None
+
+    result = from_geopandas(geodataframe_clean, overlap=True)
+    assert result.overlap is True
 
 
 @pytest.mark.parametrize("arg", ["names", "abbrevs", "numbers"])
