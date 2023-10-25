@@ -16,7 +16,9 @@ def _optional_str_or_path(name: str, value) -> bool:
     from pathlib import Path
 
     if not (value is None or isinstance(value, (str, Path))):
-        raise ValueError(f"'{name}' must be a string or pathlib.Path, got '{value}'")
+        raise ValueError(
+            f"'{name}' must be None, a string or pathlib.Path, got '{value}'"
+        )
 
 
 _VALIDATORS = {

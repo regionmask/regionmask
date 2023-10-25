@@ -61,6 +61,9 @@ r2 = Regions(name=name, numbers=numbers, names=names, abbrevs=abbrevs, outlines=
 multipoly = MultiPolygon([poly1, poly2])
 r3 = Regions([multipoly])
 
+# float numbers
+r4 = Regions(outlines, numbers=[0.0, 1.0])
+
 # a region with segments longer than 1, use Polygon to close the coords
 r_large = regionmask.Regions([Polygon(c * 10) for c in r1.coords])
 
@@ -283,6 +286,22 @@ def test_plot_lines(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
+def test_plot_lines_float_numbers(plotfunc):
+
+    func = getattr(r4, plotfunc)
+
+    with figure_context():
+        ax = func(tolerance=None)
+
+        lines = ax.collections[0].get_segments()
+
+        assert len(lines) == 2
+        assert np.allclose(lines[0], outl1_closed)
+        assert np.allclose(lines[1], outl2_closed)
+
+
+@requires_matplotlib
+@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 def test_plot_lines_multipoly(plotfunc):
     """regression of 47: because multipolygons were concatenated
     they did not look closed"""
@@ -388,20 +407,6 @@ def test_plot_regions_lines_tolerance_cartopy_axes():
         np.testing.assert_allclose(lines[1].vertices.shape, expected)
 
 
-@requires_matplotlib
-@pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-@pytest.mark.parametrize("subsample", [True, False])
-def test_plot_lines_subsample_deprecated(plotfunc, subsample):
-
-    func = getattr(r1, plotfunc)
-
-    with pytest.warns(
-        FutureWarning, match="The 'subsample' keyword has been deprecated."
-    ):
-        with figure_context():
-            func(subsample=subsample)
-
-
 # -----------------------------------------------------------------------------
 
 
@@ -411,7 +416,6 @@ def test_plot_lines_from_poly(plotfunc):
 
     func = getattr(r2, plotfunc)
 
-    # subsample is False if polygon is given
     with figure_context():
         ax = func()
         lines = ax.collections[0].get_segments()

@@ -1,10 +1,7 @@
-import warnings
 from dataclasses import dataclass
-from functools import partial
-from typing import List, Optional
+from typing import Optional
 
 import numpy as np
-import pytest
 import xarray as xr
 
 from regionmask import Regions
@@ -97,7 +94,7 @@ class DefinedRegion:
     n_regions: int
     overlap: bool = False
     skip_mask_test: bool = False
-    bounds: Optional[List[float]] = None
+    bounds: Optional[list[float]] = None
 
     def __str__(self):
         # used as name (`ids`) for parametrize
@@ -157,58 +154,3 @@ REGIONS += _REGIONS_NATURAL_EARTH_v5_0_0
 
 REGIONS_ALL = REGIONS.copy()
 REGIONS_ALL += _REGIONS_NATURAL_EARTH_v4_1_0
-
-
-REGIONS_DEPRECATED = [
-    DefinedRegion("_ar6_pre_revisions.all", 55),
-    DefinedRegion("_ar6_pre_revisions.land", 43),
-    DefinedRegion("_ar6_pre_revisions.ocean", 12),
-    DefinedRegion("_ar6_pre_revisions.separate_pacific", 58),
-]
-
-REGIONS_REQUIRING_CARTOPY = [
-    DefinedRegion("natural_earth.countries_110", 177),
-    DefinedRegion("natural_earth.countries_50", 242),
-    DefinedRegion("natural_earth.us_states_50", 51),
-    DefinedRegion("natural_earth.us_states_10", 51),
-    DefinedRegion("natural_earth.land_110", 1),
-    DefinedRegion("natural_earth.land_50", 1),
-    DefinedRegion("natural_earth.land_10", 1),
-    DefinedRegion("natural_earth.ocean_basins_50", 117),
-]
-
-
-def download_naturalearth_region_or_skip(monkeypatch, natural_earth_feature):
-
-    from urllib.request import URLError, urlopen
-
-    import cartopy
-    from cartopy.io import shapereader
-
-    # add a timeout to cartopy.io.urlopen else it can run indefinitely
-    monkeypatch.setattr(cartopy.io, "urlopen", partial(urlopen, timeout=5))
-
-    # natural earth data has moved to amazon, older version of cartopy still have the
-    # old url
-    # https://github.com/SciTools/cartopy/pull/1833
-    # https://github.com/nvkelso/natural-earth-vector/issues/445
-    # remove again once the minimum cartopy version is v0.19
-
-    url_template = (
-        "https://naturalearth.s3.amazonaws.com/"
-        "{resolution}_{category}/ne_{resolution}_{name}.zip"
-    )
-
-    downloader = cartopy.config["downloaders"][("shapefiles", "natural_earth")]
-    monkeypatch.setattr(downloader, "url_template", url_template)
-
-    try:
-        shapereader.natural_earth(
-            natural_earth_feature.resolution,
-            natural_earth_feature.category,
-            natural_earth_feature.name,
-        )
-    except URLError as e:
-        warnings.warn(str(e))
-        warnings.warn("naturalearth download timeout - test not run!")
-        pytest.skip()

@@ -19,9 +19,10 @@ python -m pip install \
     --no-deps \
     --pre \
     --upgrade \
-    numpy \
     matplotlib \
-    pandas
+    numpy \
+    pandas \
+    xarray
 python -m pip install \
     --no-deps \
     --upgrade \
@@ -31,5 +32,4 @@ python -m pip install \
     git+https://github.com/pypa/packaging \
     git+https://github.com/fatiando/pooch \
     git+https://github.com/geopandas/pyogrio \
-    git+https://github.com/rasterio/rasterio \
-    git+https://github.com/pydata/xarray \
+    git+https://github.com/rasterio/rasterio

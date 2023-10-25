@@ -7,11 +7,9 @@
    :width: 500 px
    :align: center
 
-|
 
-************************************
-create masks of geographical regions
-************************************
+create masks of geospatial regions
+==================================
 
 Determine which geographic region each grid point belongs to.
 
@@ -20,18 +18,19 @@ often important to create regional averages, e.g., over countries, continents or
 regions defined in the literature. To do so we need to know for each grid point to which
 region it belongs to.
 
-regionmask is a python package that:
+**regionmask** is a python package that:
 
-- can be used to create *masks* of geographic *regions* for arbitrary longitude and latitude grids.
-  These masks indicate which region a gridpoint belongs to. They come in two variants:
+- can be used to create *masks* of (geo)spatial *regions* for arbitrary (longitude and latitude) grids.
+  These masks indicate which region a gridpoint belongs to and can then be used to aggregate
+  gridded data over the regions. The masks come in two variants:
 
   - :doc:`2D integer masks<notebooks/mask_2D>`
   - :doc:`3D boolean masks<notebooks/mask_3D>`
 
-- takes great care to consistently treat gridpoints and overlapping regions, see
+- takes great care to create consistent masks for
 
-  - :doc:`Edge behavior and interiors<notebooks/method>`
-  - :doc:`Overlapping regions<notebooks/overlap>`
+  - :doc:`region edges and interiors<notebooks/method>`
+  - :doc:`overlapping regions<notebooks/overlap>`
 
 - contains a number of defined regions, including:
 
@@ -45,9 +44,6 @@ regionmask is a python package that:
 
   - regions defined as shapefiles can be :doc:`accessed via geopandas<notebooks/geopandas>`
   - :doc:`user-defined regions<notebooks/create_own_regions>` can be created via numpy or shapely
-
-Documentation
-=============
 
 .. toctree::
    :maxdepth: 2
@@ -92,17 +88,17 @@ Documentation
    :hidden:
    :caption: API Reference
 
-   whats_new
+   changelog
    api
 
 
 License
-=======
+-------
 
 regionmask is published under a MIT license.
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`search`

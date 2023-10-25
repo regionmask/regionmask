@@ -128,7 +128,6 @@ def _plot(
     line_kws=None,
     text_kws=None,
     resolution="110m",
-    subsample=None,
     add_land=False,
     coastline_kws=None,
     ocean_kws=None,
@@ -270,7 +269,6 @@ def _plot(
         label=label,
         line_kws=line_kws,
         text_kws=text_kws,
-        subsample=subsample,
         label_multipolygon=label_multipolygon,
         tolerance=tolerance,
     )
@@ -286,7 +284,6 @@ def _plot_regions(
     label="number",
     line_kws=None,
     text_kws=None,
-    subsample=None,
     label_multipolygon="largest",
     tolerance="auto",
 ):
@@ -334,13 +331,6 @@ def _plot_regions(
 
     """
 
-    if subsample is not None:
-        warnings.warn(
-            "The 'subsample' keyword has been deprecated in v0.9.0. Use "
-            "``tolerance`` instead.",
-            FutureWarning,
-        )
-
     import matplotlib.pyplot as plt
 
     is_geoaxes = False
@@ -375,8 +365,7 @@ def _plot_regions(
         tolerance = None
 
     # draw the outlines
-    polygons = [self[i].polygon for i in self.numbers]
-    _draw_poly(ax, polygons, tolerance=tolerance, transform=trans, **line_kws)
+    _draw_poly(ax, self.polygons, tolerance=tolerance, transform=trans, **line_kws)
 
     if add_label:
 

@@ -10,8 +10,8 @@ policy on obsolete dependencies is being followed. Print a pretty report :)
 
 import itertools
 import sys
+from collections.abc import Iterator
 from datetime import datetime
-from typing import Iterator
 
 import conda.api  # type: ignore[import]
 import yaml
@@ -27,7 +27,6 @@ IGNORE_DEPS = {
     "mypy",
     "pip",
     "pytest-cov",
-    "pytest-env",
     "pytest-xdist",
     "pytest",
 }
