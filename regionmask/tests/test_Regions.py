@@ -84,6 +84,13 @@ def test_abbrevs(test_regions):
     assert test_regions.abbrevs == ["uSq1", "uSq2"]
 
 
+def test_coords_deprecated():
+
+    with pytest.warns(FutureWarning, match="`Regions.coords` has been deprecated"):
+        test_regions1.coords
+
+
+@pytest.mark.filterwarnings("ignore:`Regions.coords` has been deprecated")
 def test_coords():
     # passing numpy coords does not automatically close the coords
     assert np.allclose(test_regions1.coords, [outl1, outl2])

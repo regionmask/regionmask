@@ -86,7 +86,7 @@ def test_mask_wrong_number_fill(func):
         )
 
     with pytest.raises(ValueError, match="`numbers` and `coords` must have"):
-        func(dummy_ds.lon, dummy_ds.lat, dummy_region.coords, numbers=[5])
+        func(dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[5])
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
