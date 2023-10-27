@@ -202,8 +202,7 @@ _ocean_basins_50 = _NaturalEarthFeature(
 class NaturalEarth:
     """class combining all natural_earth features/ geometries
 
-    Because data st be downloaded, we organise it as a class so that
-     data
+    Because data must be downloaded, we organise it as a class so that
     we only download it on demand.
     """
 
