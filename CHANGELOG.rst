@@ -16,16 +16,14 @@ v0.12.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Deprecated ``Regions.coords`` because they are no longer used (:pull:`486`).
 - Removed support for Python 3.8 (:pull:`465`).
 - Removed the ``regionmask.defined_regions.natural_earth`` regions which were deprecated
-  in v0.9.0 (:pull:`479`)
+  in v0.9.0,  (:pull:`479`)
 - Removed the deprecated ``subsample`` keyword from the plotting methods (:pull:`468`).
-- Removed the deprecated ``_ar6_pre_revisions`` regions (:pull:`#466`).
+- Removed the deprecated ``_ar6_pre_revisions`` regions (:pull:`466`).
 
 Enhancements
-~~~~~~~~~~~~
-
-Deprecations
 ~~~~~~~~~~~~
 
 New regions
