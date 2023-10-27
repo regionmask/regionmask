@@ -129,6 +129,7 @@ VERSIONS = ["v4.1.0", "v5.0.0"]
 @dataclass
 class _NaturalEarthFeature:
 
+    title: str
     resolution: str
     category: str
     name: str
@@ -153,46 +154,55 @@ class _NaturalEarthFeature:
 
 
 _countries_110 = _NaturalEarthFeature(
+    title="Natural Earth Countries: 110m",
     resolution="110m",
     category="cultural",
     name="admin_0_countries",
 )
 _countries_50 = _NaturalEarthFeature(
+    title="Natural Earth Countries: 50m",
     resolution="50m",
     category="cultural",
     name="admin_0_countries",
 )
 _countries_10 = _NaturalEarthFeature(
+    title="Natural Earth Countries: 10m",
     resolution="10m",
     category="cultural",
     name="admin_0_countries",
 )
 _us_states_50 = _NaturalEarthFeature(
+    title="Natural Earth: US States 50m",
     resolution="50m",
     category="cultural",
     name="admin_1_states_provinces_lakes",
 )
 _us_states_10 = _NaturalEarthFeature(
+    title="Natural Earth: US States 10m",
     resolution="10m",
     category="cultural",
     name="admin_1_states_provinces_lakes",
 )
 _land_110 = _NaturalEarthFeature(
+    title="Natural Earth: landmask 110m",
     resolution="110m",
     category="physical",
     name="land",
 )
 _land_50 = _NaturalEarthFeature(
+    title="Natural Earth: landmask 50m",
     resolution="50m",
     category="physical",
     name="land",
 )
 _land_10 = _NaturalEarthFeature(
+    title="Natural Earth: landmask 10m",
     resolution="10m",
     category="physical",
     name="land",
 )
 _ocean_basins_50 = _NaturalEarthFeature(
+    title="Natural Earth: ocean basins 50m",
     resolution="50m",
     category="physical",
     name="geography_marine_polys",
@@ -210,42 +220,34 @@ class NaturalEarth:
         self.version = version
         self._fix_ocean_basins_50 = fix_ocean_basins_50
 
-    def _obtain_ne(self, natural_earth_feature, **kwargs):
-        shapefilename = natural_earth_feature.shapefilename(self.version)
-        return _obtain_ne(shapefilename, **kwargs)
+    def _obtain_ne(self, feature, **kwargs):
+        shapefilename = feature.shapefilename(self.version)
+        return _obtain_ne(shapefilename, feature.title, **kwargs)
 
     @property
     @cache
     def countries_110(self):
 
-        opt = dict(title="Natural Earth Countries: 110m")
-
-        return self._obtain_ne(_countries_110, **opt)
+        return self._obtain_ne(_countries_110)
 
     @property
     @cache
     def countries_50(self):
 
-        opt = dict(title="Natural Earth Countries: 50m")
-
-        return self._obtain_ne(_countries_50, **opt)
+        return self._obtain_ne(_countries_50)
 
     @property
     @cache
     def countries_10(self):
 
-        opt = dict(title="Natural Earth Countries: 10m")
-
-        return self._obtain_ne(_countries_10, **opt)
+        return self._obtain_ne(_countries_10)
 
     @property
     @cache
     def us_states_50(self):
 
         opt = dict(
-            title="Natural Earth: US States 50m",
-            query="admin == 'United States of America'",
-            bbox=(-180, 18, -45, 72),
+            query="admin == 'United States of America'", bbox=(-180, 18, -45, 72)
         )
 
         return self._obtain_ne(_us_states_50, **opt)
@@ -255,9 +257,7 @@ class NaturalEarth:
     def us_states_10(self):
 
         opt = dict(
-            title="Natural Earth: US States 10m",
-            query="admin == 'United States of America'",
-            bbox=(-180, 18, -45, 72),
+            query="admin == 'United States of America'", bbox=(-180, 18, -45, 72)
         )
 
         return self._obtain_ne(_us_states_10, **opt)
@@ -266,13 +266,7 @@ class NaturalEarth:
     @cache
     def land_110(self):
 
-        opt = dict(
-            title="Natural Earth: landmask 110m",
-            names=["land"],
-            abbrevs=["lnd"],
-            numbers=[0],
-            combine_coords=True,
-        )
+        opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
         return self._obtain_ne(_land_110, **opt)
 
@@ -280,13 +274,7 @@ class NaturalEarth:
     @cache
     def land_50(self):
 
-        opt = dict(
-            title="Natural Earth: landmask 50m",
-            names=["land"],
-            abbrevs=["lnd"],
-            numbers=[0],
-            combine_coords=True,
-        )
+        opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
         return self._obtain_ne(_land_50, **opt)
 
@@ -294,13 +282,7 @@ class NaturalEarth:
     @cache
     def land_10(self):
 
-        opt = dict(
-            title="Natural Earth: landmask 10m",
-            names=["land"],
-            abbrevs=["lnd"],
-            numbers=[0],
-            combine_coords=True,
-        )
+        opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
         return self._obtain_ne(_land_10, **opt)
 
@@ -308,12 +290,7 @@ class NaturalEarth:
     @cache
     def ocean_basins_50(self):
 
-        opt = dict(
-            title="Natural Earth: ocean basins 50m",
-            names="name",
-            abbrevs="name",
-            preprocess=self._fix_ocean_basins_50,
-        )
+        opt = dict(names="name", abbrevs="name", preprocess=self._fix_ocean_basins_50)
 
         return self._obtain_ne(_ocean_basins_50, **opt)
 
