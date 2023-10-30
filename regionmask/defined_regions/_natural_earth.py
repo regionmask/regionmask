@@ -1,10 +1,12 @@
+import warnings
 from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import cache
 
+import geopandas
 import numpy as np
 import pooch
-from shapely.geometry import MultiPolygon
+from shapely.geometry import LineString, MultiPolygon
 
 from regionmask.defined_regions._ressources import _get_cache_dir
 
@@ -14,9 +16,9 @@ from ..core.utils import _flatten_polygons
 try:
     import pyogrio  # noqa: F401
 
-    engine = "pyogrio"
+    ENGINE = "pyogrio"
 except ImportError:
-    engine = "fiona"
+    ENGINE = "fiona"
 
 
 def _maybe_get_column(df, colname):
@@ -85,10 +87,8 @@ def _obtain_ne(
         geometry. See ``geopandas.read_file`` for defails.
     """
 
-    import geopandas
-
     # read the file with geopandas
-    df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox, engine=engine)
+    df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox, engine=ENGINE)
 
     if query is not None:
         df = df.query(query).reset_index(drop=True)
@@ -123,12 +123,13 @@ def _obtain_ne(
     )
 
 
-VERSIONS = ["v4.1.0", "v5.0.0"]
+VERSIONS = ["v4.1.0", "v5.0.0", "v5.1.2"]
 
 
 @dataclass
 class _NaturalEarthFeature:
 
+    short_name: str
     title: str
     resolution: str
     category: str
@@ -152,56 +153,71 @@ class _NaturalEarthFeature:
 
         return fN
 
+    def read(self, version, bbox=None):
+
+        shpfilename = self.shapefilename(version=version)
+        df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox, engine=ENGINE)
+        return df
+
 
 _countries_110 = _NaturalEarthFeature(
+    short_name="countries_110",
     title="Natural Earth Countries: 110m",
     resolution="110m",
     category="cultural",
     name="admin_0_countries",
 )
 _countries_50 = _NaturalEarthFeature(
+    short_name="countries_50",
     title="Natural Earth Countries: 50m",
     resolution="50m",
     category="cultural",
     name="admin_0_countries",
 )
 _countries_10 = _NaturalEarthFeature(
+    short_name="countries_10",
     title="Natural Earth Countries: 10m",
     resolution="10m",
     category="cultural",
     name="admin_0_countries",
 )
 _us_states_50 = _NaturalEarthFeature(
+    short_name="us_states_50",
     title="Natural Earth: US States 50m",
     resolution="50m",
     category="cultural",
     name="admin_1_states_provinces_lakes",
 )
 _us_states_10 = _NaturalEarthFeature(
+    short_name="us_states_10",
     title="Natural Earth: US States 10m",
     resolution="10m",
     category="cultural",
     name="admin_1_states_provinces_lakes",
 )
 _land_110 = _NaturalEarthFeature(
+    short_name="land_110",
     title="Natural Earth: landmask 110m",
     resolution="110m",
     category="physical",
     name="land",
 )
 _land_50 = _NaturalEarthFeature(
+    short_name="land_50",
     title="Natural Earth: landmask 50m",
     resolution="50m",
     category="physical",
     name="land",
 )
 _land_10 = _NaturalEarthFeature(
+    short_name="land_10",
     title="Natural Earth: landmask 10m",
     resolution="10m",
     category="physical",
     name="land",
 )
 _ocean_basins_50 = _NaturalEarthFeature(
+    short_name="ocean_basins_50",
     title="Natural Earth: ocean basins 50m",
     resolution="50m",
     category="physical",
@@ -216,13 +232,16 @@ class NaturalEarth:
     we only download it on demand.
     """
 
-    def __init__(self, version, fix_ocean_basins_50):
+    def __init__(self, version, preprocessors):
         self.version = version
-        self._fix_ocean_basins_50 = fix_ocean_basins_50
+        self._preprocessors = preprocessors
 
     def _obtain_ne(self, feature, **kwargs):
         shapefilename = feature.shapefilename(self.version)
-        return _obtain_ne(shapefilename, feature.title, **kwargs)
+
+        preprocess = self._preprocessors.get(feature.short_name)
+
+        return _obtain_ne(shapefilename, feature.title, preprocess=preprocess, **kwargs)
 
     @property
     @cache
@@ -290,7 +309,7 @@ class NaturalEarth:
     @cache
     def ocean_basins_50(self):
 
-        opt = dict(names="name", abbrevs="name", preprocess=self._fix_ocean_basins_50)
+        opt = dict(names="name", abbrevs="name")
 
         return self._obtain_ne(_ocean_basins_50, **opt)
 
@@ -307,7 +326,30 @@ def _unify_great_barrier_reef(df, idx1, idx2):
     poly = p1.union(p2)
     df.at[idx1, "geometry"] = poly
     # remove the now merged row
-    df = df.drop(labels=idx2).reset_index()
+    df = df.drop(labels=idx2).reset_index(drop=True)
+
+    return df
+
+
+def _snap(df, idx, ref, tol):
+
+    # TODO: use shapely.snap when requiring shapely v2.0.0
+    from shapely.ops import snap
+
+    polygons = df.loc[idx].geometry.tolist()
+
+    # TODO: use snap(df.loc[idx].geometry.to_numpy(), ...)?
+    polygons = [snap(p, ref, tol) for p in polygons]
+    df.loc[idx, "geometry"] = polygons
+
+    return df
+
+
+def _snap_to_90S(df, idx, tol):
+
+    ref = LineString([[-180, -90], [180, -90]])
+
+    df = _snap(df, idx, ref, tol)
 
     return df
 
@@ -318,6 +360,13 @@ def _fix_ocean_basins_50_v4_1_0(df):
     - Mediterranean Sea and Ross Sea have two parts: renamed to Eastern and Western
     Basin
     """
+
+    warnings.warn(
+        "`natural_earth_v4_1_0.ocean_basins_50` does not quite extend to 180°E - it's "
+        "recommended to use `natural_earth_v5_1_2.ocean_basins_50` instead. "
+        "See https://github.com/regionmask/regionmask/issues/410.",
+        stacklevel=5,
+    )
 
     new_names = {
         14: "Mediterranean Sea Eastern Basin",
@@ -341,11 +390,94 @@ def _fix_ocean_basins_50_v5_0_0(df):
     - The numbers/ indices are different from Version 4.0!
     """
 
+    warnings.warn(
+        "`natural_earth_v5_0_0.ocean_basins_50` does not quite extend to 180°E - it's "
+        "recommended to use `natural_earth_v5_1_2.ocean_basins_50` instead. "
+        "See https://github.com/regionmask/regionmask/issues/410.",
+        stacklevel=5,
+    )
+
     return _unify_great_barrier_reef(df, 74, 114)
 
 
-natural_earth_v4_1_0 = NaturalEarth("v4.1.0", _fix_ocean_basins_50_v4_1_0)
-natural_earth_v5_0_0 = NaturalEarth("v5.0.0", _fix_ocean_basins_50_v5_0_0)
+def _fix_ocean_basins_50_v5_1_2(df):
+    """fix ocean basins 50 for naturalearth v5.1.2
+
+    - Sea of Japan & Korea Strait geometries are different
+    - the rest (including the split of the Great Barrier Reef) is as in v5.0.0
+    - but the regions are ordered different
+    """
+
+    df = _unify_great_barrier_reef(df, 74, 113)
+
+    # fix regions not extending to 180°E
+    idx = df.loc[df.bounds["maxx"] > 179].index.tolist()
+    ref = LineString([[180, 90], [180, -90]])
+    tol = 1.03e-4
+
+    df = _snap(df, idx, ref, tol)
+
+    return df
+
+
+def _warn_countries_50(df):
+
+    warnings.warn(
+        "`land_50` of `natural_earth_v4_1_0` and `natural_earth_v5_0_0` does not quite "
+        "extend to 90°S - it's recommended to use `natural_earth_v5_1_2` instead. "
+        "See https://github.com/regionmask/regionmask/issues/487",
+        stacklevel=5,
+    )
+
+    return df
+
+
+def _warn_land_50(df):
+
+    warnings.warn(
+        "`land_50` of `natural_earth_v4_1_0` and `natural_earth_v5_0_0` does not quite "
+        "extend to 90°S - it's recommended to use `natural_earth_v5_1_2` instead. "
+        "See https://github.com/regionmask/regionmask/issues/487",
+        stacklevel=5,
+    )
+
+    return df
+
+
+def _fix_land_50(df):
+
+    return _snap_to_90S(df, [1378], 1.1e-3)
+
+
+def _fix_countries_50(df):
+
+    return _snap_to_90S(df, [239], 1.1e-3)
+
+
+natural_earth_v4_1_0 = NaturalEarth(
+    "v4.1.0",
+    preprocessors={
+        "ocean_basins_50": _fix_ocean_basins_50_v4_1_0,
+        "land_50": _warn_land_50,
+        "countries_50": _warn_countries_50,
+    },
+)
+natural_earth_v5_0_0 = NaturalEarth(
+    "v5.0.0",
+    preprocessors={
+        "ocean_basins_50": _fix_ocean_basins_50_v5_0_0,
+        "land_50": _warn_land_50,
+        "countries_50": _warn_countries_50,
+    },
+)
+natural_earth_v5_1_2 = NaturalEarth(
+    "v5.1.2",
+    preprocessors={
+        "ocean_basins_50": _fix_ocean_basins_50_v5_1_2,
+        "land_50": _fix_land_50,
+        "countries_50": _fix_countries_50,
+    },
+)
 
 
 @contextmanager

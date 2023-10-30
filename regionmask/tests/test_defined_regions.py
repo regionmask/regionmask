@@ -23,7 +23,14 @@ def _test_region(defined_region):
     assert region.lon_180
 
     if defined_region.bounds is not None:
-        np.testing.assert_allclose(defined_region.bounds, region.bounds_global)
+
+        bound_names = ("min_lon", "min_lat", "max_lon", "max_lat")
+        bounds = {name: bnd for name, bnd in zip(bound_names, region.bounds_global)}
+
+        for name, expected in defined_region.bounds.items():
+            actual = bounds[name]
+
+            np.testing.assert_allclose(actual, expected, err_msg=name)
 
 
 @pytest.mark.parametrize("defined_region", REGIONS_ALL, ids=str)

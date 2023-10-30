@@ -45,6 +45,12 @@ def test_mask_equal_defined_regions(defined_region, ds):
         pytest.skip(reason=f"Manally skipping {defined_region.region_name}")
 
     # a loop over DATASETS is not faster - due to caching of the regions
-    region = attrgetter(defined_region.region_name)(defined_regions)
+
+    if defined_region.warn_bounds:
+        with pytest.warns(FutureWarning, match="does not quite extend"):
+            region = attrgetter(defined_region.region_name)(defined_regions)
+    else:
+        region = attrgetter(defined_region.region_name)(defined_regions)
+
     mask_method = "mask_3D" if defined_region.overlap else "mask"
     _test_mask_equal_defined_regions(region, ds, mask_method)
