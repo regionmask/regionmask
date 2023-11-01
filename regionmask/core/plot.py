@@ -135,8 +135,7 @@ def _plot(
     label_multipolygon="largest",
     tolerance="auto",
 ):
-    """
-    plot map with with region outlines
+    """plot region on cartopy axes
 
     Parameters
     ----------
@@ -144,7 +143,7 @@ def _plot(
         If given uses existing axes (needs to be a cartopy GeoAxes). If not given,
         uses the current axes or creates a new axes with the specified projection.
 
-    projection : cartopy projection, default: None
+    projection : cartopy projection, optional
         Defines the projection of the map. If None uses 'PlateCarree'.
         See cartopy home page.
 
@@ -153,7 +152,7 @@ def _plot(
 
     label : 'number' | 'name' | 'abbrev', default: 'number'
         If 'number' labels the regions with numbers, if 'name' uses
-        the long name of the regions, if 'short_name' uses
+        the long name of the regions, if 'abbrev' uses
         abbreviations of the regions.
 
     add_coastlines : bool, default: None
@@ -203,10 +202,6 @@ def _plot(
     Returns
     -------
     ax : axes handle
-
-    Notes
-    -----
-    plot internally calls :py:func:`Regions.plot_regions`.
 
     """
 
@@ -287,21 +282,20 @@ def _plot_regions(
     label_multipolygon="largest",
     tolerance="auto",
 ):
-    """
-    plot map with with srex regions
+    """plot regions on regular axes
 
     Parameters
     ----------
     ax : axes handle, optional
         If given, uses existing axes. If not given, uses the current axes or creates new
-        axes. In contrast to plot this does not create a cartopy axes.
+        axes. In contrast to ``Regions.plot`` this does not create a cartopy axes.
 
-    add_label : bool
-        If true labels the regions. Optional, default True.
+    add_label : bool, default: True
+        If True labels the regions.
 
-    label : 'number' | 'name' | 'abbrev', optional
+    label : 'number' | 'name' | 'abbrev', default: 'number'
         If 'number' labels the regions with numbers, if 'name' uses
-        the long name of the regions, if 'short_name' uses
+        the long name of the regions, if 'abbrev' uses
         abbreviations of the regions. Default 'number'.
 
     line_kws : dict, optional
@@ -310,10 +304,9 @@ def _plot_regions(
     text_kws : dict, optional
         Arguments passed to the labels (ax.text).
 
-    label_multipolygon : 'largest' | 'all', optional
+    label_multipolygon : 'largest' | 'all', default: 'largest'
         If 'largest' only adds a text label for the largest Polygon of a
-        MultiPolygon. If 'all' adds text labels to all of them. Default:
-        'largest'.
+        MultiPolygon. If 'all' adds text labels to all of them.
 
     tolerance : None | 'auto' | float, default: 'auto'.
         Maximum length of drawn line segments. Can lead to better looking plots on
