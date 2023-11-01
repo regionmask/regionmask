@@ -304,7 +304,7 @@ def _plot_regions(
     text_kws : dict, optional
         Arguments passed to the labels (ax.text).
 
-    label_multipolygon : 'largest' | 'all', default: "largest"
+    label_multipolygon : 'largest' | 'all', default: 'largest'
         If 'largest' only adds a text label for the largest Polygon of a
         MultiPolygon. If 'all' adds text labels to all of them.
 
