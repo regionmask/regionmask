@@ -6,7 +6,7 @@ from functools import cache
 import geopandas
 import numpy as np
 import pooch
-from shapely.geometry import LineString, MultiPolygon
+from shapely.geometry import MultiPolygon
 
 from regionmask.defined_regions._ressources import _get_cache_dir
 
@@ -331,27 +331,42 @@ def _unify_great_barrier_reef(df, idx1, idx2):
     return df
 
 
-def _snap(df, idx, ref, tol):
+def _snap_polygon(polygon, to, atol, xy_col):
+    """
 
-    # TODO: use shapely.snap when requiring shapely v2.0.0
-    from shapely.ops import snap
+    idx: x or y coordinate
+    - 0: x-coord
+    - 1: y-coord
+
+    """
+    import shapely
+
+    arr = shapely.get_coordinates(polygon)
+
+    sel = np.isclose(arr[:, xy_col], to, atol=atol)
+    arr[sel, xy_col] = to
+
+    return shapely.set_coordinates(polygon, arr)
+
+
+def _snap(df, idx, to, atol, xy_col):
 
     polygons = df.loc[idx].geometry.tolist()
 
-    # TODO: use snap(df.loc[idx].geometry.to_numpy(), ...)?
-    polygons = [snap(p, ref, tol) for p in polygons]
+    polygons = [_snap_polygon(poly, to, atol, xy_col) for poly in polygons]
     df.loc[idx, "geometry"] = polygons
 
     return df
 
 
-def _snap_to_90S(df, idx, tol):
+def _snap_to_90S(df, idx, atol):
 
-    ref = LineString([[-180, -90], [180, -90]])
+    return _snap(df, idx, to=-90, atol=atol, xy_col=1)
 
-    df = _snap(df, idx, ref, tol)
 
-    return df
+def _snap_to_180E(df, idx, atol):
+
+    return _snap(df, idx, to=180, atol=atol, xy_col=0)
 
 
 def _fix_ocean_basins_50_v4_1_0(df):
@@ -412,10 +427,7 @@ def _fix_ocean_basins_50_v5_1_2(df):
 
     # fix regions not extending to 180°E
     idx = df.loc[df.bounds["maxx"] > 179].index.tolist()
-    ref = LineString([[180, 90], [180, -90]])
-    tol = 1.03e-4
-
-    df = _snap(df, idx, ref, tol)
+    df = _snap_to_180E(df, idx, atol=1.03e-4)
 
     return df
 
