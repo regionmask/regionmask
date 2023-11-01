@@ -52,7 +52,7 @@ lat_name : str, optional
     Deprecated. Backend used to determine whether a gridpoint lies in a region.
     All backends lead to the same mask. If None autoselects the backend.
 
-wrap_lon : bool | 180 | 360, optional
+wrap_lon : None | bool | 180 | 360, default: None
     Whether to wrap the longitude around, inferred automatically.
     If the regions and the provided longitude do not have the same
     base (i.e. one is -180..180 and the other 0..360) one of them
