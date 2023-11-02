@@ -23,12 +23,13 @@ IGNORE_DEPS = {
     "coveralls",
     "flake8",
     "hypothesis",
-    "isort" "setuptools",
+    "isort",
     "mypy",
     "pip",
     "pytest-cov",
     "pytest-xdist",
     "pytest",
+    "setuptools",
 }
 
 POLICY_MONTHS = {"python": 30, "numpy": 18}
