@@ -271,8 +271,7 @@ for nb in notebooks:
         " --template-file notebooks/tutorial_rst.tpl"
         " --ExecutePreprocessor.timeout=60"
         " --ExecutePreprocessor.kernel_name=python3"
-        " --execute "
-        + nb
+        " --execute " + nb
     )
     print(cmd)
     call(cmd, shell=True)
