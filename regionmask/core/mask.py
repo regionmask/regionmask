@@ -376,10 +376,10 @@ def _mask_3D(
 
     if overlap is None and (mask_3D.sum("region") > 1).any():
         warnings.warn(
-            "Detected overlapping regions. As of v0.11.0 these are correctly taken into "
-            "account. Note, however, that a different mask is returned than with older "
-            "versions of regionmask. To suppress this warning, set `overlap=True` (to "
-            "restore the old, incorrect, behaviour, set `overlap=False`)."
+            "Detected overlapping regions. As of v0.11.0 these are correctly taken into"
+            " account. Note, however, that a different mask is returned than with older"
+            " versions of regionmask. To suppress this warning, set `overlap=True` (to"
+            " restore the old, incorrect, behaviour, set `overlap=False`)."
         )
 
     mask_3D.attrs = {"standard_name": "region"}
@@ -726,7 +726,7 @@ def _get_LON_LAT_shape(lon, lat, numbers, is_unstructured=False, as_3D=False):
 
     if lon.ndim != lat.ndim:
         raise ValueError(
-            f"Equal number of dimensions required, found "
+            "Equal number of dimensions required, found "
             f"lon.ndim={lon.ndim} & lat.ndim={lat.ndim}."
         )
 

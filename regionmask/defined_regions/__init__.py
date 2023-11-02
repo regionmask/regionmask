@@ -17,8 +17,8 @@ def __getattr__(attr_name):
 
     if attr_name == "natural_earth":
         raise AttributeError(
-            "The `natural_earth` regions have been removed. Use ``natural_earth_v4_1_0`` "
-            " or ``natural_earth_v5_0_0`` instead."
+            "The `natural_earth` regions have been removed. Use"
+            " ``natural_earth_v4_1_0``  or ``natural_earth_v5_0_0`` instead."
         )
 
     raise AttributeError(
