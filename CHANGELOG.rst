@@ -44,7 +44,8 @@ Bug Fixes
      .. warning::
         The three regions (``ocean_basins_50``, ``countries_50``, and ``land_50``) are
         not corrected for ``natural_earth_v4_0_0`` and ``natural_earth_v5_0_0``.
-        It is therefore recommended to use ``natural_earth_v5_1_2``.
+        It is therefore recommended to use ``natural_earth_v5_1_2`` for these
+        regions.
 
 
 Docs
