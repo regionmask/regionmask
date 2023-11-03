@@ -31,11 +31,25 @@ Enhancements
 New regions
 ~~~~~~~~~~~
 
+- Added newest version of natural earth regions: ``natural_earth_v5_1_2`` - see also bug fixes
+  (:issue:`357`, :pull:`488`).
+
 Bug Fixes
 ~~~~~~~~~
 
 - Ensure correct masks are created for `float32` coordinates (:issue:`489`, :pull:`493`).
 - Fixed the default value of ``overlap`` of :py:func:`from_geopandas` to ``None`` (:issue:`453`, :pull:`470`).
+- Fixed some numerical issues for natural earth regions for ``natural_earth_v5_1_2``:
+
+   - ``ocean_basins_50`` not extending to 180°E  (:issue:`410`, :pull:`488`).
+   - ``countries_50`` and ``land_50`` not extending to -90° N (:issue:`487`, :pull:`488`).
+
+     .. warning::
+        The three regions (``ocean_basins_50``, ``countries_50``, and ``land_50``) are
+        not corrected for ``natural_earth_v4_0_0`` and ``natural_earth_v5_0_0``.
+        It is therefore recommended to use ``natural_earth_v5_1_2`` for these
+        regions.
+
 
 Docs
 ~~~~
