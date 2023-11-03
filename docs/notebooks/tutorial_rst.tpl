@@ -15,7 +15,7 @@
 {% endblock output_prompt %}
 
 {% block input %}
-{%- if cell.source.strip() and not cell.source.startswith("%") -%}
+{%- if cell.source.strip() and not (cell.source.startswith("%") or cell.source.startswith("# :suppress:")) -%}
 .. code:: python
 
 {{ cell.source | indent}}
