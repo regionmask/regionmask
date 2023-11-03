@@ -158,7 +158,7 @@ _REGIONS_NATURAL_EARTH_v4_1_0 = [
         "natural_earth_v4_1_0.land_50", 1, bounds=bounds_lon_global, warn_bounds=True
     ),
     DefinedRegion("natural_earth_v4_1_0.land_10", 1, bounds=bounds_EW_S),
-    DefinedRegion("natural_earth_v4_1_0.ocean_basins_50", 119),
+    DefinedRegion("natural_earth_v4_1_0.ocean_basins_50", 119, warn_bounds=True),
 ]
 
 _REGIONS_NATURAL_EARTH_v5_0_0 = [
@@ -182,7 +182,7 @@ _REGIONS_NATURAL_EARTH_v5_0_0 = [
         "natural_earth_v5_0_0.land_50", 1, bounds=bounds_lon_global, warn_bounds=True
     ),
     DefinedRegion("natural_earth_v5_0_0.land_10", 1, bounds=bounds_EW_S),
-    DefinedRegion("natural_earth_v5_0_0.ocean_basins_50", 117),
+    DefinedRegion("natural_earth_v5_0_0.ocean_basins_50", 117, warn_bounds=True),
 ]
 
 _REGIONS_NATURAL_EARTH_v5_1_2 = [

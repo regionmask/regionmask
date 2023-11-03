@@ -12,7 +12,12 @@ from .utils import REGIONS_ALL
 
 def _test_region(defined_region):
 
-    region = attrgetter(defined_region.region_name)(defined_regions)
+    # NOTE: can fail if the test order is randomized
+    if defined_region.warn_bounds:
+        with pytest.warns(UserWarning, match="does not quite extend"):
+            region = attrgetter(defined_region.region_name)(defined_regions)
+    else:
+        region = attrgetter(defined_region.region_name)(defined_regions)
 
     assert isinstance(region, Regions)
     assert len(region) == defined_region.n_regions
@@ -73,6 +78,7 @@ def test_natural_earth_repr():
     assert actual == expected
 
 
+@pytest.mark.filterwarnings("ignore:.*does not quite extend")
 def test_fix_ocean_basins_50():
     region = defined_regions.natural_earth_v4_1_0.ocean_basins_50
     assert "Mediterranean Sea Eastern Basin" in region.names
@@ -83,6 +89,7 @@ def test_fix_ocean_basins_50():
     assert "Ross Sea" in region.names
 
 
+@pytest.mark.filterwarnings("ignore:.*does not quite extend")
 @requires_cartopy
 def test_natural_earth_loaded_as_utf8():
     # GH 95
