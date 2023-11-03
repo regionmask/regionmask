@@ -6,9 +6,9 @@ from functools import cache
 import geopandas
 import numpy as np
 import pooch
-from packaging.version import Version
 from shapely.geometry import MultiPolygon
 
+from regionmask.core.utils import _snap_to_90S, _snap_to_180E
 from regionmask.defined_regions._ressources import _get_cache_dir
 
 from ..core.regions import Regions
@@ -330,82 +330,6 @@ def _unify_great_barrier_reef(df, idx1, idx2):
     df = df.drop(labels=idx2).reset_index(drop=True)
 
     return df
-
-
-def _snap_polygon(polygon, to, atol, xy_col):
-    """
-
-    idx: x or y coordinate
-    - 0: x-coord
-    - 1: y-coord
-
-    """
-    import shapely
-
-    arr = shapely.get_coordinates(polygon)
-
-    sel = np.isclose(arr[:, xy_col], to, atol=atol)
-    arr[sel, xy_col] = to
-
-    return shapely.set_coordinates(polygon, arr)
-
-
-def _snap_polygon_shapely_18(polygon, to, atol, xy_col):
-
-    import shapely.ops
-
-    def _snap_x(x, y, z=None):
-
-        x = np.array(x)
-        sel = np.isclose(x, to, atol=atol)
-        x[sel] = to
-        x = x.tolist()
-        return tuple(filter(None, [x, y, z]))
-
-    def _snap_y(x, y, z=None):
-
-        y = np.array(y)
-        sel = np.isclose(y, to, atol=atol)
-
-        y[sel] = to
-        y = y.tolist()
-        return tuple(filter(None, [x, y, z]))
-
-    _snap_func = _snap_x if xy_col == 0 else _snap_y
-
-    polygon = shapely.ops.transform(_snap_func, polygon)
-
-    return polygon
-
-
-def _snap(df, idx, to, atol, xy_col):
-
-    import shapely
-
-    polygons = df.loc[idx].geometry.tolist()
-
-    if Version(shapely.__version__) > Version("2.0.0"):
-        polygons = [_snap_polygon(poly, to, atol, xy_col) for poly in polygons]
-        df.loc[idx, "geometry"] = polygons
-
-        return df
-
-    polygons = [_snap_polygon_shapely_18(poly, to, atol, xy_col) for poly in polygons]
-
-    for i, polygon in zip(idx, polygons):
-        df.at[i, "geometry"] = polygon
-
-    return df
-
-
-def _snap_to_90S(df, idx, atol):
-
-    return _snap(df, idx, to=-90, atol=atol, xy_col=1)
-
-
-def _snap_to_180E(df, idx, atol):
-
-    return _snap(df, idx, to=180, atol=atol, xy_col=0)
 
 
 def _fix_ocean_basins_50_v4_1_0(df):
