@@ -204,8 +204,8 @@ def _mask(
                 "be converted to degree?"
             )
 
-    lon_arr = np.asarray(lon)
-    lat_arr = np.asarray(lat)
+    lon_arr = np.asarray(lon, dtype=float)
+    lat_arr = np.asarray(lat, dtype=float)
 
     # automatically detect whether wrapping is necessary
     if wrap_lon is None:

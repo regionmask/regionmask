@@ -32,6 +32,7 @@ New regions
 Bug Fixes
 ~~~~~~~~~
 
+- Ensure correct masks are created for `float32` coordinates (:issue:`489`, :pull:`493`).
 - Fixed the default value of ``overlap`` of :py:func:`from_geopandas` to ``None`` (:issue:`453`, :pull:`470`).
 
 Docs
