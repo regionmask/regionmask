@@ -1,14 +1,15 @@
 import geopandas as gpd
 import geopandas.testing
 import shapely
+import shapely.geometry
 
 from regionmask.core.utils import _snap, _snap_to_90S, _snap_to_180E
 
 
 def test_snap_to_180E():
 
-    poly = shapely.box(0, 0, 179, 10)
-    poly_180 = shapely.box(0, 0, 180, 10)
+    poly = shapely.geometry.box(0, 0, 179, 10)
+    poly_180 = shapely.geometry.box(0, 0, 180, 10)
 
     df = gpd.GeoDataFrame(geometry=[poly, poly])
     expected = gpd.GeoDataFrame(geometry=[poly_180, poly])
@@ -20,8 +21,8 @@ def test_snap_to_180E():
 
 def test_snap_to_90S():
 
-    poly = shapely.box(0, -89.9, 180, 10)
-    poly_90 = shapely.box(0, -90, 180, 10)
+    poly = shapely.geometry.box(0, -89.9, 180, 10)
+    poly_90 = shapely.geometry.box(0, -90, 180, 10)
 
     df = gpd.GeoDataFrame(geometry=[poly, poly])
     expected = gpd.GeoDataFrame(geometry=[poly, poly_90])
@@ -33,7 +34,7 @@ def test_snap_to_90S():
 
 def test_snap_coords_along():
 
-    poly = shapely.Polygon(
+    poly = shapely.geometry.Polygon(
         [
             (179.0, 0.0),
             (179.0, 2.0),
@@ -44,7 +45,7 @@ def test_snap_coords_along():
         ]
     )
 
-    poly_180 = shapely.Polygon(
+    poly_180 = shapely.geometry.Polygon(
         [
             (180.0, 0.0),
             (180.0, 2.0),
@@ -65,16 +66,16 @@ def test_snap_coords_along():
 
 def test_snap_multipolygon():
 
-    p1 = shapely.box(0, 0, 9, 10)
-    p2 = shapely.box(0, 10, 9, 20)
-    p3 = shapely.box(-5, 0, 0, 10)
+    p1 = shapely.geometry.box(0, 0, 9, 10)
+    p2 = shapely.geometry.box(0, 10, 9, 20)
+    p3 = shapely.geometry.box(-5, 0, 0, 10)
 
-    mp = shapely.MultiPolygon([p1, p2, p3])
+    mp = shapely.geometry.MultiPolygon([p1, p2, p3])
 
-    p1_adj = shapely.box(0, 0, 10, 10)
-    p2_adj = shapely.box(0, 10, 10, 20)
+    p1_adj = shapely.geometry.box(0, 0, 10, 10)
+    p2_adj = shapely.geometry.box(0, 10, 10, 20)
 
-    mp_adj = shapely.MultiPolygon([p1_adj, p2_adj, p3])
+    mp_adj = shapely.geometry.MultiPolygon([p1_adj, p2_adj, p3])
 
     df = gpd.GeoDataFrame(geometry=[mp])
     expected = gpd.GeoDataFrame(geometry=[mp_adj])
@@ -91,8 +92,8 @@ def test_snap_polygon_internal():
 
     ext_snapped = [(0, 0), (0, 2.5), (2, 2.5), (2, 0), (0, 0)]
 
-    polygon = shapely.Polygon(ext, [hole])
-    polygon_snapped = shapely.Polygon(ext_snapped, [hole])
+    polygon = shapely.geometry.Polygon(ext, [hole])
+    polygon_snapped = shapely.geometry.Polygon(ext_snapped, [hole])
 
     df = gpd.GeoDataFrame(geometry=[polygon])
     expected = gpd.GeoDataFrame(geometry=[polygon_snapped])
