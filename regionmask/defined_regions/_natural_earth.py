@@ -41,7 +41,7 @@ def _maybe_get_column(df, colname):
 
 
 def _obtain_ne(
-    shpfilename,
+    df,
     title,
     names="name",
     abbrevs="postal",
@@ -59,8 +59,8 @@ def _obtain_ne(
 
     Parameters
     ----------
-    shpfilename : string
-        Filename to read.
+    df : GeoDataFrame
+        GeoDataFrame to process.
     title : string
         Displayed text in Regions.
     names : str or list, default: "name"
@@ -87,9 +87,6 @@ def _obtain_ne(
         Filter features by given bounding box, GeoSeries, GeoDataFrame or a shapely
         geometry. See ``geopandas.read_file`` for defails.
     """
-
-    # read the file with geopandas
-    df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox, engine=ENGINE)
 
     if query is not None:
         df = df.query(query).reset_index(drop=True)
@@ -155,9 +152,10 @@ class _NaturalEarthFeature:
         return fN
 
     def read(self, version, bbox=None):
-
         shpfilename = self.shapefilename(version=version)
+
         df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox, engine=ENGINE)
+
         return df
 
 
@@ -235,14 +233,13 @@ class NaturalEarth:
 
     def __init__(self, version, preprocessors):
         self.version = version
-        self._preprocessors = preprocessors
+        self._preprocessors = preprocessors or {}
 
-    def _obtain_ne(self, feature, **kwargs):
-        shapefilename = feature.shapefilename(self.version)
+    def _obtain_ne(self, feature: _NaturalEarthFeature, **kwargs):
 
         preprocess = self._preprocessors.get(feature.short_name)
-
-        return _obtain_ne(shapefilename, feature.title, preprocess=preprocess, **kwargs)
+        df = feature.read(self.version, kwargs.get("bbox"))
+        return _obtain_ne(df, feature.title, preprocess=preprocess, **kwargs)
 
     @property
     @cache
