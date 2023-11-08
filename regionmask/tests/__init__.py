@@ -3,6 +3,7 @@ import warnings
 from contextlib import contextmanager
 
 import pytest
+import rasterio
 from packaging.version import Version
 
 
@@ -32,3 +33,8 @@ has_cf_xarray, requires_cf_xarray = _importorskip("cf_xarray")
 has_matplotlib, requires_matplotlib = _importorskip("matplotlib")
 has_pygeos, requires_pygeos = _importorskip("pygeos")
 has_shapely_2, requires_shapely_2 = _importorskip("shapely", minversion="2.0b1")
+
+has_gdal_3_7_3 = Version(rasterio.__gdal_version__) >= Version("3.7.3")
+requires_gdal_3_7_3 = pytest.mark.skipif(
+    not has_gdal_3_7_3, reason="requires gdal v3.7.3"
+)

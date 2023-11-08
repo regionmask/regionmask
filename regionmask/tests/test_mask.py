@@ -97,7 +97,6 @@ def test_mask(method):
     xr.testing.assert_identical(result, expected)
 
 
-# @pytest.mark.filterwarnings("error:The ``method`` argument is internal")
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_method_internal(method):
 
