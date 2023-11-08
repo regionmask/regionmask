@@ -52,7 +52,7 @@ lat_name : str, optional
     Deprecated. Backend used to determine whether a gridpoint lies in a region.
     All backends lead to the same mask. If None autoselects the backend.
 
-wrap_lon : bool | 180 | 360, optional
+wrap_lon : None | bool | 180 | 360, default: None
     Whether to wrap the longitude around, inferred automatically.
     If the regions and the provided longitude do not have the same
     base (i.e. one is -180..180 and the other 0..360) one of them
@@ -205,8 +205,8 @@ def _mask(
                 "be converted to degree?"
             )
 
-    lon_arr = np.asarray(lon)
-    lat_arr = np.asarray(lat)
+    lon_arr = np.asarray(lon, dtype=float)
+    lat_arr = np.asarray(lat, dtype=float)
 
     # automatically detect whether wrapping is necessary
     if wrap_lon is None:
@@ -397,10 +397,10 @@ def _mask_3D(
 
     if overlap is None and (mask_3D.sum("region") > 1).any():
         warnings.warn(
-            "Detected overlapping regions. As of v0.11.0 these are correctly taken into "
-            "account. Note, however, that a different mask is returned than with older "
-            "versions of regionmask. To suppress this warning, set `overlap=True` (to "
-            "restore the old, incorrect, behaviour, set `overlap=False`)."
+            "Detected overlapping regions. As of v0.11.0 these are correctly taken into"
+            " account. Note, however, that a different mask is returned than with older"
+            " versions of regionmask. To suppress this warning, set `overlap=True` (to"
+            " restore the old, incorrect, behaviour, set `overlap=False`)."
         )
 
     mask_3D.attrs = {"standard_name": "region"}
@@ -747,7 +747,7 @@ def _get_LON_LAT_shape(lon, lat, numbers, is_unstructured=False, as_3D=False):
 
     if lon.ndim != lat.ndim:
         raise ValueError(
-            f"Equal number of dimensions required, found "
+            "Equal number of dimensions required, found "
             f"lon.ndim={lon.ndim} & lat.ndim={lat.ndim}."
         )
 

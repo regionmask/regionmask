@@ -16,25 +16,40 @@ v0.12.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Deprecated ``Regions.coords`` because they are no longer used (:pull:`486`).
 - Removed support for Python 3.8 (:pull:`465`).
 - Removed the ``regionmask.defined_regions.natural_earth`` regions which were deprecated
-  in v0.9.0 (:pull:`479`)
+  in v0.9.0,  (:pull:`479`)
 - Removed the deprecated ``subsample`` keyword from the plotting methods (:pull:`468`).
-- Removed the deprecated ``_ar6_pre_revisions`` regions (:pull:`#466`).
+- Removed the deprecated ``_ar6_pre_revisions`` regions (:pull:`466`).
 
 Enhancements
 ~~~~~~~~~~~~
 
-Deprecations
-~~~~~~~~~~~~
+- Add python 3.12 to list of supported versions (:pull:`494`).
 
 New regions
 ~~~~~~~~~~~
 
+- Added newest version of natural earth regions: ``natural_earth_v5_1_2`` - see also bug fixes
+  (:issue:`357`, :pull:`488`).
+
 Bug Fixes
 ~~~~~~~~~
 
+- Ensure correct masks are created for `float32` coordinates (:issue:`489`, :pull:`493`).
 - Fixed the default value of ``overlap`` of :py:func:`from_geopandas` to ``None`` (:issue:`453`, :pull:`470`).
+- Fixed some numerical issues for natural earth regions for ``natural_earth_v5_1_2``:
+
+   - ``ocean_basins_50`` not extending to 180°E  (:issue:`410`, :pull:`488`).
+   - ``countries_50`` and ``land_50`` not extending to -90° N (:issue:`487`, :pull:`488`).
+
+     .. warning::
+        The three regions (``ocean_basins_50``, ``countries_50``, and ``land_50``) are
+        not corrected for ``natural_earth_v4_0_0`` and ``natural_earth_v5_0_0``.
+        It is therefore recommended to use ``natural_earth_v5_1_2`` for these
+        regions.
+
 
 Docs
 ~~~~

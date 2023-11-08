@@ -87,7 +87,8 @@ def _get_coords_cf(obj):
 
     if not isinstance(obj, (xr.Dataset, xr.DataArray)):
         raise TypeError(
-            f"Expected a ``Dataset`` or ``DataArray`` for ``use_cf=True``, got {type(obj)}"
+            "Expected a ``Dataset`` or ``DataArray`` for ``use_cf=True``, got"
+            f" {type(obj)}"
         )
 
     x_name = _get_cf_coords(obj, "longitude", required=True)

@@ -6,15 +6,8 @@ The outline of the marine areas are obtained from
 They are automatically downloaded, cached\ [#]_ and opened with geopandas.
 The following marine regions are defined in regionmask:
 
-* Marine Areas 1:50m
+* Ocean basins 1:50m
 
-
-.. warning::
-   ``regionmask.defined_regions.natural_earth`` is deprecated.
-   Please use ``natural_earth_v4_1_0`` or ``natural_earth_v5_0_0`` instead.
-
-   Be careful when working with the different versions of NaturalEarth regions. Some
-   polygons and regions have changed and the numbering of the regions may be different.
 
 .. ipython:: python
     :suppress:
@@ -33,9 +26,17 @@ Import regionmask:
 Ocean Basins
 ============
 
+.. warning::
+   ``natural_earth_v4_1_0.ocean_basins_50`` and ``natural_earth_v5_0_0.ocean_basins_50``
+   do not extend all the way to 180°E (see `#410 <https://github.com/regionmask/regionmask/issues/410>`_).
+   Please use ``natural_earth_v5_1_2.ocean_basins_50``
+
+   Be careful, however, as the regions changed between the natural_earth versions.
+
+
 .. ipython:: python
 
-    basins = regionmask.defined_regions.natural_earth_v5_0_0.ocean_basins_50
+    basins = regionmask.defined_regions.natural_earth_v5_1_2.ocean_basins_50
     basins
 
 .. ipython:: python

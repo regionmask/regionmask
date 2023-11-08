@@ -78,7 +78,7 @@ from ..core.regions import Regions
 numbers = range(1, 22)
 
 source = (
-    "Giorgi and Franciso, 2000 " "(http://link.springer.com/article/10.1007/PL00013733)"
+    "Giorgi and Franciso, 2000 (http://link.springer.com/article/10.1007/PL00013733)"
 )
 
 giorgi = Regions(

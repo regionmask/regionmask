@@ -10,14 +10,6 @@ The following landmasks are currently available:
 * Land 1:50m
 * Land 1:10m
 
-.. warning::
-   ``regionmask.defined_regions.natural_earth`` is deprecated.
-   Please use ``natural_earth_v4_1_0`` or ``natural_earth_v5_0_0`` instead.
-
-   Be careful when working with the different versions of NaturalEarth regions. Some
-   polygons and regions have changed and the numbering of the regions may be different.
-
-
 .. note::
    If available, it is better to use the landmask of the used data set.
 
@@ -37,6 +29,16 @@ Import regionmask:
 
 Landmask
 ========
+
+.. warning::
+   ``natural_earth_v4_1_0.land_50`` and ``natural_earth_v5_0_0.land_50``
+   do not extend all the way to 90°S (see `#487 <https://github.com/regionmask/regionmask/issues/487>`_).
+   If Antarctica is of interest, please use ``natural_earth_v5_1_2.land_50`` instead.
+
+   Be careful, however, as the regions may have changed between the natural_earth versions.
+
+   Note that ``land_10`` and ``land_110`` do not exhibit this problem.
+
 
 .. ipython:: python
 

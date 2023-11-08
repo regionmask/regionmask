@@ -4,6 +4,7 @@
 # Date:
 
 import copy
+import warnings
 
 import geopandas as gp
 import numpy as np
@@ -242,6 +243,13 @@ class Regions:
 
     @property
     def coords(self):
+        warnings.warn(
+            "`Regions.coords` has been deprecated in v0.12.0 and will be removed. "
+            "Please raise an issue if you have an use case for them.",
+            FutureWarning,
+            stacklevel=2,
+        )
+
         """list of coordinates of the region vertices as numpy array"""
         return [r.coords for r in self.regions.values()]
 

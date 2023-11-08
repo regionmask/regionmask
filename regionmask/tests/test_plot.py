@@ -65,7 +65,8 @@ r3 = Regions([multipoly])
 r4 = Regions(outlines, numbers=[0.0, 1.0])
 
 # a region with segments longer than 1, use Polygon to close the coords
-r_large = regionmask.Regions([Polygon(c * 10) for c in r1.coords])
+_p = [Polygon(np.array(c.exterior.coords) * 10) for c in r1.polygons]
+r_large = regionmask.Regions(_p)
 
 # create a polygon with a hole
 interior1_closed = ((0.2, 0.2), (0.2, 0.45), (0.45, 0.45), (0.45, 0.2), (0.2, 0.2))
@@ -372,8 +373,12 @@ def test_plot_lines_tolerance_None(plotfunc):
         ax = func(tolerance=None)
         lines = ax.collections[0].get_paths()
 
-        np.testing.assert_allclose(lines[0].vertices, r_large.coords[0])
-        np.testing.assert_allclose(lines[1].vertices, r_large.coords[1])
+        np.testing.assert_allclose(
+            lines[0].vertices, r_large.polygons[0].exterior.coords
+        )
+        np.testing.assert_allclose(
+            lines[1].vertices, r_large.polygons[1].exterior.coords
+        )
 
 
 @requires_matplotlib
@@ -421,7 +426,7 @@ def test_plot_lines_from_poly(plotfunc):
         lines = ax.collections[0].get_segments()
 
         assert len(lines) == 2
-        assert np.allclose(lines[0], r2.coords[0])
+        assert np.allclose(lines[0], r2.polygons[0].exterior.coords)
 
 
 # -----------------------------------------------------------------------------

@@ -86,7 +86,7 @@ def test_mask_wrong_number_fill(func):
         )
 
     with pytest.raises(ValueError, match="`numbers` and `coords` must have"):
-        func(dummy_ds.lon, dummy_ds.lat, dummy_region.coords, numbers=[5])
+        func(dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[5])
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
@@ -963,10 +963,27 @@ def test_mask_whole_grid(method, regions, lon):
     mask = regions.mask(lon, lat, method=method)
 
     assert (mask == 0).all()
+    assert mask.lon.dtype == int
+    assert mask.lat.dtype == int
 
     # with wrap_lon=False the edges are not masked
     mask = regions.mask(lon, lat, method=method, wrap_lon=False)
     assert mask.sel(lat=-90).isnull().all()
+
+
+@pytest.mark.parametrize("method", MASK_METHODS)
+@pytest.mark.parametrize("regions", [r_GLOB_180, r_GLOB_360])
+@pytest.mark.parametrize("lon", [lon180, lon360])
+def test_mask_whole_grid_float32(method, regions, lon):
+
+    lat = np.arange(90, -91, -10, dtype=np.float32)
+    lon = lon.astype(np.float32)  # creates a copy
+    mask = regions.mask(lon, lat, method=method)
+
+    assert (mask == 0).all()
+
+    assert mask.lon.dtype == np.float32
+    assert mask.lat.dtype == np.float32
 
 
 @pytest.mark.parametrize("regions", [r_GLOB_180, r_GLOB_360])
