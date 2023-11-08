@@ -260,6 +260,12 @@ def _mask(
             raise ValueError(
                 "regularly-spaced coordinates are required to use ``all_touched``"
             )
+        import rasterio
+
+        if Version(rasterio.__gdal_version__) < Version("3.7.3"):
+            raise NotImplementedError(
+                "Using ``all_touched`` requires gdal v3.7.3 or higher."
+            )
 
         # the regions most likely will overlap
         as_3D = True
