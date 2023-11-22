@@ -20,7 +20,8 @@ python -m pip install --no-deps --upgrade --pre -i https://pypi.anaconda.org/sci
     numpy \
     pandas \
     xarray
-python -m pip install cython # for shapely
+# install build dependencies (required due to `--no-build-isolation`)
+python -m pip install cython packaging
 # may be able to remove --no-build-isolation once numpy 2 is out
 python -m pip install --no-deps --upgrade --no-build-isolation \
     --no-binary shapely rasterio \
