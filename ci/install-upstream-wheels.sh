@@ -7,25 +7,22 @@ conda uninstall -y --force \
   geopandas \
   matplotlib-base \
   numpy \
-  pandas \
   packaging \
+  pandas \
   pooch \
   pyogrio \
   rasterio \
+  shapely \
   xarray
 # to limit the runtime of Upstream CI
-python -m pip install \
-    -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple \
-    --no-deps \
-    --pre \
-    --upgrade \
+python -m pip install --no-deps --upgrade --pre -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple \
     matplotlib \
     numpy \
     pandas \
     xarray
-python -m pip install \
-    --no-deps \
-    --upgrade \
+python -m pip install cython # for shapely
+python -m pip install --no-deps --upgrade --no-build-isolation --no-binary shapely git+https://github.com/shapely/shapely
+python -m pip install --no-deps --upgrade \
     git+https://github.com/SciTools/cartopy \
     git+https://github.com/xarray-contrib/cf-xarray \
     git+https://github.com/geopandas/geopandas \
