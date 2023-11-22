@@ -21,8 +21,10 @@ python -m pip install --no-deps --upgrade --pre -i https://pypi.anaconda.org/sci
     pandas \
     xarray
 python -m pip install cython # for shapely
-python -m pip install --no-deps --upgrade --no-build-isolation --no-binary shapely git+https://github.com/shapely/shapely
-python -m pip install --no-deps --upgrade \
+# may be able to remove --no-build-isolation once numpy 2 is out
+python -m pip install --no-deps --upgrade --no-build-isolation \
+    --no-binary shapely rasterio \
+    git+https://github.com/shapely/shapely \
     git+https://github.com/SciTools/cartopy \
     git+https://github.com/xarray-contrib/cf-xarray \
     git+https://github.com/geopandas/geopandas \
