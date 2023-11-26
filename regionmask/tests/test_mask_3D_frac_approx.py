@@ -140,10 +140,6 @@ def test_mask_percentage_poly():
     lon = np.array([10, 20])
     lat = np.array([10, 20])
 
-    p = [[5, 5], [15, 15], [25, 20], [25, 7.5], [15, 7.5], [15, 5]]
-
-    p = [[5, 15], [15, 15], [25, 20], [25, 7.5], [15, 7.5], [15, 5]]
-
     p = [[5, 5], [15, 15], [25, 20], [25, 15], [22.5, 15], [22.5, 5]]
 
     p = shapely.geometry.Polygon(p)
@@ -151,7 +147,8 @@ def test_mask_percentage_poly():
 
     result = r.mask_3D_frac_approx(lon, lat)
 
-    expected = [[[0.5, 0.75], [0.0, 0.25]]]
+    # these should be [[[0.5, 0.75], ]] but due to the method they are maximally wrong
+    expected = [[[0.45, 0.8], [0.0, 0.25]]]
     expected = xr.DataArray(
         expected,
         dims=("region", "lat", "lon"),
