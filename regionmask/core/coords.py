@@ -35,7 +35,7 @@ def _from_mapping(lon_or_obj, name):
             "directly"
         )
 
-        msg += "." if has_cf_xarray else "or try installing cf_xarray."
+        msg += "." if has_cf_xarray else " or try installing cf_xarray."
 
         raise KeyError(msg)
 
