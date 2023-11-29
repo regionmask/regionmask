@@ -420,13 +420,17 @@ def test_mask_3D_overlap_default(drop, method):
 
 
 @pytest.mark.parametrize("method", MASK_METHODS)
-def test_mask_3D_overlap_empty(method):
+@pytest.mark.parametrize("overlap", (True, False))
+def test_mask_3D_overlap_empty(method, overlap):
+
+    region = copy.copy(dummy_region_overlap)
+    region.overlap = overlap
 
     match = "No gridpoint belongs to any region. "
 
     lon = lat = [10, 11]
     with pytest.warns(UserWarning, match=match + "Returning an empty mask"):
-        result = dummy_region_overlap.mask_3D(lon, lat, drop=True, method=method)
+        result = region.mask_3D(lon, lat, drop=True, method=method)
 
     coords = {"lat": lat, "lon": lon}
     expected = expected_mask_3D(False, coords=coords, overlap=True).isel(
@@ -437,7 +441,7 @@ def test_mask_3D_overlap_empty(method):
     xr.testing.assert_equal(result, expected)
 
     with pytest.warns(UserWarning, match=match + "Returning an all-False mask."):
-        result = dummy_region_overlap.mask_3D(lon, lat, drop=False, method=method)
+        result = region.mask_3D(lon, lat, drop=False, method=method)
 
     assert result.shape == (4, 2, 2)
     assert not result.any()
@@ -459,6 +463,15 @@ def test_mask_overlap_unstructured(drop, method):
     expected = expected.stack(cells=("lat", "lon")).reset_index("cells")
 
     xr.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize("flag", ("foo", "bar"))
+def test_mask_flag_error_wrong_flagname(flag):
+
+    with pytest.raises(
+        ValueError, match="`flag` must be one of `None`, `'abbrevs'` and `'names'`"
+    ):
+        dummy_region.mask(dummy_ds, flag=flag)
 
 
 def test_mask_flag():
