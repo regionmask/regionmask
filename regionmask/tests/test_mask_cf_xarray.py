@@ -13,6 +13,32 @@ from .utils import (
 MASK_METHODS = ["mask", "mask_3D"]
 
 
+@requires_cf_xarray
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_get_coords_missing(method):
+
+    mask = getattr(dummy_region, method)
+
+    with pytest.raises(KeyError, match="'Could not get ``lon`` from ``lon_or_obj``"):
+        mask({})
+
+    with pytest.raises(KeyError, match="'Could not get ``lat`` from ``lon_or_obj``"):
+        mask({"lon": [1]})
+
+
+@pytest.mark.skipif(has_cf_xarray, reason="must not have cf_xarray")
+@pytest.mark.parametrize("method", MASK_METHODS)
+def test_mask_get_coords_missing_no_cf_xarray(method):
+
+    mask = getattr(dummy_region, method)
+
+    with pytest.raises(KeyError, match="try installing cf_xarray"):
+        mask({})
+
+    with pytest.raises(KeyError, match="try installing cf_xarray"):
+        mask({"lon": [1]})
+
+
 @pytest.mark.skipif(has_cf_xarray, reason="must not have cf_xarray")
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask_use_cf_required(method):

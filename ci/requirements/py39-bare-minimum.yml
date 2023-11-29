@@ -9,7 +9,7 @@ dependencies:
   - packaging
   - pooch
   - rasterio
-  - setuptools
+  - shapely=1.8 # fixing shapely for now
   - xarray
 # for testing
   - pytest

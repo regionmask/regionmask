@@ -12,7 +12,6 @@ dependencies:
   - pygeos
   - rasterio
   - shapely<2
-  - setuptools
   - xarray
 # for testing
   - pytest
