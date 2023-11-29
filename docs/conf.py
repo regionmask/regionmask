@@ -247,6 +247,7 @@ notebooks = (
     "notebooks/plotting",
     "notebooks/mask_2D",
     "notebooks/mask_3D",
+    "notebooks/mask_3D_frac_approx",
     "notebooks/detect_coords",
     "notebooks/geopandas",
     "notebooks/overlap",
