@@ -22,6 +22,8 @@ def test_attributes():
 
     assert np.allclose(r.centroid, (0.5, 0.5))
 
+    assert r.__repr__() == "<regionmask._OneRegion: Unit Square (USq / 1)>"
+
 
 def test_polygon_input():
 
