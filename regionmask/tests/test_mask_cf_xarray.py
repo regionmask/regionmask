@@ -83,7 +83,7 @@ def test_mask_use_cf_ambigous_name(method, drop):
 
     mask = getattr(dummy_region, method)
 
-    with pytest.raises(ValueError, match="Ambigous name for coordinates"):
+    with pytest.raises(ValueError, match="Ambiguous name for coordinates"):
         mask(ds, use_cf=None)
 
 
