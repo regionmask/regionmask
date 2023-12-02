@@ -68,7 +68,7 @@ wrap_lon : None | bool | 180 | 360, default: None
 
 {overlap}{flags}use_cf : bool, default: None
     Whether to use ``cf_xarray`` to infer the names of the x and y coordinates. If None
-    uses cf_xarray if the coord names are unambigous. If True requires cf_xarray if
+    uses cf_xarray if the coord names are unambiguous. If True requires cf_xarray if
     False does not use cf_xarray.
 
 Returns
@@ -311,7 +311,7 @@ def _mask_2D(
     #         "To create a 2D mask anyway, set ``overlap=False``."
     #     )
 
-    # if as_3D is not explicitely given - set it to True
+    # if as_3D is not explicitly given - set it to True
     as_3D = overlap is None
 
     mask = _mask(
@@ -467,13 +467,13 @@ def _3D_to_2D_mask(mask_3D, numbers):
     if (is_masked > 1).any():
         raise ValueError(
             "Found overlapping regions for ``overlap=None``. Please create a 3D mask. "
-            "You may want to explicitely set ``overlap`` to ``True`` or ``False``."
+            "You may want to explicitly set ``overlap`` to ``True`` or ``False``."
         )
 
     # reshape because region is the first dim
     numbers = np.asarray(numbers)
 
-    # I transform so it broadcasts (mask_3D can acually be 2D for unstructured grids,
+    # I transform so it broadcasts (mask_3D can actually be 2D for unstructured grids,
     # so reshape would need some logic)
     mask_2D = (mask_3D.T * numbers).T.sum("region")
 

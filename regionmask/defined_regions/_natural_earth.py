@@ -85,7 +85,7 @@ def _obtain_ne(
         If provided, call this function on the geodataframe.
     bbox : tuple | GeoDataFrame or GeoSeries | shapely Geometry, default None
         Filter features by given bounding box, GeoSeries, GeoDataFrame or a shapely
-        geometry. See ``geopandas.read_file`` for defails.
+        geometry. See ``geopandas.read_file`` for details.
     """
 
     if query is not None:

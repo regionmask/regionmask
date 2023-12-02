@@ -74,7 +74,7 @@ def _assert_unambigous_coord_names(obj, cf_name, name):
 
     if cf_name != name and name in obj.coords:
         raise ValueError(
-            f"Ambigous name for coordinates: cf_xarray determined '{cf_name}' but "
+            f"Ambiguous name for coordinates: cf_xarray determined '{cf_name}' but "
             f"'{name}' is also on the {type(obj).__name__}. Please set ``use_cf`` to "
             "True or False to resolve this conflict."
         )
