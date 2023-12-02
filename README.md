@@ -17,9 +17,10 @@ region it belongs to.
 
 **regionmask** is a python package that:
 
-- can be used to create *masks* of (geo)spatial *regions* for arbitrary (longitude and latitude) grids. These masks indicate which region a gridpoint belongs to and can then be used to aggregate gridded data over the regions. The masks come in two variants:
+- can be used to create *masks* of (geo)spatial *regions* for arbitrary (longitude and latitude) grids. These masks indicate which region a gridpoint belongs to and can then be used to aggregate gridded data over the regions. The masks come in three variants:
   - 2D integer masks
   - 3D boolean masks
+  - 3D approximate fractional masks
 - takes great care to create consistent masks for
   - region edges and interiors
   - overlapping regions
