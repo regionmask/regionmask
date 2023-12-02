@@ -312,7 +312,6 @@ def _mask_3D_frac_approx(
     n = 10
 
     lon, lat = _get_coords(lon_or_obj, lat, "lon", "lat", use_cf)
-
     backend = _determine_method(lon, lat)
 
     if backend not in ("rasterize", "rasterize_flip"):
@@ -321,7 +320,6 @@ def _mask_3D_frac_approx(
     if np.nanmin(lat) < -90 or np.nanmax(lat) > 90:
         raise InvalidCoordsError("lat must be between -90 and +90")
 
-    # lon_sampled, lat_sampled = _sample_coords_5(lon), _sample_coords_5(lat)
     lon_sampled, lat_sampled = _sample_coords(lon), _sample_coords(lat)
 
     ds = xr.Dataset(coords={"lon": lon_sampled, "lat": lat_sampled})
