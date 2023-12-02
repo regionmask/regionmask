@@ -56,13 +56,6 @@ region it belongs to.
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: Methods
-
-   notebooks/method
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
    :caption: Usage: Tutorials
 
    notebooks/plotting
@@ -84,6 +77,15 @@ region it belongs to.
    defined_landmask
    defined_ocean_basins
    defined_scientific
+
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Methods
+
+   notebooks/method
+   notebooks/method_mask_3D_frac_approx
 
 .. toctree::
    :maxdepth: 2

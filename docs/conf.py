@@ -239,11 +239,12 @@ man_pages = [("index", "regionmask", "regionmask Documentation", ["Mathias Hause
 # disable warnings
 warnings.filterwarnings("ignore")
 
-# don't check for frozen modules (which cannot be debuged)
+# don't check for frozen modules (which cannot be debugged)
 os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
 
 notebooks = (
     "notebooks/method",
+    "notebooks/method_mask_3D_frac_approx",
     "notebooks/plotting",
     "notebooks/mask_2D",
     "notebooks/mask_3D",
