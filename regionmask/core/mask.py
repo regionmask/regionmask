@@ -12,6 +12,7 @@ from .utils import (
     _find_splitpoint,
     _is_180,
     _is_numeric,
+    _sample_coords,
     _total_bounds,
     _wrapAngle,
     equally_spaced,
@@ -28,7 +29,7 @@ except ModuleNotFoundError:
 has_shapely_2 = Version(shapely.__version__) > Version("2.0b1")
 
 _MASK_DOCSTRING_TEMPLATE = """\
-create a {nd} {dtype} mask of a set of regions for the given lat/ lon grid
+create a {nd} {qualifier} mask of a set of regions for the given lat/ lon grid
 
 Parameters
 ----------
@@ -42,17 +43,7 @@ lat : array_like, optional
     If ``lon_or_obj`` is a longitude array, the latitude needs to be
     passed.
 
-{drop_doc}lon_name : str, optional
-    Deprecated. Name of longitude in ``lon_or_obj``, default: "lon".
-
-lat_name : str, optional
-    Deprecated. Name of latgitude in ``lon_or_obj``, default: "lat"
-
-{numbers_doc}method : "rasterize" | "shapely" | "pygeos". Default: None
-    Deprecated. Backend used to determine whether a gridpoint lies in a region.
-    All backends lead to the same mask. If None autoselects the backend.
-
-wrap_lon : None | bool | 180 | 360, default: None
+{drop_doc}{numbers_doc}wrap_lon : None | bool | 180 | 360, default: None
     Whether to wrap the longitude around, inferred automatically.
     If the regions and the provided longitude do not have the same
     base (i.e. one is -180..180 and the other 0..360) one of them
@@ -77,7 +68,7 @@ mask_{nd} : {dtype} xarray.DataArray
 
 See Also
 --------
-Regions.{see_also}
+{see_also}
 
 References
 ----------
@@ -133,18 +124,29 @@ flag : str, default: "abbrevs"
 """
 
 
-def _inject_mask_docstring(*, is_3D, is_gpd):
+def _inject_mask_docstring(*, which, is_gpd):
 
-    dtype = "boolean" if is_3D else "float"
+    qualifier = {"2D": "float", "3D": "boolean", "frac": "fractional"}[which]
+
+    dtype = {"2D": "float", "3D": "boolean", "frac": "float"}[which]
+
+    is_3D = which in ["3D", "frac"]
+
     nd = "3D" if is_3D else "2D"
     drop_doc = _DROP_DOCSTRING if is_3D else ""
     numbers_doc = _NUMBERS_DOCSTRING if is_gpd else ""
     gp_doc = _GP_DOCSTRING if is_gpd else ""
     overlap = _OVERLAP_DOCSTRING if is_gpd else ""
     flags = _FLAG_DOCSTRING if not (is_gpd or is_3D) else ""
-    see_also = "mask" if is_3D else "mask_3D"
+
+    see_also = {
+        "2D": "Regions.mask_3D, Regions.mask_3D_frac_approx",
+        "3D": "Regions.mask, Regions.mask_3D_frac_approx",
+        "frac": "Regions.mask, Regions.mask_3D",
+    }[which]
 
     mask_docstring = _MASK_DOCSTRING_TEMPLATE.format(
+        qualifier=qualifier,
         dtype=dtype,
         nd=nd,
         drop_doc=drop_doc,
@@ -287,6 +289,71 @@ def _mask(
         )
 
     return mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
+
+
+class InvalidCoordsError(ValueError):
+    pass
+
+
+def _mask_3D_frac_approx(
+    polygons,
+    numbers,
+    lon_or_obj,
+    lat=None,
+    drop=True,
+    wrap_lon=None,
+    overlap=None,
+    use_cf=None,
+):
+
+    # directly creating 3D masks seems to be faster in general (strangely due to the
+    # memory layout of the reshaped mask)
+    as_3D = True
+    n = 10
+
+    lon, lat = _get_coords(lon_or_obj, lat, "lon", "lat", use_cf)
+    backend = _determine_method(lon, lat)
+
+    if backend not in ("rasterize", "rasterize_flip"):
+        raise InvalidCoordsError("'lon' and 'lat' must be 1D and equally spaced.")
+
+    if np.nanmin(lat) < -90 or np.nanmax(lat) > 90:
+        raise InvalidCoordsError("lat must be between -90 and +90")
+
+    lon_sampled, lat_sampled = _sample_coords(lon), _sample_coords(lat)
+
+    ds = xr.Dataset(coords={"lon": lon_sampled, "lat": lat_sampled})
+
+    mask_sampled = _mask(
+        polygons,
+        numbers,
+        ds.lon,
+        ds.lat,
+        wrap_lon=wrap_lon,
+        as_3D=as_3D,
+        use_cf=use_cf,
+    ).values
+
+    mask_reshaped = mask_sampled.reshape(-1, lat.size, n, lon.size, n)
+    mask = mask_reshaped.mean(axis=(2, 4))
+
+    # maybe fix edges as 90°N/ S
+    sel = np.abs(lat_sampled) <= 90
+    if wrap_lon is not False and sel.any():
+
+        e1 = mask_reshaped[:, 0].mean(axis=(1, 3), where=sel[:n].reshape(-1, 1, 1))
+        e2 = mask_reshaped[:, -1].mean(axis=(1, 3), where=sel[-n:].reshape(-1, 1, 1))
+
+        mask[:, 0] = e1
+        mask[:, -1] = e2
+
+    mask = mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat")
+
+    mask_3D = _3D_to_3D_mask(mask, numbers, drop)
+
+    mask_3D.attrs = {"standard_name": "region"}
+
+    return mask_3D
 
 
 def _mask_2D(

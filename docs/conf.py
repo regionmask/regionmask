@@ -244,9 +244,11 @@ os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
 
 notebooks = (
     "notebooks/method",
+    "notebooks/method_mask_3D_frac_approx",
     "notebooks/plotting",
     "notebooks/mask_2D",
     "notebooks/mask_3D",
+    "notebooks/mask_3D_frac_approx",
     "notebooks/detect_coords",
     "notebooks/geopandas",
     "notebooks/overlap",

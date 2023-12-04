@@ -26,6 +26,8 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- Added a new approximate fractional overlap mask that allows to estimate which portion
+  of a grid point is covered by each region (:issue:`38`, :pull:`498`).
 - Add python 3.12 to list of supported versions (:pull:`494`).
 
 New regions

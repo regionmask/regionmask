@@ -22,10 +22,11 @@ region it belongs to.
 
 - can be used to create *masks* of (geo)spatial *regions* for arbitrary (longitude and latitude) grids.
   These masks indicate which region a gridpoint belongs to and can then be used to aggregate
-  gridded data over the regions. The masks come in two variants:
+  gridded data over the regions. The masks come in three variants:
 
   - :doc:`2D integer masks<notebooks/mask_2D>`
   - :doc:`3D boolean masks<notebooks/mask_3D>`
+  - :doc:`3D approximate fractional mask<notebooks/mask_3D_frac_approx>`
 
 - takes great care to create consistent masks for
 
@@ -55,18 +56,12 @@ region it belongs to.
 .. toctree::
    :maxdepth: 2
    :hidden:
-   :caption: Methods
-
-   notebooks/method
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
    :caption: Usage: Tutorials
 
    notebooks/plotting
    notebooks/mask_2D
    notebooks/mask_3D
+   notebooks/mask_3D_frac_approx
    notebooks/detect_coords
    notebooks/geopandas
    notebooks/create_own_regions
@@ -82,6 +77,15 @@ region it belongs to.
    defined_landmask
    defined_ocean_basins
    defined_scientific
+
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Methods
+
+   notebooks/method
+   notebooks/method_mask_3D_frac_approx
 
 .. toctree::
    :maxdepth: 2

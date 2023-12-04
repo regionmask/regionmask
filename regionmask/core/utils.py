@@ -228,6 +228,23 @@ def _find_splitpoint(lon):
     return split_point.squeeze() + 1
 
 
+def _sample_coords(coord):
+    """Sample coords for percentage overlap."""
+
+    n = 10
+
+    coord = np.asarray(coord)
+
+    d_coord = coord[1] - coord[0]
+
+    n_cells = coord.size
+
+    left = coord[0] - d_coord / 2 + d_coord / (n * 2)
+    right = coord[-1] + d_coord / 2 - d_coord / (n * 2)
+
+    return np.linspace(left, right, n_cells * n)
+
+
 def unpackbits(numbers, num_bits):
     "Unpacks elements of a array into a binary-valued output array."
 
