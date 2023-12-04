@@ -13,7 +13,7 @@ from shapely.geometry import MultiPolygon, Polygon
 
 from ._deprecate import _deprecate_positional_args
 from .formatting import _display
-from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
+from .mask import _inject_mask_docstring, _mask_2D, _mask_3D, _mask_3D_frac_approx
 from .plot import _plot, _plot_regions
 from .utils import (
     _is_180,
@@ -372,7 +372,7 @@ class Regions:
 
         return mask_2D
 
-    mask.__doc__ = _inject_mask_docstring(is_3D=False, is_gpd=False)
+    mask.__doc__ = _inject_mask_docstring(which="2D", is_gpd=False)
 
     @_deprecate_positional_args("0.10.0")
     def mask_3D(
@@ -414,7 +414,40 @@ class Regions:
 
         return mask_3D
 
-    mask_3D.__doc__ = _inject_mask_docstring(is_3D=True, is_gpd=False)
+    mask_3D.__doc__ = _inject_mask_docstring(which="3D", is_gpd=False)
+
+    def mask_3D_frac_approx(
+        self,
+        lon_or_obj,
+        lat=None,
+        *,
+        drop=True,
+        wrap_lon=None,
+        use_cf=None,
+    ):
+
+        mask_3D = _mask_3D_frac_approx(
+            polygons=self.polygons,
+            numbers=self.numbers,
+            lon_or_obj=lon_or_obj,
+            lat=lat,
+            drop=drop,
+            wrap_lon=wrap_lon,
+            overlap=self.overlap,  # as_3D is always True
+            use_cf=use_cf,
+        )
+
+        numbers = mask_3D.region.values
+        abbrevs = self[numbers].abbrevs
+        names = self[numbers].names
+
+        mask_3D = mask_3D.assign_coords(
+            abbrevs=("region", abbrevs), names=("region", names)
+        )
+
+        return mask_3D
+
+    mask_3D_frac_approx.__doc__ = _inject_mask_docstring(which="frac", is_gpd=False)
 
     def to_dataframe(self):
         """Convert this region into a pandas.DataFrame, excluding polygons.

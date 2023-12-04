@@ -26,6 +26,8 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- Added a new approximate fractional overlap mask that allows to estimate which portion
+  of a grid point is covered by each region (:issue:`38`, :pull:`498`).
 - Add python 3.12 to list of supported versions (:pull:`494`).
 
 New regions
@@ -113,7 +115,7 @@ Bug Fixes
 - Fix the detection of edge points at -180°E or 0°E if longitude values contain ``NA``
   values (:issue:`426`).
 - Fix the wrapping of longitudes that contain ``NA`` values and simplify the ``_wrapAngle``
-  function. Note the wrapping does not dependend on the longitude coordinates since
+  function. Note the wrapping does not depend on the longitude coordinates since
   :pull:`271` and thus this bug did not affect users since v0.8.0 (:pull:`425`).
 
 Docs
@@ -144,7 +146,7 @@ Breaking Changes
 - Made more arguments keyword-only for several functions and methods, e.g., for
   :py:meth:`Regions.mask` (:pull:`368`).
 - Passing ``lon_name`` and ``lat_name`` to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
-  is deprecated. Please pass the lon and lat coordinates direcly, e.g., ``mask*(ds[lon_name], ds[lat_name])``
+  is deprecated. Please pass the lon and lat coordinates directly, e.g., ``mask*(ds[lon_name], ds[lat_name])``
   (:issue:`293` and :pull:`371`).
 - Marked the ``method`` keyword to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
   as internal and flagged it for removal in a future version. Passing this argument should only
