@@ -113,7 +113,7 @@ for i, ymin in enumerate((2, 2.5, 3)):
     ax.set_title(f"{ymin=}")
 
 
-for i, ymax in enumerate((9, 9.5, 10)):
+for i, ymax in enumerate((9, 9-1e-5, 9+5e-5)):
     p = shapely.geometry.box(2.5, 0.5, 9.5, ymax, ccw=False)
     r = regionmask.Regions([p])
 
@@ -136,7 +136,7 @@ from affine import Affine
 from rasterio import features
 
 identity = Affine(1.0, 0.0, 0.0, 0.0, 1.0, 0.0)
-poly = shapely.box(xmin=1.5, ymin=1.5, xmax=8.5, ymax=8.5 - 1e-5)
+poly = shapely.box(xmin=2.5, ymin=2.5, xmax=7.5, ymax=8)
 raster = features.rasterize(
     ((poly, 1),),
     out_shape=(10, 10),
