@@ -63,10 +63,6 @@ def test_mask_all_touched_edge(xmin, ymin, xmax, ymax):
     xr.testing.assert_equal(result, expected)
 
 
-def test_mask_all_touched_edge(xmin, ymin, xmax, ymax):
-    pass
-
-
 import matplotlib.pyplot as plt
 import shapely
 
