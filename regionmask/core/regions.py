@@ -5,7 +5,7 @@
 
 import copy
 import warnings
-
+import xarray as xr
 import geopandas as gp
 import numpy as np
 import pandas as pd
@@ -124,7 +124,7 @@ class Regions:
         name="unnamed",
         source=None,
         overlap=None,
-    ):
+    ) -> None:
 
         if isinstance(outlines, (np.ndarray, Polygon, MultiPolygon)):
             klass = type(outlines).__name__
@@ -275,7 +275,7 @@ class Regions:
         return _total_bounds(self.polygons)
 
     @property
-    def lon_180(self):
+    def lon_180(self) -> bool:
         """if the regions extend from -180 to 180"""
         lon_min, __, lon_max, __ = self.bounds_global
 
@@ -328,7 +328,7 @@ class Regions:
         wrap_lon=None,
         flag="abbrevs",
         use_cf=None,
-    ):
+    ) -> xr.DataArray:
 
         if self.overlap:
             raise ValueError(
@@ -386,7 +386,7 @@ class Regions:
         method=None,
         wrap_lon=None,
         use_cf=None,
-    ):
+    ) -> xr.DataArray:
 
         mask_3D = _mask_3D(
             polygons=self.polygons,
@@ -422,7 +422,7 @@ class Regions:
         drop=True,
         wrap_lon=None,
         use_cf=None,
-    ):
+    ) -> xr.DataArray:
 
         mask_3D = _mask_3D_frac_approx(
             polygons=self.polygons,
@@ -447,7 +447,7 @@ class Regions:
 
     mask_3D_frac_approx.__doc__ = _inject_mask_docstring(which="frac", is_gpd=False)
 
-    def to_dataframe(self):
+    def to_dataframe(self) -> pd.DataFrame:
         """Convert this region into a pandas.DataFrame, excluding polygons.
 
         See Also
@@ -465,7 +465,7 @@ class Regions:
         df = pd.DataFrame.from_dict(data).set_index("numbers")
         return df
 
-    def to_geodataframe(self):
+    def to_geodataframe(self) -> gp.GeoDataFrame:
         """Convert this region into a geopandas.GeoDataFrame.
 
         Use ``Regions.from_geodataframe`` to round-trip a geodataframe created with
@@ -491,7 +491,7 @@ class Regions:
 
         return df
 
-    def to_geoseries(self):
+    def to_geoseries(self) -> gp.GeoSeries:
         """Convert this region into a geopandas.GeoSeries.
 
         See Also

@@ -171,7 +171,7 @@ def _mask(
     wrap_lon=None,
     as_3D=False,
     use_cf=None,
-):
+) -> xr.DataArray:
     """
     internal function to create a mask
     """
@@ -304,7 +304,7 @@ def _mask_3D_frac_approx(
     wrap_lon=None,
     overlap=None,
     use_cf=None,
-):
+) -> xr.DataArray:
 
     # directly creating 3D masks seems to be faster in general (strangely due to the
     # memory layout of the reshaped mask)
