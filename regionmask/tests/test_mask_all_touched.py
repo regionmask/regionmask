@@ -113,7 +113,7 @@ for i, ymin in enumerate((2, 2.5, 3)):
     ax.set_title(f"{ymin=}")
 
 
-for i, ymax in enumerate((9, 9-1e-5, 9+5e-5)):
+for i, ymax in enumerate((9, 9 - 1e-5, 9 + 5e-5)):
     p = shapely.geometry.box(2.5, 0.5, 9.5, ymax, ccw=False)
     r = regionmask.Regions([p])
 
