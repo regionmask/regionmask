@@ -7,7 +7,7 @@ build:
       # unshallow so the version works
       - git fetch --unshallow
     pre_install:
-        # see https://github.com/readthedocs/readthedocs.org/issues/8201
+        # Avoid having a dirty Git index
       - git update-index --assume-unchanged docs/requirements.txt docs/conf.py
     post_install:
       # install regionmask, needs to be editable
