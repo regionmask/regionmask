@@ -5,7 +5,7 @@ channels:
   - nodefaults
 
 dependencies:
-  - python=3.10
+  - python=3.12
 # regionmask dependencies
   - cartopy
   - geopandas
@@ -37,5 +37,6 @@ dependencies:
   - pip:
     - intake_geopandas>=0.2.4
     - msgpack
+    - sphinxext-rediraffe
     # install regionmask relative to this file. Needs to be editable to be accepted.
     # - -e ../.. -> is now done in readthedocs.yml pre_install

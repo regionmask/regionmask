@@ -89,7 +89,6 @@ Attributes
    Regions.names
    Regions.numbers
    Regions.region_ids
-   Regions.coords
    Regions.polygons
    Regions.centroids
    Regions.bounds
@@ -116,7 +115,6 @@ Attributes
    :toctree: generated/
 
    _OneRegion.coords
-   _OneRegion.polygon
    _OneRegion.bounds
 
 

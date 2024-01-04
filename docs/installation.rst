@@ -4,7 +4,7 @@ Installation
 Required dependencies
 ---------------------
 
-- Python (3.8 or later)
+- Python (3.9 or later)
 - `geopandas <http://geopandas.org/>`__ (0.10 or later)
 - `numpy <http://www.numpy.org/>`__ (1.21 or later)
 - `packaging <https://packaging.pypa.io/en/latest/>`__ (21.3 or later)
@@ -19,9 +19,9 @@ Optional dependencies
 For plotting
 ~~~~~~~~~~~~
 
-- `matplotlib <http://matplotlib.org/>`__ (3.5 or later) is required to create any plots.
-- `cartopy <http://scitools.org.uk/cartopy/>`__ (0.20 or later) for plotting on
-  geographical maps.
+- `matplotlib <http://matplotlib.org>`__ (3.5 or later) is required to create any plots.
+- `cartopy <https://scitools.org.uk/cartopy/docs/latest>`__ (0.20 or later) for plotting on
+  maps.
 
 For detecting coords and parsing flag values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

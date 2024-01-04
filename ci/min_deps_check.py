@@ -10,8 +10,8 @@ policy on obsolete dependencies is being followed. Print a pretty report :)
 
 import itertools
 import sys
+from collections.abc import Iterator
 from datetime import datetime
-from typing import Iterator
 
 import conda.api  # type: ignore[import]
 import yaml
@@ -23,13 +23,13 @@ IGNORE_DEPS = {
     "coveralls",
     "flake8",
     "hypothesis",
-    "isort" "setuptools",
+    "isort",
     "mypy",
     "pip",
     "pytest-cov",
-    "pytest-env",
     "pytest-xdist",
     "pytest",
+    "setuptools",
 }
 
 POLICY_MONTHS = {"python": 30, "numpy": 18}
@@ -210,7 +210,7 @@ def main(fname) -> None:
         print("\nErrors:")
         print("-------")
         for i, e in enumerate(errors):
-            print(f"{i+1}. {e}")
+            print(f"{i + 1}. {e}")
         sys.exit(1)
 
 

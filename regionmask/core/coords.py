@@ -35,7 +35,7 @@ def _from_mapping(lon_or_obj, name):
             "directly"
         )
 
-        msg += "." if has_cf_xarray else "or try installing cf_xarray."
+        msg += "." if has_cf_xarray else " or try installing cf_xarray."
 
         raise KeyError(msg)
 
@@ -74,7 +74,7 @@ def _assert_unambigous_coord_names(obj, cf_name, name):
 
     if cf_name != name and name in obj.coords:
         raise ValueError(
-            f"Ambigous name for coordinates: cf_xarray determined '{cf_name}' but "
+            f"Ambiguous name for coordinates: cf_xarray determined '{cf_name}' but "
             f"'{name}' is also on the {type(obj).__name__}. Please set ``use_cf`` to "
             "True or False to resolve this conflict."
         )
@@ -87,7 +87,8 @@ def _get_coords_cf(obj):
 
     if not isinstance(obj, (xr.Dataset, xr.DataArray)):
         raise TypeError(
-            f"Expected a ``Dataset`` or ``DataArray`` for ``use_cf=True``, got {type(obj)}"
+            "Expected a ``Dataset`` or ``DataArray`` for ``use_cf=True``, got"
+            f" {type(obj)}"
         )
 
     x_name = _get_cf_coords(obj, "longitude", required=True)

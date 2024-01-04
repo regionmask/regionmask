@@ -1,10 +1,7 @@
-import warnings
 from dataclasses import dataclass
-from functools import partial
-from typing import List, Optional
+from typing import Optional
 
 import numpy as np
-import pytest
 import xarray as xr
 
 from regionmask import Regions
@@ -97,118 +94,118 @@ class DefinedRegion:
     n_regions: int
     overlap: bool = False
     skip_mask_test: bool = False
-    bounds: Optional[List[float]] = None
+    warn_bounds: Optional[bool] = False
+    bounds: Optional[list[float]] = None
 
     def __str__(self):
         # used as name (`ids`) for parametrize
         return self.region_name
 
 
+bounds_lon_min_180 = {"min_lon": -180}
+bounds_lat_min_90 = {"min_lat": -90}
+bounds_lon_max_180 = {"max_lon": 180}
+bounds_lat_max_90 = {"max_lat": 90}
+
+bounds_lon_global = bounds_lon_min_180 | bounds_lon_max_180
+bounds_lat_global = bounds_lat_min_90 | bounds_lat_max_90
+
+bounds_global = bounds_lon_global | bounds_lat_global
+
+
+bounds_EW_S = bounds_lon_global | bounds_lat_min_90
+bounds_EW_N = bounds_lon_global | bounds_lat_max_90
+
+
 REGIONS = [
-    DefinedRegion("ar6.all", 58),
-    DefinedRegion("ar6.land", 46),
-    DefinedRegion("ar6.ocean", 15),
-    DefinedRegion("giorgi", 21),
+    DefinedRegion("ar6.all", 58, bounds=bounds_global),
+    DefinedRegion("ar6.land", 46, bounds=bounds_EW_S),
+    DefinedRegion("ar6.ocean", 15, bounds=bounds_EW_N),
+    DefinedRegion("giorgi", 21, bounds=bounds_lon_max_180),
     DefinedRegion("prudence", 8, True),
-    DefinedRegion("srex", 26),
+    DefinedRegion("srex", 26, bounds=bounds_lon_max_180),
 ]
 
 
-states10_bounds = (
-    -179.1435033839999,
-    18.906117143000074,
-    179.78093509200005,
-    71.41250234600005,
-)
+states10_bounds = {
+    "min_lon": -179.1435033839999,
+    "min_lat": 18.906117143000074,
+    "max_lon": 179.78093509200005,
+    "max_lat": 71.41250234600005,
+}
 
-us_states_50_bounds = (
-    -178.19451843993753,
-    18.963909185849403,
-    -66.98702205598455,
-    71.40768682118639,
-)
+us_states_50_bounds = {
+    "min_lon": -178.19451843993753,
+    "min_lat": 18.963909185849403,
+    "max_lon": -66.98702205598455,
+    "max_lat": 71.40768682118639,
+}
 
 
 _REGIONS_NATURAL_EARTH_v4_1_0 = [
-    DefinedRegion("natural_earth_v4_1_0.countries_110", 177),
-    DefinedRegion("natural_earth_v4_1_0.countries_50", 241),
-    DefinedRegion("natural_earth_v4_1_0.countries_10", 258),
+    DefinedRegion("natural_earth_v4_1_0.countries_110", 177, bounds=bounds_EW_S),
+    DefinedRegion(
+        "natural_earth_v4_1_0.countries_50",
+        241,
+        bounds=bounds_lon_global,
+        warn_bounds=True,
+    ),
+    DefinedRegion("natural_earth_v4_1_0.countries_10", 258, bounds=bounds_EW_S),
     DefinedRegion("natural_earth_v4_1_0.us_states_50", 51, bounds=us_states_50_bounds),
     DefinedRegion("natural_earth_v4_1_0.us_states_10", 51, bounds=states10_bounds),
-    DefinedRegion("natural_earth_v4_1_0.land_110", 1),
-    DefinedRegion("natural_earth_v4_1_0.land_50", 1),
-    DefinedRegion("natural_earth_v4_1_0.land_10", 1),
-    DefinedRegion("natural_earth_v4_1_0.ocean_basins_50", 119),
+    DefinedRegion("natural_earth_v4_1_0.land_110", 1, bounds=bounds_EW_S),
+    DefinedRegion(
+        "natural_earth_v4_1_0.land_50", 1, bounds=bounds_lon_global, warn_bounds=True
+    ),
+    DefinedRegion("natural_earth_v4_1_0.land_10", 1, bounds=bounds_EW_S),
+    DefinedRegion("natural_earth_v4_1_0.ocean_basins_50", 119, warn_bounds=True),
 ]
 
 _REGIONS_NATURAL_EARTH_v5_0_0 = [
-    DefinedRegion("natural_earth_v5_0_0.countries_110", 177),
-    DefinedRegion("natural_earth_v5_0_0.countries_50", 242),
-    DefinedRegion("natural_earth_v5_0_0.countries_10", 258, skip_mask_test=True),
+    DefinedRegion("natural_earth_v5_0_0.countries_110", 177, bounds=bounds_EW_S),
+    DefinedRegion(
+        "natural_earth_v5_0_0.countries_50",
+        242,
+        bounds=bounds_lon_global,
+        warn_bounds=True,
+    ),
+    DefinedRegion(
+        "natural_earth_v5_0_0.countries_10",
+        258,
+        bounds=bounds_EW_S,
+        skip_mask_test=True,
+    ),
     DefinedRegion("natural_earth_v5_0_0.us_states_50", 51, bounds=us_states_50_bounds),
     DefinedRegion("natural_earth_v5_0_0.us_states_10", 51, bounds=states10_bounds),
-    DefinedRegion("natural_earth_v5_0_0.land_110", 1),
-    DefinedRegion("natural_earth_v5_0_0.land_50", 1),
-    DefinedRegion("natural_earth_v5_0_0.land_10", 1),
-    DefinedRegion("natural_earth_v5_0_0.ocean_basins_50", 117),
+    DefinedRegion("natural_earth_v5_0_0.land_110", 1, bounds=bounds_EW_S),
+    DefinedRegion(
+        "natural_earth_v5_0_0.land_50", 1, bounds=bounds_lon_global, warn_bounds=True
+    ),
+    DefinedRegion("natural_earth_v5_0_0.land_10", 1, bounds=bounds_EW_S),
+    DefinedRegion("natural_earth_v5_0_0.ocean_basins_50", 117, warn_bounds=True),
 ]
 
-REGIONS += _REGIONS_NATURAL_EARTH_v5_0_0
+_REGIONS_NATURAL_EARTH_v5_1_2 = [
+    DefinedRegion("natural_earth_v5_1_2.countries_110", 177, bounds=bounds_EW_S),
+    DefinedRegion("natural_earth_v5_1_2.countries_50", 242, bounds=bounds_EW_S),
+    DefinedRegion(
+        "natural_earth_v5_1_2.countries_10",
+        258,
+        bounds=bounds_EW_S,
+        skip_mask_test=True,
+    ),
+    DefinedRegion("natural_earth_v5_1_2.us_states_50", 51, bounds=us_states_50_bounds),
+    DefinedRegion("natural_earth_v5_1_2.us_states_10", 51, bounds=states10_bounds),
+    DefinedRegion("natural_earth_v5_1_2.land_110", 1, bounds=bounds_EW_S),
+    DefinedRegion("natural_earth_v5_1_2.land_50", 1, bounds=bounds_EW_S),
+    DefinedRegion("natural_earth_v5_1_2.land_10", 1, bounds=bounds_EW_S),
+    DefinedRegion("natural_earth_v5_1_2.ocean_basins_50", 117, bounds=bounds_EW_N),
+]
+
+
+REGIONS += _REGIONS_NATURAL_EARTH_v5_1_2
+
 
 REGIONS_ALL = REGIONS.copy()
 REGIONS_ALL += _REGIONS_NATURAL_EARTH_v4_1_0
-
-
-REGIONS_DEPRECATED = [
-    DefinedRegion("_ar6_pre_revisions.all", 55),
-    DefinedRegion("_ar6_pre_revisions.land", 43),
-    DefinedRegion("_ar6_pre_revisions.ocean", 12),
-    DefinedRegion("_ar6_pre_revisions.separate_pacific", 58),
-]
-
-REGIONS_REQUIRING_CARTOPY = [
-    DefinedRegion("natural_earth.countries_110", 177),
-    DefinedRegion("natural_earth.countries_50", 242),
-    DefinedRegion("natural_earth.us_states_50", 51),
-    DefinedRegion("natural_earth.us_states_10", 51),
-    DefinedRegion("natural_earth.land_110", 1),
-    DefinedRegion("natural_earth.land_50", 1),
-    DefinedRegion("natural_earth.land_10", 1),
-    DefinedRegion("natural_earth.ocean_basins_50", 117),
-]
-
-
-def download_naturalearth_region_or_skip(monkeypatch, natural_earth_feature):
-
-    from urllib.request import URLError, urlopen
-
-    import cartopy
-    from cartopy.io import shapereader
-
-    # add a timeout to cartopy.io.urlopen else it can run indefinitely
-    monkeypatch.setattr(cartopy.io, "urlopen", partial(urlopen, timeout=5))
-
-    # natural earth data has moved to amazon, older version of cartopy still have the
-    # old url
-    # https://github.com/SciTools/cartopy/pull/1833
-    # https://github.com/nvkelso/natural-earth-vector/issues/445
-    # remove again once the minimum cartopy version is v0.19
-
-    url_template = (
-        "https://naturalearth.s3.amazonaws.com/"
-        "{resolution}_{category}/ne_{resolution}_{name}.zip"
-    )
-
-    downloader = cartopy.config["downloaders"][("shapefiles", "natural_earth")]
-    monkeypatch.setattr(downloader, "url_template", url_template)
-
-    try:
-        shapereader.natural_earth(
-            natural_earth_feature.resolution,
-            natural_earth_feature.category,
-            natural_earth_feature.name,
-        )
-    except URLError as e:
-        warnings.warn(str(e))
-        warnings.warn("naturalearth download timeout - test not run!")
-        pytest.skip()
+REGIONS_ALL += _REGIONS_NATURAL_EARTH_v5_0_0

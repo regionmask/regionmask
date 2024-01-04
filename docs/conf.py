@@ -47,19 +47,24 @@ if on_rtd:
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "IPython.sphinxext.ipython_console_highlighting",
+    "IPython.sphinxext.ipython_directive",
+    "numpydoc",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.extlinks",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
-    "numpydoc",
-    "IPython.sphinxext.ipython_directive",
-    "IPython.sphinxext.ipython_console_highlighting",
+    "sphinxext.rediraffe",
 ]
 
 extlinks = {
     "issue": ("https://github.com/regionmask/regionmask/issues/%s", "#%s"),
     "pull": ("https://github.com/regionmask/regionmask/pull/%s", "#%s"),
+}
+
+rediraffe_redirects = {
+    "whats_new.rst": "changelog.rst",
 }
 
 autosummary_generate = True
@@ -234,12 +239,16 @@ man_pages = [("index", "regionmask", "regionmask Documentation", ["Mathias Hause
 # disable warnings
 warnings.filterwarnings("ignore")
 
+# don't check for frozen modules (which cannot be debugged)
+os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
 
 notebooks = (
     "notebooks/method",
+    "notebooks/method_mask_3D_frac_approx",
     "notebooks/plotting",
     "notebooks/mask_2D",
     "notebooks/mask_3D",
+    "notebooks/mask_3D_frac_approx",
     "notebooks/detect_coords",
     "notebooks/geopandas",
     "notebooks/overlap",

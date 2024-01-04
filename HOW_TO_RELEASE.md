@@ -57,7 +57,7 @@ These instructions assume that `upstream` refers to the main repository
    git push upstream main
    git push upstream --tags
    ```
-1. Add a section for the next release to doc/whats-new.rst:
+1. Add a section for the next release to CHANGELOG.rst:
    ```rst
 
    v0.X.Y (unreleased)
@@ -91,12 +91,12 @@ These instructions assume that `upstream` refers to the main repository
 1. Update zenodo link.
 1. Commit your changes and push to main again:
    ```sh
-   git commit -am 'New whatsnew section'
-   git push upstream main
+   git co -b "new_changelog_section"
+   git commit -am 'New changelog section'
+   git push upstream HEAD
    ```
-   You're done pushing to main!
-1. Check if the new docs get built. Login to <https://readthedocs.org/projects/regionmask/versions/>.
-1. Release regionmask on conda - also update the requirements in meta.yaml <https://github.com/conda-forge/regionmask-feedstock>
+2. Check if the new docs get built. Login to <https://readthedocs.org/projects/regionmask/versions/>.
+3. Release regionmask on conda - also update the requirements in meta.yaml <https://github.com/conda-forge/regionmask-feedstock>
 
 <!-- markdownlint-enable MD013 -->
 

@@ -1,14 +1,14 @@
-import os
 import warnings
-from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass
+from functools import cache
 
+import geopandas
 import numpy as np
 import pooch
-from packaging.version import Version
 from shapely.geometry import MultiPolygon
 
+from regionmask.core.utils import _snap_to_90S, _snap_to_180E
 from regionmask.defined_regions._ressources import _get_cache_dir
 
 from ..core.regions import Regions
@@ -17,16 +17,9 @@ from ..core.utils import _flatten_polygons
 try:
     import pyogrio  # noqa: F401
 
-    engine = "pyogrio"
+    ENGINE = "pyogrio"
 except ImportError:
-    engine = "fiona"
-
-# TODO: remove deprecated (v0.9.0) natural_earth class and instance & clean up
-
-ALTERNATIVE = (
-    "Please use ``regionmask.defined_regions.natural_earth_v4_1_0`` or "
-    "``regionmask.defined_regions.natural_earth_v5_0_0`` instead"
-)
+    ENGINE = "fiona"
 
 
 def _maybe_get_column(df, colname):
@@ -48,7 +41,7 @@ def _maybe_get_column(df, colname):
 
 
 def _obtain_ne(
-    shpfilename,
+    df,
     title,
     names="name",
     abbrevs="postal",
@@ -66,8 +59,8 @@ def _obtain_ne(
 
     Parameters
     ----------
-    shpfilename : string
-        Filename to read.
+    df : GeoDataFrame
+        GeoDataFrame to process.
     title : string
         Displayed text in Regions.
     names : str or list, default: "name"
@@ -92,13 +85,8 @@ def _obtain_ne(
         If provided, call this function on the geodataframe.
     bbox : tuple | GeoDataFrame or GeoSeries | shapely Geometry, default None
         Filter features by given bounding box, GeoSeries, GeoDataFrame or a shapely
-        geometry. See ``geopandas.read_file`` for defails.
+        geometry. See ``geopandas.read_file`` for details.
     """
-
-    import geopandas
-
-    # read the file with geopandas
-    df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox, engine=engine)
 
     if query is not None:
         df = df.query(query).reset_index(drop=True)
@@ -133,12 +121,14 @@ def _obtain_ne(
     )
 
 
-VERSIONS = ["v4.1.0", "v5.0.0"]
+VERSIONS = ["v4.1.0", "v5.0.0", "v5.1.2"]
 
 
 @dataclass
 class _NaturalEarthFeature:
 
+    short_name: str
+    title: str
     resolution: str
     category: str
     name: str
@@ -161,246 +151,197 @@ class _NaturalEarthFeature:
 
         return fN
 
+    def read(self, version, bbox=None):
+        shpfilename = self.shapefilename(version=version)
+
+        df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox, engine=ENGINE)
+
+        return df
+
 
 _countries_110 = _NaturalEarthFeature(
+    short_name="countries_110",
+    title="Natural Earth Countries: 110m",
     resolution="110m",
     category="cultural",
     name="admin_0_countries",
 )
 _countries_50 = _NaturalEarthFeature(
+    short_name="countries_50",
+    title="Natural Earth Countries: 50m",
     resolution="50m",
     category="cultural",
     name="admin_0_countries",
 )
 _countries_10 = _NaturalEarthFeature(
+    short_name="countries_10",
+    title="Natural Earth Countries: 10m",
     resolution="10m",
     category="cultural",
     name="admin_0_countries",
 )
 _us_states_50 = _NaturalEarthFeature(
+    short_name="us_states_50",
+    title="Natural Earth: US States 50m",
     resolution="50m",
     category="cultural",
     name="admin_1_states_provinces_lakes",
 )
 _us_states_10 = _NaturalEarthFeature(
+    short_name="us_states_10",
+    title="Natural Earth: US States 10m",
     resolution="10m",
     category="cultural",
     name="admin_1_states_provinces_lakes",
 )
 _land_110 = _NaturalEarthFeature(
+    short_name="land_110",
+    title="Natural Earth: landmask 110m",
     resolution="110m",
     category="physical",
     name="land",
 )
 _land_50 = _NaturalEarthFeature(
+    short_name="land_50",
+    title="Natural Earth: landmask 50m",
     resolution="50m",
     category="physical",
     name="land",
 )
 _land_10 = _NaturalEarthFeature(
+    short_name="land_10",
+    title="Natural Earth: landmask 10m",
     resolution="10m",
     category="physical",
     name="land",
 )
 _ocean_basins_50 = _NaturalEarthFeature(
+    short_name="ocean_basins_50",
+    title="Natural Earth: ocean basins 50m",
     resolution="50m",
     category="physical",
     name="geography_marine_polys",
 )
 
 
-class NaturalEarth(ABC):
+class NaturalEarth:
     """class combining all natural_earth features/ geometries
 
     Because data must be downloaded, we organise it as a class so that
     we only download it on demand.
     """
 
-    def __init__(self):
+    def __init__(self, version, preprocessors):
+        self.version = version
+        self._preprocessors = preprocessors or {}
 
-        self._countries_110 = None
-        self._countries_50 = None
-        self._countries_10 = None
+    def _obtain_ne(self, feature: _NaturalEarthFeature, **kwargs):
 
-        self._us_states_50 = None
-        self._us_states_10 = None
-
-        self._land_110 = None
-        self._land_50 = None
-        self._land_10 = None
-
-        self._ocean_basins_50 = None
-
-    @abstractmethod
-    def _obtain_ne(self, natural_earth_feature, **kwargs):
-        ...
+        preprocess = self._preprocessors.get(feature.short_name)
+        df = feature.read(self.version, kwargs.get("bbox"))
+        return _obtain_ne(df, feature.title, preprocess=preprocess, **kwargs)
 
     @property
+    @cache
     def countries_110(self):
-        if self._countries_110 is None:
 
-            opt = dict(title="Natural Earth Countries: 110m")
-
-            self._countries_110 = self._obtain_ne(_countries_110, **opt)
-
-        return self._countries_110
+        return self._obtain_ne(_countries_110)
 
     @property
+    @cache
     def countries_50(self):
-        if self._countries_50 is None:
 
-            opt = dict(title="Natural Earth Countries: 50m")
-
-            self._countries_50 = self._obtain_ne(_countries_50, **opt)
-
-        return self._countries_50
+        return self._obtain_ne(_countries_50)
 
     @property
+    @cache
     def countries_10(self):
-        if self._countries_10 is None:
-            opt = dict(title="Natural Earth Countries: 10m")
 
-            self._countries_10 = self._obtain_ne(_countries_10, **opt)
-
-        return self._countries_10
+        return self._obtain_ne(_countries_10)
 
     @property
+    @cache
     def us_states_50(self):
-        if self._us_states_50 is None:
 
-            opt = dict(
-                title="Natural Earth: US States 50m",
-                query="admin == 'United States of America'",
-                bbox=(-180, 18, -45, 72),
-            )
+        opt = dict(
+            query="admin == 'United States of America'", bbox=(-180, 18, -45, 72)
+        )
 
-            self._us_states_50 = self._obtain_ne(_us_states_50, **opt)
-        return self._us_states_50
+        return self._obtain_ne(_us_states_50, **opt)
 
     @property
+    @cache
     def us_states_10(self):
-        if self._us_states_10 is None:
 
-            opt = dict(
-                title="Natural Earth: US States 10m",
-                query="admin == 'United States of America'",
-                bbox=(-180, 18, -45, 72),
-            )
+        opt = dict(
+            query="admin == 'United States of America'", bbox=(-180, 18, -45, 72)
+        )
 
-            self._us_states_10 = self._obtain_ne(_us_states_10, **opt)
-        return self._us_states_10
+        return self._obtain_ne(_us_states_10, **opt)
 
     @property
+    @cache
     def land_110(self):
-        if self._land_110 is None:
 
-            opt = dict(
-                title="Natural Earth: landmask 110m",
-                names=["land"],
-                abbrevs=["lnd"],
-                numbers=[0],
-                combine_coords=True,
-            )
+        opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
-            self._land_110 = self._obtain_ne(_land_110, **opt)
-        return self._land_110
+        return self._obtain_ne(_land_110, **opt)
 
     @property
+    @cache
     def land_50(self):
-        if self._land_50 is None:
 
-            opt = dict(
-                title="Natural Earth: landmask 50m",
-                names=["land"],
-                abbrevs=["lnd"],
-                numbers=[0],
-                combine_coords=True,
-            )
+        opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
-            self._land_50 = self._obtain_ne(_land_50, **opt)
-        return self._land_50
+        return self._obtain_ne(_land_50, **opt)
 
     @property
+    @cache
     def land_10(self):
-        if self._land_10 is None:
 
-            opt = dict(
-                title="Natural Earth: landmask 10m",
-                names=["land"],
-                abbrevs=["lnd"],
-                numbers=[0],
-                combine_coords=True,
-            )
+        opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
-            self._land_10 = self._obtain_ne(_land_10, **opt)
-        return self._land_10
+        return self._obtain_ne(_land_10, **opt)
 
     @property
+    @cache
     def ocean_basins_50(self):
-        if self._ocean_basins_50 is None:
 
-            opt = dict(
-                title="Natural Earth: ocean basins 50m",
-                names="name",
-                abbrevs="name",
-                preprocess=self._fix_ocean_basins_50,
-            )
+        opt = dict(names="name", abbrevs="name")
 
-            regs = self._obtain_ne(_ocean_basins_50, **opt)
-
-            self._ocean_basins_50 = regs
-
-        return self._ocean_basins_50
+        return self._obtain_ne(_ocean_basins_50, **opt)
 
     def __repr__(self):
-        return "Region Definitions from 'http://www.naturalearthdata.com'."
+        return f"Region definitions from 'http://www.naturalearthdata.com' - {self.version}"
 
 
-def _fix_ocean_basins_50_cartopy(self, df):
-    """ocean basins 50 has duplicate entries"""
+def _unify_great_barrier_reef(df, idx1, idx2):
 
-    names_v4_1_0 = {
-        14: "Mediterranean Sea",
-        30: "Mediterranean Sea",
-        26: "Ross Sea",
-        29: "Ross Sea",
-    }
+    p1 = df.loc[idx1].geometry
+    p2 = df.loc[idx2].geometry
 
-    names_v5_0_0 = {
-        74: "Great Barrier Reef",
-        114: "Great Barrier Reef",
-    }
-
-    names_v5_1_2 = {
-        74: "Great Barrier Reef",
-        113: "Great Barrier Reef",
-    }
-
-    is_v4_1_0 = all(df.loc[idx]["name"] == name for idx, name in names_v4_1_0.items())
-    is_v5_0_0 = all(df.loc[idx]["name"] == name for idx, name in names_v5_0_0.items())
-    is_v5_1_2 = all(df.loc[idx]["name"] == name for idx, name in names_v5_1_2.items())
-
-    if is_v4_1_0:
-        df = _fix_ocean_basins_50_v4_1_0(self, df)
-    elif is_v5_0_0:
-        df = _fix_ocean_basins_50_v5_0_0(self, df)
-    elif is_v5_1_2:
-        df = _fix_ocean_basins_50_v5_1_2(self, df)
-    else:
-        raise ValueError(
-            "Unknown version of the ocean basins 50m data from naturalearth. "
-            f"{ALTERNATIVE}."
-        )
+    # merge the two Great Barrier Reef polygons - idx1 <<< idx2
+    poly = p1.union(p2)
+    df.at[idx1, "geometry"] = poly
+    # remove the now merged row
+    df = df.drop(labels=idx2).reset_index(drop=True)
 
     return df
 
 
-def _fix_ocean_basins_50_v4_1_0(self, df):
+def _fix_ocean_basins_50_v4_1_0(df):
     """fix ocean basins 50 for naturalearth v4.1.0
 
     - Mediterranean Sea and Ross Sea have two parts: renamed to Eastern and Western
-      Basin
+    Basin
     """
+
+    warnings.warn(
+        "`natural_earth_v4_1_0.ocean_basins_50` does not quite extend to 180°E - it's "
+        "recommended to use `natural_earth_v5_1_2.ocean_basins_50` instead. "
+        "See https://github.com/regionmask/regionmask/issues/410.",
+        stacklevel=5,
+    )
 
     new_names = {
         14: "Mediterranean Sea Eastern Basin",
@@ -416,21 +357,7 @@ def _fix_ocean_basins_50_v4_1_0(self, df):
     return df
 
 
-def _unify__great_barrier_reef(df, idx1, idx2):
-
-    p1 = df.loc[idx1].geometry
-    p2 = df.loc[idx2].geometry
-
-    # merge the two Great Barrier Reef polygons - idx1 <<< idx2
-    poly = p1.union(p2)
-    df.at[idx1, "geometry"] = poly
-    # remove the now merged row
-    df = df.drop(labels=idx2).reset_index()
-
-    return df
-
-
-def _fix_ocean_basins_50_v5_0_0(self, df):
+def _fix_ocean_basins_50_v5_0_0(df):
     """fix ocean basins 50 for naturalearth v5.0.0
 
     - Mediterranean Sea and Ross Sea is **no longer** split in two.
@@ -438,10 +365,17 @@ def _fix_ocean_basins_50_v5_0_0(self, df):
     - The numbers/ indices are different from Version 4.0!
     """
 
-    return _unify__great_barrier_reef(df, 74, 114)
+    warnings.warn(
+        "`natural_earth_v5_0_0.ocean_basins_50` does not quite extend to 180°E - it's "
+        "recommended to use `natural_earth_v5_1_2.ocean_basins_50` instead. "
+        "See https://github.com/regionmask/regionmask/issues/410.",
+        stacklevel=5,
+    )
+
+    return _unify_great_barrier_reef(df, 74, 114)
 
 
-def _fix_ocean_basins_50_v5_1_2(self, df):
+def _fix_ocean_basins_50_v5_1_2(df):
     """fix ocean basins 50 for naturalearth v5.1.2
 
     - Sea of Japan & Korea Strait geometries are different
@@ -449,84 +383,73 @@ def _fix_ocean_basins_50_v5_1_2(self, df):
     - but the regions are ordered different
     """
 
-    return _unify__great_barrier_reef(df, 74, 113)
+    df = _unify_great_barrier_reef(df, 74, 113)
+
+    # fix regions not extending to 180°E
+    idx = df.loc[df.bounds["maxx"] > 179].index.tolist()
+    df = _snap_to_180E(df, idx, atol=1.03e-4)
+
+    return df
 
 
-class NaturalEarthCartopy(NaturalEarth):
-
-    _fix_ocean_basins_50 = _fix_ocean_basins_50_cartopy
-
-    def _obtain_ne(self, natural_earth_feature, **kwargs):
-
-        shapefilename = _get_shapefilename_cartopy(
-            natural_earth_feature.resolution,
-            natural_earth_feature.category,
-            natural_earth_feature.name,
-        )
-
-        return _obtain_ne(shapefilename, **kwargs)
-
-
-class NaturalEarth_v4_1_0(NaturalEarth):
-
-    _fix_ocean_basins_50 = _fix_ocean_basins_50_v4_1_0
-    version = "v4.1.0"
-
-    def _obtain_ne(self, natural_earth_feature, **kwargs):
-        shapefilename = natural_earth_feature.shapefilename(self.version)
-        return _obtain_ne(shapefilename, **kwargs)
-
-
-class NaturalEarth_v5_0_0(NaturalEarth):
-
-    _fix_ocean_basins_50 = _fix_ocean_basins_50_v5_0_0
-    version = "v5.0.0"
-
-    def _obtain_ne(self, natural_earth_feature, **kwargs):
-        shapefilename = natural_earth_feature.shapefilename(self.version)
-        return _obtain_ne(shapefilename, **kwargs)
-
-
-natural_earth = NaturalEarthCartopy()
-
-natural_earth_v4_1_0 = NaturalEarth_v4_1_0()
-natural_earth_v5_0_0 = NaturalEarth_v5_0_0()
-
-
-def _get_shapefilename_cartopy(resolution, category, name):
-
-    try:
-        import cartopy
-    except ImportError as e:
-        msg = (
-            "``regionmask.defined_regions.natural_earth`` requires cartopy and is "
-            f"deprecated.\n{ALTERNATIVE} (which do not require cartopy)."
-        )
-        raise ImportError(msg) from e
-
-    _cartopy_data_dir = cartopy.config["data_dir"]
-
-    # check if cartopy has already downloaded the file
-    cartopy_file = os.path.join(
-        _cartopy_data_dir,
-        "shapefiles",
-        "natural_earth",
-        f"{category}",
-        f"ne_{resolution}_{name}.shp",
-    )
-
-    if not os.path.exists(cartopy_file):
-        raise ValueError(
-            "``regionmask.defined_regions.natural_earth`` is deprecated. Will not "
-            f"download new files via this interface. {ALTERNATIVE}."
-        )
+def _warn_countries_50(df):
 
     warnings.warn(
-        f"``regionmask.defined_regions.natural_earth`` is deprecated. {ALTERNATIVE}.",
-        FutureWarning,
+        "`land_50` of `natural_earth_v4_1_0` and `natural_earth_v5_0_0` does not quite "
+        "extend to 90°S - it's recommended to use `natural_earth_v5_1_2` instead. "
+        "See https://github.com/regionmask/regionmask/issues/487",
+        stacklevel=5,
     )
 
-    return cartopy_file
+    return df
+
+
+def _warn_land_50(df):
+
+    warnings.warn(
+        "`land_50` of `natural_earth_v4_1_0` and `natural_earth_v5_0_0` does not quite "
+        "extend to 90°S - it's recommended to use `natural_earth_v5_1_2` instead. "
+        "See https://github.com/regionmask/regionmask/issues/487",
+        stacklevel=5,
+    )
+
+    return df
+
+
+def _fix_land_50(df):
+
+    return _snap_to_90S(df, [1378], 1.1e-3)
+
+
+def _fix_countries_50(df):
+
+    return _snap_to_90S(df, [239], 1.1e-3)
+
+
+natural_earth_v4_1_0 = NaturalEarth(
+    "v4.1.0",
+    preprocessors={
+        "ocean_basins_50": _fix_ocean_basins_50_v4_1_0,
+        "land_50": _warn_land_50,
+        "countries_50": _warn_countries_50,
+    },
+)
+natural_earth_v5_0_0 = NaturalEarth(
+    "v5.0.0",
+    preprocessors={
+        "ocean_basins_50": _fix_ocean_basins_50_v5_0_0,
+        "land_50": _warn_land_50,
+        "countries_50": _warn_countries_50,
+    },
+)
+natural_earth_v5_1_2 = NaturalEarth(
+    "v5.1.2",
+    preprocessors={
+        "ocean_basins_50": _fix_ocean_basins_50_v5_1_2,
+        "land_50": _fix_land_50,
+        "countries_50": _fix_countries_50,
+    },
+)
 
 
 @contextmanager
@@ -556,12 +479,7 @@ def _fetch_aws(version, resolution, category, name):
     url = f"{base_url}/{aws_version}/{resolution}_{category}/{bname}.zip"
 
     path = _get_cache_dir() / f"natural_earth/{version}"
-
-    if Version(pooch.__version__) < Version("1.4"):
-        # extract_dir not available
-        unzipper = pooch.Unzip()
-    else:
-        unzipper = pooch.Unzip(extract_dir=bname)
+    unzipper = pooch.Unzip(extract_dir=bname)
 
     with set_pooch_log_level():
         fNs = pooch.retrieve(

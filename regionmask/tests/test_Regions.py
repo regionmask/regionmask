@@ -37,14 +37,17 @@ test_regions2 = Regions(poly, numbers2, names_dict, abbrevs_dict, name=name)
 numbers3 = [2, 3]
 test_regions3 = Regions(outlines, np.array(numbers3), names, abbrevs, name=name)
 
+# float numbers
+numbers4 = [0.0, 1.0]
+test_regions4 = Regions(outlines, np.array(numbers4), names, abbrevs, name=name)
 
 # =============================================================================
 
-all_test_regions = (test_regions1, test_regions2, test_regions3)
+all_test_regions = (test_regions1, test_regions2, test_regions3, test_regions4)
 
-all_numbers = (numbers1, numbers2, numbers3)
+all_numbers = (numbers1, numbers2, numbers3, numbers4)
 
-all_first_numbers = (0, 1, 2)
+all_first_numbers = tuple(num[0] for num in all_numbers)
 
 # =============================================================================
 
@@ -81,6 +84,13 @@ def test_abbrevs(test_regions):
     assert test_regions.abbrevs == ["uSq1", "uSq2"]
 
 
+def test_coords_deprecated():
+
+    with pytest.warns(FutureWarning, match="`Regions.coords` has been deprecated"):
+        test_regions1.coords
+
+
+@pytest.mark.filterwarnings("ignore:`Regions.coords` has been deprecated")
 def test_coords():
     # passing numpy coords does not automatically close the coords
     assert np.allclose(test_regions1.coords, [outl1, outl2])
@@ -177,7 +187,7 @@ def test_map_keys_unique():
 @pytest.mark.parametrize(
     "test_regions, number", zip(all_test_regions, all_first_numbers)
 )
-def test_subset_to_Region(test_regions, number):
+def test_subset_to_OneRegion(test_regions, number):
     s1 = test_regions[number]
     assert isinstance(s1, _OneRegion)
     assert s1.number == number
@@ -192,6 +202,13 @@ def test_subset_to_Region(test_regions, number):
     assert isinstance(s1, _OneRegion)
     assert s1.number == number
     assert s1.abbrev == "uSq1"
+
+
+@pytest.mark.parametrize("test_region", all_test_regions)
+def test_Regions_iter(test_region):
+
+    for result, expected in zip(test_region, test_region.regions.values()):
+        assert result is expected
 
 
 @pytest.mark.parametrize(
@@ -410,10 +427,11 @@ def test_from_geodataframe():
     r = Regions.from_geodataframe(df)
     assert r.name == "unnamed"
     assert r.source is None
-    assert r.overlap is False
+    assert r.overlap is None
 
 
-def test_from_geodataframe_roundtrip():
+@pytest.mark.parametrize("overlap", [True, False, None])
+def test_from_geodataframe_roundtrip(overlap):
 
     import geopandas
 
@@ -421,7 +439,7 @@ def test_from_geodataframe_roundtrip():
 
     df = geopandas.GeoDataFrame(data=data, geometry=[poly1, poly2], index=numbers2)
     df.index.name = "numbers"
-    df.attrs = dict(source="source", name=name, overlap=True)
+    df.attrs = dict(source="source", name=name, overlap=overlap)
 
     r = Regions.from_geodataframe(df)
 

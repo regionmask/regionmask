@@ -1,20 +1,76 @@
 .. currentmodule:: regionmask
 
-What's New
-==========
+Changelog
+=========
 
 .. ipython:: python
    :suppress:
 
     import regionmask
 
-.. _whats-new.0.11.0:
+.. _changelog.0.12.0:
 
-
-.. _whats-new.{0.11.0}:
-
-v0.11.0 (unreleased)
+v0.12.0 (unreleased)
 --------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+- Deprecated ``Regions.coords`` because they are no longer used (:pull:`486`).
+- Removed support for Python 3.8 (:pull:`465`).
+- Removed the ``regionmask.defined_regions.natural_earth`` regions which were deprecated
+  in v0.9.0,  (:pull:`479`)
+- Removed the deprecated ``subsample`` keyword from the plotting methods (:pull:`468`).
+- Removed the deprecated ``_ar6_pre_revisions`` regions (:pull:`466`).
+
+Enhancements
+~~~~~~~~~~~~
+
+- Added a new approximate fractional overlap mask that allows to estimate which portion
+  of a grid point is covered by each region (:issue:`38`, :pull:`498`).
+- Add python 3.12 to list of supported versions (:pull:`494`).
+
+New regions
+~~~~~~~~~~~
+
+- Added newest version of natural earth regions: ``natural_earth_v5_1_2`` - see also bug fixes
+  (:issue:`357`, :pull:`488`).
+
+Bug Fixes
+~~~~~~~~~
+
+- Ensure correct masks are created for `float32` coordinates (:issue:`489`, :pull:`493`).
+- Fixed the default value of ``overlap`` of :py:func:`from_geopandas` to ``None`` (:issue:`453`, :pull:`470`).
+- Fixed some numerical issues for natural earth regions for ``natural_earth_v5_1_2``:
+
+   - ``ocean_basins_50`` not extending to 180°E  (:issue:`410`, :pull:`488`).
+   - ``countries_50`` and ``land_50`` not extending to -90° N (:issue:`487`, :pull:`488`).
+
+     .. warning::
+        The three regions (``ocean_basins_50``, ``countries_50``, and ``land_50``) are
+        not corrected for ``natural_earth_v4_0_0`` and ``natural_earth_v5_0_0``.
+        It is therefore recommended to use ``natural_earth_v5_1_2`` for these
+        regions.
+
+
+Docs
+~~~~
+
+- Updated the "Using regionmask with intake" example (:pull:`477`).
+- Fixed the url to the MEOW dataset in the intake example (:pull:`474` and :pull:`477`).
+- Fixed the docstring for ``overlap`` of :py:func:`from_geopandas` and :py:class:`Regions` (:issue:`453`, :pull:`470`).
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Small optimizations for :py:class:`Regions` (:pull:`#478`).
+
+
+v0.11.0 (22.09.2023)
+--------------------
+
+regionmask v0.11.0 checks if regions are overlapping per default. It also fixes some minor
+bugs and bumps the supported versions.
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
@@ -42,26 +98,29 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
-- Can now pass the ``use_cf`` parameter to :py:func:`mask_geopandas` and :py:func:`mask_3D_geopandas`.
-  This could also be counted as a bug fix as these functions could not control the behavior
-  of finding the coords otherwise (:pull:`427`).
-
-New regions
-~~~~~~~~~~~
+- regionmask now checks if regions are overlapping (unless ``overlap=False`` is explicitly set) - check
+  the documentation on :doc:`overlapping regions<notebooks/overlap>` for details (:pull:`439`).
 
 Bug Fixes
 ~~~~~~~~~
 
-- Fix a bug which raises an error when trying to creating a mask for overlapping regions
-  and unstructured coordinates (:issue:`438`).
+- Fixed two bugs, which would raise an error when creating a mask for overlapping regions if:
+
+  - the coordinates were unstructured (:issue:`438`) or
+  - there were more than 32 regions and equally-spaced coordinates (:issue:`453`).
+
+- Can now pass the ``use_cf`` parameter to :py:func:`mask_geopandas` and :py:func:`mask_3D_geopandas`.
+  Previously these two functions could not control the behavior of finding the coords
+  (:pull:`427`).
 - Fix the detection of edge points at -180°E or 0°E if longitude values contain ``NA``
   values (:issue:`426`).
 - Fix the wrapping of longitudes that contain ``NA`` values and simplify the ``_wrapAngle``
-  function. Note the wrapping does not dependend on the longitude coordinates since
+  function. Note the wrapping does not depend on the longitude coordinates since
   :pull:`271` and thus this bug did not affect users since v0.8.0 (:pull:`425`).
 
 Docs
 ~~~~
+- Rename docs/whats_new.rst to CHANGELOG.rst (:pull:`457`).
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
@@ -87,7 +146,7 @@ Breaking Changes
 - Made more arguments keyword-only for several functions and methods, e.g., for
   :py:meth:`Regions.mask` (:pull:`368`).
 - Passing ``lon_name`` and ``lat_name`` to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
-  is deprecated. Please pass the lon and lat coordinates direcly, e.g., ``mask*(ds[lon_name], ds[lat_name])``
+  is deprecated. Please pass the lon and lat coordinates directly, e.g., ``mask*(ds[lon_name], ds[lat_name])``
   (:issue:`293` and :pull:`371`).
 - Marked the ``method`` keyword to the masking methods and functions (e.g. :py:meth:`Regions.mask`)
   as internal and flagged it for removal in a future version. Passing this argument should only
@@ -109,7 +168,7 @@ Enhancements
   coordinates(``lat.attrs["units"]`` ) are given as "radians" (:issue:`279`).
 - Better error when passing a single region without wrapping it into a list or tuple (:issue:`372`).
 - Added :py:class:`set_options` to regionmask which can, currently, be used to control
-  the number of displayed rows of :py:class:`Regions` (:issue:`#376`).
+  the number of displayed rows of :py:class:`Regions` (:issue:`376`).
 - Create faster masks with shapely 2.0, which replaces pygeos (:pull:`349`).
 - Allow setting the cache location manually: ``regionmask.set_options(cache_dir="~/.rmask")``.
   The default location is given by ``pooch.os_cache("regionmask")``, i.e. `~/.cache/regionmask/`
