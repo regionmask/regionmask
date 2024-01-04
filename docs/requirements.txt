@@ -25,6 +25,7 @@ numpydoc
 pandoc
 pillow
 pip
+pickleshare # https://github.com/ipython/ipython/issues/14237
 sphinx
 sphinx_rtd_theme
 sphinxext-rediraffe
