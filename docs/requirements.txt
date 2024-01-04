@@ -27,6 +27,7 @@ pillow
 pip
 sphinx
 sphinx_rtd_theme
+sphinxext-rediraffe
 # for regionmask intake example
 intake_geopandas>=0.2.4
 msgpack
