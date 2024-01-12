@@ -34,7 +34,7 @@ has_matplotlib, requires_matplotlib = _importorskip("matplotlib")
 has_pygeos, requires_pygeos = _importorskip("pygeos")
 has_shapely_2, requires_shapely_2 = _importorskip("shapely", minversion="2.0b1")
 
-has_gdal_3_7_3 = Version(rasterio.__gdal_version__) >= Version("3.7.3")
-requires_gdal_3_7_3 = pytest.mark.skipif(
-    not has_gdal_3_7_3, reason="requires gdal v3.7.3"
+has_gdal_3_8_2 = Version(rasterio.__gdal_version__) >= Version("3.8.2")
+requires_gdal_3_8_2 = pytest.mark.skipif(
+    not has_gdal_3_8_2, reason="requires gdal v3.8.2"
 )

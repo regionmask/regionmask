@@ -386,7 +386,6 @@ class Regions:
         method=None,
         wrap_lon=None,
         use_cf=None,
-        all_touched=False,
     ):
 
         mask_3D = _mask_3D(
@@ -401,7 +400,6 @@ class Regions:
             wrap_lon=wrap_lon,
             overlap=self.overlap,
             use_cf=use_cf,
-            all_touched=all_touched,
         )
 
         numbers = mask_3D.region.values
@@ -416,6 +414,40 @@ class Regions:
 
     mask_3D.__doc__ = _inject_mask_docstring(which="3D", is_gpd=False)
 
+    def mask_3D_all_touched(
+        self,
+        lon_or_obj,
+        lat=None,
+        *,
+        drop=True,
+        wrap_lon=None,
+        use_cf=None,
+    ):
+        mask_3D = _mask_3D(
+            polygons=self.polygons,
+            numbers=self.numbers,
+            lon_or_obj=lon_or_obj,
+            lat=lat,
+            drop=drop,
+            wrap_lon=wrap_lon,
+            overlap=self.overlap,
+            use_cf=use_cf,
+            all_touched=True,
+        )
+
+        numbers = mask_3D.region.values
+        abbrevs = self[numbers].abbrevs
+        names = self[numbers].names
+
+        mask_3D = mask_3D.assign_coords(
+            abbrevs=("region", abbrevs), names=("region", names)
+        )
+
+        return mask_3D
+
+    # TODO: docstring
+    # mask_3D.__doc__ = _inject_mask_docstring(which="3D", is_gpd=False)
+
     def mask_3D_frac_approx(
         self,
         lon_or_obj,
@@ -425,7 +457,6 @@ class Regions:
         wrap_lon=None,
         use_cf=None,
     ):
-
         mask_3D = _mask_3D_frac_approx(
             polygons=self.polygons,
             numbers=self.numbers,
