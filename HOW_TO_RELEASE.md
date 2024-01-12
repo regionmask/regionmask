@@ -21,42 +21,10 @@ These instructions assume that `upstream` refers to the main repository
    git pull upstream main
    ```
 1. Check that the tests and ReadTheDocs build is passing!
-1. Tag the release:
-   ```sh
-   git tag -a v0.X.Y -m 'v0.X.Y'
-   ```
-1. Ensure the dependencies for building are installed:
-   ```sh
-   mamba update pip
-   python -m pip install build twine
-   ```
-1. Build source and binary wheels for PyPI:
-   ```sh
-   git clean -xdfn  # This removes any untracked files! - Dry run -
-   ```
-   For real
-   ```sh
-   git clean -xdf  # This removes any untracked files!
-   git status # check for tracked files
-   git restore -SW .  # This removes any tracked changes!
-   python -m build
-   ```
-1. Use twine to check the package build:
-   ```sh
-   twine check --strict dist/regionmask*
-   ```
-1. Use twine to register and upload the release on PyPI. Be careful, you can't take this
-   back!
-   ```sh
-   twine upload dist/*
-   ```
-   You will need to be listed as a package owner at <https://pypi.python.org/pypi/regionmask>
-   for this to work.
-1. Push your changes to main:
-   ```sh
-   git push upstream main
-   git push upstream --tags
-   ```
+1. Issue the release on GitHub. Click on "Draft a new release" at https://github.com/regionmask/regionmask/releases. Type in the version number (with a "v") and paste the release summary in the notes. This should
+   -  upload a new version to pypi
+   -  create a new version on zenodo
+   -  open a PR at https://github.com/conda-forge/regionmask-feedstock to create a new version on conda-forge (might take some hours). Make sure to double check the required versions.
 1. Add a section for the next release to CHANGELOG.rst:
    ```rst
 
@@ -103,3 +71,44 @@ These instructions assume that `upstream` refers to the main repository
 ## Credit
 
 These instructions were copied from xarray.
+
+
+## Manual upload to pypi - deprecated
+
+
+1. Tag the release:
+   ```sh
+   git tag -a v0.X.Y -m 'v0.X.Y'
+   ```
+1. Ensure the dependencies for building are installed:
+   ```sh
+   mamba update pip
+   python -m pip install build twine
+   ```
+1. Build source and binary wheels for PyPI:
+   ```sh
+   git clean -xdfn  # This removes any untracked files! - Dry run -
+   ```
+   For real
+   ```sh
+   git clean -xdf  # This removes any untracked files!
+   git status # check for tracked files
+   git restore -SW .  # This removes any tracked changes!
+   python -m build
+   ```
+1. Use twine to check the package build:
+   ```sh
+   twine check --strict dist/regionmask*
+   ```
+1. Use twine to register and upload the release on PyPI. Be careful, you can't take this
+   back!
+   ```sh
+   twine upload dist/*
+   ```
+   You will need to be listed as a package owner at <https://pypi.python.org/pypi/regionmask>
+   for this to work.
+1. Push your changes to main:
+   ```sh
+   git push upstream main
+   git push upstream --tags
+   ```
