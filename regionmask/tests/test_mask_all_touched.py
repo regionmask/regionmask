@@ -72,7 +72,7 @@ import regionmask
 
 f, axs = plt.subplots(3, 2)
 
-ds = regionmask.core.utils.create_lon_lat_dataarray_from_bounds(0, 18, 1, 15, -1, -1)
+ds = regionmask.core.utils.create_lon_lat_dataarray_from_bounds(15, -1, -1, 15, -1, -1)
 
 for i, xmin in enumerate((2, 2.5, 3)):
     p = shapely.geometry.box(xmin, 2.5, 9.5, 9.5, ccw=False)
@@ -139,6 +139,25 @@ from rasterio import features
 
 identity = Affine(1.0, 0.0, 0.0, 0.0, 1.0, 0.0)
 poly = shapely.box(xmin=2.5, ymin=2.5, xmax=7.5, ymax=8)
+raster = features.rasterize(
+    ((poly, 1),),
+    out_shape=(10, 10),
+    fill=0,
+    all_touched=True,
+    transform=identity,
+)
+print(raster.sum())
+raster
+
+
+
+import shapely
+from affine import Affine
+from rasterio import features
+
+identity = Affine(1.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+poly = shapely.geometry.box(2.5, 0.5, 9.5, 9, ccw=False)
+
 raster = features.rasterize(
     ((poly, 1),),
     out_shape=(10, 10),
