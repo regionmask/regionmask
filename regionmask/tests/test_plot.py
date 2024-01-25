@@ -25,8 +25,7 @@ from regionmask.core.plot import (
     _maybe_gca,
     _polygons_coords,
 )
-
-from . import assert_no_warnings, requires_cartopy, requires_matplotlib
+from regionmask.tests import assert_no_warnings, requires_cartopy, requires_matplotlib
 
 # =============================================================================
 

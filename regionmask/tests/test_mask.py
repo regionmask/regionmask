@@ -18,15 +18,14 @@ from regionmask.core.mask import (
     _transform_from_latlon,
 )
 from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
-
-from . import (
+from regionmask.tests import (
     assert_no_warnings,
     has_pygeos,
     has_shapely_2,
     requires_pygeos,
     requires_shapely_2,
 )
-from .utils import (
+from regionmask.tests.utils import (
     dummy_ds,
     dummy_region,
     dummy_region_overlap,

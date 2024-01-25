@@ -5,9 +5,8 @@ import pytest
 
 from regionmask import defined_regions
 from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
-
-from . import has_pygeos
-from .utils import REGIONS
+from regionmask.tests import has_pygeos
+from regionmask.tests.utils import REGIONS
 
 # =============================================================================
 
