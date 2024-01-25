@@ -1,5 +1,3 @@
-# flake8: noqa
-
 from regionmask.defined_regions import _natural_earth, _ressources
 from regionmask.defined_regions._ar6 import ar6
 from regionmask.defined_regions._natural_earth import (
