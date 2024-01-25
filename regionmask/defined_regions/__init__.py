@@ -1,15 +1,25 @@
-# flake8: noqa
-
-from . import _natural_earth, _ressources
-from ._ar6 import ar6
-from ._natural_earth import (
+from regionmask.defined_regions import _natural_earth, _ressources
+from regionmask.defined_regions._ar6 import ar6
+from regionmask.defined_regions._natural_earth import (
     natural_earth_v4_1_0,
     natural_earth_v5_0_0,
     natural_earth_v5_1_2,
 )
-from .giorgi import giorgi
-from .prudence import prudence
-from .srex import srex
+from regionmask.defined_regions.giorgi import giorgi
+from regionmask.defined_regions.prudence import prudence
+from regionmask.defined_regions.srex import srex
+
+__all__ = [
+    "_natural_earth",
+    "_ressources",
+    "ar6",
+    "natural_earth_v4_1_0",
+    "natural_earth_v5_0_0",
+    "natural_earth_v5_1_2",
+    "giorgi",
+    "prudence",
+    "srex",
+]
 
 
 def __getattr__(attr_name):

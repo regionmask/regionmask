@@ -1,8 +1,8 @@
 import pytest
 import xarray as xr
 
-from . import has_cf_xarray, requires_cf_xarray
-from .utils import (
+from regionmask.tests import has_cf_xarray, requires_cf_xarray
+from regionmask.tests.utils import (
     dummy_ds,
     dummy_ds_cf,
     dummy_region,

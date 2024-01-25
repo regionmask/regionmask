@@ -11,11 +11,16 @@ import numpy as np
 import pandas as pd
 from shapely.geometry import MultiPolygon, Polygon
 
-from ._deprecate import _deprecate_positional_args
-from .formatting import _display
-from .mask import _inject_mask_docstring, _mask_2D, _mask_3D, _mask_3D_frac_approx
-from .plot import _plot, _plot_regions
-from .utils import (
+from regionmask.core._deprecate import _deprecate_positional_args
+from regionmask.core.formatting import _display
+from regionmask.core.mask import (
+    _inject_mask_docstring,
+    _mask_2D,
+    _mask_3D,
+    _mask_3D_frac_approx,
+)
+from regionmask.core.plot import _plot, _plot_regions
+from regionmask.core.utils import (
     _is_180,
     _is_numeric,
     _maybe_to_dict,
@@ -310,7 +315,7 @@ class Regions:
         return _display(self, max_rows, max_width)
 
     def __repr__(self):  # pragma: no cover
-        from .options import OPTIONS
+        from regionmask.core.options import OPTIONS
 
         max_rows = OPTIONS["display_max_rows"]
 

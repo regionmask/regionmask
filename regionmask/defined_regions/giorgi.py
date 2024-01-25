@@ -2,6 +2,8 @@
 # Uncertainties in regional climate change prediction: a regional analysis
 # of ensemble simulations with the HADCM2 coupled AOGCM
 
+from regionmask.core.regions import Regions
+
 outlines = dict()
 outlines[1] = ((110, -45), (155, -45), (155, -11), (110, -11))
 outlines[2] = ((-82, -20), (-34, -20), (-34, 12), (-82, 12))
@@ -73,7 +75,6 @@ names[21] = "North Asia"
 
 # =============================================================================
 
-from ..core.regions import Regions
 
 numbers = range(1, 22)
 

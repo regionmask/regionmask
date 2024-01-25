@@ -6,8 +6,7 @@ import xarray as xr
 from packaging.version import Version
 
 from regionmask.core.coords import _get_coords
-
-from .utils import (
+from regionmask.core.utils import (
     _equally_spaced_on_split_lon,
     _find_splitpoint,
     _is_180,
