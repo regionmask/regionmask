@@ -2,8 +2,7 @@ import numpy as np
 import pytest
 
 from regionmask.core.plot import _get_tolerance, segmentize
-
-from . import requires_shapely_2
+from regionmask.tests import requires_shapely_2
 
 
 def test_get_tolerance():

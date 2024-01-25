@@ -6,8 +6,7 @@ import xarray as xr
 import regionmask
 from regionmask.core.mask import InvalidCoordsError
 from regionmask.core.utils import _sample_coords
-
-from .utils import dummy_region
+from regionmask.tests.utils import dummy_region
 
 
 def test_sample_coords():
