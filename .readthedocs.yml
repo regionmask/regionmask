@@ -1,8 +1,6 @@
 version: 2
 build:
   os: ubuntu-22.04
-  tools:
-    python: mambaforge-22.9
   jobs:
     post_checkout:
       - (git --no-pager log --pretty="tformat:%s" -1 | grep -vqF "[skip-rtd]") || exit 183
@@ -10,13 +8,21 @@ build:
       - git fetch --unshallow
     pre_install:
         # Avoid having a dirty Git index
-      - git update-index --assume-unchanged ci/requirements/docs.yml docs/conf.py
+      - git update-index --assume-unchanged docs/requirements.txt docs/conf.py
     post_install:
       # install regionmask, needs to be editable
       - pip install -e .
+  tools:
+    python: "3.11"
+  apt_packages:
+    - pandoc
+
 sphinx:
   configuration: docs/conf.py
   fail_on_warning: true
-conda:
-  environment: ci/requirements/docs.yml
+
+python:
+  install:
+    - requirements: docs/requirements.txt
+
 formats: []
