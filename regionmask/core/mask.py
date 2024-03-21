@@ -588,7 +588,7 @@ def mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat"):
 
     ds = lat.coords.merge(lon.coords)
 
-    dims = xr.core.variable.broadcast_variables(lat.variable, lon.variable)[0].dims
+    dims = xr.broadcast(lat, lon)[0].dims
 
     # unstructured grids are 1D
     if mask.ndim - 1 == len(dims):
