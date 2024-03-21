@@ -251,13 +251,14 @@ def _mask(
         mask_func = _mask_rasterize_flip
     elif method == "rasterize_split":
         mask_func = _mask_rasterize_split
-        kwargs = {"is_unstructured": is_unstructured}
     elif method == "shapely":
         mask_func = _mask_shapely
         kwargs = {"is_unstructured": is_unstructured}
     elif method == "shapely_2":
         mask_func = _mask_shapely_v2
         kwargs = {"is_unstructured": is_unstructured}
+
+    print(method)
 
     mask = mask_func(lon_arr, lat_arr, polygons, numbers=numbers, as_3D=as_3D, **kwargs)
 
