@@ -12,7 +12,7 @@ dependencies:
     # regionmask dependencies
     - cartopy
     - geopandas
-    - matplotlib-base
+    - matplotlib
     - numpy
     - packaging
     - pooch
