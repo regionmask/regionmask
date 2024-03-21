@@ -27,6 +27,14 @@ except ModuleNotFoundError:
 
 has_shapely_2 = Version(shapely.__version__) > Version("2.0b1")
 
+# a tiny offset to get a consistent edge behaviour
+# LAT_OFFSET or LON_OFFSET: could be positive to enlarge the mask or be negative to tighten the mask
+# TOL_TINY is tolerance value to feed the np.close to compare LON/LAT with the edge.
+# TOL_TINY needs to be order of the magitude of LON_OFFSET/180 or LAT_OFFSET/90
+LON_OFFSET = 1e-8
+LAT_OFFSET = 1e-10
+TOL_TINY   = 1e-10
+
 _MASK_DOCSTRING_TEMPLATE = """\
 create a {nd} {qualifier} mask of a set of regions for the given lat/ lon grid
 
@@ -639,12 +647,12 @@ def _mask_edgepoints_shapely(
 
     # find points at -180°E/0°E
     if np.nanmin(lon) < 0:
-        LON_180W_or_0E = np.isclose(LON, -180.0) & mask_unassigned
+        LON_180W_or_0E = np.isclose(LON, -180.0, rtol=TOL_TINY) & mask_unassigned
     else:
-        LON_180W_or_0E = np.isclose(LON, 0.0) & mask_unassigned
+        LON_180W_or_0E = np.isclose(LON, 0.0, rtol=TOL_TINY) & mask_unassigned
 
     # find points at -90°N
-    LAT_90S = np.isclose(LAT, -90) & mask_unassigned
+    LAT_90S = np.isclose(LAT, -90, rtol=TOL_TINY) & mask_unassigned
 
     borderpoints = LON_180W_or_0E | LAT_90S
 
@@ -653,8 +661,8 @@ def _mask_edgepoints_shapely(
         return mask.reshape(shape)
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON[borderpoints] - 1 * 10**-8
-    LAT = LAT[borderpoints] - 1 * 10**-10
+    LON = LON[borderpoints] + LON_OFFSET
+    LAT = LAT[borderpoints] + LAT_OFFSET
 
     # wrap points LON_180W_or_0E: -180°E -> 180°E and 0°E -> 360°E
     LON[LON_180W_or_0E[borderpoints]] += 360
@@ -689,8 +697,8 @@ def _mask_pygeos(
     out = _get_out(shape, fill, as_3D=as_3D)
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10**-8
-    LAT = LAT - 1 * 10**-10
+    LON = LON + LON_OFFSET
+    LAT = LAT + LAT_OFFSET
 
     # convert shapely points to pygeos
     poly_pygeos = pygeos.from_shapely(polygons)
@@ -722,8 +730,8 @@ def _mask_shapely_v2(
     out = _get_out(shape, fill, as_3D=as_3D)
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10**-8
-    LAT = LAT - 1 * 10**-10
+    LON = LON + LON_OFFSET
+    LAT = LAT + LAT_OFFSET
 
     # convert shapely points to pygeos
     points = shapely.points(LON, LAT)
@@ -756,8 +764,8 @@ def _mask_shapely(
     out = _get_out(shape, fill, as_3D=as_3D)
 
     # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10**-8
-    LAT = LAT - 1 * 10**-10
+    LON = LON + LON_OFFSET
+    LAT = LAT + LAT_OFFSET
 
     if as_3D:
         for i, polygon in enumerate(polygons):
@@ -943,8 +951,8 @@ def _mask_rasterize_internal(lon, lat, polygons, numbers, fill=np.nan, **kwargs)
     lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
 
     # subtract a tiny offset: https://github.com/mapbox/rasterio/issues/1844
-    lon = lon - 1 * 10**-8
-    lat = lat - 1 * 10**-10
+    lon = lon + LON_OFFSET
+    lat = lat + LAT_OFFSET
 
     return _mask_rasterize_no_offset(lon, lat, polygons, numbers, fill, **kwargs)
 
