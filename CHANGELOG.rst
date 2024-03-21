@@ -8,6 +8,14 @@ Changelog
 
     import regionmask
 
+
+.. _changelog.0.12.1:
+
+v0.12.1 (21.03.2024)
+--------------------
+
+Fix some metadata to allow releasing.
+
 .. _changelog.0.12.0:
 
 v0.12.0 (21.03.2024)
