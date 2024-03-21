@@ -9,6 +9,33 @@ Changelog
     import regionmask
 
 
+.. _changelog.0.13.0:
+
+v0.13.0 (unreleased)
+--------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+Enhancements
+~~~~~~~~~~~~
+
+Deprecations
+~~~~~~~~~~~~
+
+New regions
+~~~~~~~~~~~
+
+Bug Fixes
+~~~~~~~~~
+
+Docs
+~~~~
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+
 .. _changelog.0.12.1:
 
 v0.12.1 (21.03.2024)
