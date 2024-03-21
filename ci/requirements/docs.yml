@@ -6,35 +6,37 @@ channels:
 
 dependencies:
   - python=3.12
-# regionmask dependencies
-  - cartopy
-  - geopandas
-  - matplotlib-base
-  - numpy
-  - packaging
-  - pooch
-  - pyogrio
-  - rasterio
-  - xarray
-# dependencies for the examples
-  - cf_xarray
-  - cftime
-  - netcdf4
-# for regionmask intake example
-  - aiohttp
-  - fsspec==0.8.7
-  - intake
-  - requests
-# dependencies to build the docu
-  - ipykernel
-  - nbconvert
-  - numpydoc
-  - pillow
+  - pandoc
   - pip
-  - sphinx
-  - sphinx_rtd_theme
-# for regionmask intake example
   - pip:
+    # regionmask dependencies
+    - cartopy
+    - geopandas
+    - matplotlib-base
+    - numpy
+    - packaging
+    - pooch
+    - pyogrio
+    - rasterio
+    - xarray
+    # dependencies for the examples
+    - cf_xarray
+    - cftime
+    - netcdf4
+    # for regionmask intake example
+    - aiohttp
+    - fsspec==0.8.7
+    - intake
+    - requests
+    # dependencies to build the docu
+    - ipykernel
+    - nbconvert
+    - numpydoc
+    - pillow
+    - pip
+    - sphinx
+    - sphinx_rtd_theme
+    # for regionmask intake example
     - intake_geopandas>=0.2.4
     - msgpack
     - sphinxext-rediraffe
