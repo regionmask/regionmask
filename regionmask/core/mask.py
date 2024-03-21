@@ -18,13 +18,6 @@ from regionmask.core.utils import (
     unpackbits,
 )
 
-try:
-    import pygeos
-
-    has_pygeos = True
-except ModuleNotFoundError:
-    has_pygeos = False
-
 has_shapely_2 = Version(shapely.__version__) > Version("2.0b1")
 
 _MASK_DOCSTRING_TEMPLATE = """\
@@ -224,8 +217,11 @@ def _mask(
     if wrap_lon_:
         lon_arr = _wrapAngle(lon_arr, wrap_lon_, is_unstructured=is_unstructured)
 
-    if method not in (None, "rasterize", "shapely", "pygeos"):
-        msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
+    if method in ("pygeos"):
+        raise ValueError("pygeos is no longer supported")
+
+    if method not in (None, "rasterize", "shapely"):
+        msg = "Method must be None or one of 'rasterize', and 'shapely'."
         raise ValueError(msg)
 
     if method is not None:
@@ -247,13 +243,6 @@ def _mask(
         if "rasterize" not in method:
             msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
             raise ValueError(msg)
-    elif method == "pygeos":
-        if not has_pygeos:
-            raise ModuleNotFoundError("No module named 'pygeos'")
-        elif has_shapely_2:
-            warnings.warn(
-                "pygeos is deprecated in favour of shapely 2.0", FutureWarning
-            )
 
     kwargs = {}
     if method == "rasterize":
@@ -262,8 +251,6 @@ def _mask(
         mask_func = _mask_rasterize_flip
     elif method == "rasterize_split":
         mask_func = _mask_rasterize_split
-    elif method == "pygeos":
-        mask_func = _mask_pygeos
         kwargs = {"is_unstructured": is_unstructured}
     elif method == "shapely":
         mask_func = _mask_shapely
@@ -572,9 +559,6 @@ def _determine_method(lon, lat):
     if has_shapely_2:
         return "shapely_2"
 
-    if has_pygeos:
-        return "pygeos"
-
     return "shapely"
 
 
@@ -676,43 +660,11 @@ def _mask_edgepoints_shapely(
     return mask.reshape(shape)
 
 
-def _mask_pygeos(
-    lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
-):
-    """create a mask using pygeos.STRtree"""
-
-    lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
-
-    LON, LAT, shape = _get_LON_LAT_shape(
-        lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
-    )
-    out = _get_out(shape, fill, as_3D=as_3D)
-
-    # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10**-8
-    LAT = LAT - 1 * 10**-10
-
-    # convert shapely points to pygeos
-    poly_pygeos = pygeos.from_shapely(polygons)
-    points_pygeos = pygeos.points(LON, LAT)
-
-    tree = pygeos.STRtree(points_pygeos)
-    a, b = tree.query_bulk(poly_pygeos, predicate="contains")
-
-    if as_3D:
-        for i in range(len(numbers)):
-            out[i, b[a == i]] = True
-    else:
-        for i, number in enumerate(numbers):
-            out[b[a == i]] = number
-
-    return out.reshape(shape)
-
 
 def _mask_shapely_v2(
     lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
 ):
-    """create a mask using pygeos.STRtree"""
+    """create a mask using shapely.STRtree"""
 
     lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
 
@@ -725,7 +677,7 @@ def _mask_shapely_v2(
     LON = LON - 1 * 10**-8
     LAT = LAT - 1 * 10**-10
 
-    # convert shapely points to pygeos
+    # convert to points
     points = shapely.points(LON, LAT)
 
     tree = shapely.STRtree(points)
