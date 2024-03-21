@@ -217,7 +217,7 @@ def _mask(
     if wrap_lon_:
         lon_arr = _wrapAngle(lon_arr, wrap_lon_, is_unstructured=is_unstructured)
 
-    if method in ("pygeos"):
+    if method == "pygeos":
         raise ValueError("pygeos is no longer supported")
 
     if method not in (None, "rasterize", "shapely"):
