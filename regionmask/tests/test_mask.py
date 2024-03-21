@@ -17,11 +17,7 @@ from regionmask.core.mask import (
     _transform_from_latlon,
 )
 from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
-from regionmask.tests import (
-    assert_no_warnings,
-    has_shapely_2,
-    requires_shapely_2,
-)
+from regionmask.tests import assert_no_warnings, has_shapely_2, requires_shapely_2
 from regionmask.tests.utils import (
     dummy_ds,
     dummy_region,
@@ -875,7 +871,6 @@ def test_rasterize_on_split_lon_asymmetric():
     result = r_US_180_cw.mask(ds, method="rasterize")
     expected = r_US_180_cw.mask(ds, method="shapely")
     xr.testing.assert_equal(result, expected)
-
 
 
 if has_shapely_2:

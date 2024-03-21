@@ -660,7 +660,6 @@ def _mask_edgepoints_shapely(
     return mask.reshape(shape)
 
 
-
 def _mask_shapely_v2(
     lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
 ):
