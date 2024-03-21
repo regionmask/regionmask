@@ -41,11 +41,11 @@ jobs:
 
       - name: Set environment variables
         run: |
-        if [[ ${{ matrix.python-version }} != "" ]]; then
-          echo "CONDA_ENV_FILE=environment.yml" >> $GITHUB_ENV
-        else
-          echo "CONDA_ENV_FILE=ci/requirements/{{ matrix.env }}.yml" >> $GITHUB_ENV
-        fi
+          if [[ ${{ matrix.python-version }} != "" ]]; then
+            echo "CONDA_ENV_FILE=environment.yml" >> $GITHUB_ENV
+          else
+            echo "CONDA_ENV_FILE=ci/requirements/{{ matrix.env }}.yml" >> $GITHUB_ENV
+          fi
 
       - name: Create conda environment
         uses: mamba-org/setup-micromamba@v1
