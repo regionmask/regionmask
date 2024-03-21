@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   test:
-    name: py${{ matrix.python-version }}
+    name: py${{ matrix.python-version }} ${{ matrix.env }}
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -22,23 +22,37 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-        # Bookend python versions
         python-version: ["3.9", "3.12"]
+        env: [""]
+        include:
+          - env: "bare-minimum"
+            os: "ubuntu-latest"
+            python-version: "3.9"
+          - env: "min-all-deps"
+            os: "ubuntu-latest"
+            python-version: "3.9"
+          - env: "shapely_lt_2"
+            os: "ubuntu-latest"
+            python-version: "3.10"
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags.
+
       - name: Set environment variables
         run: |
-          echo "CONDA_ENV_FILE=ci/requirements/environment.yml" >> $GITHUB_ENV
-          echo "PYTHON_VERSION=${{ matrix.python-version }}" >> $GITHUB_ENV
+        if [[ ${{ matrix.python-version }} != "" ]]; then
+          echo "CONDA_ENV_FILE=environment.yml" >> $GITHUB_ENV
+        else
+          echo "CONDA_ENV_FILE=ci/requirements/{{ matrix.env }}.yml" >> $GITHUB_ENV
+        fi
 
       - name: Create conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
           cache-downloads: true
           cache-downloads-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}"
-          environment-file: ci/requirements/environment.yml
+          environment-file: ${{ env.CONDA_ENV_FILE }}
           create-args: >-
             python=${{ matrix.python-version }}
 
@@ -46,21 +60,15 @@ jobs:
         run: |
           python -m pip install --no-deps -e .
 
-      - name: Version info
-        run: |
-          conda info -a
-          conda list
-
       - name: Import regionmask
         run: |
           python -c "import regionmask"
-
       - name: Run tests
         timeout-minutes: 5
         run: python -u -m pytest
           --cov=regionmask
           --cov-report=xml
-          --junitxml=test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
+          --junitxml=pytest.xml
 
       - name: Upload code coverage to Codecov
         uses: codecov/codecov-action@v4
