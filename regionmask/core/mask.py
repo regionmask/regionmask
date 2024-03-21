@@ -258,8 +258,6 @@ def _mask(
         mask_func = _mask_shapely_v2
         kwargs = {"is_unstructured": is_unstructured}
 
-    print(method)
-
     mask = mask_func(lon_arr, lat_arr, polygons, numbers=numbers, as_3D=as_3D, **kwargs)
 
     # not False required
