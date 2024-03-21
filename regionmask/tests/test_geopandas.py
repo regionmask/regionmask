@@ -11,9 +11,8 @@ from regionmask.core._geopandas import (
     _construct_abbrevs,
     _enumerate_duplicates,
 )
-
-from . import requires_cf_xarray
-from .utils import (
+from regionmask.tests import requires_cf_xarray
+from regionmask.tests.utils import (
     dummy_ds,
     dummy_ds_cf,
     dummy_region,

@@ -2,10 +2,10 @@ import warnings
 
 import numpy as np
 
-from ..defined_regions._natural_earth import _maybe_get_column
-from ._deprecate import _deprecate_positional_args
-from .mask import _inject_mask_docstring, _mask_2D, _mask_3D
-from .regions import Regions
+from regionmask.core._deprecate import _deprecate_positional_args
+from regionmask.core.mask import _inject_mask_docstring, _mask_2D, _mask_3D
+from regionmask.core.regions import Regions
+from regionmask.defined_regions._natural_earth import _maybe_get_column
 
 
 def _check_duplicates(data, name):

@@ -8,3 +8,28 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools_scm]
 fallback_version = "999"
 version_scheme = "no-guess-dev"
+
+[tool.ruff]
+# also check notebooks
+extend-include = ["*.ipynb"]
+target-version = "py39"
+
+[tool.ruff.lint]
+# E402: module level import not at top of file
+# E501: line too long - let the formatter worry about this
+# E731: do not assign a lambda expression, use a def
+ignore = [
+  "E402",
+  "E501",
+  "E731",
+]
+select = [
+  "F", # Pyflakes
+  "E", # Pycodestyle
+  "W", # warnings
+  "I", # isort
+  "UP", # Pyupgrade
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["regionmask"]

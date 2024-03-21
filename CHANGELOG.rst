@@ -63,6 +63,7 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Restore compatibility with upcoming xarray release (probably v2023.04 or v2024.04, :pull:`#512`).
 - Small optimizations for :py:class:`Regions` (:pull:`#478`).
 
 

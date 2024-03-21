@@ -12,7 +12,7 @@ def test_option_invalid_error(invalid_option):
 
     with pytest.raises(ValueError, match="not in the set of valid options"):
 
-        regionmask.set_options(invalid_option=5)
+        regionmask.set_options(invalid_option=invalid_option)
 
 
 def test_options_display_max_rows_errors():

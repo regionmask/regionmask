@@ -1,4 +1,5 @@
 # the outlines are given at https://link.springer.com/article/10.1007/s10584-006-9210-7
+from regionmask.core.regions import Regions
 
 outlines = dict()
 
@@ -40,7 +41,6 @@ names = {
 
 # =============================================================================
 
-from ..core.regions import Regions
 
 numbers = range(1, 9)
 source = (

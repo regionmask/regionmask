@@ -8,11 +8,9 @@ import numpy as np
 import pooch
 from shapely.geometry import MultiPolygon
 
-from regionmask.core.utils import _snap_to_90S, _snap_to_180E
+from regionmask.core.regions import Regions
+from regionmask.core.utils import _flatten_polygons, _snap_to_90S, _snap_to_180E
 from regionmask.defined_regions._ressources import _get_cache_dir
-
-from ..core.regions import Regions
-from ..core.utils import _flatten_polygons
 
 try:
     import pyogrio  # noqa: F401

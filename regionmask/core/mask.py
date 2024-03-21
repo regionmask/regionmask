@@ -6,8 +6,7 @@ import xarray as xr
 from packaging.version import Version
 
 from regionmask.core.coords import _get_coords
-
-from .utils import (
+from regionmask.core.utils import (
     _equally_spaced_on_split_lon,
     _find_splitpoint,
     _is_180,
@@ -589,7 +588,7 @@ def mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat"):
 
     ds = lat.coords.merge(lon.coords)
 
-    dims = xr.core.variable.broadcast_variables(lat.variable, lon.variable)[0].dims
+    dims = xr.broadcast(lat, lon)[0].dims
 
     # unstructured grids are 1D
     if mask.ndim - 1 == len(dims):
