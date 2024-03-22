@@ -596,7 +596,7 @@ def assert_feature_artist(ax, expected):
     # cartopy coastlines etc. are FeatureArtist instances
 
     # NOTE: only works if cartopy never releases v0.22.1
-    if Version(cartopy.__version__) >= Version("0.22.0"):
+    if Version(cartopy.__version__) > Version("0.22.0"):
         # + 1 because `collection` also contains the lines
         assert len(ax.collections) == expected + 1
     else:
@@ -605,9 +605,9 @@ def assert_feature_artist(ax, expected):
 
 def get_artist_or_collection(ax):
 
-    if Version(cartopy.__version__) >= Version("0.22.0"):
+    if Version(cartopy.__version__) > Version("0.22.0"):
         return ax.collections[0]
-    return get_artist_or_collection(ax)
+    return ax.artists[0]
 
 
 @requires_matplotlib
