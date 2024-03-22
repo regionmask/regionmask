@@ -9,7 +9,6 @@ dependencies:
   - numpy
   - packaging
   - pooch
-  - pygeos
   - rasterio
   - shapely<2
   - xarray

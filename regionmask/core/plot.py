@@ -70,7 +70,7 @@ def segmentize(coords, tolerance):
 
     See Also
     --------
-    pygeos.segmentize
+    shapely.segmentize
     """
 
     coords = np.asarray(coords)

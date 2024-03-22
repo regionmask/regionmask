@@ -17,6 +17,8 @@ v0.13.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Drop support for pygeos, which was replaced by shapely v2.0 (:pull:`519`).
+
 Enhancements
 ~~~~~~~~~~~~
 
