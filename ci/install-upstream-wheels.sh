@@ -7,11 +7,12 @@ conda uninstall -y --force \
   geopandas \
   matplotlib-base \
   numpy \
-  pandas \
   packaging \
+  pandas \
   pooch \
   pyogrio \
   rasterio \
+  shapely \
   xarray
 # to limit the runtime of Upstream CI
 python -m pip install \
@@ -32,4 +33,5 @@ python -m pip install \
     git+https://github.com/pypa/packaging \
     git+https://github.com/fatiando/pooch \
     git+https://github.com/geopandas/pyogrio \
-    git+https://github.com/rasterio/rasterio
+    git+https://github.com/rasterio/rasterio \
+    git+https://github.com/shapely/shapely/
