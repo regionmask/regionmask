@@ -3,6 +3,7 @@ import contextlib
 from packaging.version import Version
 
 try:
+    import cartopy
     import cartopy.crs as ccrs
 except ImportError:  # pragma: no cover
     pass
@@ -109,6 +110,13 @@ PLOTFUNCS = [
     "plot_regions",
     pytest.param("plot", marks=requires_cartopy),
 ]
+
+
+def maybe_no_coastlines(plotfunc):
+
+    # NOTE: cartopy v0.23 moves the coastlines from artist to collection
+
+    return {"add_coastlines": False} if plotfunc == "plot" else {}
 
 
 # =============================================================================
@@ -275,7 +283,7 @@ def test_plot_lines(plotfunc):
     func = getattr(r1, plotfunc)
 
     with figure_context():
-        ax = func(tolerance=None)
+        ax = func(tolerance=None, **maybe_no_coastlines(plotfunc))
 
         lines = ax.collections[0].get_segments()
 
@@ -291,7 +299,7 @@ def test_plot_lines_float_numbers(plotfunc):
     func = getattr(r4, plotfunc)
 
     with figure_context():
-        ax = func(tolerance=None)
+        ax = func(tolerance=None, **maybe_no_coastlines(plotfunc))
 
         lines = ax.collections[0].get_segments()
 
@@ -309,7 +317,7 @@ def test_plot_lines_multipoly(plotfunc):
     func = getattr(r3, plotfunc)
 
     with figure_context():
-        ax = func(tolerance=None)
+        ax = func(tolerance=None, **maybe_no_coastlines(plotfunc))
 
         lines = ax.collections[0].get_segments()
         assert len(lines) == 2
@@ -327,7 +335,7 @@ def test_plot_lines_selection(plotfunc):
     with figure_context():
         func = getattr(r1[0, 1], plotfunc)
 
-        ax = func(tolerance=None)
+        ax = func(tolerance=None, **maybe_no_coastlines(plotfunc))
         lines = ax.collections[0].get_segments()
         assert len(lines) == 2
         assert np.allclose(lines[0], outl1_closed)
@@ -355,7 +363,7 @@ def test_plot_lines_tolerance(plotfunc):
     func = getattr(r1, plotfunc)
 
     with figure_context():
-        ax = func(tolerance=1 / 50)
+        ax = func(tolerance=1 / 50, **maybe_no_coastlines(plotfunc))
         lines = ax.collections[0].get_paths()
 
         assert len(lines) == 2
@@ -369,7 +377,7 @@ def test_plot_lines_tolerance_None(plotfunc):
     func = getattr(r_large, plotfunc)
 
     with figure_context():
-        ax = func(tolerance=None)
+        ax = func(tolerance=None, **maybe_no_coastlines(plotfunc))
         lines = ax.collections[0].get_paths()
 
         np.testing.assert_allclose(
@@ -390,7 +398,7 @@ def test_plot_lines_tolerance_auto(plotfunc, kwargs):
     expected = (41, 2) if plotfunc == "plot" else (5, 2)
 
     with figure_context():
-        ax = func(**kwargs)
+        ax = func(**kwargs, **maybe_no_coastlines(plotfunc))
 
         lines = ax.collections[0].get_paths()
         np.testing.assert_allclose(lines[0].vertices.shape, expected)
@@ -421,7 +429,7 @@ def test_plot_lines_from_poly(plotfunc):
     func = getattr(r2, plotfunc)
 
     with figure_context():
-        ax = func()
+        ax = func(**maybe_no_coastlines(plotfunc))
         lines = ax.collections[0].get_segments()
 
         assert len(lines) == 2
@@ -438,7 +446,11 @@ def test_plot_line_prop(plotfunc):
     func = getattr(r1, plotfunc)
 
     with figure_context():
-        ax = func(tolerance=None, line_kws=dict(lw=2, color="g"))
+        ax = func(
+            tolerance=None,
+            line_kws=dict(lw=2, color="g"),
+            **maybe_no_coastlines(plotfunc),
+        )
 
         collection = ax.collections[0]
 
@@ -580,6 +592,24 @@ def test_plot_text_clip(plotfunc):
             assert text.get_clip_on() is False
 
 
+def assert_feature_artist(ax, expected):
+    # cartopy coastlines etc. are FeatureArtist instances
+
+    # NOTE: only works if cartopy never releases v0.22.1
+    if Version(cartopy.__version__) >= Version("0.22.0"):
+        # + 1 because `collection` also contains the lines
+        assert len(ax.collections) == expected + 1
+    else:
+        assert len(ax.artists) == expected
+
+
+def get_artist_or_collection(ax):
+
+    if Version(cartopy.__version__) >= Version("0.22.0"):
+        return ax.collections[0]
+    return get_artist_or_collection(ax)
+
+
 @requires_matplotlib
 @requires_cartopy
 def test_plot_ocean():
@@ -589,18 +619,18 @@ def test_plot_ocean():
     # no ocean per default
     with figure_context():
         ax = r1.plot(**kwargs)
-        assert len(ax.artists) == 0
+        assert_feature_artist(ax, 0)
 
     with figure_context():
         ax = r1.plot(add_ocean=False, **kwargs)
-        assert len(ax.artists) == 0
+        assert_feature_artist(ax, 0)
 
     # default settings
     with figure_context():
         ax = r1.plot(add_ocean=True, **kwargs)
-        assert len(ax.artists) == 1
+        assert_feature_artist(ax, 1)
 
-        art = ax.artists[0]
+        art = get_artist_or_collection(ax)
         assert art.get_zorder() == 0.9
         # note testing private attribute
         assert art._kwargs["lw"] == 0
@@ -608,9 +638,9 @@ def test_plot_ocean():
     # user settings
     with figure_context():
         ax = r1.plot(add_ocean=True, ocean_kws=dict(zorder=1), **kwargs)
-        assert len(ax.artists) == 1
+        assert_feature_artist(ax, 1)
 
-        art = ax.artists[0]
+        art = get_artist_or_collection(ax)
         assert art.get_zorder() == 1
 
 
@@ -623,17 +653,17 @@ def test_plot_land():
     # no land per default
     with figure_context():
         ax = r1.plot(**kwargs)
-        assert len(ax.artists) == 0
+        assert_feature_artist(ax, 0)
 
     with figure_context():
         ax = r1.plot(add_land=False, **kwargs)
-        assert len(ax.artists) == 0
+        assert_feature_artist(ax, 0)
 
     # default settings
     with figure_context():
         ax = r1.plot(add_land=True, **kwargs)
-        assert len(ax.artists) == 1
-        art = ax.artists[0]
+        assert_feature_artist(ax, 1)
+        art = get_artist_or_collection(ax)
         assert art.get_zorder() == 0.9
         # note testing private attribute
         assert art._kwargs["lw"] == 0
@@ -641,8 +671,8 @@ def test_plot_land():
     # user settings
     with figure_context():
         ax = r1.plot(add_land=True, land_kws=dict(zorder=1), **kwargs)
-        assert len(ax.artists) == 1
-        art = ax.artists[0]
+        assert_feature_artist(ax, 1)
+        art = get_artist_or_collection(ax)
         assert art.get_zorder() == 1
 
 
@@ -655,22 +685,22 @@ def test_plot_add_coastlines():
     # coastlines are added per default
     with figure_context():
         ax = r1.plot(**kwargs)
-        assert len(ax.artists) == 1
+        assert_feature_artist(ax, 1)
 
     with figure_context():
         ax = r1.plot(add_coastlines=False, **kwargs)
-        assert len(ax.artists) == 0
+        assert_feature_artist(ax, 0)
 
     with figure_context():
         ax = r1.plot(add_coastlines=True, **kwargs)
-        assert len(ax.artists) == 1
-        art = ax.artists[0]
+        assert_feature_artist(ax, 1)
+        art = get_artist_or_collection(ax)
         assert art._kwargs == {"lw": 0.5, "edgecolor": "0.4", "facecolor": "none"}
 
     with figure_context():
         ax = r1.plot(add_coastlines=True, coastline_kws=dict(), **kwargs)
-        assert len(ax.artists) == 1
-        art = ax.artists[0]
+        assert_feature_artist(ax, 1)
+        art = get_artist_or_collection(ax)
         assert art._kwargs == {"edgecolor": "black", "facecolor": "none"}
 
 
