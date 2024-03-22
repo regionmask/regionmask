@@ -32,10 +32,10 @@ python -m pip install \
     git+https://github.com/geopandas/geopandas \
     git+https://github.com/pypa/packaging \
     git+https://github.com/fatiando/pooch \
-    git+https://github.com/geopandas/pyogrio \
-    git+https://github.com/rasterio/rasterio
+    git+https://github.com/geopandas/pyogrio
 python -m pip install cython # to build shapely
 python -m pip install \
     --no-deps \
     --no-build-isolation \
+    git+https://github.com/rasterio/rasterio \
     git+https://github.com/shapely/shapely
