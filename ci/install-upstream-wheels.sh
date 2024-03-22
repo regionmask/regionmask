@@ -7,6 +7,7 @@ conda uninstall -y --force \
   cartopy \
   cf_xarray \
   geopandas \
+  geopandas-base \
   matplotlib-base \
   numpy \
   packaging \
