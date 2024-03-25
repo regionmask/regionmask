@@ -38,7 +38,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 - Get upstream-dev CI to run with numpy 2.0 (:pull:`522`) and fix accrued upstream failures
-  for rasterio (:pull:`524`) and cartopy (:pull:`525`).
+  for rasterio (:pull:`524`), cartopy (:pull:`525`), and matplotlib (:pull:`527`).
 
 
 .. _changelog.0.12.1:
