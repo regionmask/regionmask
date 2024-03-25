@@ -285,11 +285,11 @@ def test_plot_lines(plotfunc):
     with figure_context():
         ax = func(tolerance=None, **maybe_no_coastlines(plotfunc))
 
-        lines = ax.collections[0].get_segments()
+        lines = ax.collections[0].get_paths()
 
         assert len(lines) == 2
-        assert np.allclose(lines[0], outl1_closed)
-        assert np.allclose(lines[1], outl2_closed)
+        assert np.allclose(lines[0].vertices, outl1_closed)
+        assert np.allclose(lines[1].vertices, outl2_closed)
 
 
 @requires_matplotlib
@@ -301,11 +301,11 @@ def test_plot_lines_float_numbers(plotfunc):
     with figure_context():
         ax = func(tolerance=None, **maybe_no_coastlines(plotfunc))
 
-        lines = ax.collections[0].get_segments()
+        lines = ax.collections[0].get_paths()
 
         assert len(lines) == 2
-        assert np.allclose(lines[0], outl1_closed)
-        assert np.allclose(lines[1], outl2_closed)
+        assert np.allclose(lines[0].vertices, outl1_closed)
+        assert np.allclose(lines[1].vertices, outl2_closed)
 
 
 @requires_matplotlib
@@ -319,10 +319,10 @@ def test_plot_lines_multipoly(plotfunc):
     with figure_context():
         ax = func(tolerance=None, **maybe_no_coastlines(plotfunc))
 
-        lines = ax.collections[0].get_segments()
+        lines = ax.collections[0].get_paths()
         assert len(lines) == 2
-        assert np.allclose(lines[0], outl1_closed)
-        assert np.allclose(lines[1], outl2_closed)
+        assert np.allclose(lines[0].vertices, outl1_closed)
+        assert np.allclose(lines[1].vertices, outl2_closed)
 
 
 # -----------------------------------------------------------------------------
@@ -336,10 +336,10 @@ def test_plot_lines_selection(plotfunc):
         func = getattr(r1[0, 1], plotfunc)
 
         ax = func(tolerance=None, **maybe_no_coastlines(plotfunc))
-        lines = ax.collections[0].get_segments()
+        lines = ax.collections[0].get_paths()
         assert len(lines) == 2
-        assert np.allclose(lines[0], outl1_closed)
-        assert np.allclose(lines[1], outl2_closed)
+        assert np.allclose(lines[0].vertices, outl1_closed)
+        assert np.allclose(lines[1].vertices, outl2_closed)
 
 
 @requires_matplotlib
@@ -430,10 +430,10 @@ def test_plot_lines_from_poly(plotfunc):
 
     with figure_context():
         ax = func(**maybe_no_coastlines(plotfunc))
-        lines = ax.collections[0].get_segments()
+        lines = ax.collections[0].get_paths()
 
         assert len(lines) == 2
-        assert np.allclose(lines[0], r2.polygons[0].exterior.coords)
+        assert np.allclose(lines[0].vertices, r2.polygons[0].exterior.coords)
 
 
 # -----------------------------------------------------------------------------
