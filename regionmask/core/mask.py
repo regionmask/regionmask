@@ -918,6 +918,9 @@ def _mask_rasterize_no_offset(
     transform = _transform_from_latlon(lon, lat)
     out_shape = (len(lat), len(lon))
 
+    # can remove once https://github.com/rasterio/rasterio/issues/3043 is fixed
+    dtype = dtype if dtype is None else np.dtype(dtype).name
+
     raster = features.rasterize(
         shapes,
         out_shape=out_shape,
