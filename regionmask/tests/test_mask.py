@@ -12,7 +12,7 @@ from regionmask.core.mask import (
     _inject_mask_docstring,
     _mask_rasterize,
     _mask_rasterize_no_offset,
-    _mask_shapely_v2,
+    _mask_shapely,
     _transform_from_latlon,
 )
 from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
@@ -28,7 +28,7 @@ from regionmask.tests.utils import (
 
 MASK_FUNCS = [
     _mask_rasterize,
-    _mask_shapely_v2,
+    _mask_shapely,
 ]
 
 MASK_METHODS = [

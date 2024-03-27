@@ -247,7 +247,7 @@ def _mask(
     elif method == "rasterize_split":
         mask_func = _mask_rasterize_split
     elif method == "shapely":
-        mask_func = _mask_shapely_v2
+        mask_func = _mask_shapely
         kwargs = {"is_unstructured": is_unstructured}
 
     mask = mask_func(lon_arr, lat_arr, polygons, numbers=numbers, as_3D=as_3D, **kwargs)
@@ -648,7 +648,7 @@ def _mask_edgepoints_shapely(
     return mask.reshape(shape)
 
 
-def _mask_shapely_v2(
+def _mask_shapely(
     lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
 ):
     """create a mask using shapely.STRtree"""
