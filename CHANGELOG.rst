@@ -18,6 +18,14 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Drop support for pygeos, which was replaced by shapely v2.0 (:pull:`519`).
+- Reqquire shapely v2.0+ (:pull:`521`).
+- The minimum versions of some dependencies were changed (:pull:`521`):
+
+  ============ ===== =====
+  Package      Old   New
+  ============ ===== =====
+  shapely      1.8   2.0
+  ============ ===== =====
 
 Enhancements
 ~~~~~~~~~~~~
