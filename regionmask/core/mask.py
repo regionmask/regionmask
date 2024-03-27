@@ -3,7 +3,6 @@ import warnings
 import numpy as np
 import shapely
 import xarray as xr
-from packaging.version import Version
 
 from regionmask.core.coords import _get_coords
 from regionmask.core.utils import (
@@ -17,8 +16,6 @@ from regionmask.core.utils import (
     equally_spaced,
     unpackbits,
 )
-
-has_shapely_2 = Version(shapely.__version__) > Version("2.0b1")
 
 _MASK_DOCSTRING_TEMPLATE = """\
 create a {nd} {qualifier} mask of a set of regions for the given lat/ lon grid
@@ -236,8 +233,6 @@ def _mask(
 
     if method is None:
         method = _determine_method(lon_arr, lat_arr)
-    elif method == "shapely" and has_shapely_2:
-        method = "shapely_2"
     elif method == "rasterize":
         method = _determine_method(lon_arr, lat_arr)
         if "rasterize" not in method:
@@ -252,9 +247,6 @@ def _mask(
     elif method == "rasterize_split":
         mask_func = _mask_rasterize_split
     elif method == "shapely":
-        mask_func = _mask_shapely
-        kwargs = {"is_unstructured": is_unstructured}
-    elif method == "shapely_2":
         mask_func = _mask_shapely_v2
         kwargs = {"is_unstructured": is_unstructured}
 
@@ -555,9 +547,6 @@ def _determine_method(lon, lat):
         else:
             return "rasterize_split"
 
-    if has_shapely_2:
-        return "shapely_2"
-
     return "shapely"
 
 
@@ -606,7 +595,7 @@ def _mask_edgepoints_shapely(
     as_3D=False,
 ):
 
-    import shapely.vectorized as shp_vect
+    import shapely.vectorized
 
     LON, LAT, shape = _get_LON_LAT_shape(
         lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
@@ -649,11 +638,11 @@ def _mask_edgepoints_shapely(
 
     if as_3D:
         for i, polygon in enumerate(polygons):
-            sel = shp_vect.contains(polygon, LON, LAT)
+            sel = shapely.vectorized.contains(polygon, LON, LAT)
             mask[i, idx[sel]] = True
     else:
         for i, polygon in enumerate(polygons):
-            sel = shp_vect.contains(polygon, LON, LAT)
+            sel = shapely.vectorized.contains(polygon, LON, LAT)
             mask[idx[sel]] = numbers[i]
 
     return mask.reshape(shape)
@@ -687,37 +676,6 @@ def _mask_shapely_v2(
     else:
         for i, number in enumerate(numbers):
             out[b[a == i]] = number
-
-    return out.reshape(shape)
-
-
-def _mask_shapely(
-    lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
-):
-    """create a mask using shapely.vectorized.contains"""
-
-    import shapely.vectorized
-
-    lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
-
-    LON, LAT, shape = _get_LON_LAT_shape(
-        lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
-    )
-    out = _get_out(shape, fill, as_3D=as_3D)
-
-    # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10**-8
-    LAT = LAT - 1 * 10**-10
-
-    if as_3D:
-        for i, polygon in enumerate(polygons):
-            sel = shapely.vectorized.contains(polygon, LON, LAT)
-            out[i, sel] = True
-
-    else:
-        for i, polygon in enumerate(polygons):
-            sel = shapely.vectorized.contains(polygon, LON, LAT)
-            out[sel] = numbers[i]
 
     return out.reshape(shape)
 
