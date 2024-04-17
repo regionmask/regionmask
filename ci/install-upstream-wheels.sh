@@ -36,6 +36,7 @@ python -m pip install \
     git+https://github.com/geopandas/geopandas \
     git+https://github.com/pypa/packaging \
     git+https://github.com/fatiando/pooch
+python -m pip install cython # to build rasterio
 python -m pip install \
     --no-deps \
     --no-build-isolation \
