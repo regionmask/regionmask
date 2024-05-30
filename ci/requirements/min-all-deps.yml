@@ -15,7 +15,7 @@ dependencies:
   # pyogrio makes environment solving difficult
   - pyogrio=0.3
   - rasterio=1.2
-  - shapely=1.8
+  - shapely=2.0
   - xarray=0.20
 # for testing
   - pytest

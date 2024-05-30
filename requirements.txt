@@ -7,5 +7,5 @@ numpy >= 1.21
 packaging >= 21.3
 pooch >= 1.4
 rasterio >= 1.2
-shapely >= 1.8
+shapely >= 2.0
 xarray >= 0.20

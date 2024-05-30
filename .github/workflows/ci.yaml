@@ -31,9 +31,6 @@ jobs:
           - env: "min-all-deps"
             os: "ubuntu-latest"
             python-version: "3.9"
-          - env: "shapely_lt_2"
-            os: "ubuntu-latest"
-            python-version: "3.10"
     steps:
       - uses: actions/checkout@v4
         with:
