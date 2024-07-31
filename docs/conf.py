@@ -56,6 +56,7 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
     "sphinxext.rediraffe",
+    "myst_nb",
 ]
 
 extlinks = {
@@ -66,6 +67,37 @@ extlinks = {
 rediraffe_redirects = {
     "whats_new.rst": "changelog.rst",
 }
+
+
+nb_kernel_rgx_aliases = {".*": "python3"}
+nb_execution_timeout = 60
+
+PROLOG = """\
+:::{note}
+This page was generated from an Jupyter notebook that can be accessed from
+[github](https://github.com/regionmask/regionmask/tree/main/docs/notebooks).
+:::
+"""
+
+
+myst_substitutions = {"prolog": PROLOG}
+
+myst_enable_extensions = [
+    # "amsmath",
+    # "attrs_inline",
+    "colon_fence",
+    # "deflist",
+    # "dollarmath",
+    # "fieldlist",
+    # "html_admonition",
+    # "html_image",
+    # "linkify",
+    # "replacements",
+    # "smartquotes",
+    # "strikethrough",
+    "substitution",
+    # "tasklist",
+]
 
 autosummary_generate = True
 
@@ -255,27 +287,27 @@ notebooks = (
     "notebooks/create_own_regions",
 )
 
-print("\nBuilding notebooks:")
-for nb in notebooks:
+# print("\nBuilding notebooks:")
+# for nb in notebooks:
 
-    # only render notebooks if necessary
-    f1 = os.path.getmtime(nb + ".ipynb")
-    try:
-        f2 = os.path.getmtime(nb + ".rst")
+#     # only render notebooks if necessary
+#     f1 = os.path.getmtime(nb + ".ipynb")
+#     try:
+#         f2 = os.path.getmtime(nb + ".rst")
 
-        if f2 > f1:
-            print(f" --- skipping: {nb}")
-            continue
-    except FileNotFoundError:
-        pass
+#         if f2 > f1:
+#             print(f" --- skipping: {nb}")
+#             continue
+#     except FileNotFoundError:
+#         pass
 
-    cmd = (
-        "jupyter nbconvert"
-        " --to rst"
-        " --template-file notebooks/tutorial_rst.tpl"
-        " --ExecutePreprocessor.timeout=60"
-        " --ExecutePreprocessor.kernel_name=python3"
-        " --execute " + nb
-    )
-    print(cmd)
-    call(cmd, shell=True)
+#     cmd = (
+#         "jupyter nbconvert"
+#         " --to rst"
+#         " --template-file notebooks/tutorial_rst.tpl"
+#         " --ExecutePreprocessor.timeout=60"
+#         " --ExecutePreprocessor.kernel_name=python3"
+#         " --execute " + nb
+#     )
+#     print(cmd)
+#     call(cmd, shell=True)
