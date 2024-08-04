@@ -83,11 +83,11 @@ This page was generated from an Jupyter notebook that can be accessed from
 myst_substitutions = {"prolog": PROLOG}
 
 myst_enable_extensions = [
-    # "amsmath",
+    "amsmath",
     # "attrs_inline",
     "colon_fence",
     # "deflist",
-    # "dollarmath",
+    "dollarmath",
     # "fieldlist",
     # "html_admonition",
     # "html_image",
@@ -272,42 +272,4 @@ man_pages = [("index", "regionmask", "regionmask Documentation", ["Mathias Hause
 warnings.filterwarnings("ignore")
 
 # don't check for frozen modules (which cannot be debugged)
-os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
-
-notebooks = (
-    "notebooks/method",
-    "notebooks/method_mask_3D_frac_approx",
-    "notebooks/plotting",
-    "notebooks/mask_2D",
-    "notebooks/mask_3D",
-    "notebooks/mask_3D_frac_approx",
-    "notebooks/detect_coords",
-    "notebooks/geopandas",
-    "notebooks/overlap",
-    "notebooks/create_own_regions",
-)
-
-# print("\nBuilding notebooks:")
-# for nb in notebooks:
-
-#     # only render notebooks if necessary
-#     f1 = os.path.getmtime(nb + ".ipynb")
-#     try:
-#         f2 = os.path.getmtime(nb + ".rst")
-
-#         if f2 > f1:
-#             print(f" --- skipping: {nb}")
-#             continue
-#     except FileNotFoundError:
-#         pass
-
-#     cmd = (
-#         "jupyter nbconvert"
-#         " --to rst"
-#         " --template-file notebooks/tutorial_rst.tpl"
-#         " --ExecutePreprocessor.timeout=60"
-#         " --ExecutePreprocessor.kernel_name=python3"
-#         " --execute " + nb
-#     )
-#     print(cmd)
-#     call(cmd, shell=True)
+# os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"

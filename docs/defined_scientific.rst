@@ -116,6 +116,8 @@ Ocean
     )
 
 
+.. _prudence-regions:
+
 PRUDENCE Regions
 ================
 

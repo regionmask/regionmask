@@ -27,7 +27,7 @@ dependencies:
   - requests
 # dependencies to build the docu
   - ipykernel
-  - nbconvert
+  - myst_nb
   - numpydoc
   - pillow
   - pip
