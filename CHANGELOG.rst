@@ -18,6 +18,7 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Drop support for pygeos, which was replaced by shapely v2.0 (:pull:`519`).
+- Bumped minimum rasterio version to v1.3 (:issue:`347`).
 
 Enhancements
 ~~~~~~~~~~~~
