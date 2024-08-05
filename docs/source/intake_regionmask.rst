@@ -54,7 +54,7 @@ cached locally:
     import os
     import zipfile
 
-    file = "cache/MEOW-TNC/data"
+    file = ".cache/MEOW-TNC/data"
 
     assert os.path.exists(file)
     assert zipfile.is_zipfile(file)
@@ -68,6 +68,6 @@ Build your own catalog
 To create a catalog we use the syntax described in `intake <https://intake.readthedocs.io/en/latest/catalog.html#yaml-format>`_.
 Below we show the catalog used above, which contains two example datasets (the second is the MEOW regions):
 
-.. literalinclude:: ../data/regions_remote_catalog.yaml
+.. literalinclude:: ../../data/regions_remote_catalog.yaml
    :language: yaml
 

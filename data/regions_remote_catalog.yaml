@@ -34,7 +34,7 @@ sources:
       storage_options:
         simplecache:
           same_names: true
-          cache_storage: cache/MEOW-TNC/
+          cache_storage: .cache/MEOW-TNC/
       regionmask_kwargs:
         name: MEOW
         names: ECOREGION
