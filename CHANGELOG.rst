@@ -34,6 +34,9 @@ Bug Fixes
 Docs
 ~~~~
 
+- Use [MyST-NB](https://myst-nb.readthedocs.io/en/stable/) to render jupyter notebooks
+  for the documentation, instead of nbconvert (:pull:`540`).
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
