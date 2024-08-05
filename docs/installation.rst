@@ -9,7 +9,7 @@ Required dependencies
 - `numpy <http://www.numpy.org/>`__ (1.21 or later)
 - `packaging <https://packaging.pypa.io/en/latest/>`__ (21.3 or later)
 - `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.4 or later)
-- `rasterio <https://rasterio.readthedocs.io/>`__ (1.2 or later)
+- `rasterio <https://rasterio.readthedocs.io/>`__ (1.3 or later)
 - `shapely <http://toblerity.org/shapely/>`__ (1.8 or later)
 - `xarray <http://xarray.pydata.org/>`__ (0.20 or later)
 
