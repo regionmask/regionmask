@@ -25,12 +25,16 @@ biogeographic classification of the world's coasts and shelves.
 
 .. ipython:: python
 
+    import importlib
+
     import intake
     import intake_geopandas
 
     # open a pre-defined remote or local catalog yaml file, containing the MEOW regions
-    path = "../data/regions_remote_catalog.yaml"
-    cat = intake.open_catalog(path)
+    path = importlib.resources.files("regionmask").parent / "data"
+    filename = path / "regions_remote_catalog.yaml"
+
+    cat = intake.open_catalog(filename)
 
     # access data from remote source
     meow_regions = cat.MEOW.read()
