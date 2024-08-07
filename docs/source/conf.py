@@ -121,7 +121,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "regionmask"
-copyright = "2016-%s, regionmask Developers" % datetime.datetime.now().year
+copyright = f"2016-{datetime.datetime.now().year}, regionmask Developers"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
