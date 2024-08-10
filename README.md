@@ -1,4 +1,4 @@
-![regionmask logo](docs/logo/logo.png)
+![regionmask logo](docs/source/logo/logo.png)
 
 # create *masks* of geospatial *regions* for arbitrary grids
 
