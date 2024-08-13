@@ -30,7 +30,6 @@ def test_mask_all_touched_requires_gdal_3_7_3():
 @pytest.mark.parametrize("ymax", (10.5, 11))
 def test_mask_all_touched_edge(xmin, ymin, xmax, ymax):
 
-
     ds = regionmask.core.utils.create_lon_lat_dataarray_from_bounds(
         0, 18, 1, 15, -1, -1
     )
@@ -148,7 +147,6 @@ raster = features.rasterize(
 )
 print(raster.sum())
 raster
-
 
 
 import shapely
