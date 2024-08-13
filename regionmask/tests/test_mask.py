@@ -13,11 +13,10 @@ from regionmask.core.mask import (
     _mask_rasterize,
     _mask_rasterize_no_offset,
     _mask_shapely,
-    _mask_shapely_v2,
     _transform_from_latlon,
 )
 from regionmask.core.utils import _wrapAngle, create_lon_lat_dataarray_from_bounds
-from regionmask.tests import assert_no_warnings, has_shapely_2, requires_shapely_2
+from regionmask.tests import assert_no_warnings
 from regionmask.tests.utils import (
     dummy_ds,
     dummy_region,
@@ -30,7 +29,6 @@ from regionmask.tests.utils import (
 MASK_FUNCS = [
     _mask_rasterize,
     _mask_shapely,
-    pytest.param(_mask_shapely_v2, marks=requires_shapely_2),
 ]
 
 MASK_METHODS = [
@@ -873,17 +871,11 @@ def test_rasterize_on_split_lon_asymmetric():
     xr.testing.assert_equal(result, expected)
 
 
-if has_shapely_2:
-    METHOD_IRREGULAR = "shapely_2"
-else:
-    METHOD_IRREGULAR = "shapely"
-
-
 METHODS = {
     0: "rasterize",
     1: "rasterize_flip",
     2: "rasterize_split",
-    3: METHOD_IRREGULAR,
+    3: "shapely",  # METHOD_IRREGULAR
 }
 
 equal = np.arange(0.5, 360)

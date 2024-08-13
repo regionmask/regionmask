@@ -10,7 +10,7 @@ Required dependencies
 - `packaging <https://packaging.pypa.io/en/latest/>`__ (23.1 or later)
 - `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.7 or later)
 - `rasterio <https://rasterio.readthedocs.io/>`__ (1.3 or later)
-- `shapely <http://toblerity.org/shapely/>`__ (1.8 or later)
+- `shapely <https://shapely.readthedocs.io/en/stable>`__ (2.0 or later)
 - `xarray <http://xarray.pydata.org/>`__ (2023.07 or later)
 
 Optional dependencies

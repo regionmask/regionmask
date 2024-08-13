@@ -18,9 +18,10 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Drop support for pygeos, which was replaced by shapely v2.0 (:pull:`519`).
+- Require shapely v2.0+ (:pull:`521`).
 - Bumped minimum rasterio version to v1.3 (:issue:`347`).
 
-- The minimum versions of some dependencies were changed (:pull:`541`):
+- The minimum versions of some dependencies were changed (:pull:`541`, :pull:`546`, and :pull:`521`):
 
   ============ ===== =====
   Package      Old   New
@@ -33,7 +34,7 @@ Breaking Changes
   pandas       1.3   2.0
   pooch        1.4   1.7
   rasterio     1.2   1.3
-  shapely      1.8   1.8
+  shapely      1.8   2.0
   xarray       0.20  2023.07
   ============ ===== =====
 
