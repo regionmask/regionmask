@@ -28,6 +28,8 @@ These instructions assume that `upstream` refers to the main repository
 1. Add a section for the next release to CHANGELOG.rst:
    ```rst
 
+   .. _changelog.0.X.Y:
+
    v0.X.Y (unreleased)
    --------------------
 
@@ -72,6 +74,7 @@ These instructions assume that `upstream` refers to the main repository
 
 These instructions were copied from xarray.
 
+---
 
 ## Manual upload to pypi - deprecated
 

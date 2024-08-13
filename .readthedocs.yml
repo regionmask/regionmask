@@ -8,7 +8,7 @@ build:
       - git fetch --unshallow
     pre_install:
         # Avoid having a dirty Git index
-      - git update-index --assume-unchanged docs/requirements.txt docs/conf.py
+      - git update-index --assume-unchanged docs/requirements.txt docs/source/conf.py
     post_install:
       # install regionmask, needs to be editable
       - pip install -e .
@@ -18,7 +18,7 @@ build:
     - pandoc
 
 sphinx:
-  configuration: docs/conf.py
+  configuration: docs/source/conf.py
   fail_on_warning: true
 
 python:
