@@ -4,19 +4,19 @@ channels:
   - nodefaults
 dependencies:
   - python=3.9
-  - cartopy=0.20
-  - cf_xarray=0.7
-  - geopandas=0.10
-  - matplotlib-base=3.5
-  - numpy=1.21
-  - packaging=21.3
-  - pandas=1.3
-  - pooch=1.4
+  - cartopy=0.22
+  - cf_xarray=0.8
+  - geopandas=0.13
+  - matplotlib-base=3.7
+  - numpy=1.24
+  - packaging=23.1
+  - pandas=2.0
+  - pooch=1.7
   # pyogrio makes environment solving difficult
-  - pyogrio=0.3
+  - pyogrio=0.5
   - rasterio=1.3
   - shapely=1.8
-  - xarray=0.20
+  - xarray=2023.7
 # for testing
   - pytest
   - pytest-cov

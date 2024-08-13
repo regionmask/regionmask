@@ -5,13 +5,13 @@ Required dependencies
 ---------------------
 
 - Python (3.9 or later)
-- `geopandas <http://geopandas.org/>`__ (0.10 or later)
-- `numpy <http://www.numpy.org/>`__ (1.21 or later)
-- `packaging <https://packaging.pypa.io/en/latest/>`__ (21.3 or later)
-- `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.4 or later)
+- `geopandas <http://geopandas.org/>`__ (0.13 or later)
+- `numpy <http://www.numpy.org/>`__ (1.24 or later)
+- `packaging <https://packaging.pypa.io/en/latest/>`__ (23.1 or later)
+- `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.7 or later)
 - `rasterio <https://rasterio.readthedocs.io/>`__ (1.3 or later)
 - `shapely <http://toblerity.org/shapely/>`__ (1.8 or later)
-- `xarray <http://xarray.pydata.org/>`__ (0.20 or later)
+- `xarray <http://xarray.pydata.org/>`__ (2023.07 or later)
 
 Optional dependencies
 ---------------------
@@ -19,21 +19,21 @@ Optional dependencies
 For plotting
 ~~~~~~~~~~~~
 
-- `matplotlib <http://matplotlib.org>`__ (3.5 or later) is required to create any plots.
-- `cartopy <https://scitools.org.uk/cartopy/docs/latest>`__ (0.20 or later) for plotting on
+- `matplotlib <http://matplotlib.org>`__ (3.7 or later) is required to create any plots.
+- `cartopy <https://scitools.org.uk/cartopy/docs/latest>`__ (0.22 or later) for plotting on
   maps.
 
 For detecting coords and parsing flag values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/>`__ (0.7 or later) allows
+- `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/>`__ (0.8 or later) allows
   to autodetect coordidate names and rich comparison of abbreviations or names of regions
   for 2D masks via ``mask.cf``.
 
 For faster loading of shapefiles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- `pyogrio <https://pyogrio.readthedocs.io>`__ (0.3 or later) allows faster reading of
+- `pyogrio <https://pyogrio.readthedocs.io>`__ (0.5 or later) allows faster reading of
   shapefiles. Currently only used for natural earth data (as the other data is loaded
   reasonanbly fast with fiona).
 
