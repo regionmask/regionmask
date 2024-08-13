@@ -11,7 +11,7 @@ build:
       - git update-index --assume-unchanged docs/requirements.txt docs/source/conf.py
     post_install:
       # install regionmask, needs to be editable
-      - pip install -e .
+      - pip install -e .[docs]
   tools:
     python: "3.12"
 
