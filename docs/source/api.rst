@@ -66,6 +66,7 @@ Creating a Mask
 
    Regions.mask
    Regions.mask_3D
+   Regions.mask_3D_frac_approx
 
 Conversion
 ----------
