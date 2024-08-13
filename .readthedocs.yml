@@ -14,8 +14,6 @@ build:
       - pip install -e .
   tools:
     python: "3.11"
-  apt_packages:
-    - pandoc
 
 sphinx:
   configuration: docs/source/conf.py
