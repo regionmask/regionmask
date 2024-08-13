@@ -33,7 +33,7 @@ For detecting coords and parsing flag values
 For faster loading of shapefiles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- `pyogrio <https://pyogrio.readthedocs.io>`__ (0.5 or later) allows faster reading of
+- `pyogrio <https://pyogrio.readthedocs.io>`__ (0.6 or later) allows faster reading of
   shapefiles. Currently only used for natural earth data (as the other data is loaded
   reasonanbly fast with fiona).
 
