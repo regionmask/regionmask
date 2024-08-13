@@ -25,12 +25,16 @@ biogeographic classification of the world's coasts and shelves.
 
 .. ipython:: python
 
+    import importlib
+
     import intake
     import intake_geopandas
 
     # open a pre-defined remote or local catalog yaml file, containing the MEOW regions
-    path = "../data/regions_remote_catalog.yaml"
-    cat = intake.open_catalog(path)
+    path = importlib.resources.files("regionmask").parent / "data"
+    filename = path / "regions_remote_catalog.yaml"
+
+    cat = intake.open_catalog(filename)
 
     # access data from remote source
     meow_regions = cat.MEOW.read()
@@ -54,7 +58,7 @@ cached locally:
     import os
     import zipfile
 
-    file = "cache/MEOW-TNC/data"
+    file = ".cache/MEOW-TNC/data"
 
     assert os.path.exists(file)
     assert zipfile.is_zipfile(file)
@@ -68,6 +72,6 @@ Build your own catalog
 To create a catalog we use the syntax described in `intake <https://intake.readthedocs.io/en/latest/catalog.html#yaml-format>`_.
 Below we show the catalog used above, which contains two example datasets (the second is the MEOW regions):
 
-.. literalinclude:: ../data/regions_remote_catalog.yaml
+.. literalinclude:: ../../data/regions_remote_catalog.yaml
    :language: yaml
 

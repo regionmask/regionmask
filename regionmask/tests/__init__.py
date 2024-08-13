@@ -30,5 +30,3 @@ def assert_no_warnings():
 has_cartopy, requires_cartopy = _importorskip("cartopy")
 has_cf_xarray, requires_cf_xarray = _importorskip("cf_xarray")
 has_matplotlib, requires_matplotlib = _importorskip("matplotlib")
-has_pygeos, requires_pygeos = _importorskip("pygeos")
-has_shapely_2, requires_shapely_2 = _importorskip("shapely", minversion="2.0b1")

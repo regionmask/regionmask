@@ -5,9 +5,7 @@ import pytest
 
 from regionmask import defined_regions
 from regionmask.core.utils import create_lon_lat_dataarray_from_bounds
-
-from . import has_pygeos
-from .utils import REGIONS
+from regionmask.tests.utils import REGIONS
 
 # =============================================================================
 
@@ -30,13 +28,7 @@ def _test_mask_equal_defined_regions(region, ds, mask_method):
 
     assert np.allclose(rasterize, shapely, equal_nan=True)
 
-    if has_pygeos:
-        pygeos = mask(ds, method="pygeos")
 
-        assert np.allclose(rasterize, pygeos, equal_nan=True)
-
-
-@pytest.mark.filterwarnings("ignore:pygeos is deprecated")
 @pytest.mark.filterwarnings("ignore:.*does not quite extend")
 @pytest.mark.parametrize("defined_region", REGIONS, ids=str)
 @pytest.mark.parametrize("ds", DATASETS)

@@ -3,8 +3,6 @@ import pytest
 
 from regionmask.core.plot import _get_tolerance, segmentize
 
-from . import requires_shapely_2
-
 
 def test_get_tolerance():
 
@@ -95,7 +93,6 @@ COORDS = (
 )
 
 
-@requires_shapely_2
 @pytest.mark.parametrize("coords", COORDS)
 @pytest.mark.parametrize("tolerance", [0.3, 1.0, 2.7852])
 def test_segmentize_shapely(coords, tolerance):

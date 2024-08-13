@@ -1,4 +1,4 @@
-# =============================================================================
+from regionmask.core.regions import Regions
 
 # the outlines is given at
 # http://ipcc-wg2.gov/SREX/images/uploads/SREX-Ch3-Supplement_FINAL.pdf
@@ -222,7 +222,6 @@ names = {
 
 # =============================================================================
 
-from ..core.regions import Regions
 
 numbers = range(1, 27)
 source = (

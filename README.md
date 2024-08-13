@@ -1,4 +1,4 @@
-![regionmask logo](docs/logo/logo.png)
+![regionmask logo](docs/source/logo/logo.png)
 
 # create *masks* of geospatial *regions* for arbitrary grids
 
@@ -7,7 +7,7 @@
 [![Documentation Status](https://readthedocs.org/projects/regionmask/badge/?version=stable)](https://regionmask.readthedocs.io/en/stable/?badge=stable)
 [![PyPi Badge](https://img.shields.io/pypi/v/regionmask.svg)](https://pypi.python.org/pypi/regionmask/)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/regionmask/badges/version.svg)](https://anaconda.org/conda-forge/regionmask)
-[![zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8370810.svg)](https://doi.org/10.5281/zenodo.8370810)
+[![zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10849860.svg)](https://doi.org/10.5281/zenodo.10849860)
 
 
 When working with gridded data such as climate model output or reanalysis data it is

@@ -5,9 +5,8 @@ import pytest
 
 from regionmask import Regions, defined_regions
 from regionmask.defined_regions._natural_earth import NaturalEarth, _maybe_get_column
-
-from . import requires_cartopy
-from .utils import REGIONS_ALL
+from regionmask.tests import requires_cartopy
+from regionmask.tests.utils import REGIONS_ALL
 
 
 def _test_region(defined_region):

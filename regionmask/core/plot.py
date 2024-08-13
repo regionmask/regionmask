@@ -2,7 +2,7 @@ import warnings
 
 import numpy as np
 
-from .utils import _flatten_polygons, flatten_3D_mask
+from regionmask.core.utils import _flatten_polygons, flatten_3D_mask
 
 
 def _polygons_coords(polygons):
@@ -70,7 +70,7 @@ def segmentize(coords, tolerance):
 
     See Also
     --------
-    pygeos.segmentize
+    shapely.segmentize
     """
 
     coords = np.asarray(coords)

@@ -64,7 +64,7 @@ def test_deprecate_positional_args_warns_for_function():
 
         @_deprecate_positional_args("v0.1")
         def f5(a, *, b, c=3, **kwargs):
-            pass
+            return a, b, c, kwargs
 
 
 def test_deprecate_positional_args_warns_for_class():
