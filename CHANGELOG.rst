@@ -21,7 +21,7 @@ Breaking Changes
 - Require shapely v2.0+ (:pull:`521`).
 - Bumped minimum rasterio version to v1.3 (:issue:`347`).
 
-- The minimum versions of some dependencies were changed (:pull:`541`, :pull:`546`, and :pull:`521`):
+- The minimum versions of some dependencies were changed (:pull:`541`, :pull:`546`, :pull:`521`, and :pull:`547`):
 
   ============ ===== =====
   Package      Old   New
@@ -32,6 +32,7 @@ Breaking Changes
   matplotlib*  3.5   3.7
   numpy        1.21  1.24
   pandas       1.3   2.0
+  pygrio*      0.3   0.6
   pooch        1.4   1.7
   rasterio     1.2   1.3
   shapely      1.8   2.0
