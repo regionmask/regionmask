@@ -1,6 +1,6 @@
 _build
 *.png
-!logo/logo.png
+!source/logo/logo.png
 generated/
 _static/notebooks/*.rst
 cache/

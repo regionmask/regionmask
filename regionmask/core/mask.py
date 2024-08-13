@@ -3,7 +3,6 @@ import warnings
 import numpy as np
 import shapely
 import xarray as xr
-from packaging.version import Version
 
 from regionmask.core.coords import _get_coords
 from regionmask.core.utils import (
@@ -17,15 +16,6 @@ from regionmask.core.utils import (
     equally_spaced,
     unpackbits,
 )
-
-try:
-    import pygeos
-
-    has_pygeos = True
-except ModuleNotFoundError:
-    has_pygeos = False
-
-has_shapely_2 = Version(shapely.__version__) > Version("2.0b1")
 
 _MASK_DOCSTRING_TEMPLATE = """\
 create a {nd} {qualifier} mask of a set of regions for the given lat/ lon grid
@@ -225,8 +215,11 @@ def _mask(
     if wrap_lon_:
         lon_arr = _wrapAngle(lon_arr, wrap_lon_, is_unstructured=is_unstructured)
 
-    if method not in (None, "rasterize", "shapely", "pygeos"):
-        msg = "Method must be None or one of 'rasterize', 'shapely' and 'pygeos'."
+    if method == "pygeos":
+        raise ValueError("pygeos is no longer supported")
+
+    if method not in (None, "rasterize", "shapely"):
+        msg = "Method must be None or one of 'rasterize', and 'shapely'."
         raise ValueError(msg)
 
     if method is not None:
@@ -241,20 +234,11 @@ def _mask(
 
     if method is None:
         method = _determine_method(lon_arr, lat_arr)
-    elif method == "shapely" and has_shapely_2:
-        method = "shapely_2"
     elif method == "rasterize":
         method = _determine_method(lon_arr, lat_arr)
         if "rasterize" not in method:
             msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
             raise ValueError(msg)
-    elif method == "pygeos":
-        if not has_pygeos:
-            raise ModuleNotFoundError("No module named 'pygeos'")
-        elif has_shapely_2:
-            warnings.warn(
-                "pygeos is deprecated in favour of shapely 2.0", FutureWarning
-            )
 
     if all_touched:
         if "rasterize" not in method:
@@ -282,14 +266,8 @@ def _mask(
     elif method == "rasterize_split":
         mask_func = _mask_rasterize_split
         kwargs = {"all_touched": all_touched}
-    elif method == "pygeos":
-        mask_func = _mask_pygeos
-        kwargs = {"is_unstructured": is_unstructured}
     elif method == "shapely":
         mask_func = _mask_shapely
-        kwargs = {"is_unstructured": is_unstructured}
-    elif method == "shapely_2":
-        mask_func = _mask_shapely_v2
         kwargs = {"is_unstructured": is_unstructured}
 
     mask = mask_func(lon_arr, lat_arr, polygons, numbers=numbers, as_3D=as_3D, **kwargs)
@@ -591,12 +569,6 @@ def _determine_method(lon, lat):
         else:
             return "rasterize_split"
 
-    if has_shapely_2:
-        return "shapely_2"
-
-    if has_pygeos:
-        return "pygeos"
-
     return "shapely"
 
 
@@ -610,7 +582,7 @@ def mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat"):
 
     ds = lat.coords.merge(lon.coords)
 
-    dims = xr.core.variable.broadcast_variables(lat.variable, lon.variable)[0].dims
+    dims = xr.broadcast(lat, lon)[0].dims
 
     # unstructured grids are 1D
     if mask.ndim - 1 == len(dims):
@@ -645,7 +617,7 @@ def _mask_edgepoints_shapely(
     as_3D=False,
 ):
 
-    import shapely.vectorized as shp_vect
+    import shapely.vectorized
 
     LON, LAT, shape = _get_LON_LAT_shape(
         lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
@@ -688,20 +660,20 @@ def _mask_edgepoints_shapely(
 
     if as_3D:
         for i, polygon in enumerate(polygons):
-            sel = shp_vect.contains(polygon, LON, LAT)
+            sel = shapely.vectorized.contains(polygon, LON, LAT)
             mask[i, idx[sel]] = True
     else:
         for i, polygon in enumerate(polygons):
-            sel = shp_vect.contains(polygon, LON, LAT)
+            sel = shapely.vectorized.contains(polygon, LON, LAT)
             mask[idx[sel]] = numbers[i]
 
     return mask.reshape(shape)
 
 
-def _mask_pygeos(
+def _mask_shapely(
     lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
 ):
-    """create a mask using pygeos.STRtree"""
+    """create a mask using shapely.STRtree"""
 
     lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
 
@@ -714,40 +686,7 @@ def _mask_pygeos(
     LON = LON - 1 * 10**-8
     LAT = LAT - 1 * 10**-10
 
-    # convert shapely points to pygeos
-    poly_pygeos = pygeos.from_shapely(polygons)
-    points_pygeos = pygeos.points(LON, LAT)
-
-    tree = pygeos.STRtree(points_pygeos)
-    a, b = tree.query_bulk(poly_pygeos, predicate="contains")
-
-    if as_3D:
-        for i in range(len(numbers)):
-            out[i, b[a == i]] = True
-    else:
-        for i, number in enumerate(numbers):
-            out[b[a == i]] = number
-
-    return out.reshape(shape)
-
-
-def _mask_shapely_v2(
-    lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
-):
-    """create a mask using pygeos.STRtree"""
-
-    lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
-
-    LON, LAT, shape = _get_LON_LAT_shape(
-        lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
-    )
-    out = _get_out(shape, fill, as_3D=as_3D)
-
-    # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10**-8
-    LAT = LAT - 1 * 10**-10
-
-    # convert shapely points to pygeos
+    # convert to points
     points = shapely.points(LON, LAT)
 
     tree = shapely.STRtree(points)
@@ -759,37 +698,6 @@ def _mask_shapely_v2(
     else:
         for i, number in enumerate(numbers):
             out[b[a == i]] = number
-
-    return out.reshape(shape)
-
-
-def _mask_shapely(
-    lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
-):
-    """create a mask using shapely.vectorized.contains"""
-
-    import shapely.vectorized
-
-    lon, lat = _parse_input(lon, lat, polygons, fill, numbers)
-
-    LON, LAT, shape = _get_LON_LAT_shape(
-        lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
-    )
-    out = _get_out(shape, fill, as_3D=as_3D)
-
-    # add a tiny offset to get a consistent edge behaviour
-    LON = LON - 1 * 10**-8
-    LAT = LAT - 1 * 10**-10
-
-    if as_3D:
-        for i, polygon in enumerate(polygons):
-            sel = shapely.vectorized.contains(polygon, LON, LAT)
-            out[i, sel] = True
-
-    else:
-        for i, polygon in enumerate(polygons):
-            sel = shapely.vectorized.contains(polygon, LON, LAT)
-            out[sel] = numbers[i]
 
     return out.reshape(shape)
 
@@ -989,6 +897,9 @@ def _mask_rasterize_no_offset(
 
     transform = _transform_from_latlon(lon, lat)
     out_shape = (len(lat), len(lon))
+
+    # can remove once https://github.com/rasterio/rasterio/issues/3043 is fixed
+    dtype = dtype if dtype is None else np.dtype(dtype).name
 
     raster = features.rasterize(
         shapes,

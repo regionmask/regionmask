@@ -10,12 +10,12 @@ build:
       - git fetch --unshallow
     pre_install:
         # Avoid having a dirty Git index
-      - git update-index --assume-unchanged ci/requirements/docs.yml docs/conf.py
+      - git update-index --assume-unchanged ci/requirements/docs.yml docs/source/conf.py
     post_install:
       # install regionmask, needs to be editable
       - pip install -e .
 sphinx:
-  configuration: docs/conf.py
+  configuration: docs/source/conf.py
   fail_on_warning: true
 conda:
   environment: ci/requirements/docs.yml

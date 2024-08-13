@@ -8,10 +8,77 @@ Changelog
 
     import regionmask
 
+
+.. _changelog.0.13.0:
+
+v0.13.0 (unreleased)
+--------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+- Drop support for pygeos, which was replaced by shapely v2.0 (:pull:`519`).
+- Require shapely v2.0+ (:pull:`521`).
+- Bumped minimum rasterio version to v1.3 (:issue:`347`).
+
+- The minimum versions of some dependencies were changed (:pull:`541`, :pull:`546`, :pull:`521`, and :pull:`547`):
+
+  ============ ===== =====
+  Package      Old   New
+  ============ ===== =====
+  cartopy*     0.20  0.22
+  cf_xarray*   0.7   0.8
+  geopandas    0.10   0.13
+  matplotlib*  3.5   3.7
+  numpy        1.21  1.24
+  pandas       1.3   2.0
+  pygrio*      0.3   0.6
+  pooch        1.4   1.7
+  rasterio     1.2   1.3
+  shapely      1.8   2.0
+  xarray       0.20  2023.07
+  ============ ===== =====
+
+Enhancements
+~~~~~~~~~~~~
+
+Deprecations
+~~~~~~~~~~~~
+
+New regions
+~~~~~~~~~~~
+
+Bug Fixes
+~~~~~~~~~
+
+Docs
+~~~~
+
+- Use [MyST-NB](https://myst-nb.readthedocs.io/en/stable/) to render jupyter notebooks
+  for the documentation, instead of nbconvert (:pull:`540`).
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Get upstream-dev CI to run with numpy 2.0 (:pull:`522`) and fix accrued upstream failures
+  for rasterio (:pull:`524`), cartopy (:pull:`525`), and matplotlib (:pull:`527`).
+
+
+.. _changelog.0.12.1:
+
+v0.12.1 (21.03.2024)
+--------------------
+
+Fix some metadata to allow releasing.
+
 .. _changelog.0.12.0:
 
-v0.12.0 (unreleased)
+v0.12.0 (21.03.2024)
 --------------------
+
+regionmask v0.12.0 adds a new approximate fractional overlap mask, fixes a number of issues
+with certain natural earth regions and restores compatibility with the upcoming xarray
+release.
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
@@ -63,8 +130,10 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
-- Small optimizations for :py:class:`Regions` (:pull:`#478`).
+- Restore compatibility with upcoming xarray release (probably v2023.04 or v2024.04, :pull:`512`).
+- Small optimizations for :py:class:`Regions` (:pull:`478`).
 
+.. _changelog.0.11.0:
 
 v0.11.0 (22.09.2023)
 --------------------
@@ -132,6 +201,7 @@ Internal Changes
 - Add upstream-dev CI check to ensure regionmask works with the developmen version of
   its dependencies (:pull:`444`).
 
+.. _changelog.0.10.0:
 
 v0.10.0 (31.05.2023)
 --------------------
@@ -322,6 +392,8 @@ Internal Changes
 - Add `packaging` as a dependency (:issue:`324`, :pull:`328`).
 - Add python 3.10 to list of supported versions (:pull:`330`).
 
+.. _whats-new.0.8.0:
+
 v0.8.0 (08.09.2021)
 -------------------
 
@@ -411,6 +483,8 @@ Internal Changes
   not happen and turn the timeout Error into a warning (:pull:`261`).
 - Set ``regex=True`` in ``pd.Series.str.replace`` due to an upcoming change in pandas (:pull:`262`).
 
+.. _whats-new.0.7.0:
+
 v0.7.0 (28.07.2021)
 -------------------
 
@@ -497,6 +571,8 @@ Internal Changes
 - Enforce minimum versions in `requirements.txt` and clean up required dependencies
   (:issue:`199` and :pull:`219`).
 
+.. _whats-new.0.6.2:
+
 v0.6.2 (19.01.2021)
 -------------------
 
@@ -514,11 +590,15 @@ Bug Fixes
   the regions as 32, 30, 31). This can lead to problems for :py:meth:`Regions.mask_3D` and
   :py:func:`mask_3D_geopandas` (:issue:`200`).
 
+.. _whats-new.0.6.1:
+
 v0.6.1 (19.08.2020)
 -------------------
 
 There were some last updates to the AR6 regions (``regionmask.defined_regions.ar6``).
 If you use the AR6 regions please update the package. There were no functional changes.
+
+.. _whats-new.0.6.0:
 
 v0.6.0 (30.07.2020)
 -------------------
@@ -607,6 +687,8 @@ Docs
   small adjustments to the docs (:pull:`125`).
 - Set ``mpl.rcParams["savefig.bbox"] = "tight"`` in ``docs/defined_*.rst`` to avoid
   spurious borders in the map plots (:issue:`112`).
+
+.. _whats-new.0.5.0:
 
 v0.5.0 (19.12.2019)
 -------------------
@@ -698,6 +780,8 @@ Bug Fixes
    figures).
  - Fix wrong figure in docs: countries showed landmask (:issue:`39`).
 
+.. _whats-new.0.4.0:
+
 v0.4.0 (02.03.2018)
 -------------------
 
@@ -714,6 +798,8 @@ Bug Fixes
 - Columns of geodataframes can be in lower ('name') or upper case ('NAME') (:issue:`25`).
 - Links to github issues not working, due to missing sphinx.ext.extlinks (:issue:`26`).
 - Docs: mask_xarray.ipynb: mask no longer needs a name (as of :pull:`5`).
+
+.. _whats-new.0.3.1:
 
 v0.3.1 (4 October 2016)
 -----------------------
@@ -733,12 +819,14 @@ Bug Fixes
 - Removed unnecessary files (ne_downloader.py and naturalearth.py).
 - Resolved conflicting region outlines in the Giorgi regions (:issue:`17`).
 
+.. _whats-new.0.3.0:
 
 v0.3.0 (20 September 2016)
 --------------------------
 
 - Allow passing 2 dimensional latitude and longitude grids (:issue:`8`).
 
+.. _whats-new.0.2.0:
 
 v0.2.0 (5 September 2016)
 -------------------------
@@ -746,6 +834,8 @@ v0.2.0 (5 September 2016)
 - Add name for xarray mask (:issue:`3`).
 - overhaul of the documentation
 - move rtd / matplotlib handling to background
+
+.. _whats-new.0.1.0:
 
 v0.1.0 (15 August 2016)
 -----------------------
