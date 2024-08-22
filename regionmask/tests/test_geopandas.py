@@ -185,7 +185,7 @@ def test_check_duplicates_return_True():
 
 
 def test_construct_abbrevs_name_none(geodataframe_clean):
-    with pytest.raises(KeyError, match="names is None"):
+    with pytest.raises(ValueError, match="names is None"):
         _construct_abbrevs(geodataframe_clean, None)
 
 
