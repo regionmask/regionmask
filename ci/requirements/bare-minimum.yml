@@ -4,7 +4,7 @@ channels:
   - nodefaults
 dependencies:
   - python=3.9
-  - geopandas
+  - geopandas<1.0 # avoid installing pyogrio in one of the environments
   - numpy
   - packaging
   - pooch
