@@ -130,7 +130,7 @@ class Regions:
         overlap=None,
     ):
 
-        if isinstance(outlines, (np.ndarray, Polygon, MultiPolygon)):
+        if isinstance(outlines, np.ndarray | Polygon | MultiPolygon):
             klass = type(outlines).__name__
             raise ValueError(
                 f"Cannot pass a single {klass} as region - please pass it as a list."
@@ -619,7 +619,7 @@ class _OneRegion:
         self._centroid = None
         self._bounds = None
 
-        if isinstance(outline, (Polygon, MultiPolygon)):
+        if isinstance(outline, Polygon | MultiPolygon):
             self.polygon = outline
             self._coords = None
         else:

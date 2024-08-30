@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 import xarray as xr
@@ -94,8 +93,8 @@ class DefinedRegion:
     n_regions: int
     overlap: bool = False
     skip_mask_test: bool = False
-    warn_bounds: Optional[bool] = False
-    bounds: Optional[list[float]] = None
+    warn_bounds: bool | None = False
+    bounds: list[float] | None = None
 
     def __str__(self):
         # used as name (`ids`) for parametrize
