@@ -193,7 +193,7 @@ def _prepare_gdf_for_mask(geodataframe, numbers):
 
     from geopandas import GeoDataFrame, GeoSeries
 
-    if not isinstance(geodataframe, (GeoDataFrame, GeoSeries)):
+    if not isinstance(geodataframe, GeoDataFrame | GeoSeries):
         raise TypeError("input must be a geopandas 'GeoDataFrame' or 'GeoSeries'")
 
     polygons = geodataframe.geometry.tolist()

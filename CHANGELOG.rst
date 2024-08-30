@@ -19,6 +19,7 @@ Breaking Changes
 
 - Drop support for pygeos, which was replaced by shapely v2.0 (:pull:`519`).
 - Require shapely v2.0+ (:pull:`521`).
+- Removed support for Python 3.9 (:pull:`555`).
 - Bumped minimum rasterio version to v1.3 (:issue:`347`).
 - Finalized the deprecation of positional arguments (:pull:`552`).
 
