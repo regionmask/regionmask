@@ -2,7 +2,6 @@ import warnings
 
 import numpy as np
 
-from regionmask.core._deprecate import _deprecate_positional_args
 from regionmask.core.mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from regionmask.core.regions import Regions
 from regionmask.defined_regions._natural_earth import _maybe_get_column
@@ -59,7 +58,6 @@ def _construct_abbrevs(geodataframe, names):
     return abbrevs
 
 
-@_deprecate_positional_args("0.10.0")
 def from_geopandas(
     geodataframe,
     *,
@@ -195,7 +193,7 @@ def _prepare_gdf_for_mask(geodataframe, numbers):
 
     from geopandas import GeoDataFrame, GeoSeries
 
-    if not isinstance(geodataframe, (GeoDataFrame, GeoSeries)):
+    if not isinstance(geodataframe, GeoDataFrame | GeoSeries):
         raise TypeError("input must be a geopandas 'GeoDataFrame' or 'GeoSeries'")
 
     polygons = geodataframe.geometry.tolist()
@@ -213,7 +211,6 @@ def _prepare_gdf_for_mask(geodataframe, numbers):
 # TODO: switch order of use_cf and overlap once the deprecation is finished
 
 
-@_deprecate_positional_args("0.10.0")
 def mask_geopandas(
     geodataframe,
     lon_or_obj,
@@ -254,7 +251,6 @@ def mask_geopandas(
 mask_geopandas.__doc__ = _inject_mask_docstring(which="2D", is_gpd=True)
 
 
-@_deprecate_positional_args("0.10.0")
 def mask_3D_geopandas(
     geodataframe,
     lon_or_obj,

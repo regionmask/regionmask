@@ -108,6 +108,17 @@ def test_from_geopandas_use_columns(geodataframe_clean):
     assert result.overlap is None
 
 
+def test_from_geopandas_from_name(geodataframe_clean):
+
+    result = from_geopandas(
+        geodataframe_clean,
+        names="names",
+        abbrevs="_from_name",
+    )
+
+    assert result.abbrevs == ["UniSqu0", "UniSqu1", "UniSqu2"]
+
+
 @pytest.mark.parametrize("attr", ["name", "source", "overlap"])
 def test_from_geopandas_not_roundtrip_warning(attr, geodataframe_clean):
 
@@ -171,6 +182,11 @@ def test_check_duplicates_raise_ValueError():
 
 def test_check_duplicates_return_True():
     assert _check_duplicates(series_unique, "name")
+
+
+def test_construct_abbrevs_name_none(geodataframe_clean):
+    with pytest.raises(ValueError, match="names is None"):
+        _construct_abbrevs(geodataframe_clean, None)
 
 
 def test_construct_abbrevs_wrong_name(geodataframe_clean):

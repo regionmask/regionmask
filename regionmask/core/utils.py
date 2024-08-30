@@ -3,23 +3,11 @@ import warnings
 import numpy as np
 import shapely
 import xarray as xr
-from packaging.version import Version
 
 
 def _total_bounds(polygons):
 
-    if Version(shapely.__version__) > Version("2.0b1"):
-
-        return shapely.total_bounds(polygons)
-
-    bounds = np.array([p.bounds for p in polygons])
-
-    xmin = bounds[:, 0].min()
-    ymin = bounds[:, 1].min()
-    xmax = bounds[:, 2].max()
-    ymax = bounds[:, 3].max()
-
-    return [xmin, ymin, xmax, ymax]
+    return shapely.total_bounds(polygons)
 
 
 def _flatten_polygons(polygons, error="raise"):
@@ -318,48 +306,12 @@ def _snap_polygon(polygon, to, atol, xy_col):
     return shapely.set_coordinates(polygon, arr)
 
 
-def _snap_polygon_shapely_18(polygon, to, atol, xy_col):
-
-    import shapely.ops
-
-    def _snap_x(x, y, z=None):
-
-        x = np.array(x)
-        sel = np.isclose(x, to, atol=atol)
-        x[sel] = to
-        x = x.tolist()
-        return tuple(filter(None, [x, y, z]))
-
-    def _snap_y(x, y, z=None):
-
-        y = np.array(y)
-        sel = np.isclose(y, to, atol=atol)
-
-        y[sel] = to
-        y = y.tolist()
-        return tuple(filter(None, [x, y, z]))
-
-    _snap_func = _snap_x if xy_col == 0 else _snap_y
-
-    polygon = shapely.ops.transform(_snap_func, polygon)
-
-    return polygon
-
-
 def _snap(df, idx, to, atol, xy_col):
 
     polygons = df.loc[idx].geometry.tolist()
 
-    if Version(shapely.__version__) > Version("2.0.0"):
-        polygons = [_snap_polygon(poly, to, atol, xy_col) for poly in polygons]
-        df.loc[idx, "geometry"] = polygons
-
-        return df
-
-    polygons = [_snap_polygon_shapely_18(poly, to, atol, xy_col) for poly in polygons]
-
-    for i, polygon in zip(idx, polygons):
-        df.at[i, "geometry"] = polygon
+    polygons = [_snap_polygon(poly, to, atol, xy_col) for poly in polygons]
+    df.loc[idx, "geometry"] = polygons
 
     return df
 

@@ -11,7 +11,6 @@ import numpy as np
 import pandas as pd
 from shapely.geometry import MultiPolygon, Polygon
 
-from regionmask.core._deprecate import _deprecate_positional_args
 from regionmask.core.formatting import _display
 from regionmask.core.mask import (
     _inject_mask_docstring,
@@ -131,7 +130,7 @@ class Regions:
         overlap=None,
     ) -> None:
 
-        if isinstance(outlines, (np.ndarray, Polygon, MultiPolygon)):
+        if isinstance(outlines, np.ndarray | Polygon | MultiPolygon):
             klass = type(outlines).__name__
             raise ValueError(
                 f"Cannot pass a single {klass} as region - please pass it as a list."
@@ -321,7 +320,6 @@ class Regions:
 
         return self._display(max_rows=max_rows)
 
-    @_deprecate_positional_args("0.10.0")
     def mask(
         self,
         lon_or_obj,
@@ -379,7 +377,6 @@ class Regions:
 
     mask.__doc__ = _inject_mask_docstring(which="2D", is_gpd=False)
 
-    @_deprecate_positional_args("0.10.0")
     def mask_3D(
         self,
         lon_or_obj,
@@ -622,7 +619,7 @@ class _OneRegion:
         self._centroid = None
         self._bounds = None
 
-        if isinstance(outline, (Polygon, MultiPolygon)):
+        if isinstance(outline, Polygon | MultiPolygon):
             self.polygon = outline
             self._coords = None
         else:
