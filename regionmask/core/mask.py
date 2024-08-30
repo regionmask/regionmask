@@ -595,7 +595,6 @@ def _mask_edgepoints_shapely(
     as_3D=False,
 ):
 
-    import shapely.vectorized
 
     LON, LAT, shape = _get_LON_LAT_shape(
         lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
@@ -636,14 +635,16 @@ def _mask_edgepoints_shapely(
     # "mask[borderpoints][sel] = number" does not work, need to use np.where
     idx = np.where(borderpoints)[0]
 
+    polys = np.array(polygons).reshape(-1, 1)
+    arr = shapely.contains_xy(polys, LON, LAT)
+
     if as_3D:
-        for i, polygon in enumerate(polygons):
-            sel = shapely.vectorized.contains(polygon, LON, LAT)
-            mask[i, idx[sel]] = True
+        for i in range(len(polygons)):
+            mask[i, idx[arr[i, :]]] = True
+
     else:
-        for i, polygon in enumerate(polygons):
-            sel = shapely.vectorized.contains(polygon, LON, LAT)
-            mask[idx[sel]] = numbers[i]
+        for i in range(len(polygons)):
+            mask[idx[arr[i, :]]] = numbers[i]
 
     return mask.reshape(shape)
 
