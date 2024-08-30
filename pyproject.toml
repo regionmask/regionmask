@@ -12,7 +12,7 @@ version_scheme = "no-guess-dev"
 [tool.ruff]
 # also check notebooks
 extend-include = ["*.ipynb"]
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 # E402: module level import not at top of file
