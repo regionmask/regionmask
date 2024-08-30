@@ -595,7 +595,6 @@ def _mask_edgepoints_shapely(
     as_3D=False,
 ):
 
-
     LON, LAT, shape = _get_LON_LAT_shape(
         lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
     )
