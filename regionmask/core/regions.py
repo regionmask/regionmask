@@ -231,17 +231,17 @@ class Regions:
         return region_ids
 
     @property
-    def abbrevs(self):
+    def abbrevs(self) -> list[str]:
         """list of abbreviations of the regions"""
         return [r.abbrev for r in self.regions.values()]
 
     @property
-    def names(self):
+    def names(self) -> list[str]:
         """list of names of the regions"""
         return [r.name for r in self.regions.values()]
 
     @property
-    def numbers(self):
+    def numbers(self) -> list[int | float]:
         """list of the numbers of the regions"""
         return [r.number for r in self.regions.values()]
 
