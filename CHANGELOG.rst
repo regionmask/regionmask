@@ -22,6 +22,7 @@ Breaking Changes
 - Removed support for Python 3.9 (:pull:`555`).
 - Bumped minimum rasterio version to v1.3 (:issue:`347`).
 - Finalized the deprecation of positional arguments (:pull:`552`).
+- Remove ``lon_name`` and ``lat_name`` keyword arguments of the mask functions deprecated in v0.10.0 (:pull:`557`).
 
 - The minimum versions of some dependencies were changed (:pull:`541`, :pull:`546`, :pull:`521`, and :pull:`547`):
 
