@@ -84,6 +84,22 @@ def test_abbrevs(test_regions):
     assert test_regions.abbrevs == ["uSq1", "uSq2"]
 
 
+def test_region_ids_deprecated():
+
+    with pytest.warns(
+        FutureWarning, match="`Regions.region_ids` has been made private"
+    ):
+        test_regions1.region_ids
+
+
+def test_region_ids():
+
+    actual = test_regions1._region_ids
+    expected = {0: 0, 1: 1, "uSq1": 0, "uSq2": 1, "Unit Square1": 0, "Unit Square2": 1}
+
+    assert actual == expected
+
+
 def test_coords_deprecated():
 
     with pytest.warns(FutureWarning, match="`Regions.coords` has been deprecated"):

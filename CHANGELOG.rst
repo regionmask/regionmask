@@ -67,6 +67,7 @@ Internal Changes
   for rasterio (:pull:`524`), cartopy (:pull:`525`), and matplotlib (:pull:`527`).
 - Avoid usage of `shapely.vectorized` which might be removed in a future version of
   shapely (:pull:`554`).
+- Made ``Regions.region_ids`` private (:pull:`560`).
 - Use pre-commit-ci to ensure formatting conventions are enforced (:pull:`559`).
 
 
