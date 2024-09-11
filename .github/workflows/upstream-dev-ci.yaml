@@ -76,4 +76,3 @@ jobs:
         uses: xarray-contrib/issue-from-pytest-log@v1
         with:
           log-path: output-${{ matrix.python-version }}-log.jsonl
-
