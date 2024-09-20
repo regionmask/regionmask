@@ -3,6 +3,7 @@ import warnings
 from contextlib import contextmanager
 
 import pytest
+import rasterio
 from packaging.version import Version
 
 
