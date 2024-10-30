@@ -45,6 +45,8 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- Add python 3.12 to list of supported versions (:pull:`565`).
+
 Deprecations
 ~~~~~~~~~~~~
 
