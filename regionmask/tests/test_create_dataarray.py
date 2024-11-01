@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import xarray as xr
 
-from regionmask.core.mask import _numpy_coords_to_dataarray, mask_to_dataarray
+from regionmask.core.mask import _mask_to_dataarray, _numpy_coords_to_dataarray
 
 
 def test_mask_to_dataarray_mixed_types():
@@ -10,10 +10,10 @@ def test_mask_to_dataarray_mixed_types():
     ds = xr.Dataset(coords={"lon": [0], "lat": [0]})
 
     with pytest.raises(ValueError, match="Cannot handle coordinates with mixed types!"):
-        mask_to_dataarray(None, ds.lon.values, ds.lon)
+        _mask_to_dataarray(None, ds.lon.values, ds.lon)
 
     with pytest.raises(ValueError, match="Cannot handle coordinates with mixed types!"):
-        mask_to_dataarray(None, ds.lon, ds.lon.values)
+        _mask_to_dataarray(None, ds.lon, ds.lon.values)
 
 
 def create_test_datasets():
@@ -69,7 +69,7 @@ def create_test_datasets():
 @pytest.mark.parametrize("ds, lon_name, lat_name, mask", create_test_datasets())
 def test_mask_to_dataarray_ds_indiv(ds, lon_name, lat_name, mask):
 
-    actual = mask_to_dataarray(mask, ds[lon_name], ds[lat_name])
+    actual = _mask_to_dataarray(mask, ds[lon_name], ds[lat_name])
     expected = ds.coords.to_dataset()
     xr.testing.assert_equal(expected, actual.coords.to_dataset())
     np.testing.assert_equal(mask, actual.values)
@@ -80,7 +80,7 @@ def test_mask_to_dataarray_ds_indiv(ds, lon_name, lat_name, mask):
 def test_mask_to_dataarray_3D_mask(n_regions, ds, lon_name, lat_name, mask):
 
     mask_3D = np.stack([mask] * n_regions, 0)
-    actual = mask_to_dataarray(mask_3D, ds[lon_name], ds[lat_name])
+    actual = _mask_to_dataarray(mask_3D, ds[lon_name], ds[lat_name])
     expected = ds.coords.to_dataset()
     xr.testing.assert_equal(expected, actual.coords.to_dataset())
     np.testing.assert_equal(mask_3D, actual.values)
@@ -95,7 +95,7 @@ def test_mask_to_dataarray_3D_mask(n_regions, ds, lon_name, lat_name, mask):
 def test_mask_to_dataarray_numpy_1D(lon, lat, lon_name, lat_name):
 
     mask = np.arange(4).reshape(2, 2)
-    actual = mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
+    actual = _mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
     expected = xr.DataArray(
         mask, dims=(lat_name, lon_name), coords={lat_name: lat, lon_name: lon}
     )
@@ -110,7 +110,7 @@ def test_mask_to_dataarray_numpy_2D(lon_name, lat_name):
     lat = [[1, 1], [0, 0]]
 
     mask = np.arange(4).reshape(2, 2)
-    actual = mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
+    actual = _mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
     dims = (f"{lat_name}_idx", f"{lon_name}_idx")
     expected = xr.DataArray(
         mask, dims=dims, coords={lat_name: (dims, lat), lon_name: (dims, lon)}

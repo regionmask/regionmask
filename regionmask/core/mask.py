@@ -154,8 +154,6 @@ def _mask(
     numbers,
     lon_or_obj,
     lat=None,
-    lon_name=None,
-    lat_name=None,
     method=None,
     wrap_lon=None,
     as_3D=False,
@@ -165,20 +163,10 @@ def _mask(
     internal function to create a mask
     """
 
-    if lon_name is not None or lat_name is not None:
-        warnings.warn(
-            "Passing 'lon_name' and 'lat_name' was deprecated in v0.10.0. Please pass "
-            "the coordinates directly, e.g., `mask*(ds[lon_name], ds[lat_name])`.",
-            FutureWarning,
-        )
-
-    lon_name = "lon" if lon_name is None else lon_name
-    lat_name = "lat" if lat_name is None else lat_name
-
     if not _is_numeric(numbers):
         raise ValueError("'numbers' must be numeric")
 
-    lon, lat = _get_coords(lon_or_obj, lat, lon_name, lat_name, use_cf)
+    lon, lat = _get_coords(lon_or_obj, lat, "lon", "lat", use_cf)
 
     # determine whether unstructured grid
     # have to do this before np.asarray
@@ -265,7 +253,7 @@ def _mask(
             as_3D=as_3D,
         )
 
-    return mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
+    return _mask_to_dataarray(mask, lon, lat)
 
 
 class InvalidCoordsError(ValueError):
@@ -324,7 +312,7 @@ def _mask_3D_frac_approx(
         mask[:, 0] = e1
         mask[:, -1] = e2
 
-    mask = mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat")
+    mask = _mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat")
 
     mask_3D = _3D_to_3D_mask(mask, numbers, drop)
 
@@ -338,8 +326,6 @@ def _mask_2D(
     numbers,
     lon_or_obj,
     lat=None,
-    lon_name=None,
-    lat_name=None,
     method=None,
     wrap_lon=None,
     use_cf=None,
@@ -363,8 +349,6 @@ def _mask_2D(
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,
-        lon_name=lon_name,
-        lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
         use_cf=use_cf,
@@ -390,8 +374,6 @@ def _mask_3D(
     lon_or_obj,
     lat=None,
     drop=True,
-    lon_name=None,
-    lat_name=None,
     method=None,
     wrap_lon=None,
     overlap=None,
@@ -405,8 +387,6 @@ def _mask_3D(
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,
-        lon_name=lon_name,
-        lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
         as_3D=as_3D,
@@ -550,7 +530,7 @@ def _determine_method(lon, lat):
     return "shapely"
 
 
-def mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat"):
+def _mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat"):
 
     if sum(isinstance(c, xr.DataArray) for c in (lon, lat)) == 1:
         raise ValueError("Cannot handle coordinates with mixed types!")

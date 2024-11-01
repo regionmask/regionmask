@@ -78,7 +78,7 @@ def expected_mask_3D(drop, coords=None, overlap=False, lon_name="lon", lat_name=
             "names": ("region", [f"Region{i}" for i in numbers]),
         }
     )
-    dims = ("region",) + (lat_name, lon_name)
+    dims = ("region", lat_name, lon_name)
     attrs = {"standard_name": "region"}
 
     expected = xr.DataArray(mask, coords=coords, dims=dims, name="mask", attrs=attrs)

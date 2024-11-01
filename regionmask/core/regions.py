@@ -203,12 +203,14 @@ class Regions:
 
         """
 
+        _region_ids = self._region_ids
+
         # a single key
         if np.ndim(key) == 0:
-            key = self.region_ids[key]
+            key = _region_ids[key]
         # a list of keys
         else:
-            key = [self.region_ids[k] for k in key]
+            key = [_region_ids[k] for k in key]
             # make sure they are unique
             key = np.unique(key).tolist()
 
@@ -221,12 +223,24 @@ class Regions:
     def region_ids(self):
         """dictionary that maps all names and abbrevs to the region number"""
 
+        warnings.warn(
+            "`Regions.region_ids` has been made private in v0.13.0 and will be removed",
+            FutureWarning,
+            stacklevel=2,
+        )
+
+        return self._region_ids
+
+    @property
+    def _region_ids(self):
+        """dictionary that maps all names and abbrevs to the region number"""
+
         # collect data
         abbrevs = self.abbrevs
         names = self.names
         numbers = self.numbers
         # combine data and make a mapping
-        all_comb = zip(numbers + abbrevs + names, (numbers * 3))
+        all_comb = zip(numbers + abbrevs + names, numbers * 3)
         region_ids = {key: value for key, value in all_comb}
         return region_ids
 
@@ -247,6 +261,8 @@ class Regions:
 
     @property
     def coords(self):
+        """list of coordinates of the region vertices as numpy array"""
+
         warnings.warn(
             "`Regions.coords` has been deprecated in v0.12.0 and will be removed. "
             "Please raise an issue if you have an use case for them.",
@@ -254,7 +270,6 @@ class Regions:
             stacklevel=2,
         )
 
-        """list of coordinates of the region vertices as numpy array"""
         return [r.coords for r in self.regions.values()]
 
     @property
@@ -325,8 +340,6 @@ class Regions:
         lon_or_obj,
         lat=None,
         *,
-        lon_name=None,
-        lat_name=None,
         method=None,
         wrap_lon=None,
         flag="abbrevs",
@@ -345,8 +358,6 @@ class Regions:
             numbers=self.numbers,
             lon_or_obj=lon_or_obj,
             lat=lat,
-            lon_name=lon_name,
-            lat_name=lat_name,
             method=method,
             wrap_lon=wrap_lon,
             use_cf=use_cf,
@@ -383,8 +394,6 @@ class Regions:
         lat=None,
         *,
         drop=True,
-        lon_name=None,
-        lat_name=None,
         method=None,
         wrap_lon=None,
         use_cf=None,
@@ -396,8 +405,6 @@ class Regions:
             lon_or_obj=lon_or_obj,
             lat=lat,
             drop=drop,
-            lon_name=lon_name,
-            lat_name=lat_name,
             method=method,
             wrap_lon=wrap_lon,
             overlap=self.overlap,
