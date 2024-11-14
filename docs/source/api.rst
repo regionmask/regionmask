@@ -89,7 +89,6 @@ Attributes
    Regions.abbrevs
    Regions.names
    Regions.numbers
-   Regions.region_ids
    Regions.polygons
    Regions.centroids
    Regions.bounds

@@ -7,15 +7,15 @@ OPTIONS = {
 }
 
 
-def _optional_positive_integer(name: str, value) -> bool:
+def _optional_positive_integer(name: str, value):
     if not (value is None or isinstance(value, int) and value > 0):
         raise ValueError(f"'{name}' must be a positive integer or None, got '{value}'")
 
 
-def _optional_str_or_path(name: str, value) -> bool:
+def _optional_str_or_path(name: str, value):
     from pathlib import Path
 
-    if not (value is None or isinstance(value, (str, Path))):
+    if not (value is None or isinstance(value, str | Path)):
         raise ValueError(
             f"'{name}' must be None, a string or pathlib.Path, got '{value}'"
         )

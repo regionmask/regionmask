@@ -50,13 +50,13 @@ r1 = Regions(
 )
 
 numbers = [1, 2]
-names = {1: "Unit Square1", 2: "Unit Square2"}
-abbrevs = {1: "uSq1", 2: "uSq2"}
+names2 = {1: "Unit Square1", 2: "Unit Square2"}
+abbrevs2 = {1: "uSq1", 2: "uSq2"}
 poly1 = Polygon(outl1)
 poly2 = Polygon(outl2)
 poly = {1: poly1, 2: poly2}
 
-r2 = Regions(name=name, numbers=numbers, names=names, abbrevs=abbrevs, outlines=poly)
+r2 = Regions(name=name, numbers=numbers, names=names2, abbrevs=abbrevs2, outlines=poly)
 
 multipoly = MultiPolygon([poly1, poly2])
 r3 = Regions([multipoly])

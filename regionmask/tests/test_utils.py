@@ -91,7 +91,7 @@ def test_is_180():
         _is_180(-1, 181)
 
     with pytest.raises(ValueError, match="and smaller than 0. Additional text."):
-        _is_180(-1, 181, "Additional text.")
+        _is_180(-1, 181, msg_add="Additional text.")
 
 
 @pytest.mark.parametrize("lon_vals", [(-161, -29, 2), (-180, 181, 2)])
@@ -210,14 +210,14 @@ def test_unpackbits():
 
     numbers = np.array([0, 1, 3, 254, 255])
     result = unpackbits(numbers, 8)
-    expected = [
+    expected_ = [
         [0, 0, 0, 0, 0, 0, 0, 0],
         [1, 0, 0, 0, 0, 0, 0, 0],
         [1, 1, 0, 0, 0, 0, 0, 0],
         [0, 1, 1, 1, 1, 1, 1, 1],
         [1, 1, 1, 1, 1, 1, 1, 1],
     ]
-    expected = np.array(expected, dtype=bool)
+    expected = np.array(expected_, dtype=bool)
 
     np.testing.assert_equal(result, expected)
 
