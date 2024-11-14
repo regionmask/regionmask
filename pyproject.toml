@@ -38,7 +38,6 @@ known-first-party = ["regionmask"]
 # enable_error_code = ["ignore-without-code", "redundant-self", "redundant-expr"]
 exclude = [
   'build',
-  'xarray/util/generate_.*\.py',
 ]
 files = "regionmask"
 
