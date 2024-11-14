@@ -74,4 +74,3 @@ Below we show the catalog used above, which contains two example datasets (the s
 
 .. literalinclude:: ../../data/regions_remote_catalog.yaml
    :language: yaml
-

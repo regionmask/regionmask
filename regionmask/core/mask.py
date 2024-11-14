@@ -155,32 +155,20 @@ def _mask(
     numbers,
     lon_or_obj,
     lat=None,
-    lon_name=None,
-    lat_name=None,
     method=None,
     wrap_lon=None,
     as_3D=False,
     use_cf=None,
     all_touched=False,
-):
+) -> xr.DataArray:
     """
     internal function to create a mask
     """
 
-    if lon_name is not None or lat_name is not None:
-        warnings.warn(
-            "Passing 'lon_name' and 'lat_name' was deprecated in v0.10.0. Please pass "
-            "the coordinates directly, e.g., `mask*(ds[lon_name], ds[lat_name])`.",
-            FutureWarning,
-        )
-
-    lon_name = "lon" if lon_name is None else lon_name
-    lat_name = "lat" if lat_name is None else lat_name
-
     if not _is_numeric(numbers):
         raise ValueError("'numbers' must be numeric")
 
-    lon, lat = _get_coords(lon_or_obj, lat, lon_name, lat_name, use_cf)
+    lon, lat = _get_coords(lon_or_obj, lat, "lon", "lat", use_cf)
 
     # determine whether unstructured grid
     # have to do this before np.asarray
@@ -268,7 +256,7 @@ def _mask(
         mask_func = _mask_rasterize_split
         kwargs = {"all_touched": all_touched}
     elif method == "shapely":
-        mask_func = _mask_shapely
+        mask_func = _mask_shapely  # type:ignore[assignment]
         kwargs = {"is_unstructured": is_unstructured}
 
     mask = mask_func(lon_arr, lat_arr, polygons, numbers=numbers, as_3D=as_3D, **kwargs)
@@ -286,7 +274,7 @@ def _mask(
             as_3D=as_3D,
         )
 
-    return mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
+    return _mask_to_dataarray(mask, lon, lat)
 
 
 class InvalidCoordsError(ValueError):
@@ -302,7 +290,7 @@ def _mask_3D_frac_approx(
     wrap_lon=None,
     overlap=None,
     use_cf=None,
-):
+) -> xr.DataArray:
 
     # directly creating 3D masks seems to be faster in general (strangely due to the
     # memory layout of the reshaped mask)
@@ -345,7 +333,7 @@ def _mask_3D_frac_approx(
         mask[:, 0] = e1
         mask[:, -1] = e2
 
-    mask = mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat")
+    mask = _mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat")
 
     mask_3D = _3D_to_3D_mask(mask, numbers, drop)
 
@@ -359,13 +347,11 @@ def _mask_2D(
     numbers,
     lon_or_obj,
     lat=None,
-    lon_name=None,
-    lat_name=None,
     method=None,
     wrap_lon=None,
     use_cf=None,
     overlap=None,
-):
+) -> xr.DataArray:
 
     # NOTE: this is already checked in Regions.mask, and mask_geopandas
     # double check here if this method is ever made public
@@ -384,8 +370,6 @@ def _mask_2D(
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,
-        lon_name=lon_name,
-        lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
         use_cf=use_cf,
@@ -411,14 +395,12 @@ def _mask_3D(
     lon_or_obj,
     lat=None,
     drop=True,
-    lon_name=None,
-    lat_name=None,
     method=None,
     wrap_lon=None,
     overlap=None,
     use_cf=None,
     all_touched=False,
-):
+) -> xr.DataArray:
 
     as_3D = overlap or overlap is None or all_touched
 
@@ -427,8 +409,6 @@ def _mask_3D(
         numbers=numbers,
         lon_or_obj=lon_or_obj,
         lat=lat,
-        lon_name=lon_name,
-        lat_name=lat_name,
         method=method,
         wrap_lon=wrap_lon,
         as_3D=as_3D,
@@ -573,7 +553,7 @@ def _determine_method(lon, lat):
     return "shapely"
 
 
-def mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat"):
+def _mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat"):
 
     if sum(isinstance(c, xr.DataArray) for c in (lon, lat)) == 1:
         raise ValueError("Cannot handle coordinates with mixed types!")
@@ -618,8 +598,6 @@ def _mask_edgepoints_shapely(
     as_3D=False,
 ):
 
-    import shapely.vectorized
-
     LON, LAT, shape = _get_LON_LAT_shape(
         lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
     )
@@ -659,14 +637,16 @@ def _mask_edgepoints_shapely(
     # "mask[borderpoints][sel] = number" does not work, need to use np.where
     idx = np.where(borderpoints)[0]
 
+    polys = np.array(polygons).reshape(-1, 1)
+    arr = shapely.contains_xy(polys, LON, LAT)
+
     if as_3D:
-        for i, polygon in enumerate(polygons):
-            sel = shapely.vectorized.contains(polygon, LON, LAT)
-            mask[i, idx[sel]] = True
+        for i in range(len(polygons)):
+            mask[i, idx[arr[i, :]]] = True
+
     else:
-        for i, polygon in enumerate(polygons):
-            sel = shapely.vectorized.contains(polygon, LON, LAT)
-            mask[idx[sel]] = numbers[i]
+        for i in range(len(polygons)):
+            mask[idx[arr[i, :]]] = numbers[i]
 
     return mask.reshape(shape)
 

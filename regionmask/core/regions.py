@@ -9,9 +9,9 @@ import warnings
 import geopandas as gp
 import numpy as np
 import pandas as pd
+import xarray as xr
 from shapely.geometry import MultiPolygon, Polygon
 
-from regionmask.core._deprecate import _deprecate_positional_args
 from regionmask.core.formatting import _display
 from regionmask.core.mask import (
     _inject_mask_docstring,
@@ -126,12 +126,12 @@ class Regions:
         numbers=None,
         names=None,
         abbrevs=None,
-        name="unnamed",
-        source=None,
-        overlap=None,
-    ):
+        name: str = "unnamed",
+        source: str | None = None,
+        overlap: bool | None = None,
+    ) -> None:
 
-        if isinstance(outlines, (np.ndarray, Polygon, MultiPolygon)):
+        if isinstance(outlines, np.ndarray | Polygon | MultiPolygon):
             klass = type(outlines).__name__
             raise ValueError(
                 f"Cannot pass a single {klass} as region - please pass it as a list."
@@ -152,10 +152,10 @@ class Regions:
             n: _OneRegion(n, names[n], abbrevs[n], outlines[n]) for n in sorted(numbers)
         }
 
-        self.regions = regions
-        self.name = name
-        self.source = source
-        self.overlap = overlap
+        self.regions: dict[int, _OneRegion] = regions
+        self.name: str = name
+        self.source: str | None = source
+        self.overlap: bool | None = overlap
 
     def __getitem__(self, key):
         """subset of Regions or Region
@@ -185,10 +185,10 @@ class Regions:
             new_self.regions = regions
             return new_self
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.regions)
 
-    def map_keys(self, key):
+    def map_keys(self, key) -> int | list[int]:
         """map from names and abbrevs of the regions to numbers
 
         Parameters
@@ -200,16 +200,21 @@ class Regions:
         Returns
         -------
         mapped_key : int or list of int
-        Raises a KeyError if the key does not exist.
+
+        Raises
+        ------
+        KeyError if the key does not exist.
 
         """
 
+        _region_ids = self._region_ids
+
         # a single key
         if np.ndim(key) == 0:
-            key = self.region_ids[key]
+            key = _region_ids[key]
         # a list of keys
         else:
-            key = [self.region_ids[k] for k in key]
+            key = [_region_ids[k] for k in key]
             # make sure they are unique
             key = np.unique(key).tolist()
 
@@ -222,32 +227,46 @@ class Regions:
     def region_ids(self):
         """dictionary that maps all names and abbrevs to the region number"""
 
+        warnings.warn(
+            "`Regions.region_ids` has been made private in v0.13.0 and will be removed",
+            FutureWarning,
+            stacklevel=2,
+        )
+
+        return self._region_ids
+
+    @property
+    def _region_ids(self):
+        """dictionary that maps all names and abbrevs to the region number"""
+
         # collect data
         abbrevs = self.abbrevs
         names = self.names
         numbers = self.numbers
         # combine data and make a mapping
-        all_comb = zip(numbers + abbrevs + names, (numbers * 3))
+        all_comb = zip(numbers + abbrevs + names, numbers * 3)
         region_ids = {key: value for key, value in all_comb}
         return region_ids
 
     @property
-    def abbrevs(self):
+    def abbrevs(self) -> list[str]:
         """list of abbreviations of the regions"""
         return [r.abbrev for r in self.regions.values()]
 
     @property
-    def names(self):
+    def names(self) -> list[str]:
         """list of names of the regions"""
         return [r.name for r in self.regions.values()]
 
     @property
-    def numbers(self):
+    def numbers(self) -> list[int]:
         """list of the numbers of the regions"""
         return [r.number for r in self.regions.values()]
 
     @property
     def coords(self):
+        """list of coordinates of the region vertices as numpy array"""
+
         warnings.warn(
             "`Regions.coords` has been deprecated in v0.12.0 and will be removed. "
             "Please raise an issue if you have an use case for them.",
@@ -255,11 +274,10 @@ class Regions:
             stacklevel=2,
         )
 
-        """list of coordinates of the region vertices as numpy array"""
         return [r.coords for r in self.regions.values()]
 
     @property
-    def polygons(self):
+    def polygons(self) -> list[Polygon | MultiPolygon]:
         """list of shapely Polygon/ MultiPolygon of the regions"""
         return [r.polygon for r in self.regions.values()]
 
@@ -280,14 +298,14 @@ class Regions:
         return _total_bounds(self.polygons)
 
     @property
-    def lon_180(self):
+    def lon_180(self) -> bool:
         """if the regions extend from -180 to 180"""
         lon_min, __, lon_max, __ = self.bounds_global
 
         return _is_180(lon_min, lon_max)
 
     @property
-    def lon_360(self):
+    def lon_360(self) -> bool:
         """if the regions extend from 0 to 360"""
         return not self.lon_180
 
@@ -321,19 +339,16 @@ class Regions:
 
         return self._display(max_rows=max_rows)
 
-    @_deprecate_positional_args("0.10.0")
     def mask(
         self,
         lon_or_obj,
         lat=None,
         *,
-        lon_name=None,
-        lat_name=None,
         method=None,
         wrap_lon=None,
         flag="abbrevs",
         use_cf=None,
-    ):
+    ) -> xr.DataArray:
 
         if self.overlap:
             raise ValueError(
@@ -347,8 +362,6 @@ class Regions:
             numbers=self.numbers,
             lon_or_obj=lon_or_obj,
             lat=lat,
-            lon_name=lon_name,
-            lat_name=lat_name,
             method=method,
             wrap_lon=wrap_lon,
             use_cf=use_cf,
@@ -379,19 +392,16 @@ class Regions:
 
     mask.__doc__ = _inject_mask_docstring(which="2D", is_gpd=False)
 
-    @_deprecate_positional_args("0.10.0")
     def mask_3D(
         self,
         lon_or_obj,
         lat=None,
         *,
         drop=True,
-        lon_name=None,
-        lat_name=None,
         method=None,
         wrap_lon=None,
         use_cf=None,
-    ):
+    ) -> xr.DataArray:
 
         mask_3D = _mask_3D(
             polygons=self.polygons,
@@ -399,8 +409,6 @@ class Regions:
             lon_or_obj=lon_or_obj,
             lat=lat,
             drop=drop,
-            lon_name=lon_name,
-            lat_name=lat_name,
             method=method,
             wrap_lon=wrap_lon,
             overlap=self.overlap,
@@ -461,7 +469,8 @@ class Regions:
         drop=True,
         wrap_lon=None,
         use_cf=None,
-    ):
+    ) -> xr.DataArray:
+
         mask_3D = _mask_3D_frac_approx(
             polygons=self.polygons,
             numbers=self.numbers,
@@ -485,7 +494,7 @@ class Regions:
 
     mask_3D_frac_approx.__doc__ = _inject_mask_docstring(which="frac", is_gpd=False)
 
-    def to_dataframe(self):
+    def to_dataframe(self) -> pd.DataFrame:
         """Convert this region into a pandas.DataFrame, excluding polygons.
 
         See Also
@@ -503,7 +512,7 @@ class Regions:
         df = pd.DataFrame.from_dict(data).set_index("numbers")
         return df
 
-    def to_geodataframe(self):
+    def to_geodataframe(self) -> gp.GeoDataFrame:
         """Convert this region into a geopandas.GeoDataFrame.
 
         Use ``Regions.from_geodataframe`` to round-trip a geodataframe created with
@@ -529,7 +538,7 @@ class Regions:
 
         return df
 
-    def to_geoseries(self):
+    def to_geoseries(self) -> gp.GeoSeries:
         """Convert this region into a geopandas.GeoSeries.
 
         See Also
@@ -605,10 +614,9 @@ class Regions:
             overlap=overlap,
         )
 
-
-# add the plotting methods
-Regions.plot = _plot
-Regions.plot_regions = _plot_regions
+    # add the plotting methods
+    plot = _plot
+    plot_regions = _plot_regions
 
 
 # =============================================================================
@@ -655,7 +663,7 @@ class _OneRegion:
         self._centroid = None
         self._bounds = None
 
-        if isinstance(outline, (Polygon, MultiPolygon)):
+        if isinstance(outline, Polygon | MultiPolygon):
             self.polygon = outline
             self._coords = None
         else:

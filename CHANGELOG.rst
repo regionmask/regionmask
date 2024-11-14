@@ -19,7 +19,10 @@ Breaking Changes
 
 - Drop support for pygeos, which was replaced by shapely v2.0 (:pull:`519`).
 - Require shapely v2.0+ (:pull:`521`).
+- Removed support for Python 3.9 (:pull:`555`).
 - Bumped minimum rasterio version to v1.3 (:issue:`347`).
+- Finalized the deprecation of positional arguments (:pull:`552`).
+- Remove ``lon_name`` and ``lat_name`` keyword arguments of the mask functions deprecated in v0.10.0 (:pull:`557`).
 
 - The minimum versions of some dependencies were changed (:pull:`541`, :pull:`546`, :pull:`521`, and :pull:`547`):
 
@@ -42,6 +45,9 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- Add python 3.12 to list of supported versions (:pull:`565`).
+- Started typing regionmask (:pull:`569`).
+
 Deprecations
 ~~~~~~~~~~~~
 
@@ -62,6 +68,10 @@ Internal Changes
 
 - Get upstream-dev CI to run with numpy 2.0 (:pull:`522`) and fix accrued upstream failures
   for rasterio (:pull:`524`), cartopy (:pull:`525`), and matplotlib (:pull:`527`).
+- Avoid usage of `shapely.vectorized` which might be removed in a future version of
+  shapely (:pull:`554`).
+- Made ``Regions.region_ids`` private (:pull:`560`).
+- Use pre-commit-ci to ensure formatting conventions are enforced (:pull:`559`).
 
 
 .. _changelog.0.12.1:

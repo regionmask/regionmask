@@ -118,9 +118,9 @@ def test_mask_percentage():
 
     result = r.mask_3D_frac_approx(lon, lat)
 
-    expected = [[[1, 0.5], [0.5, 0.25]]]
+    expected_ = [[[1, 0.5], [0.5, 0.25]]]
     expected = xr.DataArray(
-        expected,
+        expected_,
         dims=("region", "lat", "lon"),
         coords={
             "lat": lat,
@@ -147,9 +147,9 @@ def test_mask_percentage_poly():
     result = r.mask_3D_frac_approx(lon, lat)
 
     # these should be [[[0.5, 0.75], ]] but due to the method they are maximally wrong
-    expected = [[[0.45, 0.8], [0.0, 0.25]]]
+    expected_ = [[[0.45, 0.8], [0.0, 0.25]]]
     expected = xr.DataArray(
-        expected,
+        expected_,
         dims=("region", "lat", "lon"),
         coords={
             "lat": lat,
@@ -177,9 +177,9 @@ def test_mask_percentage_coord_names(lat_name, lon_name):
 
     result = r.mask_3D_frac_approx(ds[lon_name], ds[lat_name])
 
-    expected = [[[1, 0.5], [0.5, 0.25]]]
+    expected_ = [[[1, 0.5], [0.5, 0.25]]]
     expected = xr.DataArray(
-        expected,
+        expected_,
         dims=("region", lat_name, lon_name),
         coords={
             lat_name: lat,
@@ -202,9 +202,9 @@ def test_mask_percentage_overlap():
     r = shapely.geometry.box(0, -90, 360, 90)
     r = regionmask.Regions([r, r])
 
-    expected = np.ones((2,) + lat.shape + lon.shape)
+    expected_ = np.ones((2,) + lat.shape + lon.shape)
     expected = xr.DataArray(
-        expected,
+        expected_,
         dims=("region", "lat", "lon"),
         coords={
             "region": [0, 1],
@@ -221,7 +221,7 @@ def test_mask_percentage_overlap():
 
 
 @pytest.mark.parametrize("lon_range", ((0, 360), (-180, 180)))
-def test_mask_percentage_maybe_flip(lon_range):
+def test_mask_percentage_maybe_flip(lon_range: tuple[int, int]):
     # all points should be 1 for a global mask
 
     lat = np.arange(90, -91, -5)
@@ -230,9 +230,9 @@ def test_mask_percentage_maybe_flip(lon_range):
     r = shapely.geometry.box(0, -90, 360, 90)
     r = regionmask.Regions([r])
 
-    expected = np.ones((1,) + lat.shape + lon.shape, dtype=bool)
+    expected_ = np.ones((1,) + lat.shape + lon.shape, dtype=bool)
     expected = xr.DataArray(
-        expected,
+        expected_,
         dims=("region", "lat", "lon"),
         coords={
             "region": [0],

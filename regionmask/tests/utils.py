@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 import xarray as xr
@@ -79,7 +78,7 @@ def expected_mask_3D(drop, coords=None, overlap=False, lon_name="lon", lat_name=
             "names": ("region", [f"Region{i}" for i in numbers]),
         }
     )
-    dims = ("region",) + (lat_name, lon_name)
+    dims = ("region", lat_name, lon_name)
     attrs = {"standard_name": "region"}
 
     expected = xr.DataArray(mask, coords=coords, dims=dims, name="mask", attrs=attrs)
@@ -94,18 +93,18 @@ class DefinedRegion:
     n_regions: int
     overlap: bool = False
     skip_mask_test: bool = False
-    warn_bounds: Optional[bool] = False
-    bounds: Optional[list[float]] = None
+    warn_bounds: bool | None = False
+    bounds: dict[str, float] | None = None
 
     def __str__(self):
         # used as name (`ids`) for parametrize
         return self.region_name
 
 
-bounds_lon_min_180 = {"min_lon": -180}
-bounds_lat_min_90 = {"min_lat": -90}
-bounds_lon_max_180 = {"max_lon": 180}
-bounds_lat_max_90 = {"max_lat": 90}
+bounds_lon_min_180 = {"min_lon": -180.0}
+bounds_lat_min_90 = {"min_lat": -90.0}
+bounds_lon_max_180 = {"max_lon": 180.0}
+bounds_lat_max_90 = {"max_lat": 90.0}
 
 bounds_lon_global = bounds_lon_min_180 | bounds_lon_max_180
 bounds_lat_global = bounds_lat_min_90 | bounds_lat_max_90

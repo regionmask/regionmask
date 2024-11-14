@@ -27,7 +27,7 @@ from regionmask.tests.utils import (
 )
 
 MASK_FUNCS = [
-    _mask_rasterize,
+    _mask_rasterize,  # type:ignore[list-item]
     _mask_shapely,
 ]
 
@@ -158,24 +158,6 @@ def test_mask_ndim_ne_1_2(ndim):
 
     with pytest.raises(ValueError, match="1D or 2D data required"):
         dummy_region.mask(lon, lat)
-
-
-@pytest.mark.parametrize("lon_name", ["lon", "longitude"])
-@pytest.mark.parametrize("lat_name", ["lat", "latitude"])
-@pytest.mark.parametrize("method", MASK_METHODS)
-def test_mask_obj(lon_name, lat_name, method):
-
-    expected = expected_mask_2D(lat_name=lat_name, lon_name=lon_name)
-
-    obj = {lon_name: dummy_ds.lon.values, lat_name: dummy_ds.lat.values}
-    with pytest.warns(
-        FutureWarning, match="Passing 'lon_name' and 'lat_name' was deprecated"
-    ):
-        result = dummy_region.mask(
-            obj, method=method, lon_name=lon_name, lat_name=lat_name
-        )
-
-    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.filterwarnings("ignore:No gridpoint belongs to any region.")
@@ -631,26 +613,6 @@ def test_mask_3D_empty(method):
 
     assert result.shape == (3, 2, 2)
     assert not result.any()
-
-
-@pytest.mark.filterwarnings("ignore:rename .* does not create an index")
-@pytest.mark.parametrize("lon_name", ["lon", "longitude"])
-@pytest.mark.parametrize("lat_name", ["lat", "latitude"])
-@pytest.mark.parametrize("drop", [True, False])
-@pytest.mark.parametrize("method", MASK_METHODS)
-def test_mask_3D_obj(lon_name, lat_name, drop, method):
-
-    expected = expected_mask_3D(drop, lon_name=lon_name, lat_name=lat_name)
-
-    obj = dummy_ds.rename(lon=lon_name, lat=lat_name)
-    with pytest.warns(
-        FutureWarning, match="Passing 'lon_name' and 'lat_name' was deprecated"
-    ):
-        result = dummy_region.mask_3D(
-            obj, method=method, drop=drop, lon_name=lon_name, lat_name=lat_name
-        )
-
-    xr.testing.assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("meth", ["mask", "mask_3D"])

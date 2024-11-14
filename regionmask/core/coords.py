@@ -13,7 +13,7 @@ def _get_coords(lon_or_obj, lat, lon_name, lat_name, use_cf):
     if lat is not None:
         return lon_or_obj, lat
 
-    is_xr_object = isinstance(lon_or_obj, (xr.Dataset, xr.DataArray))
+    is_xr_object = isinstance(lon_or_obj, xr.Dataset | xr.DataArray)
 
     if use_cf is None and has_cf_xarray and is_xr_object:
         return _get_coords_cf_or_name(lon_or_obj, lon_name, lat_name)
@@ -85,7 +85,7 @@ def _get_coords_cf(obj):
     if not has_cf_xarray:
         raise ImportError("cf_xarray required")
 
-    if not isinstance(obj, (xr.Dataset, xr.DataArray)):
+    if not isinstance(obj, xr.Dataset | xr.DataArray):
         raise TypeError(
             "Expected a ``Dataset`` or ``DataArray`` for ``use_cf=True``, got"
             f" {type(obj)}"
