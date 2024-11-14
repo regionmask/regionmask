@@ -14,7 +14,7 @@ def _flatten_polygons(polygons, error="raise"):
 
     from shapely.geometry import MultiPolygon, Polygon
 
-    if error not in ["raise", "skip"]:
+    if error not in ("raise", "skip"):
         raise ValueError("'error' must be one of 'raise' and 'skip'")
 
     polys = []
@@ -42,7 +42,7 @@ def _maybe_to_dict(keys, values):
 
 def _create_dict_of_numbered_string(numbers, string):
 
-    return {number: string + str(number) for number in numbers}
+    return {number: f"{string}{number}" for number in numbers}
 
 
 def _sanitize_names_abbrevs(numbers, values, default):
@@ -105,7 +105,7 @@ def _wrapAngle(lon, wrap_lon=True, is_unstructured=False):
     return lon
 
 
-def _is_180(lon_min, lon_max, msg_add=""):
+def _is_180(lon_min, lon_max, *, msg_add=""):
 
     lon_min = np.round(lon_min, 6)
     lon_max = np.round(lon_max, 6)
@@ -187,7 +187,7 @@ def equally_spaced(*args):
     return all(np.allclose(d_arg[0], d_arg) for d_arg in d_args)
 
 
-def _equally_spaced_on_split_lon(lon):
+def _equally_spaced_on_split_lon(lon) -> bool:
 
     lon = np.asarray(lon)
 
@@ -216,7 +216,7 @@ def _find_splitpoint(lon):
     return split_point.squeeze() + 1
 
 
-def _sample_coords(coord):
+def _sample_coords(coord) -> np.ndarray:
     """Sample coords for percentage overlap."""
 
     n = 10
@@ -250,7 +250,7 @@ def unpackbits(numbers, num_bits):
     return np.bitwise_and(numbers, mask, out=out, casting="unsafe").reshape(shape)
 
 
-def flatten_3D_mask(mask_3D):
+def flatten_3D_mask(mask_3D: xr.DataArray) -> xr.DataArray:
     """flatten 3D masks
 
     Parameters

@@ -5,10 +5,11 @@
 
 import copy
 import warnings
-import xarray as xr
+
 import geopandas as gp
 import numpy as np
 import pandas as pd
+import xarray as xr
 from shapely.geometry import MultiPolygon, Polygon
 
 from regionmask.core.formatting import _display
@@ -125,9 +126,9 @@ class Regions:
         numbers=None,
         names=None,
         abbrevs=None,
-        name="unnamed",
-        source=None,
-        overlap=None,
+        name: str = "unnamed",
+        source: str | None = None,
+        overlap: bool | None = None,
     ) -> None:
 
         if isinstance(outlines, np.ndarray | Polygon | MultiPolygon):
@@ -151,10 +152,10 @@ class Regions:
             n: _OneRegion(n, names[n], abbrevs[n], outlines[n]) for n in sorted(numbers)
         }
 
-        self.regions = regions
-        self.name = name
-        self.source = source
-        self.overlap = overlap
+        self.regions: dict[int, _OneRegion] = regions
+        self.name: str = name
+        self.source: str | None = source
+        self.overlap: bool | None = overlap
 
     def __getitem__(self, key):
         """subset of Regions or Region
@@ -184,10 +185,10 @@ class Regions:
             new_self.regions = regions
             return new_self
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.regions)
 
-    def map_keys(self, key):
+    def map_keys(self, key) -> int | list[int]:
         """map from names and abbrevs of the regions to numbers
 
         Parameters
@@ -199,7 +200,10 @@ class Regions:
         Returns
         -------
         mapped_key : int or list of int
-        Raises a KeyError if the key does not exist.
+
+        Raises
+        ------
+        KeyError if the key does not exist.
 
         """
 
@@ -255,7 +259,7 @@ class Regions:
         return [r.name for r in self.regions.values()]
 
     @property
-    def numbers(self) -> list[int | float]:
+    def numbers(self) -> list[int]:
         """list of the numbers of the regions"""
         return [r.number for r in self.regions.values()]
 
@@ -273,7 +277,7 @@ class Regions:
         return [r.coords for r in self.regions.values()]
 
     @property
-    def polygons(self):
+    def polygons(self) -> list[Polygon | MultiPolygon]:
         """list of shapely Polygon/ MultiPolygon of the regions"""
         return [r.polygon for r in self.regions.values()]
 
@@ -301,7 +305,7 @@ class Regions:
         return _is_180(lon_min, lon_max)
 
     @property
-    def lon_360(self):
+    def lon_360(self) -> bool:
         """if the regions extend from 0 to 360"""
         return not self.lon_180
 
@@ -576,10 +580,9 @@ class Regions:
             overlap=overlap,
         )
 
-
-# add the plotting methods
-Regions.plot = _plot
-Regions.plot_regions = _plot_regions
+    # add the plotting methods
+    plot = _plot
+    plot_regions = _plot_regions
 
 
 # =============================================================================
