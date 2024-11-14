@@ -60,9 +60,4 @@ module = [
   "shapely.*",
 ]
 
-[tool.pyright]
-include = ["regionmask"]
 
-stubPath = "src/stubs"
-
-reportMissingImports = false
