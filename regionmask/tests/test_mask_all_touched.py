@@ -154,7 +154,7 @@ from affine import Affine
 from rasterio import features
 
 transform = Affine(1.0, 0.0, 0.0, 0.0, 1.0, 0.0)
-poly = shapely.geometry.box(1 - 1e-5, 1.5, 8.5, 9. + 1e-5, ccw=False)
+poly = shapely.geometry.box(1 - 1e-5, 1.5, 8.5, 9.0 + 1e-5, ccw=False)
 
 raster = features.rasterize(
     ((poly, 1),),
@@ -171,7 +171,7 @@ from affine import Affine
 from rasterio import features
 
 transform = Affine(1.0, 0.0, 0.0, 0.0, 1.0, 0.0)
-poly = shapely.geometry.box(1, 1.5, 9.0 + 1e-5, 9., ccw=False)
+poly = shapely.geometry.box(1, 1.5, 9.0 + 1e-5, 9.0, ccw=False)
 
 raster = features.rasterize(
     ((poly, 1),),
@@ -182,8 +182,6 @@ raster = features.rasterize(
 )
 print(raster.sum())
 raster
-
-
 
 
 import shapely
@@ -193,7 +191,7 @@ from rasterio import features
 transform = Affine(-1.0, 0.0, 10.0 - 1e-8, 0.0, -1.0, 10.0 - 1e-10)
 transform = Affine(-1.0, 0.0, 10.0, 0.0, -1.0, 10.0)
 
-poly = shapely.geometry.box(1, 1, 9-1e-4, 9, ccw=False)
+poly = shapely.geometry.box(1, 1, 9 - 1e-4, 9, ccw=False)
 
 raster = features.rasterize(
     ((poly, 1),),
@@ -204,4 +202,3 @@ raster = features.rasterize(
 )
 print(raster.sum())
 raster
-
