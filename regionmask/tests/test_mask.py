@@ -27,7 +27,7 @@ from regionmask.tests.utils import (
 )
 
 MASK_FUNCS = [
-    _mask_rasterize,
+    _mask_rasterize,  # type:ignore[list-item]
     _mask_shapely,
 ]
 

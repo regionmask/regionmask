@@ -1,6 +1,6 @@
 """String formatting routines for __repr__."""
 
-from pandas.io.formats import console
+from pandas.io.formats import console  # type:ignore[attr-defined]
 
 
 def maybe_truncate(obj, maxlen=500):

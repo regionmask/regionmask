@@ -158,7 +158,7 @@ def _mask(
     wrap_lon=None,
     as_3D=False,
     use_cf=None,
-):
+) -> xr.DataArray:
     """
     internal function to create a mask
     """
@@ -235,7 +235,7 @@ def _mask(
     elif method == "rasterize_split":
         mask_func = _mask_rasterize_split
     elif method == "shapely":
-        mask_func = _mask_shapely
+        mask_func = _mask_shapely  # type:ignore[assignment]
         kwargs = {"is_unstructured": is_unstructured}
 
     mask = mask_func(lon_arr, lat_arr, polygons, numbers=numbers, as_3D=as_3D, **kwargs)
@@ -269,7 +269,7 @@ def _mask_3D_frac_approx(
     wrap_lon=None,
     overlap=None,
     use_cf=None,
-):
+) -> xr.DataArray:
 
     # directly creating 3D masks seems to be faster in general (strangely due to the
     # memory layout of the reshaped mask)
@@ -330,7 +330,7 @@ def _mask_2D(
     wrap_lon=None,
     use_cf=None,
     overlap=None,
-):
+) -> xr.DataArray:
 
     # NOTE: this is already checked in Regions.mask, and mask_geopandas
     # double check here if this method is ever made public
@@ -378,7 +378,7 @@ def _mask_3D(
     wrap_lon=None,
     overlap=None,
     use_cf=None,
-):
+) -> xr.DataArray:
 
     as_3D = overlap or overlap is None
 

@@ -4,7 +4,7 @@
 
 from regionmask.core.regions import Regions
 
-outlines = dict()
+outlines: dict[int, tuple[tuple[int, int], ...]] = dict()
 outlines[1] = ((110, -45), (155, -45), (155, -11), (110, -11))
 outlines[2] = ((-82, -20), (-34, -20), (-34, 12), (-82, 12))
 outlines[3] = ((-76, -56), (-40, -56), (-40, -20), (-76, -20))

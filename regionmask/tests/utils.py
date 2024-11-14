@@ -94,17 +94,17 @@ class DefinedRegion:
     overlap: bool = False
     skip_mask_test: bool = False
     warn_bounds: bool | None = False
-    bounds: list[float] | None = None
+    bounds: dict[str, float] | None = None
 
     def __str__(self):
         # used as name (`ids`) for parametrize
         return self.region_name
 
 
-bounds_lon_min_180 = {"min_lon": -180}
-bounds_lat_min_90 = {"min_lat": -90}
-bounds_lon_max_180 = {"max_lon": 180}
-bounds_lat_max_90 = {"max_lat": 90}
+bounds_lon_min_180 = {"min_lon": -180.0}
+bounds_lat_min_90 = {"min_lat": -90.0}
+bounds_lon_max_180 = {"max_lon": 180.0}
+bounds_lat_max_90 = {"max_lat": 90.0}
 
 bounds_lon_global = bounds_lon_min_180 | bounds_lon_max_180
 bounds_lat_global = bounds_lat_min_90 | bounds_lat_max_90

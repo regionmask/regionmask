@@ -56,15 +56,15 @@ def test_multi_polygon_input():
 
 def test_centroid():
 
-    outl = ((0, 0), (0, 1), (1, 1.0), (1, 0))
+    outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
 
     # normal
-    r = _OneRegion(1, "Unit Square", "USq", outl)
+    r = _OneRegion(1, "Unit Square", "USq", outl1)
     assert np.allclose(r.centroid, (0.5, 0.5))
 
     # superfluous point -> center should still be at (0.5, 0.5)
-    outl = ((0, 0), (0, 0.5), (0, 1), (1, 1.0), (1, 0))
-    r = _OneRegion(1, "Unit Square", "USq", outl)
+    outl2 = ((0, 0), (0, 0.5), (0, 1), (1, 1.0), (1, 0))
+    r = _OneRegion(1, "Unit Square", "USq", outl2)
     assert np.allclose(r.centroid, (0.5, 0.5))
 
 
@@ -86,12 +86,12 @@ def test_bounds():
 
 def test_wrong_region_outlines():
 
-    outl = (((0, 0), (0, 1)), ((1, 1.0), (1, 0)))
+    outl1 = (((0, 0), (0, 1)), ((1, 1.0), (1, 0)))
 
     with pytest.raises(ValueError, match="Outline must be 2D"):
-        _OneRegion(1, "Unit Square", "USq", outl)
+        _OneRegion(1, "Unit Square", "USq", outl1)
 
-    outl = ((0, 0, 0), (0, 1, 1), (1, 1, 1), (1, 0, 0))
+    outl2 = ((0, 0, 0), (0, 1, 1), (1, 1, 1), (1, 0, 0))
 
     with pytest.raises(ValueError, match="Outline must have Nx2 elements"):
-        _OneRegion(1, "Unit Square", "USq", outl)
+        _OneRegion(1, "Unit Square", "USq", outl2)

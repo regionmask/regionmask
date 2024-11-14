@@ -36,17 +36,19 @@ def test_segmentize():
 
     result = segmentize(outl1_closed, tolerance=0.5)
 
-    expected = [
-        [0, 0],
-        [0, 0.5],
-        [0, 1],
-        [0.5, 1],
-        [1, 1.0],
-        [1, 0.5],
-        [1, 0],
-        [0.5, 0],
-        [0, 0],
-    ]
+    expected = np.array(
+        [
+            [0, 0],
+            [0, 0.5],
+            [0, 1],
+            [0.5, 1],
+            [1, 1.0],
+            [1, 0.5],
+            [1, 0],
+            [0.5, 0],
+            [0, 0],
+        ]
+    )
 
     assert np.allclose(expected, result)
 
