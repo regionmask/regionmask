@@ -70,6 +70,7 @@ rediraffe_redirects = {
 
 
 nb_kernel_rgx_aliases = {".*": "python3"}
+nb_execution_show_tb = True
 nb_execution_timeout = 60
 
 PROLOG = """\
