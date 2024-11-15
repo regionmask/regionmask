@@ -46,7 +46,7 @@ Enhancements
 ~~~~~~~~~~~~
 
 - Add python 3.12 to list of supported versions (:pull:`565`).
-- Started typing regionmask (:pull:`569`, :pull:`571`).
+- Started typing regionmask (:pull:`569`, :pull:`571`, :pull:`572`).
 
 Deprecations
 ~~~~~~~~~~~~

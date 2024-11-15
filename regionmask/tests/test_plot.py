@@ -1,4 +1,5 @@
 import contextlib
+from typing import Any, TypedDict, cast
 
 from packaging.version import Version
 
@@ -14,6 +15,7 @@ try:
 except ImportError:  # pragma: no cover
     pass
 
+
 import numpy as np
 import pytest
 from shapely.geometry import MultiPolygon, Point, Polygon
@@ -27,6 +29,11 @@ from regionmask.core.plot import (
     _polygons_coords,
 )
 from regionmask.tests import assert_no_warnings, requires_cartopy, requires_matplotlib
+
+NO_ADD_ARTISTS = TypedDict(
+    "NO_ADD_ARTISTS", {"tolerance": Any, "add_label": Any, "add_coastlines": Any}
+)
+
 
 # =============================================================================
 
@@ -263,14 +270,14 @@ def test_plot_regions_projection() -> None:
 
     # if none is given -> no projection
     with figure_context():
-        ax = r1.plot_regions(tolerance=None)
-        assert not hasattr(ax, "projection")
+        ax1 = r1.plot_regions(tolerance=None)
+        assert not hasattr(ax1, "projection")
 
     # projection given with axes is respected
     with figure_context() as f:
-        ax = f.subplots(subplot_kw=dict(projection=ccrs.Mollweide()))
-        ax = r1.plot_regions(tolerance=None, ax=ax)
-        assert isinstance(ax.projection, ccrs.Mollweide)
+        ax2 = f.subplots(subplot_kw=dict(projection=ccrs.Mollweide()))
+        ax2 = r1.plot_regions(tolerance=None, ax=ax2)
+        assert isinstance(ax2.projection, ccrs.Mollweide)
 
 
 # -----------------------------------------------------------------------------
@@ -415,8 +422,13 @@ def test_plot_regions_lines_tolerance_cartopy_axes() -> None:
         ax = r_large.plot_regions(ax=plt.axes(projection=ccrs.PlateCarree()))
 
         lines = ax.collections[0].get_paths()
-        np.testing.assert_allclose(lines[0].vertices.shape, expected)
-        np.testing.assert_allclose(lines[1].vertices.shape, expected)
+
+        # NOTE: Path.vertices is wrongly typed as ArrayLike, must be ndarray
+        vertices = cast(np.ndarray, lines[0].vertices)
+        np.testing.assert_allclose(vertices.shape, expected)
+
+        vertices = cast(np.ndarray, lines[1].vertices)
+        np.testing.assert_allclose(vertices.shape, expected)
 
 
 # -----------------------------------------------------------------------------
@@ -614,7 +626,7 @@ def get_artist_or_collection(ax):
 @requires_cartopy
 def test_plot_ocean() -> None:
 
-    kwargs = dict(tolerance=None, add_label=False, add_coastlines=False)
+    kwargs: NO_ADD_ARTISTS = dict(tolerance=None, add_label=False, add_coastlines=False)
 
     # no ocean per default
     with figure_context():
@@ -648,7 +660,7 @@ def test_plot_ocean() -> None:
 @requires_cartopy
 def test_plot_land() -> None:
 
-    kwargs = dict(tolerance=None, add_label=False, add_coastlines=False)
+    kwargs: NO_ADD_ARTISTS = dict(tolerance=None, add_label=False, add_coastlines=False)
 
     # no land per default
     with figure_context():
@@ -680,7 +692,9 @@ def test_plot_land() -> None:
 @requires_cartopy
 def test_plot_add_coastlines() -> None:
 
-    kwargs = dict(tolerance=None, add_label=False)
+    NO_TOL_LBL = TypedDict("NO_TOL_LBL", {"tolerance": Any, "add_label": Any})
+
+    kwargs: NO_TOL_LBL = dict(tolerance=None, add_label=False)
 
     # coastlines are added per default
     with figure_context():
@@ -817,4 +831,4 @@ def test_plot_unused_kws(feature_name, kws_name) -> None:
             RuntimeWarning,
             match=f"'{kws_name}' are passed but '{feature_name}' is False",
         ):
-            r1.plot(**{feature_name: False, kws_name: {}})
+            r1.plot(**{feature_name: False, kws_name: {}})  # type: ignore[arg-type]
