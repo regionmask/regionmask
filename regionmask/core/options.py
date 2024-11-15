@@ -1,7 +1,14 @@
 # adapted from xarray under the terms of its license - see licences/XARRAY_LICENSE
 
+from typing import TypedDict
 
-OPTIONS = {
+
+class _OPTIONS(TypedDict):
+    display_max_rows: int
+    cache_dir: str | None
+
+
+OPTIONS: _OPTIONS = {
     "display_max_rows": 10,
     "cache_dir": None,
 }

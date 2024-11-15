@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import warnings
+from typing import Literal
 
 import numpy as np
 import shapely
@@ -152,12 +155,12 @@ def _inject_mask_docstring(*, which, is_gpd):
 def _mask(
     polygons,
     numbers,
-    lon_or_obj,
-    lat=None,
+    lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+    lat: np.typing.ArrayLike | xr.DataArray | None = None,
     method=None,
-    wrap_lon=None,
-    as_3D=False,
-    use_cf=None,
+    wrap_lon: None | bool | Literal[180, 360] = None,
+    as_3D: bool = False,
+    use_cf: bool | None = None,
 ) -> xr.DataArray:
     """
     internal function to create a mask
@@ -263,12 +266,12 @@ class InvalidCoordsError(ValueError):
 def _mask_3D_frac_approx(
     polygons,
     numbers,
-    lon_or_obj,
-    lat=None,
+    lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+    lat: np.typing.ArrayLike | xr.DataArray | None = None,
     drop=True,
-    wrap_lon=None,
-    overlap=None,
-    use_cf=None,
+    wrap_lon: None | bool | Literal[180, 360] = None,
+    overlap: bool | None = None,
+    use_cf: bool | None = None,
 ) -> xr.DataArray:
 
     # directly creating 3D masks seems to be faster in general (strangely due to the
@@ -276,16 +279,16 @@ def _mask_3D_frac_approx(
     as_3D = True
     n = 10
 
-    lon, lat = _get_coords(lon_or_obj, lat, "lon", "lat", use_cf)
-    backend = _determine_method(lon, lat)
+    lon_, lat_ = _get_coords(lon_or_obj, lat, "lon", "lat", use_cf)
+    backend = _determine_method(lon_, lat_)
 
     if backend not in ("rasterize", "rasterize_flip"):
         raise InvalidCoordsError("'lon' and 'lat' must be 1D and equally spaced.")
 
-    if np.nanmin(lat) < -90 or np.nanmax(lat) > 90:
+    if np.nanmin(lat_) < -90 or np.nanmax(lat_) > 90:
         raise InvalidCoordsError("lat must be between -90 and +90")
 
-    lon_sampled, lat_sampled = _sample_coords(lon), _sample_coords(lat)
+    lon_sampled, lat_sampled = _sample_coords(lon_), _sample_coords(lat_)
 
     ds = xr.Dataset(coords={"lon": lon_sampled, "lat": lat_sampled})
 
@@ -299,7 +302,7 @@ def _mask_3D_frac_approx(
         use_cf=use_cf,
     ).values
 
-    mask_reshaped = mask_sampled.reshape(-1, lat.size, n, lon.size, n)
+    mask_reshaped = mask_sampled.reshape(-1, lat_.size, n, lon_.size, n)
     mask = mask_reshaped.mean(axis=(2, 4))
 
     # maybe fix edges as 90°N/ S
@@ -312,7 +315,7 @@ def _mask_3D_frac_approx(
         mask[:, 0] = e1
         mask[:, -1] = e2
 
-    mask = _mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat")
+    mask = _mask_to_dataarray(mask, lon_, lat_, lon_name="lon", lat_name="lat")
 
     mask_3D = _3D_to_3D_mask(mask, numbers, drop)
 
@@ -324,12 +327,12 @@ def _mask_3D_frac_approx(
 def _mask_2D(
     polygons,
     numbers,
-    lon_or_obj,
-    lat=None,
+    lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+    lat: np.typing.ArrayLike | xr.DataArray | None = None,
     method=None,
-    wrap_lon=None,
-    use_cf=None,
-    overlap=None,
+    wrap_lon: None | bool | Literal[180, 360] = None,
+    use_cf: bool | None = None,
+    overlap: bool | None = None,
 ) -> xr.DataArray:
 
     # NOTE: this is already checked in Regions.mask, and mask_geopandas
@@ -371,13 +374,13 @@ def _mask_2D(
 def _mask_3D(
     polygons,
     numbers,
-    lon_or_obj,
-    lat=None,
-    drop=True,
+    lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+    lat: np.typing.ArrayLike | xr.DataArray | None = None,
+    drop: bool = True,
     method=None,
-    wrap_lon=None,
-    overlap=None,
-    use_cf=None,
+    wrap_lon: None | bool | Literal[180, 360] = None,
+    overlap: bool | None = None,
+    use_cf: bool | None = None,
 ) -> xr.DataArray:
 
     as_3D = overlap or overlap is None
@@ -411,7 +414,7 @@ def _mask_3D(
     return mask_3D
 
 
-def _2D_to_3D_mask(mask, numbers, drop):
+def _2D_to_3D_mask(mask: xr.DataArray, numbers, drop: bool) -> xr.DataArray:
     # TODO: unify with _3D_to_3D_mask
 
     isnan = np.isnan(mask.values)
@@ -434,8 +437,8 @@ def _2D_to_3D_mask(mask, numbers, drop):
 
         return mask_3D
 
-    mask_3D = [(mask == num) for num in numbers]
-    mask_3D = xr.concat(mask_3D, dim="region", compat="override", coords="minimal")
+    lst_msk = [(mask == num) for num in numbers]
+    mask_3D = xr.concat(lst_msk, dim="region", compat="override", coords="minimal")
     mask_3D = mask_3D.assign_coords(region=("region", numbers))
 
     if np.all(isnan):
@@ -448,7 +451,7 @@ def _2D_to_3D_mask(mask, numbers, drop):
     return mask_3D
 
 
-def _3D_to_3D_mask(mask_3D, numbers, drop):
+def _3D_to_3D_mask(mask_3D: xr.DataArray, numbers, drop: bool) -> xr.DataArray:
     # TODO: unify with _2D_to_3D_mask
 
     any_masked = mask_3D.any(mask_3D.dims[1:])
@@ -482,7 +485,7 @@ def _3D_to_3D_mask(mask_3D, numbers, drop):
     return mask_3D
 
 
-def _3D_to_2D_mask(mask_3D, numbers):
+def _3D_to_2D_mask(mask_3D: xr.DataArray, numbers) -> xr.DataArray:
 
     # NOTE: very similar to regionmask.core.utils.flatten_3D_mask
 
@@ -511,7 +514,9 @@ def _3D_to_2D_mask(mask_3D, numbers):
     return mask_2D
 
 
-def _determine_method(lon, lat):
+def _determine_method(
+    lon, lat
+) -> Literal["rasterize", "rasterize_flip", "rasterize_split", "shapely"]:
     """find method to be used -> prefers faster methods"""
 
     if equally_spaced(lon, lat):
@@ -530,7 +535,7 @@ def _determine_method(lon, lat):
     return "shapely"
 
 
-def _mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat"):
+def _mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat") -> xr.DataArray:
 
     if sum(isinstance(c, xr.DataArray) for c in (lon, lat)) == 1:
         raise ValueError("Cannot handle coordinates with mixed types!")
@@ -549,20 +554,22 @@ def _mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat"):
     return ds.assign(mask=(dims, mask)).mask
 
 
-def _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name):
+def _numpy_coords_to_dataarray(
+    lon, lat, lon_name, lat_name
+) -> tuple[xr.DataArray, xr.DataArray]:
     # TODO: simplify if passing lon_name and lat_name is no longer supported
 
     dims2D = (f"{lat_name}_idx", f"{lon_name}_idx")
 
     lon = np.asarray(lon)
     dims = dims2D if lon.ndim == 2 else lon_name
-    lon = xr.Dataset(coords={lon_name: (dims, lon)})[lon_name]
+    lon_ = xr.Dataset(coords={lon_name: (dims, lon)})[lon_name]
 
     lat = np.asarray(lat)
     dims = dims2D if lat.ndim == 2 else lat_name
-    lat = xr.Dataset(coords={lat_name: (dims, lat)})[lat_name]
+    lat_ = xr.Dataset(coords={lat_name: (dims, lat)})[lat_name]
 
-    return lon, lat
+    return lon_, lat_
 
 
 def _mask_edgepoints_shapely(
@@ -573,7 +580,7 @@ def _mask_edgepoints_shapely(
     numbers,
     is_unstructured=False,
     as_3D=False,
-):
+) -> np.ndarray:
 
     LON, LAT, shape = _get_LON_LAT_shape(
         lon, lat, numbers, is_unstructured=is_unstructured, as_3D=as_3D
@@ -630,7 +637,7 @@ def _mask_edgepoints_shapely(
 
 def _mask_shapely(
     lon, lat, polygons, numbers, fill=np.nan, is_unstructured=False, as_3D=False
-):
+) -> np.ndarray:
     """create a mask using shapely.STRtree"""
 
     lon, lat = _parse_input(lon, lat, polygons, fill, numbers)

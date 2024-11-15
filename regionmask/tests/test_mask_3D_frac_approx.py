@@ -1,3 +1,5 @@
+from typing import Any, Literal, TypedDict
+
 import numpy as np
 import pytest
 import shapely
@@ -22,10 +24,16 @@ def test_sample_coords() -> None:
 
 @pytest.mark.parametrize("dim", ["lon_or_obj", "lat"])
 @pytest.mark.parametrize("invalid_coords", ([0, 1, 3], [[0, 1, 2]]))
-def test_mask_percentage_wrong_coords(dim, invalid_coords) -> None:
+def test_mask_percentage_wrong_coords(
+    dim: Literal["lon_or_obj", "lat"], invalid_coords
+) -> None:
+
+    class LATLON(TypedDict):
+        lon_or_obj: Any
+        lat: Any
 
     valid_coords = [0, 1, 2]
-    latlon = {"lon_or_obj": valid_coords, "lat": valid_coords}
+    latlon: LATLON = {"lon_or_obj": valid_coords, "lat": valid_coords}
     # replace one of the coords with invalid values
     latlon[dim] = invalid_coords
 
