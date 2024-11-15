@@ -12,6 +12,7 @@ build:
     post_install:
       # install regionmask, needs to be editable
       - pip install -e .[docs]
+      - pip install git+https://github.com/pydata/xarray/
   tools:
     python: "3.12"
 
