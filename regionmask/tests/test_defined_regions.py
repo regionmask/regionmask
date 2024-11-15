@@ -38,12 +38,12 @@ def _test_region(defined_region):
 
 
 @pytest.mark.parametrize("defined_region", REGIONS_ALL, ids=str)
-def test_defined_region(defined_region):
+def test_defined_region(defined_region) -> None:
 
     _test_region(defined_region)
 
 
-def test_defined_regions_natural_earth_informative_error():
+def test_defined_regions_natural_earth_informative_error() -> None:
 
     with pytest.raises(
         AttributeError, match="The `natural_earth` regions have been removed."
@@ -51,7 +51,7 @@ def test_defined_regions_natural_earth_informative_error():
         defined_regions.natural_earth
 
 
-def test_defined_regions_attribute_error():
+def test_defined_regions_attribute_error() -> None:
 
     with pytest.raises(
         AttributeError,
@@ -60,14 +60,14 @@ def test_defined_regions_attribute_error():
         defined_regions.attr
 
 
-def test_natural_earth_wrong_version():
+def test_natural_earth_wrong_version() -> None:
     ne_wrong_version = NaturalEarth("v0.3.0", None)
 
     with pytest.raises(ValueError, match="version must"):
         ne_wrong_version.land_110
 
 
-def test_natural_earth_repr():
+def test_natural_earth_repr() -> None:
     actual = repr(defined_regions.natural_earth_v4_1_0)
     expected = "Region definitions from 'http://www.naturalearthdata.com' - v4.1.0"
     assert actual == expected
@@ -78,7 +78,7 @@ def test_natural_earth_repr():
 
 
 @pytest.mark.filterwarnings("ignore:.*does not quite extend")
-def test_fix_ocean_basins_50():
+def test_fix_ocean_basins_50() -> None:
     region = defined_regions.natural_earth_v4_1_0.ocean_basins_50
     assert "Mediterranean Sea Eastern Basin" in region.names
     assert "Ross Sea Eastern Basin" in region.names
@@ -90,7 +90,7 @@ def test_fix_ocean_basins_50():
 
 @pytest.mark.filterwarnings("ignore:.*does not quite extend")
 @requires_cartopy
-def test_natural_earth_loaded_as_utf8():
+def test_natural_earth_loaded_as_utf8() -> None:
     # GH 95
 
     region = defined_regions.natural_earth_v5_0_0.ocean_basins_50
@@ -98,7 +98,7 @@ def test_natural_earth_loaded_as_utf8():
     assert "Río de la Plata" in region.names
 
 
-def test_maybe_get_column():
+def test_maybe_get_column() -> None:
     class lowercase:
         @property
         def name(self):

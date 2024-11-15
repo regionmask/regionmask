@@ -5,7 +5,7 @@ from shapely.geometry import MultiPolygon, Polygon
 from regionmask import _OneRegion
 
 
-def test_attributes():
+def test_attributes() -> None:
 
     outl = ((0, 0), (0, 1), (1, 1.0), (1, 0))
     r = _OneRegion(1, "Unit Square", "USq", outl)
@@ -25,7 +25,7 @@ def test_attributes():
     assert r.__repr__() == "<regionmask._OneRegion: Unit Square (USq / 1)>"
 
 
-def test_polygon_input():
+def test_polygon_input() -> None:
 
     # polygon closes open paths
     outl = ((0, 0), (0, 1), (1, 1.0), (1, 0), (0, 0))
@@ -38,7 +38,7 @@ def test_polygon_input():
     assert r.polygon == outl_poly
 
 
-def test_multi_polygon_input():
+def test_multi_polygon_input() -> None:
 
     # polygon closes open paths
     outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0), (0, 0))
@@ -54,7 +54,7 @@ def test_multi_polygon_input():
     assert r.polygon == outl_poly
 
 
-def test_centroid():
+def test_centroid() -> None:
 
     outl1 = ((0, 0), (0, 1), (1, 1.0), (1, 0))
 
@@ -68,7 +68,7 @@ def test_centroid():
     assert np.allclose(r.centroid, (0.5, 0.5))
 
 
-def test_bounds():
+def test_bounds() -> None:
 
     outl = ((0, 0), (0, 1), (1, 1.0), (1, 0))
 
@@ -84,7 +84,7 @@ def test_bounds():
     assert np.allclose(r.bounds, (0, -1, 2, 1))
 
 
-def test_wrong_region_outlines():
+def test_wrong_region_outlines() -> None:
 
     outl1 = (((0, 0), (0, 1)), ((1, 1.0), (1, 0)))
 

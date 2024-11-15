@@ -2,7 +2,7 @@ from regionmask.core import formatting
 from regionmask.defined_regions import srex
 
 
-def test_maybe_truncate():
+def test_maybe_truncate() -> None:
     assert formatting.maybe_truncate("ß", 10) == "ß"
     assert formatting.maybe_truncate("abcdefghij", 8) == "abcde..."
 
@@ -10,7 +10,7 @@ def test_maybe_truncate():
         assert formatting.maybe_truncate("abcdefghij", max_length) == "..."
 
 
-def test_repr_srex():
+def test_repr_srex() -> None:
 
     result = srex.__repr__()
 
@@ -36,7 +36,7 @@ Regions:
     assert result == expected
 
 
-def test_display_metadata():
+def test_display_metadata() -> None:
 
     expected = ["overlap:  False"]
     result = formatting._display_metadata(None, False)

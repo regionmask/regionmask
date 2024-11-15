@@ -4,7 +4,7 @@ import pytest
 from regionmask.core.utils import _wrapAngle, _wrapAngle180, _wrapAngle360
 
 
-def test_wrapAngle360():
+def test_wrapAngle360() -> None:
 
     assert _wrapAngle360(0) == 0
     assert _wrapAngle360(1) == 1
@@ -22,7 +22,7 @@ def test_wrapAngle360():
     np.testing.assert_allclose(result, expected)
 
 
-def test_wrapAngle180():
+def test_wrapAngle180() -> None:
 
     assert _wrapAngle180(0) == 0
     assert _wrapAngle180(1) == 1
@@ -42,20 +42,20 @@ def test_wrapAngle180():
 
 
 @pytest.mark.parametrize("lon", (360, 180, [360], np.array(360), np.array([360])))
-def test_wrapAngle180_not_inplace(lon):
+def test_wrapAngle180_not_inplace(lon) -> None:
 
     result = _wrapAngle180(lon)
     assert lon != result
 
 
 @pytest.mark.parametrize("lon", (360, -10, [360], np.array(360), np.array([360])))
-def test_wrapAngle360_not_inplace(lon):
+def test_wrapAngle360_not_inplace(lon) -> None:
 
     result = _wrapAngle360(lon)
     assert lon != result
 
 
-def test_wrapAngle():
+def test_wrapAngle() -> None:
     lon = np.arange(0, 360)
     expected = _wrapAngle180(lon)
     result = _wrapAngle(lon)
@@ -87,7 +87,7 @@ def test_wrapAngle():
 
 @pytest.mark.parametrize("wrap_lon", [True, False, 180, 360])
 @pytest.mark.parametrize("lon", ([180.0, 190], [-180, 170]))
-def test_wrapAngle_nan(wrap_lon, lon):
+def test_wrapAngle_nan(wrap_lon, lon) -> None:
 
     result = _wrapAngle(lon + [np.nan], wrap_lon=wrap_lon)[:-1]
     expected = _wrapAngle(lon, wrap_lon=wrap_lon)
