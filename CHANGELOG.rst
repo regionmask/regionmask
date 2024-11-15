@@ -57,6 +57,8 @@ New regions
 Bug Fixes
 ~~~~~~~~~
 
+- Add `User-Agent` to request-headers when retrieving data (:pull:`570`)
+
 Docs
 ~~~~
 
