@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import warnings
 from collections.abc import Iterable
-from typing import Literal, Self, overload
+from typing import Literal, overload
 
 import geopandas as gp
 import numpy as np
@@ -163,7 +163,7 @@ class Regions:
     def __getitem__(self, key: str) -> _OneRegion: ...
 
     @overload
-    def __getitem__(self, key: Iterable) -> Self: ...
+    def __getitem__(self, key: Iterable) -> Regions: ...
 
     def __getitem__(self, key):
         """subset of Regions or Region
