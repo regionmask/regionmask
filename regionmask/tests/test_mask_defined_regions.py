@@ -32,7 +32,7 @@ def _test_mask_equal_defined_regions(region, ds, mask_method):
 @pytest.mark.filterwarnings("ignore:.*does not quite extend")
 @pytest.mark.parametrize("defined_region", REGIONS, ids=str)
 @pytest.mark.parametrize("ds", DATASETS)
-def test_mask_equal_defined_regions(defined_region, ds):
+def test_mask_equal_defined_regions(defined_region, ds) -> None:
 
     if defined_region.skip_mask_test:
         pytest.skip(reason=f"Manually skipping {defined_region.region_name}")

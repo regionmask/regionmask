@@ -8,14 +8,14 @@ from regionmask.defined_regions._ressources import _get_cache_dir
 
 
 @pytest.mark.parametrize("invalid_option", [None, "None", "__foo__"])
-def test_option_invalid_error(invalid_option):
+def test_option_invalid_error(invalid_option) -> None:
 
     with pytest.raises(ValueError, match="not in the set of valid options"):
 
         regionmask.set_options(invalid_option=invalid_option)
 
 
-def test_options_display_max_rows_errors():
+def test_options_display_max_rows_errors() -> None:
 
     default = regionmask.core.options.OPTIONS["display_max_rows"]
     assert default == 10
@@ -31,7 +31,7 @@ def test_options_display_max_rows_errors():
 
 
 @pytest.mark.parametrize("n, expected", [(3, 3), (5, 5), (8, 9), (25, 25), (None, 26)])
-def test_options_display_max_rows(n, expected):
+def test_options_display_max_rows(n, expected) -> None:
     # NOTE: pandas has a strange behaviour here
 
     from regionmask.defined_regions import srex
@@ -48,7 +48,7 @@ class A:
 
 
 @pytest.mark.parametrize("cache_dir", [5, str, A()])
-def test_set_cache_dir_error(cache_dir):
+def test_set_cache_dir_error(cache_dir) -> None:
 
     with pytest.raises(
         ValueError, match="cache_dir' must be None, a string or pathlib.Path"
@@ -56,7 +56,7 @@ def test_set_cache_dir_error(cache_dir):
         regionmask.set_options(cache_dir=cache_dir)
 
 
-def test_get_cache_dir():
+def test_get_cache_dir() -> None:
     import pooch
 
     default_cache_dir = pooch.os_cache("regionmask")
@@ -72,7 +72,7 @@ def test_get_cache_dir():
     assert _get_cache_dir() == default_cache_dir
 
 
-def test_get_options():
+def test_get_options() -> None:
 
     options = regionmask.get_options()
 
