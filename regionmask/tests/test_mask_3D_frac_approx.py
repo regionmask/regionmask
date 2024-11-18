@@ -1,3 +1,5 @@
+from typing import Any, Literal, TypedDict
+
 import numpy as np
 import pytest
 import shapely
@@ -9,7 +11,7 @@ from regionmask.core.utils import _sample_coords
 from regionmask.tests.utils import dummy_region
 
 
-def test_sample_coords():
+def test_sample_coords() -> None:
 
     actual = _sample_coords([0, 10])
     expected = np.arange(-4.5, 14.6, 1)
@@ -22,10 +24,16 @@ def test_sample_coords():
 
 @pytest.mark.parametrize("dim", ["lon_or_obj", "lat"])
 @pytest.mark.parametrize("invalid_coords", ([0, 1, 3], [[0, 1, 2]]))
-def test_mask_percentage_wrong_coords(dim, invalid_coords):
+def test_mask_percentage_wrong_coords(
+    dim: Literal["lon_or_obj", "lat"], invalid_coords
+) -> None:
+
+    class LATLON(TypedDict):
+        lon_or_obj: Any
+        lat: Any
 
     valid_coords = [0, 1, 2]
-    latlon = {"lon_or_obj": valid_coords, "lat": valid_coords}
+    latlon: LATLON = {"lon_or_obj": valid_coords, "lat": valid_coords}
     # replace one of the coords with invalid values
     latlon[dim] = invalid_coords
 
@@ -36,7 +44,7 @@ def test_mask_percentage_wrong_coords(dim, invalid_coords):
 
 
 @pytest.mark.parametrize("lat", ((-91, 90), (-90, 92), (-91, 92)))
-def test_mask_percentage_lon_beyond_90(lat):
+def test_mask_percentage_lon_beyond_90(lat) -> None:
 
     lat = np.arange(*lat)
     lon = np.arange(0, 360, 10)
@@ -45,7 +53,7 @@ def test_mask_percentage_lon_beyond_90(lat):
         dummy_region.mask_3D_frac_approx(lon, lat)
 
 
-def test_mask_percentage_coords():
+def test_mask_percentage_coords() -> None:
     # ensure coords are the same (as they might by averaged)
 
     lat = np.arange(90, -90, -1)
@@ -64,7 +72,7 @@ def test_mask_percentage_coords():
     assert result.region.item() == 0
 
 
-def test_mask_percentage_poles():
+def test_mask_percentage_poles() -> None:
     # all points should be 1 for a global mask
 
     lat = np.arange(90, -91, -5)
@@ -77,7 +85,7 @@ def test_mask_percentage_poles():
     assert (result == 1).all()
 
 
-def test_mask_percentage_southpole():
+def test_mask_percentage_southpole() -> None:
     # all at the southpole should be 1 - irrespective of where exactly the southernmost
     # latitude is
 
@@ -92,7 +100,7 @@ def test_mask_percentage_southpole():
         assert (result.isel(lat=0) == 1).all()
 
 
-def test_mask_percentage_northpole():
+def test_mask_percentage_northpole() -> None:
     # all at the southpole should be 1 - irrespective of where exactly the southernmost
     # latitude is
 
@@ -107,7 +115,7 @@ def test_mask_percentage_northpole():
         assert (result.isel(lat=0) == 1).all()
 
 
-def test_mask_percentage():
+def test_mask_percentage() -> None:
 
     lon = np.array([15, 30])
     lat = np.array([15, 30])
@@ -134,7 +142,7 @@ def test_mask_percentage():
     xr.testing.assert_allclose(result, expected)
 
 
-def test_mask_percentage_poly():
+def test_mask_percentage_poly() -> None:
 
     lon = np.array([10, 20])
     lat = np.array([10, 20])
@@ -165,7 +173,7 @@ def test_mask_percentage_poly():
 
 @pytest.mark.parametrize("lat_name", ("lat", "y"))
 @pytest.mark.parametrize("lon_name", ("lon", "x"))
-def test_mask_percentage_coord_names(lat_name, lon_name):
+def test_mask_percentage_coord_names(lat_name, lon_name) -> None:
 
     lon = np.array([15, 30])
     lat = np.array([15, 30])
@@ -193,7 +201,7 @@ def test_mask_percentage_coord_names(lat_name, lon_name):
     xr.testing.assert_allclose(result, expected)
 
 
-def test_mask_percentage_overlap():
+def test_mask_percentage_overlap() -> None:
     # all points should be 1 for a global mask
 
     lat = np.arange(90, -91, -5)
@@ -221,7 +229,7 @@ def test_mask_percentage_overlap():
 
 
 @pytest.mark.parametrize("lon_range", ((0, 360), (-180, 180)))
-def test_mask_percentage_maybe_flip(lon_range: tuple[int, int]):
+def test_mask_percentage_maybe_flip(lon_range: tuple[int, int]) -> None:
     # all points should be 1 for a global mask
 
     lat = np.arange(90, -91, -5)

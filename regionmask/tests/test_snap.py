@@ -6,7 +6,7 @@ import shapely.geometry
 from regionmask.core.utils import _snap, _snap_to_90S, _snap_to_180E
 
 
-def test_snap_to_180E():
+def test_snap_to_180E() -> None:
 
     poly = shapely.geometry.box(0, 0, 179, 10)
     poly_180 = shapely.geometry.box(0, 0, 180, 10)
@@ -19,7 +19,7 @@ def test_snap_to_180E():
     geopandas.testing.assert_geodataframe_equal(result, expected)
 
 
-def test_snap_to_90S():
+def test_snap_to_90S() -> None:
 
     poly = shapely.geometry.box(0, -89.9, 180, 10)
     poly_90 = shapely.geometry.box(0, -90, 180, 10)
@@ -32,7 +32,7 @@ def test_snap_to_90S():
     geopandas.testing.assert_geodataframe_equal(result, expected)
 
 
-def test_snap_coords_along():
+def test_snap_coords_along() -> None:
 
     poly = shapely.geometry.Polygon(
         [
@@ -64,7 +64,7 @@ def test_snap_coords_along():
     geopandas.testing.assert_geodataframe_equal(result, expected)
 
 
-def test_snap_multipolygon():
+def test_snap_multipolygon() -> None:
 
     p1 = shapely.geometry.box(0, 0, 9, 10)
     p2 = shapely.geometry.box(0, 10, 9, 20)
@@ -85,7 +85,7 @@ def test_snap_multipolygon():
     geopandas.testing.assert_geodataframe_equal(result, expected)
 
 
-def test_snap_polygon_internal():
+def test_snap_polygon_internal() -> None:
 
     ext = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     hole = [(0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5)]

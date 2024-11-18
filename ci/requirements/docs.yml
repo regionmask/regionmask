@@ -8,3 +8,4 @@ dependencies:
   - pip
   - pip:
     - -e ../..[docs]
+    - git+https://github.com/pydata/xarray/ # workaround until new xarray version is out

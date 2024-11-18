@@ -5,6 +5,7 @@ from functools import cache
 
 import geopandas
 import numpy as np
+import pandas as pd
 import pooch
 from shapely.geometry import MultiPolygon
 
@@ -20,7 +21,7 @@ except ImportError:
     ENGINE = "fiona"
 
 
-def _maybe_get_column(df, colname):
+def _maybe_get_column(df: pd.DataFrame, colname: str | list[str | int]) -> pd.Series:
     """return column of the df or not"""
 
     if isinstance(colname, str):
@@ -35,7 +36,7 @@ def _maybe_get_column(df, colname):
             raise KeyError(msg.format(colname, colname.swapcase()))
 
     else:
-        return colname
+        return pd.Series(colname)
 
 
 def _obtain_ne(
@@ -92,7 +93,7 @@ def _obtain_ne(
     if preprocess is not None:
         df = preprocess(df)
 
-    # get necessary data for Regions_cls
+    # get necessary data for Regions
     numbers = _maybe_get_column(df, numbers)
     names = _maybe_get_column(df, names)
     abbrevs = _maybe_get_column(df, abbrevs)
@@ -241,25 +242,25 @@ class NaturalEarth:
 
     @property
     @cache
-    def countries_110(self):
+    def countries_110(self) -> Regions:
 
         return self._obtain_ne(_countries_110)
 
     @property
     @cache
-    def countries_50(self):
+    def countries_50(self) -> Regions:
 
         return self._obtain_ne(_countries_50)
 
     @property
     @cache
-    def countries_10(self):
+    def countries_10(self) -> Regions:
 
         return self._obtain_ne(_countries_10)
 
     @property
     @cache
-    def us_states_50(self):
+    def us_states_50(self) -> Regions:
 
         opt = dict(
             query="admin == 'United States of America'", bbox=(-180, 18, -45, 72)
@@ -269,7 +270,7 @@ class NaturalEarth:
 
     @property
     @cache
-    def us_states_10(self):
+    def us_states_10(self) -> Regions:
 
         opt = dict(
             query="admin == 'United States of America'", bbox=(-180, 18, -45, 72)
@@ -279,7 +280,7 @@ class NaturalEarth:
 
     @property
     @cache
-    def land_110(self):
+    def land_110(self) -> Regions:
 
         opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
@@ -287,7 +288,7 @@ class NaturalEarth:
 
     @property
     @cache
-    def land_50(self):
+    def land_50(self) -> Regions:
 
         opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
@@ -295,7 +296,7 @@ class NaturalEarth:
 
     @property
     @cache
-    def land_10(self):
+    def land_10(self) -> Regions:
 
         opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
@@ -303,7 +304,7 @@ class NaturalEarth:
 
     @property
     @cache
-    def ocean_basins_50(self):
+    def ocean_basins_50(self) -> Regions:
 
         opt = dict(names="name", abbrevs="name")
 

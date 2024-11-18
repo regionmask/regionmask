@@ -30,8 +30,11 @@ def fetch_remote_shapefile(name):
         version_dev="main",
     )
 
+    # pass user-agent to allow rtd downloading from github
+    downloader = pooch.HTTPDownloader(headers={"User-Agent": "regionmask"})
+
     # the file will be downloaded automatically the first time this is run.
-    return REMOTE_RESSOURCE.fetch(name)
+    return REMOTE_RESSOURCE.fetch(name, downloader=downloader)
 
 
 def read_remote_shapefile(name):

@@ -1,8 +1,25 @@
+from __future__ import annotations
+
 import warnings
+from typing import TYPE_CHECKING, Any, Literal, TypeVar
 
 import numpy as np
 
 from regionmask.core.utils import _flatten_polygons, flatten_3D_mask
+
+if TYPE_CHECKING:
+    from cartopy.mpl.geoaxes import GeoAxes
+    from matplotlib.axes import Axes
+
+    Axes_or_GeoAxes = TypeVar("Axes_or_GeoAxes", Axes, GeoAxes)
+
+    # alternatively:
+
+    # try:
+    #     from matplotlib.axes import Axes
+    # except ImportError:
+    #     # type Axes = Any  # type:ignore[no-redef] requires python 3.12+
+    #     Axes: TypeAlias = Any  # type:ignore[no-redef]
 
 
 def _polygons_coords(polygons):
@@ -16,13 +33,13 @@ def _polygons_coords(polygons):
     return coords
 
 
-def _get_tolerance(coords):
+def _get_tolerance(coords) -> float:
 
     mx = np.max(np.abs(coords))
     return 1 if mx == 0 else max(10 ** (int(np.log10(mx)) - 2), 1)
 
 
-def _draw_poly(ax, polygons, tolerance=None, **kwargs):
+def _draw_poly(ax, polygons, tolerance=None, **kwargs) -> None:
     """
     draw the outline of the regions
 
@@ -119,23 +136,23 @@ def _maybe_gca(**kwargs):
 def _plot(
     self,
     *,
-    ax=None,
+    ax: GeoAxes | None = None,
     projection=None,
-    add_label=True,
-    label="number",
-    add_coastlines=True,
-    add_ocean=False,
-    line_kws=None,
-    text_kws=None,
-    resolution="110m",
-    add_land=False,
-    coastline_kws=None,
-    ocean_kws=None,
-    land_kws=None,
-    label_multipolygon="largest",
-    tolerance="auto",
+    add_label: bool = True,
+    label: Literal["number", "name", "abbrev"] = "number",
+    add_coastlines: bool = True,
+    add_ocean: bool = False,
+    line_kws: dict[str, Any] | None = None,
+    text_kws: dict[str, Any] | None = None,
+    resolution: Literal["110m", "50m", "10m"] = "110m",
+    add_land: bool = False,
+    coastline_kws: dict[str, Any] | None = None,
+    ocean_kws: dict[str, Any] | None = None,
+    land_kws: dict[str, Any] | None = None,
+    label_multipolygon: Literal["largest", "all"] = "largest",
+    tolerance: Literal["auto"] | float | None = "auto",
     transform=None,
-):
+) -> GeoAxes:
     """plot region on cartopy axes
 
     Parameters
@@ -279,15 +296,15 @@ def _plot(
 def _plot_regions(
     self,
     *,
-    ax=None,
-    add_label=True,
-    label="number",
-    line_kws=None,
-    text_kws=None,
-    label_multipolygon="largest",
-    tolerance="auto",
+    ax: Axes_or_GeoAxes | None = None,
+    add_label: bool = True,
+    label: Literal["number", "name", "abbrev"] = "number",
+    line_kws: dict[str, Any] | None = None,
+    text_kws: dict[str, Any] | None = None,
+    label_multipolygon: Literal["largest", "all"] = "largest",
+    tolerance: Literal["auto"] | float | None = "auto",
     transform=None,
-):
+) -> Axes_or_GeoAxes:
     """plot regions on regular axes
 
     Parameters
