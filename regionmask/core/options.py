@@ -1,9 +1,16 @@
 # adapted from xarray under the terms of its license - see licences/XARRAY_LICENSE
+from __future__ import annotations
 
-from typing import TypedDict
+from typing import Any, TypedDict
+
+# TODO: Unpack defined in python 3.11+
+try:
+    from typing import Unpack
+except ImportError:
+    Unpack: Any  # type:ignore[no-redef]
 
 
-class _OPTIONS(TypedDict):
+class _OPTIONS(TypedDict, total=False):
     display_max_rows: int
     cache_dir: str | None
 
@@ -69,8 +76,10 @@ class set_options:
     <regionmask.core.options.set_options object at 0x...>
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Unpack[_OPTIONS]):
+
         self.old = {}
+
         for key, value in kwargs.items():
             if key not in OPTIONS:
                 raise ValueError(
@@ -79,7 +88,9 @@ class set_options:
 
             _VALIDATORS[key](key, value)
 
-            self.old[key] = OPTIONS[key]
+            # mypy does not know that key must be a literal from _OPTIONS TypedDict
+            self.old[key] = OPTIONS[key]  # type:ignore[literal-required]
+
         self._apply_update(kwargs)
 
     def _apply_update(self, options_dict):

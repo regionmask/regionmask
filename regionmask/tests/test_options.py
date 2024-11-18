@@ -12,7 +12,7 @@ def test_option_invalid_error(invalid_option) -> None:
 
     with pytest.raises(ValueError, match="not in the set of valid options"):
 
-        regionmask.set_options(invalid_option=invalid_option)
+        regionmask.set_options(invalid_option=invalid_option)  # type:ignore[call-arg]
 
 
 def test_options_display_max_rows_errors() -> None:
@@ -27,7 +27,7 @@ def test_options_display_max_rows_errors() -> None:
         regionmask.set_options(display_max_rows=-3)
 
     with pytest.raises(ValueError, match="'display_max_rows' must be a positive"):
-        regionmask.set_options(display_max_rows=3.5)
+        regionmask.set_options(display_max_rows=3.5)  # type:ignore[arg-type]
 
 
 @pytest.mark.parametrize("n, expected", [(3, 3), (5, 5), (8, 9), (25, 25), (None, 26)])

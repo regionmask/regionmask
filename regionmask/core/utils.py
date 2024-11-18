@@ -174,15 +174,15 @@ def _is_numeric(numbers):
 
 def equally_spaced(*args):
 
-    args = [np.asarray(arg) for arg in args]
+    args_ = [np.asarray(arg) for arg in args]
 
-    if any(arg.ndim > 1 for arg in args):
+    if any(arg.ndim > 1 for arg in args_):
         return False
 
-    if any(arg.size < 2 for arg in args):
+    if any(arg.size < 2 for arg in args_):
         return False
 
-    d_args = (np.diff(arg) for arg in args)
+    d_args = (np.diff(arg) for arg in args_)
 
     return all(np.allclose(d_arg[0], d_arg) for d_arg in d_args)
 
