@@ -5,6 +5,7 @@ from functools import cache
 
 import geopandas
 import numpy as np
+import pandas as pd
 import pooch
 from shapely.geometry import MultiPolygon
 
@@ -20,7 +21,7 @@ except ImportError:
     ENGINE = "fiona"
 
 
-def _maybe_get_column(df, colname):
+def _maybe_get_column(df: pd.DataFrame, colname: str | list[str | int]) -> pd.Series:
     """return column of the df or not"""
 
     if isinstance(colname, str):
@@ -35,7 +36,7 @@ def _maybe_get_column(df, colname):
             raise KeyError(msg.format(colname, colname.swapcase()))
 
     else:
-        return colname
+        return pd.Series(colname)
 
 
 def _obtain_ne(
@@ -92,7 +93,7 @@ def _obtain_ne(
     if preprocess is not None:
         df = preprocess(df)
 
-    # get necessary data for Regions_cls
+    # get necessary data for Regions
     numbers = _maybe_get_column(df, numbers)
     names = _maybe_get_column(df, names)
     abbrevs = _maybe_get_column(df, abbrevs)

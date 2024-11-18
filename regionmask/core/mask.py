@@ -190,6 +190,7 @@ def _mask(
     lat_arr = np.asarray(lat, dtype=float)
 
     # automatically detect whether wrapping is necessary
+    wrap_lon_: Literal[180, 360] | bool
     if wrap_lon is None:
 
         lon_bounds = _total_bounds(polygons)[::2]

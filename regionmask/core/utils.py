@@ -1,16 +1,20 @@
+from __future__ import annotations
+
 import warnings
+from typing import Literal
 
 import numpy as np
 import shapely
 import xarray as xr
+from numpy.typing import ArrayLike
 
 
-def _total_bounds(polygons):
+def _total_bounds(polygons) -> np.ndarray:
 
     return shapely.total_bounds(polygons)
 
 
-def _flatten_polygons(polygons, error="raise"):
+def _flatten_polygons(polygons, error="raise") -> list[shapely.Polygon]:
 
     from shapely.geometry import MultiPolygon, Polygon
 
@@ -31,7 +35,7 @@ def _flatten_polygons(polygons, error="raise"):
     return polys
 
 
-def _maybe_to_dict(keys, values):
+def _maybe_to_dict(keys, values) -> dict:
     """convert iterable to dict if necessary"""
 
     if not isinstance(values, dict):
@@ -40,12 +44,12 @@ def _maybe_to_dict(keys, values):
     return values
 
 
-def _create_dict_of_numbered_string(numbers, string):
+def _create_dict_of_numbered_string(numbers, string) -> dict[int, str]:
 
     return {number: f"{string}{number}" for number in numbers}
 
 
-def _sanitize_names_abbrevs(numbers, values, default):
+def _sanitize_names_abbrevs(numbers, values, default) -> dict[int, str]:
 
     if isinstance(values, str):
         values = _create_dict_of_numbered_string(numbers, values)
@@ -60,13 +64,13 @@ def _sanitize_names_abbrevs(numbers, values, default):
     return values
 
 
-def _wrapAngle360(lon):
+def _wrapAngle360(lon: ArrayLike) -> np.ndarray:
     """wrap angle to `[0, 360[`."""
     lon = np.array(lon)
     return np.mod(lon, 360)
 
 
-def _wrapAngle180(lon):
+def _wrapAngle180(lon: ArrayLike) -> np.ndarray:
     """wrap angle to `[-180, 180[`."""
     lon = np.array(lon)
     sel = (lon < -180) | (180 <= lon)
@@ -74,38 +78,41 @@ def _wrapAngle180(lon):
     return lon
 
 
-def _wrapAngle(lon, wrap_lon=True, is_unstructured=False):
+def _wrapAngle(
+    lon: float | ArrayLike,
+    wrap_lon: None | bool | Literal[180, 360] = True,
+    is_unstructured: bool = False,
+) -> np.ndarray:
     """wrap the angle to the other base
 
     If lon is from -180 to 180 wraps them to 0..360
     If lon is from 0 to 360 wraps them to -180..180
     """
 
-    if np.isscalar(lon):
-        lon = [lon]
+    lon_ = [lon] if np.isscalar(lon) else lon
 
-    lon = np.array(lon)
+    lon_ = np.array(lon_)
 
     if wrap_lon is True:
-        mn, mx = np.nanmin(lon), np.nanmax(lon)
+        mn, mx = np.nanmin(lon_), np.nanmax(lon_)
         msg = "Cannot infer the transformation."
         wrap_lon = 360 if _is_180(mn, mx, msg_add=msg) else 180
 
     if wrap_lon == 180:
-        lon = _wrapAngle180(lon)
+        lon_ = _wrapAngle180(lon_)
 
     if wrap_lon == 360:
-        lon = _wrapAngle360(lon)
+        lon_ = _wrapAngle360(lon_)
 
     # check if they are still unique
-    if lon.ndim == 1 and not is_unstructured:
-        if lon.shape != np.unique(lon).shape:
+    if lon_.ndim == 1 and not is_unstructured:
+        if lon_.shape != np.unique(lon_).shape:
             raise ValueError("There are equal longitude coordinates (when wrapped)!")
 
-    return lon
+    return lon_
 
 
-def _is_180(lon_min, lon_max, *, msg_add=""):
+def _is_180(lon_min: float, lon_max: float, *, msg_add: str = "") -> bool:
 
     lon_min = np.round(lon_min, 6)
     lon_max = np.round(lon_max, 6)
@@ -119,7 +126,7 @@ def _is_180(lon_min, lon_max, *, msg_add=""):
 
 def create_lon_lat_dataarray_from_bounds(
     lon_start, lon_stop, lon_step, lat_start, lat_stop, lat_step
-):
+) -> xr.Dataset:
     """example xarray Dataset
 
     Parameters
@@ -166,13 +173,13 @@ def create_lon_lat_dataarray_from_bounds(
     return ds
 
 
-def _is_numeric(numbers):
+def _is_numeric(numbers) -> bool:
 
     numbers = np.asarray(numbers)
     return np.issubdtype(numbers.dtype, np.number)
 
 
-def equally_spaced(*args):
+def equally_spaced(*args) -> bool:
 
     args_ = [np.asarray(arg) for arg in args]
 
@@ -201,7 +208,7 @@ def _equally_spaced_on_split_lon(lon) -> bool:
     return (d_lon_not_isclose.sum() == 1) and not d_lon_not_isclose[-1]
 
 
-def _find_splitpoint(lon):
+def _find_splitpoint(lon: ArrayLike) -> int:
 
     lon = np.asarray(lon)
     d_lon = np.diff(lon)
@@ -213,10 +220,10 @@ def _find_splitpoint(lon):
     if len(split_point) != 1:
         raise ValueError("more or less than one split point found")
 
-    return split_point.squeeze() + 1
+    return split_point.item() + 1
 
 
-def _sample_coords(coord) -> np.ndarray:
+def _sample_coords(coord: ArrayLike) -> np.ndarray:
     """Sample coords for percentage overlap."""
 
     n = 10
@@ -233,7 +240,7 @@ def _sample_coords(coord) -> np.ndarray:
     return np.linspace(left, right, n_cells * n)
 
 
-def unpackbits(numbers, num_bits):
+def unpackbits(numbers: np.ndarray, num_bits: int) -> np.ndarray:
     "Unpacks elements of a array into a binary-valued output array."
 
     # after https://stackoverflow.com/a/51509307/3010700

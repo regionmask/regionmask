@@ -181,8 +181,8 @@ def test_check_duplicates_raise_ValueError() -> None:
         _check_duplicates(series_duplicates, "name")
 
 
-def test_check_duplicates_return_True() -> None:
-    assert _check_duplicates(series_unique, "name")
+def test_check_duplicates_no_error() -> None:
+    _check_duplicates(series_unique, "name")
 
 
 def test_construct_abbrevs_name_none(geodataframe_clean) -> None:

@@ -1,6 +1,7 @@
 from operator import attrgetter
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from regionmask import Regions, defined_regions
@@ -99,19 +100,13 @@ def test_natural_earth_loaded_as_utf8() -> None:
 
 
 def test_maybe_get_column() -> None:
-    class lowercase:
-        @property
-        def name(self):
-            return 1
 
-    class uppercase:
-        @property
-        def NAME(self):
-            return 2
+    lowercase = pd.DataFrame({"name": [1]})
+    uppercase = pd.DataFrame({"NAME": [2]})
 
-    assert _maybe_get_column(lowercase(), "name") == 1
-    assert _maybe_get_column(uppercase(), "name") == 2
-    assert _maybe_get_column(uppercase(), "NAME") == 2
+    assert _maybe_get_column(lowercase, "name").item() == 1
+    assert _maybe_get_column(uppercase, "name").item() == 2
+    assert _maybe_get_column(uppercase, "NAME").item() == 2
 
     with pytest.raises(KeyError, match="not on the geopandas dataframe"):
         _maybe_get_column(lowercase, "not_a_column")
