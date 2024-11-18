@@ -1,6 +1,11 @@
-import warnings
+from __future__ import annotations
 
+import warnings
+from typing import Literal
+
+import geopandas as gp
 import numpy as np
+import xarray as xr
 
 from regionmask.core.mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from regionmask.core.regions import Regions
@@ -59,15 +64,15 @@ def _construct_abbrevs(geodataframe, names):
 
 
 def from_geopandas(
-    geodataframe,
+    geodataframe: gp.GeoDataFrame,
     *,
-    numbers=None,
-    names=None,
-    abbrevs=None,
-    name="unnamed",
-    source=None,
-    overlap=None,
-):
+    numbers: str | None = None,
+    names: str | None = None,
+    abbrevs: str | None = None,
+    name: str = "unnamed",
+    source: str | None = None,
+    overlap: bool | None = None,
+) -> Regions:
     """
     Create ``regionmask.Regions`` from a ``geopandas.GeoDataFrame``.
 
@@ -143,25 +148,26 @@ def from_geopandas(
 
 
 def _from_geopandas(
-    geodataframe,
-    numbers=None,
-    names=None,
-    abbrevs=None,
-    name="unnamed",
-    source=None,
-    overlap=False,
-):
+    geodataframe: gp.GeoDataFrame,
+    numbers: str | None = None,
+    names: str | None = None,
+    abbrevs: str | None = None,
+    name: str = "unnamed",
+    source: str | None = None,
+    overlap: bool | None = False,
+) -> Regions:
 
     if numbers is not None:
         # sort, otherwise breaks
         geodataframe = geodataframe.sort_values(numbers)
-        numbers = _maybe_get_column(geodataframe, numbers)
-        _check_missing(numbers, "numbers")
-        _check_duplicates(numbers, "numbers")
+        numbers_ = _maybe_get_column(geodataframe, numbers)
+        _check_missing(numbers_, "numbers")
+        _check_duplicates(numbers_, "numbers")
     else:
-        numbers = geodataframe.index.values
-    # make sure numbers is a list
-    numbers = np.array(numbers)
+        numbers_ = geodataframe.index.values
+
+    # make sure numbers is an array
+    numbers_ = np.array(numbers_)
 
     if names is not None:
         names = _maybe_get_column(geodataframe, names)
@@ -180,7 +186,7 @@ def _from_geopandas(
 
     return Regions(
         outlines,
-        numbers=numbers,
+        numbers=numbers_,
         names=names,
         abbrevs=abbrevs,
         name=name,
@@ -212,16 +218,16 @@ def _prepare_gdf_for_mask(geodataframe, numbers):
 
 
 def mask_geopandas(
-    geodataframe,
-    lon_or_obj,
-    lat=None,
+    geodataframe: gp.GeoDataFrame,
+    lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+    lat: np.typing.ArrayLike | xr.DataArray | None = None,
     *,
-    numbers=None,
+    numbers: str | None = None,
     method=None,
-    wrap_lon=None,
-    use_cf=None,
-    overlap=None,
-):
+    wrap_lon: None | bool | Literal[180, 360] = None,
+    use_cf: bool | None = None,
+    overlap: bool | None = None,
+) -> xr.DataArray:
 
     if overlap:
         raise ValueError(
@@ -248,17 +254,17 @@ mask_geopandas.__doc__ = _inject_mask_docstring(which="2D", is_gpd=True)
 
 
 def mask_3D_geopandas(
-    geodataframe,
-    lon_or_obj,
-    lat=None,
+    geodataframe: gp.GeoDataFrame,
+    lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+    lat: np.typing.ArrayLike | xr.DataArray | None = None,
     *,
-    drop=True,
-    numbers=None,
+    drop: bool = True,
+    numbers: str | None = None,
     method=None,
-    wrap_lon=None,
-    use_cf=None,
-    overlap=None,
-):
+    wrap_lon: None | bool | Literal[180, 360] = None,
+    use_cf: bool | None = None,
+    overlap: bool | None = None,
+) -> xr.DataArray:
 
     polygons, numbers = _prepare_gdf_for_mask(geodataframe, numbers=numbers)
 
