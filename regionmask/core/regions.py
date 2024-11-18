@@ -244,7 +244,7 @@ class Regions:
         return self._region_ids
 
     @property
-    def _region_ids(self):
+    def _region_ids(self) -> dict[str | int, int]:
         """dictionary that maps all names and abbrevs to the region number"""
 
         # collect data
@@ -252,7 +252,8 @@ class Regions:
         names = self.names
         numbers = self.numbers
         # combine data and make a mapping
-        all_comb = zip(numbers + abbrevs + names, numbers * 3)
+        keys: list[int | str] = abbrevs + names + numbers
+        all_comb = zip(keys, numbers * 3)
         region_ids = {key: value for key, value in all_comb}
         return region_ids
 
@@ -698,7 +699,7 @@ class _OneRegion:
         if self._coords is None:
 
             if isinstance(self.polygon, Polygon):
-                coords = np.array(self.polygon.exterior.coords)
+                coords_ = np.array(self.polygon.exterior.coords)
             else:
                 polys = self.polygon.geoms
 
@@ -706,9 +707,9 @@ class _OneRegion:
                 nan = np.full((1, 2), np.nan)
                 coords = [c for poly in polys for c in (poly.exterior.coords, nan)]
                 # remove the last nan and stack
-                coords = np.vstack(coords[:-1])
+                coords_ = np.vstack(coords[:-1])
 
-            self._coords = coords
+            self._coords = coords_
 
         return self._coords
 
