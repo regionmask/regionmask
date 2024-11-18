@@ -1,7 +1,13 @@
 # adapted from xarray under the terms of its license - see licences/XARRAY_LICENSE
 from __future__ import annotations
 
-from typing import TypedDict, Unpack
+from typing import Any, TypedDict
+
+# TODO: Unpack defined in python 3.11+
+try:
+    from typing import Unpack
+except ImportError:
+    Unpack: Any  # type:ignore[no-redef]
 
 
 class _OPTIONS(TypedDict, total=False):
