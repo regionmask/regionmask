@@ -241,25 +241,25 @@ class NaturalEarth:
 
     @property
     @cache
-    def countries_110(self):
+    def countries_110(self) -> Regions:
 
         return self._obtain_ne(_countries_110)
 
     @property
     @cache
-    def countries_50(self):
+    def countries_50(self) -> Regions:
 
         return self._obtain_ne(_countries_50)
 
     @property
     @cache
-    def countries_10(self):
+    def countries_10(self) -> Regions:
 
         return self._obtain_ne(_countries_10)
 
     @property
     @cache
-    def us_states_50(self):
+    def us_states_50(self) -> Regions:
 
         opt = dict(
             query="admin == 'United States of America'", bbox=(-180, 18, -45, 72)
@@ -269,7 +269,7 @@ class NaturalEarth:
 
     @property
     @cache
-    def us_states_10(self):
+    def us_states_10(self) -> Regions:
 
         opt = dict(
             query="admin == 'United States of America'", bbox=(-180, 18, -45, 72)
@@ -279,7 +279,7 @@ class NaturalEarth:
 
     @property
     @cache
-    def land_110(self):
+    def land_110(self) -> Regions:
 
         opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
@@ -287,7 +287,7 @@ class NaturalEarth:
 
     @property
     @cache
-    def land_50(self):
+    def land_50(self) -> Regions:
 
         opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
@@ -295,7 +295,7 @@ class NaturalEarth:
 
     @property
     @cache
-    def land_10(self):
+    def land_10(self) -> Regions:
 
         opt = dict(names=["land"], abbrevs=["lnd"], numbers=[0], combine_coords=True)
 
@@ -303,7 +303,7 @@ class NaturalEarth:
 
     @property
     @cache
-    def ocean_basins_50(self):
+    def ocean_basins_50(self) -> Regions:
 
         opt = dict(names="name", abbrevs="name")
 
