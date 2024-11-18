@@ -46,7 +46,8 @@ Enhancements
 ~~~~~~~~~~~~
 
 - Add python 3.12 to list of supported versions (:pull:`565`).
-- Started typing regionmask (:pull:`569`, :pull:`571`, :pull:`572`, :pull:`573`).
+- Started typing regionmask (:pull:`569`, :pull:`571`, :pull:`572`, :pull:`573`,
+  :pull:`575`, :pull:`576`, :pull:`577`, :pull:`578`).
 - regionmask is now discoverably by mypy, although typing hints coverage is no yet
   complete  (:pull:`573`).
 

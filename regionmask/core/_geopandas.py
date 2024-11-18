@@ -1,13 +1,18 @@
-import warnings
+from __future__ import annotations
 
+import warnings
+from typing import Literal
+
+import geopandas as gp
 import numpy as np
+import pandas as pd
+import xarray as xr
 
 from regionmask.core.mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from regionmask.core.regions import Regions
-from regionmask.defined_regions._natural_earth import _maybe_get_column
 
 
-def _check_duplicates(data, name):
+def _check_duplicates(data: pd.Series, name: str) -> None:
     """Checks if `data` has duplicates.
 
     Parameters
@@ -24,10 +29,9 @@ def _check_duplicates(data, name):
     if data.duplicated().any():
         duplicates = data[data.duplicated(keep=False)]
         raise ValueError(f"{name} cannot contain duplicate values, found {duplicates}")
-    return True
 
 
-def _check_missing(data, name):
+def _check_missing(data: pd.Series, name: str):
     if data.isnull().any():
         raise ValueError(f"{name} cannot contain missing values")
 
@@ -42,32 +46,32 @@ def _enumerate_duplicates(series, keep=False):
     return series.str.cat(cumcount, na_rep="", join="left")
 
 
-def _construct_abbrevs(geodataframe, names):
+def _construct_abbrevs(geodataframe: gp.GeoDataFrame, names: str | None) -> pd.Series:
     """Construct unique abbreviations based on geodataframe.names."""
     if names is None:
         raise ValueError(
             "names is None, but should be a valid column name of"
             f"geodataframe, choose from {geodataframe.columns}"
         )
-    abbrevs = []
-    names = _maybe_get_column(geodataframe, names)
-    names = names.str.replace(r"[(\[\]).]", "", regex=True)
-    names = names.str.replace("[/-]", " ", regex=True)
-    abbrevs = names.str.split(" ").map(lambda x: "".join([y[:3] for y in x]))
+
+    names_: pd.Series = geodataframe[names]
+    names_ = names_.str.replace(r"[(\[\]).]", "", regex=True)
+    names_ = names_.str.replace("[/-]", " ", regex=True)
+    abbrevs = names_.str.split(" ").map(lambda x: "".join([y[:3] for y in x]))
     abbrevs = _enumerate_duplicates(abbrevs)
     return abbrevs
 
 
 def from_geopandas(
-    geodataframe,
+    geodataframe: gp.GeoDataFrame,
     *,
-    numbers=None,
-    names=None,
-    abbrevs=None,
-    name="unnamed",
-    source=None,
-    overlap=None,
-):
+    numbers: str | None = None,
+    names: str | None = None,
+    abbrevs: str | None = None,
+    name: str = "unnamed",
+    source: str | None = None,
+    overlap: bool | None = None,
+) -> Regions:
     """
     Create ``regionmask.Regions`` from a ``geopandas.GeoDataFrame``.
 
@@ -143,46 +147,49 @@ def from_geopandas(
 
 
 def _from_geopandas(
-    geodataframe,
-    numbers=None,
-    names=None,
-    abbrevs=None,
-    name="unnamed",
-    source=None,
-    overlap=False,
-):
+    geodataframe: gp.GeoDataFrame,
+    numbers: str | None = None,
+    names: str | None = None,
+    abbrevs: str | None = None,
+    name: str = "unnamed",
+    source: str | None = None,
+    overlap: bool | None = False,
+) -> Regions:
 
     if numbers is not None:
         # sort, otherwise breaks
         geodataframe = geodataframe.sort_values(numbers)
-        numbers = _maybe_get_column(geodataframe, numbers)
-        _check_missing(numbers, "numbers")
-        _check_duplicates(numbers, "numbers")
+        numbers_ = geodataframe[numbers]
+        _check_missing(numbers_, "numbers")
+        _check_duplicates(numbers_, "numbers")
     else:
-        numbers = geodataframe.index.values
-    # make sure numbers is a list
-    numbers = np.array(numbers)
+        numbers_ = geodataframe.index.values
 
+    # make sure numbers is an array
+    numbers_ = np.array(numbers_)
+
+    names_ = None
     if names is not None:
-        names = _maybe_get_column(geodataframe, names)
-        _check_missing(names, "names")
-        _check_duplicates(names, "names")
+        names_ = geodataframe[names]
+        _check_missing(names_, "names")
+        _check_duplicates(names_, "names")
 
+    abbrevs_ = None
     if abbrevs is not None:
-        if abbrevs == "_from_name":
-            abbrevs = _construct_abbrevs(geodataframe, names)
+        if abbrevs != "_from_name":
+            abbrevs_ = geodataframe[abbrevs]
+            _check_missing(abbrevs_, "abbrevs")
+            _check_duplicates(abbrevs_, "abbrevs")
         else:
-            abbrevs = _maybe_get_column(geodataframe, abbrevs)
-            _check_missing(abbrevs, "abbrevs")
-            _check_duplicates(abbrevs, "abbrevs")
+            abbrevs_ = _construct_abbrevs(geodataframe, names)
 
     outlines = geodataframe["geometry"]
 
     return Regions(
         outlines,
-        numbers=numbers,
-        names=names,
-        abbrevs=abbrevs,
+        numbers=numbers_,
+        names=names_,
+        abbrevs=abbrevs_,
         name=name,
         source=source,
         overlap=overlap,
@@ -212,16 +219,16 @@ def _prepare_gdf_for_mask(geodataframe, numbers):
 
 
 def mask_geopandas(
-    geodataframe,
-    lon_or_obj,
-    lat=None,
+    geodataframe: gp.GeoDataFrame,
+    lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+    lat: np.typing.ArrayLike | xr.DataArray | None = None,
     *,
-    numbers=None,
+    numbers: str | None = None,
     method=None,
-    wrap_lon=None,
-    use_cf=None,
-    overlap=None,
-):
+    wrap_lon: None | bool | Literal[180, 360] = None,
+    use_cf: bool | None = None,
+    overlap: bool | None = None,
+) -> xr.DataArray:
 
     if overlap:
         raise ValueError(
@@ -248,17 +255,17 @@ mask_geopandas.__doc__ = _inject_mask_docstring(which="2D", is_gpd=True)
 
 
 def mask_3D_geopandas(
-    geodataframe,
-    lon_or_obj,
-    lat=None,
+    geodataframe: gp.GeoDataFrame,
+    lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+    lat: np.typing.ArrayLike | xr.DataArray | None = None,
     *,
-    drop=True,
-    numbers=None,
+    drop: bool = True,
+    numbers: str | None = None,
     method=None,
-    wrap_lon=None,
-    use_cf=None,
-    overlap=None,
-):
+    wrap_lon: None | bool | Literal[180, 360] = None,
+    use_cf: bool | None = None,
+    overlap: bool | None = None,
+) -> xr.DataArray:
 
     polygons, numbers = _prepare_gdf_for_mask(geodataframe, numbers=numbers)
 

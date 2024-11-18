@@ -167,8 +167,9 @@ def test_from_geopandas_duplicates_error(geodataframe_duplicates, arg) -> None:
 @pytest.mark.parametrize("arg", ["names", "abbrevs", "numbers"])
 def test_from_geopandas_column_missing(geodataframe_clean, arg) -> None:
 
+    kwargs = {arg: "not_a_column"}
     with pytest.raises(KeyError):
-        from_geopandas(geodataframe_clean, **{arg: "not_a_column"})
+        from_geopandas(geodataframe_clean, **kwargs)  # type:ignore[arg-type]
 
 
 series_duplicates = pd.Series([1, 1, 2, 3, 4])
@@ -180,8 +181,8 @@ def test_check_duplicates_raise_ValueError() -> None:
         _check_duplicates(series_duplicates, "name")
 
 
-def test_check_duplicates_return_True() -> None:
-    assert _check_duplicates(series_unique, "name")
+def test_check_duplicates_no_error() -> None:
+    _check_duplicates(series_unique, "name")
 
 
 def test_construct_abbrevs_name_none(geodataframe_clean) -> None:
