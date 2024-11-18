@@ -5,14 +5,14 @@ from typing import Literal
 
 import geopandas as gp
 import numpy as np
+import pandas as pd
 import xarray as xr
 
 from regionmask.core.mask import _inject_mask_docstring, _mask_2D, _mask_3D
 from regionmask.core.regions import Regions
-from regionmask.defined_regions._natural_earth import _maybe_get_column
 
 
-def _check_duplicates(data, name):
+def _check_duplicates(data: pd.Series, name: str) -> None:
     """Checks if `data` has duplicates.
 
     Parameters
@@ -29,10 +29,9 @@ def _check_duplicates(data, name):
     if data.duplicated().any():
         duplicates = data[data.duplicated(keep=False)]
         raise ValueError(f"{name} cannot contain duplicate values, found {duplicates}")
-    return True
 
 
-def _check_missing(data, name):
+def _check_missing(data: pd.Series, name: str):
     if data.isnull().any():
         raise ValueError(f"{name} cannot contain missing values")
 
@@ -47,18 +46,18 @@ def _enumerate_duplicates(series, keep=False):
     return series.str.cat(cumcount, na_rep="", join="left")
 
 
-def _construct_abbrevs(geodataframe, names):
+def _construct_abbrevs(geodataframe: gp.GeoDataFrame, names: str | None) -> pd.Series:
     """Construct unique abbreviations based on geodataframe.names."""
     if names is None:
         raise ValueError(
             "names is None, but should be a valid column name of"
             f"geodataframe, choose from {geodataframe.columns}"
         )
-    abbrevs = []
-    names = _maybe_get_column(geodataframe, names)
-    names = names.str.replace(r"[(\[\]).]", "", regex=True)
-    names = names.str.replace("[/-]", " ", regex=True)
-    abbrevs = names.str.split(" ").map(lambda x: "".join([y[:3] for y in x]))
+
+    names_: pd.Series = geodataframe[names]
+    names_ = names_.str.replace(r"[(\[\]).]", "", regex=True)
+    names_ = names_.str.replace("[/-]", " ", regex=True)
+    abbrevs = names_.str.split(" ").map(lambda x: "".join([y[:3] for y in x]))
     abbrevs = _enumerate_duplicates(abbrevs)
     return abbrevs
 
@@ -160,7 +159,7 @@ def _from_geopandas(
     if numbers is not None:
         # sort, otherwise breaks
         geodataframe = geodataframe.sort_values(numbers)
-        numbers_ = _maybe_get_column(geodataframe, numbers)
+        numbers_ = geodataframe[numbers]
         _check_missing(numbers_, "numbers")
         _check_duplicates(numbers_, "numbers")
     else:
@@ -169,26 +168,28 @@ def _from_geopandas(
     # make sure numbers is an array
     numbers_ = np.array(numbers_)
 
+    names_ = None
     if names is not None:
-        names = _maybe_get_column(geodataframe, names)
-        _check_missing(names, "names")
-        _check_duplicates(names, "names")
+        names_ = geodataframe[names]
+        _check_missing(names_, "names")
+        _check_duplicates(names_, "names")
 
+    abbrevs_ = None
     if abbrevs is not None:
-        if abbrevs == "_from_name":
-            abbrevs = _construct_abbrevs(geodataframe, names)
+        if abbrevs != "_from_name":
+            abbrevs_ = geodataframe[abbrevs]
+            _check_missing(abbrevs_, "abbrevs")
+            _check_duplicates(abbrevs_, "abbrevs")
         else:
-            abbrevs = _maybe_get_column(geodataframe, abbrevs)
-            _check_missing(abbrevs, "abbrevs")
-            _check_duplicates(abbrevs, "abbrevs")
+            abbrevs_ = _construct_abbrevs(geodataframe, names)
 
     outlines = geodataframe["geometry"]
 
     return Regions(
         outlines,
         numbers=numbers_,
-        names=names,
-        abbrevs=abbrevs,
+        names=names_,
+        abbrevs=abbrevs_,
         name=name,
         source=source,
         overlap=overlap,

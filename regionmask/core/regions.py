@@ -318,7 +318,7 @@ class Regions:
         """if the regions extend from 0 to 360"""
         return not self.lon_180
 
-    def _display(self, max_rows: int = 10, max_width: str | None = None) -> str:
+    def _display(self, max_rows: int = 10, max_width: int | None = None) -> str:
         """Render ``Regions`` object to a console-friendly tabular output.
 
         Parameters
