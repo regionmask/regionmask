@@ -38,9 +38,9 @@ def test_options_display_max_rows(n, expected) -> None:
 
     with regionmask.set_options(display_max_rows=n):
         result = srex.__repr__()
-        result = len(result.split("\n"))
+        n_rows = len(result.split("\n"))
 
-        assert result == expected + 6 + 1
+        assert n_rows == expected + 6 + 1
 
 
 class A:
