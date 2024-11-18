@@ -1,5 +1,6 @@
 from functools import cache
 
+from regionmask import Regions
 from regionmask.core._geopandas import from_geopandas
 from regionmask.defined_regions._ressources import read_remote_shapefile
 
@@ -36,7 +37,7 @@ class AR6:
 
     @property
     @cache
-    def all(self):
+    def all(self) -> Regions:
 
         return from_geopandas(
             self.df,
@@ -49,7 +50,7 @@ class AR6:
 
     @property
     @cache
-    def land(self):
+    def land(self) -> Regions:
 
         land = self.df.Type.str.contains("Land")
 
@@ -64,7 +65,7 @@ class AR6:
 
     @property
     @cache
-    def ocean(self):
+    def ocean(self) -> Regions:
 
         ocean = self.df.Type.str.contains("Ocean")
 
