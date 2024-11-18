@@ -30,9 +30,11 @@ from regionmask.core.plot import (
 )
 from regionmask.tests import assert_no_warnings, requires_cartopy, requires_matplotlib
 
-NO_ADD_ARTISTS = TypedDict(
-    "NO_ADD_ARTISTS", {"tolerance": Any, "add_label": Any, "add_coastlines": Any}
-)
+
+class NO_ADD_ARTISTS(TypedDict):
+    tolerance: Any
+    add_label: Any
+    add_coastlines: Any
 
 
 # =============================================================================
@@ -692,7 +694,9 @@ def test_plot_land() -> None:
 @requires_cartopy
 def test_plot_add_coastlines() -> None:
 
-    NO_TOL_LBL = TypedDict("NO_TOL_LBL", {"tolerance": Any, "add_label": Any})
+    class NO_TOL_LBL(TypedDict):
+        tolerance: Any
+        add_label: Any
 
     kwargs: NO_TOL_LBL = dict(tolerance=None, add_label=False)
 

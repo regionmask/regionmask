@@ -1,10 +1,9 @@
-#!/usr/bin/env python
-
-# Author: Mathias Hauser
-# Date:
+from __future__ import annotations
 
 import copy
 import warnings
+from collections.abc import Iterable
+from typing import Literal, overload
 
 import geopandas as gp
 import numpy as np
@@ -157,6 +156,15 @@ class Regions:
         self.source: str | None = source
         self.overlap: bool | None = overlap
 
+    @overload
+    def __getitem__(self, key: int) -> _OneRegion: ...
+
+    @overload
+    def __getitem__(self, key: str) -> _OneRegion: ...
+
+    @overload
+    def __getitem__(self, key: Iterable) -> Regions: ...
+
     def __getitem__(self, key):
         """subset of Regions or Region
 
@@ -282,17 +290,17 @@ class Regions:
         return [r.polygon for r in self.regions.values()]
 
     @property
-    def centroids(self):
+    def centroids(self) -> list[np.ndarray]:
         """list of the center of mass of the regions"""
         return [r.centroid for r in self.regions.values()]
 
     @property
-    def bounds(self):
+    def bounds(self) -> list[tuple[float, float, float, float]]:
         """list of the bounds of the regions (min_lon, min_lat, max_lon, max_lat)"""
         return [r.bounds for r in self.regions.values()]
 
     @property
-    def bounds_global(self):
+    def bounds_global(self) -> np.ndarray:
         """global bounds over all regions (min_lon, min_lat, max_lon, max_lat)"""
 
         return _total_bounds(self.polygons)
@@ -309,7 +317,7 @@ class Regions:
         """if the regions extend from 0 to 360"""
         return not self.lon_180
 
-    def _display(self, max_rows=10, max_width=None):
+    def _display(self, max_rows: int = 10, max_width: str | None = None) -> str:
         """Render ``Regions`` object to a console-friendly tabular output.
 
         Parameters
@@ -332,7 +340,7 @@ class Regions:
         """
         return _display(self, max_rows, max_width)
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self) -> str:  # pragma: no cover
         from regionmask.core.options import OPTIONS
 
         max_rows = OPTIONS["display_max_rows"]
@@ -341,13 +349,13 @@ class Regions:
 
     def mask(
         self,
-        lon_or_obj,
-        lat=None,
+        lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+        lat: np.typing.ArrayLike | xr.DataArray | None = None,
         *,
         method=None,
-        wrap_lon=None,
-        flag="abbrevs",
-        use_cf=None,
+        wrap_lon: None | bool | Literal[180, 360] = None,
+        flag: Literal["abbrevs", "names"] | None = "abbrevs",
+        use_cf: bool | None = None,
     ) -> xr.DataArray:
 
         if self.overlap:
@@ -394,13 +402,13 @@ class Regions:
 
     def mask_3D(
         self,
-        lon_or_obj,
-        lat=None,
+        lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+        lat: np.typing.ArrayLike | xr.DataArray | None = None,
         *,
-        drop=True,
+        drop: bool = True,
         method=None,
-        wrap_lon=None,
-        use_cf=None,
+        wrap_lon: None | bool | Literal[180, 360] = None,
+        use_cf: bool | None = None,
     ) -> xr.DataArray:
 
         mask_3D = _mask_3D(
@@ -429,12 +437,12 @@ class Regions:
 
     def mask_3D_frac_approx(
         self,
-        lon_or_obj,
-        lat=None,
+        lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+        lat: np.typing.ArrayLike | xr.DataArray | None = None,
         *,
-        drop=True,
-        wrap_lon=None,
-        use_cf=None,
+        drop: bool = True,
+        wrap_lon: None | bool | Literal[180, 360] = None,
+        use_cf: bool | None = None,
     ) -> xr.DataArray:
 
         mask_3D = _mask_3D_frac_approx(
@@ -521,7 +529,14 @@ class Regions:
         return df
 
     @classmethod
-    def from_geodataframe(cls, df, *, name=None, source=None, overlap=None):
+    def from_geodataframe(
+        cls,
+        df: gp.GeoDataFrame,
+        *,
+        name: str | None = None,
+        source: str | None = None,
+        overlap: bool | None = None,
+    ):
         """
         Convert a  ``geopandas.GeoDataFrame`` created with ``to_geodataframe`` back to
         ``regionmask.Region`` (round trip)
