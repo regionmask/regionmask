@@ -8,7 +8,7 @@ from typing import Any, TypedDict
 if sys.version_info < (3, 11):
     Unpack: Any
 else:
-    from typing import Unpack  # type:ignore[no-redef]
+    from typing import Unpack
 
 
 class _OPTIONS(TypedDict, total=False):
