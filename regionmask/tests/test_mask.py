@@ -1,4 +1,5 @@
 import copy
+from collections.abc import Callable
 
 import numpy as np
 import pytest
@@ -26,8 +27,8 @@ from regionmask.tests.utils import (
     expected_mask_3D,
 )
 
-MASK_FUNCS = [
-    _mask_rasterize,  # type:ignore[list-item]
+MASK_FUNCS: list[Callable] = [
+    _mask_rasterize,
     _mask_shapely,
 ]
 

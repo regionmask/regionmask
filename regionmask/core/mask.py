@@ -847,7 +847,7 @@ def _mask_rasterize_internal(lon, lat, polygons, numbers, fill=np.nan, **kwargs)
 
 def _mask_rasterize_no_offset(
     lon, lat, polygons, numbers, fill=np.nan, dtype=float, **kwargs
-):
+) -> np.ndarray:
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
     This only works for regularly spaced 1D lat and lon arrays.
@@ -859,7 +859,7 @@ def _mask_rasterize_no_offset(
 
     from rasterio import features
 
-    shapes = zip(polygons, numbers)
+    shapes = zip(polygons, numbers, strict=True)
 
     transform = _transform_from_latlon(lon, lat)
     out_shape = (len(lat), len(lon))
