@@ -11,8 +11,11 @@ Changelog
 
 .. _changelog.0.13.0:
 
-v0.13.0 (unreleased)
+v0.13.0 (03.12.2024)
 --------------------
+
+regionmask v0.13.0 is mostly a maintenance release: it bumps the supported versions,
+requires shapely v2.0+, and adds (partial) type hints.
 
 Breaking Changes
 ~~~~~~~~~~~~~~~~
@@ -50,12 +53,6 @@ Enhancements
   :pull:`575`, :pull:`576`, :pull:`577`, :pull:`578`).
 - regionmask is now discoverably by mypy, although typing hints coverage is no yet
   complete  (:pull:`574`).
-
-Deprecations
-~~~~~~~~~~~~
-
-New regions
-~~~~~~~~~~~
 
 Bug Fixes
 ~~~~~~~~~
