@@ -44,7 +44,7 @@ jobs:
     name: Minimum Version Policy CI job
     runs-on: "ubuntu-latest"
     steps:
-      - uses: xarray-contrib/minimum-dependency-versions@6f9cf5a097a367891f67474fc70f5a9810e34c35
+      - uses: mathause/minimum-dependency-versions@use_github.action_path
         with:
           environment-paths: |
             ci/requirements/min-all-deps.yml
