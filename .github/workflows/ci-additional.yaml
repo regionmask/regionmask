@@ -42,8 +42,7 @@ jobs:
 
   auto-min-version-policy:
     name: Minimum Version Policy CI job
-
-    - uses: xarray-contrib/minimum-dependency-versions
-      with:
-        environment-paths: |
-          ci/requirements/min-all-deps.yml
+    uses: xarray-contrib/minimum-dependency-versions
+    with:
+      environment-paths: |
+        ci/requirements/min-all-deps.yml
