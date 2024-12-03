@@ -40,7 +40,6 @@ jobs:
         run: |
           python ci/min_deps_check.py ci/requirements/min-all-deps.yml
 
-
   auto-min-version-policy:
     name: Minimum Version Policy CI job
 
