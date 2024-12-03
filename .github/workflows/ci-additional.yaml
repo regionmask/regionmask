@@ -21,8 +21,6 @@ jobs:
         shell: bash -l {0}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all history for all branches and tags.
 
       - name: Create conda environment
         uses: mamba-org/setup-micromamba@v2
@@ -39,3 +37,13 @@ jobs:
       - name: minimum versions policy
         run: |
           python ci/min_deps_check.py ci/requirements/min-all-deps.yml
+
+  auto-min-version-policy:
+    name: Minimum Version Policy CI job
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xarray-contrib/minimum-dependency-versions@7fefa63f6a9030d5aa87ae08c258c1d21aaa9874
+        with:
+          environment-paths: |
+            ci/requirements/min-all-deps.yml
