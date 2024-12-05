@@ -55,18 +55,15 @@ These instructions assume that `upstream` refers to the main repository
    ~~~~~~~~~~~~~~~~
 
    ```
-1. Issue the release on GitHub. Click on "Draft a new release" at
-   <https://github.com/regionmask/regionmask/releases>. Type in the version number
-   and paste the release summary in the notes.
 1. Update zenodo link.
 1. Commit your changes and push to main again:
    ```sh
    git co -b "new_changelog_section"
    git commit -am 'New changelog section'
-   git push upstream HEAD
+   git push origin HEAD
    ```
-2. Check if the new docs get built. Login to <https://readthedocs.org/projects/regionmask/versions/>.
-3. Release regionmask on conda - also update the requirements in meta.yaml <https://github.com/conda-forge/regionmask-feedstock>
+1. Check if the new docs get built. Login to <https://readthedocs.org/projects/regionmask/versions/>.
+1. Release regionmask on conda - also update the requirements in meta.yaml <https://github.com/conda-forge/regionmask-feedstock>
 
 <!-- markdownlint-enable MD013 -->
 
