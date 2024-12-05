@@ -35,6 +35,8 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Remove lat_name and lon_name internally (:pull:`592`).
+
 
 .. _changelog.0.13.0:
 
