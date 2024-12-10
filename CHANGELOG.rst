@@ -35,6 +35,7 @@ Docs
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Make more arguments keyword-only for internal mask functions  (:pull:`593`).
 - Remove lat_name and lon_name internally (:pull:`592`).
 
 
