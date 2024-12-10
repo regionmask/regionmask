@@ -7,7 +7,7 @@ import numpy as np
 
 from regionmask.core.utils import _flatten_polygons, flatten_3D_mask
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from cartopy.mpl.geoaxes import GeoAxes
     from matplotlib.axes import Axes
 

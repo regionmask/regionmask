@@ -316,7 +316,7 @@ def _mask_3D_frac_approx(
         mask[:, 0] = e1
         mask[:, -1] = e2
 
-    mask = _mask_to_dataarray(mask, lon_, lat_, lon_name="lon", lat_name="lat")
+    mask = _mask_to_dataarray(mask, lon_, lat_)
 
     mask_3D = _3D_to_3D_mask(mask, numbers, drop)
 
@@ -536,13 +536,13 @@ def _determine_method(
     return "shapely"
 
 
-def _mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat") -> xr.DataArray:
+def _mask_to_dataarray(mask, lon, lat) -> xr.DataArray:
 
     if sum(isinstance(c, xr.DataArray) for c in (lon, lat)) == 1:
         raise ValueError("Cannot handle coordinates with mixed types!")
 
     if not isinstance(lon, xr.DataArray) or not isinstance(lat, xr.DataArray):
-        lon, lat = _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name)
+        lon, lat = _numpy_coords_to_dataarray(lon, lat)
 
     ds = lat.coords.merge(lon.coords)
 
@@ -555,10 +555,9 @@ def _mask_to_dataarray(mask, lon, lat, lon_name="lon", lat_name="lat") -> xr.Dat
     return ds.assign(mask=(dims, mask)).mask
 
 
-def _numpy_coords_to_dataarray(
-    lon, lat, lon_name, lat_name
-) -> tuple[xr.DataArray, xr.DataArray]:
-    # TODO: simplify if passing lon_name and lat_name is no longer supported
+def _numpy_coords_to_dataarray(lon, lat) -> tuple[xr.DataArray, xr.DataArray]:
+
+    lon_name, lat_name = "lon", "lat"
 
     dims2D = (f"{lat_name}_idx", f"{lon_name}_idx")
 
@@ -847,7 +846,7 @@ def _mask_rasterize_internal(lon, lat, polygons, numbers, fill=np.nan, **kwargs)
 
 def _mask_rasterize_no_offset(
     lon, lat, polygons, numbers, fill=np.nan, dtype=float, **kwargs
-):
+) -> np.ndarray:
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
     This only works for regularly spaced 1D lat and lon arrays.
@@ -859,7 +858,7 @@ def _mask_rasterize_no_offset(
 
     from rasterio import features
 
-    shapes = zip(polygons, numbers)
+    shapes = zip(polygons, numbers, strict=True)
 
     transform = _transform_from_latlon(lon, lat)
     out_shape = (len(lat), len(lon))

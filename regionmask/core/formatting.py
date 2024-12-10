@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from pandas.io.formats import console  # type:ignore[attr-defined]
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from regionmask.core.regions import Regions
 
 
