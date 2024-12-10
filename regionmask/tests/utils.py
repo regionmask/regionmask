@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 import xarray as xr
@@ -35,7 +36,7 @@ def expected_mask_1D():
 
 def expected_mask_2D(
     a=0, b=1, fill=np.nan, coords=None, lon_name="lon", lat_name="lat"
-):
+) -> xr.DataArray:
 
     mask = np.array([[a, fill], [b, fill]])
 
@@ -47,7 +48,7 @@ def expected_mask_2D(
     flag_values = np.array([a, b])
     flag_meanings = "r0 r1"
 
-    attrs = {"standard_name": "region"}
+    attrs: dict[str, Any] = {"standard_name": "region"}
 
     attrs["flag_values"] = flag_values
     attrs["flag_meanings"] = flag_meanings

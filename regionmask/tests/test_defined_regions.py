@@ -1,6 +1,7 @@
 from operator import attrgetter
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from regionmask import Regions, defined_regions
@@ -38,12 +39,12 @@ def _test_region(defined_region):
 
 
 @pytest.mark.parametrize("defined_region", REGIONS_ALL, ids=str)
-def test_defined_region(defined_region):
+def test_defined_region(defined_region) -> None:
 
     _test_region(defined_region)
 
 
-def test_defined_regions_natural_earth_informative_error():
+def test_defined_regions_natural_earth_informative_error() -> None:
 
     with pytest.raises(
         AttributeError, match="The `natural_earth` regions have been removed."
@@ -51,7 +52,7 @@ def test_defined_regions_natural_earth_informative_error():
         defined_regions.natural_earth
 
 
-def test_defined_regions_attribute_error():
+def test_defined_regions_attribute_error() -> None:
 
     with pytest.raises(
         AttributeError,
@@ -60,14 +61,14 @@ def test_defined_regions_attribute_error():
         defined_regions.attr
 
 
-def test_natural_earth_wrong_version():
+def test_natural_earth_wrong_version() -> None:
     ne_wrong_version = NaturalEarth("v0.3.0", None)
 
     with pytest.raises(ValueError, match="version must"):
         ne_wrong_version.land_110
 
 
-def test_natural_earth_repr():
+def test_natural_earth_repr() -> None:
     actual = repr(defined_regions.natural_earth_v4_1_0)
     expected = "Region definitions from 'http://www.naturalearthdata.com' - v4.1.0"
     assert actual == expected
@@ -78,7 +79,7 @@ def test_natural_earth_repr():
 
 
 @pytest.mark.filterwarnings("ignore:.*does not quite extend")
-def test_fix_ocean_basins_50():
+def test_fix_ocean_basins_50() -> None:
     region = defined_regions.natural_earth_v4_1_0.ocean_basins_50
     assert "Mediterranean Sea Eastern Basin" in region.names
     assert "Ross Sea Eastern Basin" in region.names
@@ -90,7 +91,7 @@ def test_fix_ocean_basins_50():
 
 @pytest.mark.filterwarnings("ignore:.*does not quite extend")
 @requires_cartopy
-def test_natural_earth_loaded_as_utf8():
+def test_natural_earth_loaded_as_utf8() -> None:
     # GH 95
 
     region = defined_regions.natural_earth_v5_0_0.ocean_basins_50
@@ -98,20 +99,14 @@ def test_natural_earth_loaded_as_utf8():
     assert "Río de la Plata" in region.names
 
 
-def test_maybe_get_column():
-    class lowercase:
-        @property
-        def name(self):
-            return 1
+def test_maybe_get_column() -> None:
 
-    class uppercase:
-        @property
-        def NAME(self):
-            return 2
+    lowercase = pd.DataFrame({"name": [1]})
+    uppercase = pd.DataFrame({"NAME": [2]})
 
-    assert _maybe_get_column(lowercase(), "name") == 1
-    assert _maybe_get_column(uppercase(), "name") == 2
-    assert _maybe_get_column(uppercase(), "NAME") == 2
+    assert _maybe_get_column(lowercase, "name").item() == 1
+    assert _maybe_get_column(uppercase, "name").item() == 2
+    assert _maybe_get_column(uppercase, "NAME").item() == 2
 
     with pytest.raises(KeyError, match="not on the geopandas dataframe"):
         _maybe_get_column(lowercase, "not_a_column")

@@ -28,7 +28,7 @@ from regionmask.core.utils import (
         [[0, 1, 2], "r", {0: "r0", 1: "r1", 2: "r2"}],
     ],
 )
-def test_create_dict_of_numbered_string(numbers, string, expected):
+def test_create_dict_of_numbered_string(numbers, string, expected) -> None:
 
     result = _create_dict_of_numbered_string(numbers, string)
 
@@ -45,7 +45,7 @@ def test_create_dict_of_numbered_string(numbers, string, expected):
         [[1, 2], {0: "a", 1: "b"}, {0: "a", 1: "b"}],
     ],
 )
-def test_maybe_to_dict(keys, values, expected):
+def test_maybe_to_dict(keys, values, expected) -> None:
 
     result = _maybe_to_dict(keys, values)
 
@@ -63,7 +63,7 @@ def test_maybe_to_dict(keys, values, expected):
         [[0, 1], "Region", "r", {0: "Region0", 1: "Region1"}],
     ],
 )
-def test_sanitize_names_abbrevs(numbers, values, default, expected):
+def test_sanitize_names_abbrevs(numbers, values, default, expected) -> None:
 
     result = _sanitize_names_abbrevs(numbers, values, default)
 
@@ -72,13 +72,13 @@ def test_sanitize_names_abbrevs(numbers, values, default, expected):
     assert result == expected
 
 
-def test_sanitize_names_abbrevs_unequal_length():
+def test_sanitize_names_abbrevs_unequal_length() -> None:
 
     with pytest.raises(ValueError, match="not have the same length"):
         _sanitize_names_abbrevs([0, 1], ["A"], "default")
 
 
-def test_is_180():
+def test_is_180() -> None:
 
     assert _is_180(-180, 180)
     assert not _is_180(0, 180.1)
@@ -96,7 +96,7 @@ def test_is_180():
 
 @pytest.mark.parametrize("lon_vals", [(-161, -29, 2), (-180, 181, 2)])
 @pytest.mark.parametrize("lat_vals", [(75, 13, -2), (90, -91, -2)])
-def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
+def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals) -> None:
 
     # use "+" because x(*a, *b) is not valid in python 2.7
     result = create_lon_lat_dataarray_from_bounds(*lon_vals + lat_vals)
@@ -122,13 +122,13 @@ def test_create_lon_lat_dataarray_from_bounds(lon_vals, lat_vals):
     np.allclose(result["LAT"], LAT_EXPECTED)
 
 
-def test_is_numeric():
+def test_is_numeric() -> None:
 
     assert _is_numeric([1, 2, 3])
     assert not _is_numeric(["a"])
 
 
-def test_equally_spaced():
+def test_equally_spaced() -> None:
 
     np.random.seed(0)
 
@@ -160,7 +160,7 @@ def test_equally_spaced():
     assert equally_spaced(close_to_equal, close_to_equal)
 
 
-def test__equally_spaced_on_split_lon():
+def test__equally_spaced_on_split_lon() -> None:
     np.random.seed(0)
 
     equal = np.arange(10)
@@ -190,7 +190,7 @@ def test__equally_spaced_on_split_lon():
     assert _equally_spaced_on_split_lon(close_to_equal_split)
 
 
-def test_find_splitpoint():
+def test_find_splitpoint() -> None:
 
     np.random.seed(0)
     equal_split = np.asarray([5, 6, 7, 8, 9, 10, 1, 2, 3, 4])
@@ -206,7 +206,7 @@ def test_find_splitpoint():
         _find_splitpoint([0, 1, 3, 4, 6, 7])
 
 
-def test_unpackbits():
+def test_unpackbits() -> None:
 
     numbers = np.array([0, 1, 3, 254, 255])
     result = unpackbits(numbers, 8)
@@ -223,7 +223,7 @@ def test_unpackbits():
 
 
 @pytest.mark.parametrize("num_bits", np.arange(1, 33))
-def test_unpackbits_num_bits(num_bits):
+def test_unpackbits_num_bits(num_bits) -> None:
 
     # zero -> all zeros
     result = unpackbits(np.array([0]), num_bits)
@@ -248,7 +248,7 @@ def test_unpackbits_num_bits(num_bits):
 
 @pytest.mark.parametrize("shape", ((2, 3), (3, 2), (2, 2), (2, 3, 4)))
 @pytest.mark.parametrize("num_bits", [1, 2, 4, 8, 16, 32])
-def test_unpackbits_shape(shape, num_bits):
+def test_unpackbits_shape(shape, num_bits) -> None:
 
     numbers = np.ones(shape=shape, dtype=np.uint32)
     result = unpackbits(numbers, num_bits)
@@ -262,7 +262,7 @@ def test_unpackbits_shape(shape, num_bits):
         assert unpackbits(numbers * 2**i, num_bits)[..., i].all()
 
 
-def test_unpackbits_numpy():
+def test_unpackbits_numpy() -> None:
     # np.unpackbits only works for uint8
 
     numbers = np.arange(255, dtype=np.uint8)
@@ -273,7 +273,7 @@ def test_unpackbits_numpy():
     np.testing.assert_equal(result, expected)
 
 
-def test_unpackbits_wrong_dtype():
+def test_unpackbits_wrong_dtype() -> None:
 
     with pytest.raises(ValueError, match="needs to be int-like"):
         unpackbits(np.array(0, dtype=float), 8)
@@ -282,7 +282,7 @@ def test_unpackbits_wrong_dtype():
 @pytest.mark.parametrize(
     "numbers, n_bits", ((np.array([1, 3, 0, 255]), 8), (np.arange(2**4), 4))
 )
-def test_unpackbits_roundtrip(numbers, n_bits):
+def test_unpackbits_roundtrip(numbers, n_bits) -> None:
 
     numbers = 2 ** np.arange(n_bits)
 
@@ -291,7 +291,7 @@ def test_unpackbits_roundtrip(numbers, n_bits):
     np.testing.assert_equal(result, numbers)
 
 
-def test_flatten_3D_mask_wrong_input():
+def test_flatten_3D_mask_wrong_input() -> None:
 
     lon = np.arange(-180, 180, 2)
     lat = np.arange(90, -91, -2)
@@ -301,7 +301,7 @@ def test_flatten_3D_mask_wrong_input():
     mask_3D = srex.mask_3D(lon, lat)
 
     with pytest.raises(ValueError, match="expected a xarray.DataArray"):
-        flatten_3D_mask(None)
+        flatten_3D_mask(None)  # type:ignore[arg-type]
 
     with pytest.raises(ValueError, match="``mask_3D`` must have 3 dimensions"):
         flatten_3D_mask(mask_2D)
@@ -315,7 +315,7 @@ def test_flatten_3D_mask_wrong_input():
     np.testing.assert_equal(result, expected)
 
 
-def test_flatten_3D_mask_overlap():
+def test_flatten_3D_mask_overlap() -> None:
 
     lon = np.arange(-180, 180, 2)
     lat = np.arange(90, -91, -2)
@@ -331,7 +331,7 @@ def test_flatten_3D_mask_overlap():
         flatten_3D_mask(mask_3D)
 
 
-def test_total_bounds():
+def test_total_bounds() -> None:
 
     p1 = box(0, 2, 5, 3)
     p2 = box(5, 2, 7, 9)

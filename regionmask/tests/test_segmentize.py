@@ -4,7 +4,7 @@ import pytest
 from regionmask.core.plot import _get_tolerance, segmentize
 
 
-def test_get_tolerance():
+def test_get_tolerance() -> None:
 
     assert _get_tolerance(0) == 1
     assert _get_tolerance(-1) == 1
@@ -17,7 +17,7 @@ def test_get_tolerance():
     assert _get_tolerance(10**8) == 10**6
 
 
-def test_segmentize():
+def test_segmentize() -> None:
 
     zeros = np.zeros(51)
 
@@ -53,7 +53,7 @@ def test_segmentize():
     assert np.allclose(expected, result)
 
 
-def test_segmentize_mixed_length():
+def test_segmentize_mixed_length() -> None:
     # only one of the segments needs to be split
 
     outl = ((0, 0), (0, 1), (0, 5))
@@ -64,7 +64,7 @@ def test_segmentize_mixed_length():
 
 
 @pytest.mark.parametrize("number", [1, 2, 5, 20, 100])
-def test_segmentize_n_segments(number):
+def test_segmentize_n_segments(number) -> None:
 
     zeros = np.zeros(number + 1)
 
@@ -73,7 +73,7 @@ def test_segmentize_n_segments(number):
     assert np.allclose(expected, result)
 
 
-def test_segmentize_smaller():
+def test_segmentize_smaller() -> None:
 
     result = segmentize([[0, 0], [0, 1]], tolerance=0.3)
     expected = [
@@ -97,7 +97,7 @@ COORDS = (
 
 @pytest.mark.parametrize("coords", COORDS)
 @pytest.mark.parametrize("tolerance", [0.3, 1.0, 2.7852])
-def test_segmentize_shapely(coords, tolerance):
+def test_segmentize_shapely(coords, tolerance) -> None:
 
     import shapely
     import shapely.testing

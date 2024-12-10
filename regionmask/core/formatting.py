@@ -1,9 +1,16 @@
 """String formatting routines for __repr__."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from pandas.io.formats import console  # type:ignore[attr-defined]
 
+if TYPE_CHECKING:  # pragma: no cover
+    from regionmask.core.regions import Regions
 
-def maybe_truncate(obj, maxlen=500):
+
+def maybe_truncate(obj, maxlen: int = 500) -> str:
 
     # copied from xarray
 
@@ -13,7 +20,9 @@ def maybe_truncate(obj, maxlen=500):
     return s
 
 
-def _display_metadata(source, overlap, max_width=80):
+def _display_metadata(
+    source: str | None, overlap: bool | None, max_width: int = 80
+) -> list[str]:
 
     summary = []
 
@@ -21,13 +30,13 @@ def _display_metadata(source, overlap, max_width=80):
         source = maybe_truncate(f"Source:   {source}", max_width)
         summary.append(source)
 
-    overlap = f"overlap:  {overlap}"
-    summary.append(overlap)
+    overlap_ = f"overlap:  {overlap}"
+    summary.append(overlap_)
 
     return summary
 
 
-def _display_regions_gp(self, max_rows, max_width):
+def _display_regions_gp(self: Regions, max_rows: int, max_width: int) -> list[str]:
     summary = ["Regions:"]
 
     # __repr__ of polygons can be slow -> use pd.DataFrame
@@ -49,7 +58,7 @@ def _display_regions_gp(self, max_rows, max_width):
     return summary
 
 
-def _display(self, max_rows=10, max_width=None):
+def _display(self, max_rows: int = 10, max_width: int | None = None) -> str:
 
     if max_width is None:
         max_width, _ = console.get_console_size()

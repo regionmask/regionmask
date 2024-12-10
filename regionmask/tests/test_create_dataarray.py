@@ -5,7 +5,7 @@ import xarray as xr
 from regionmask.core.mask import _mask_to_dataarray, _numpy_coords_to_dataarray
 
 
-def test_mask_to_dataarray_mixed_types():
+def test_mask_to_dataarray_mixed_types() -> None:
 
     ds = xr.Dataset(coords={"lon": [0], "lat": [0]})
 
@@ -67,7 +67,7 @@ def create_test_datasets():
 
 
 @pytest.mark.parametrize("ds, lon_name, lat_name, mask", create_test_datasets())
-def test_mask_to_dataarray_ds_indiv(ds, lon_name, lat_name, mask):
+def test_mask_to_dataarray_ds_indiv(ds, lon_name, lat_name, mask) -> None:
 
     actual = _mask_to_dataarray(mask, ds[lon_name], ds[lat_name])
     expected = ds.coords.to_dataset()
@@ -77,7 +77,7 @@ def test_mask_to_dataarray_ds_indiv(ds, lon_name, lat_name, mask):
 
 @pytest.mark.parametrize("n_regions", [1, 2, 3])
 @pytest.mark.parametrize("ds, lon_name, lat_name, mask", create_test_datasets())
-def test_mask_to_dataarray_3D_mask(n_regions, ds, lon_name, lat_name, mask):
+def test_mask_to_dataarray_3D_mask(n_regions, ds, lon_name, lat_name, mask) -> None:
 
     mask_3D = np.stack([mask] * n_regions, 0)
     actual = _mask_to_dataarray(mask_3D, ds[lon_name], ds[lat_name])
@@ -90,62 +90,52 @@ def test_mask_to_dataarray_3D_mask(n_regions, ds, lon_name, lat_name, mask):
 
 @pytest.mark.parametrize("lon", ([0, 1], np.array([0.1, 2.3])))
 @pytest.mark.parametrize("lat", ([2, 3], np.array([-1.75, 23.85])))
-@pytest.mark.parametrize("lon_name", ("lon", "longitude"))
-@pytest.mark.parametrize("lat_name", ("lat", "latitude"))
-def test_mask_to_dataarray_numpy_1D(lon, lat, lon_name, lat_name):
+def test_mask_to_dataarray_numpy_1D(lon, lat) -> None:
 
     mask = np.arange(4).reshape(2, 2)
-    actual = _mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
-    expected = xr.DataArray(
-        mask, dims=(lat_name, lon_name), coords={lat_name: lat, lon_name: lon}
-    )
+    actual = _mask_to_dataarray(mask, lon, lat)
+    expected = xr.DataArray(mask, dims=("lat", "lon"), coords={"lat": lat, "lon": lon})
     xr.testing.assert_equal(expected, actual)
 
 
-@pytest.mark.parametrize("lon_name", ("lon", "longitude", "x"))
-@pytest.mark.parametrize("lat_name", ("lat", "latitude", "y"))
-def test_mask_to_dataarray_numpy_2D(lon_name, lat_name):
+def test_mask_to_dataarray_numpy_2D() -> None:
 
     lon = [[0, 1], [0, 1]]
     lat = [[1, 1], [0, 0]]
 
     mask = np.arange(4).reshape(2, 2)
-    actual = _mask_to_dataarray(mask, lon, lat, lon_name, lat_name)
-    dims = (f"{lat_name}_idx", f"{lon_name}_idx")
+    actual = _mask_to_dataarray(mask, lon, lat)
+    dims = ("lat_idx", "lon_idx")
     expected = xr.DataArray(
-        mask, dims=dims, coords={lat_name: (dims, lat), lon_name: (dims, lon)}
+        mask, dims=dims, coords={"lat": (dims, lat), "lon": (dims, lon)}
     )
     xr.testing.assert_equal(expected, actual)
 
 
-@pytest.mark.parametrize("lon_name", ("lon", "longitude", "x"))
-@pytest.mark.parametrize("lat_name", ("lat", "latitude", "y"))
-def test_numpy_coords_to_dataarray_1D(lon_name, lat_name):
+def test_numpy_coords_to_dataarray_1D() -> None:
 
     lon = [0, 1]
     lat = [0, 1]
 
-    lon_actual, lat_actual = _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name)
+    lon_actual, lat_actual = _numpy_coords_to_dataarray(lon, lat)
 
-    lon_expected = xr.Dataset(coords={lon_name: lon})[lon_name]
-    lat_expected = xr.Dataset(coords={lat_name: lat})[lat_name]
+    lon_expected = xr.Dataset(coords={"lon": lon})["lon"]
+    lat_expected = xr.Dataset(coords={"lat": lat})["lat"]
 
     xr.testing.assert_equal(lon_expected, lon_actual)
     xr.testing.assert_equal(lat_expected, lat_actual)
 
 
-@pytest.mark.parametrize("lon_name", ("lon", "longitude", "x"))
-@pytest.mark.parametrize("lat_name", ("lat", "latitude", "y"))
-def test_numpy_coords_to_dataarray_2D(lon_name, lat_name):
+def test_numpy_coords_to_dataarray_2D() -> None:
 
     lon = [[0, 1]]
     lat = [[0, 1]]
 
-    lon_actual, lat_actual = _numpy_coords_to_dataarray(lon, lat, lon_name, lat_name)
+    lon_actual, lat_actual = _numpy_coords_to_dataarray(lon, lat)
 
-    dims = (f"{lat_name}_idx", f"{lon_name}_idx")
-    lon_expected = xr.Dataset(coords={lon_name: (dims, lon)})[lon_name]
-    lat_expected = xr.Dataset(coords={lat_name: (dims, lat)})[lat_name]
+    dims = ("lat_idx", "lon_idx")
+    lon_expected = xr.Dataset(coords={"lon": (dims, lon)})["lon"]
+    lat_expected = xr.Dataset(coords={"lat": (dims, lat)})["lat"]
 
     xr.testing.assert_equal(lon_expected, lon_actual)
     xr.testing.assert_equal(lat_expected, lat_actual)

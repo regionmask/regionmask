@@ -1,4 +1,5 @@
 import contextlib
+from typing import Any, TypedDict, cast
 
 from packaging.version import Version
 
@@ -14,6 +15,7 @@ try:
 except ImportError:  # pragma: no cover
     pass
 
+
 import numpy as np
 import pytest
 from shapely.geometry import MultiPolygon, Point, Polygon
@@ -27,6 +29,13 @@ from regionmask.core.plot import (
     _polygons_coords,
 )
 from regionmask.tests import assert_no_warnings, requires_cartopy, requires_matplotlib
+
+
+class NO_ADD_ARTISTS(TypedDict):
+    tolerance: Any
+    add_label: Any
+    add_coastlines: Any
+
 
 # =============================================================================
 
@@ -122,7 +131,7 @@ def maybe_no_coastlines(plotfunc):
 # =============================================================================
 
 
-def test_flatten_polygons():
+def test_flatten_polygons() -> None:
     # TODO: move to test_utils.py
 
     result = _flatten_polygons([poly1])
@@ -157,7 +166,7 @@ def test_flatten_polygons():
     assert result[0].equals(poly1)
 
 
-def test_polygons_coords():
+def test_polygons_coords() -> None:
 
     result = _polygons_coords([poly1, poly2])
     assert len(result) == 2
@@ -180,7 +189,7 @@ def test_polygons_coords():
 
 
 @requires_matplotlib
-def test_maybe_gca():
+def test_maybe_gca() -> None:
 
     with figure_context():
         ax = _maybe_gca(aspect=1)
@@ -205,7 +214,7 @@ def test_maybe_gca():
 
 
 @requires_cartopy
-def test_plot_projection():
+def test_plot_projection() -> None:
 
     # default is PlateCarree
     with figure_context():
@@ -225,7 +234,7 @@ def test_plot_projection():
 
 
 @requires_cartopy
-def test_plot_gca():
+def test_plot_gca() -> None:
 
     with figure_context() as f:
         axs = f.subplots(1, 2, subplot_kw=dict(projection=ccrs.Robinson()))
@@ -249,7 +258,7 @@ def test_plot_gca():
 
 
 @requires_cartopy
-def test_plot_regions_gca():
+def test_plot_regions_gca() -> None:
 
     with figure_context() as f:
         axs = f.subplots(1, 2)
@@ -259,18 +268,18 @@ def test_plot_regions_gca():
 
 
 @requires_cartopy
-def test_plot_regions_projection():
+def test_plot_regions_projection() -> None:
 
     # if none is given -> no projection
     with figure_context():
-        ax = r1.plot_regions(tolerance=None)
-        assert not hasattr(ax, "projection")
+        ax1 = r1.plot_regions(tolerance=None)
+        assert not hasattr(ax1, "projection")
 
     # projection given with axes is respected
     with figure_context() as f:
-        ax = f.subplots(subplot_kw=dict(projection=ccrs.Mollweide()))
-        ax = r1.plot_regions(tolerance=None, ax=ax)
-        assert isinstance(ax.projection, ccrs.Mollweide)
+        ax2 = f.subplots(subplot_kw=dict(projection=ccrs.Mollweide()))
+        ax2 = r1.plot_regions(tolerance=None, ax=ax2)
+        assert isinstance(ax2.projection, ccrs.Mollweide)
 
 
 # -----------------------------------------------------------------------------
@@ -278,7 +287,7 @@ def test_plot_regions_projection():
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_lines(plotfunc):
+def test_plot_lines(plotfunc) -> None:
 
     func = getattr(r1, plotfunc)
 
@@ -294,7 +303,7 @@ def test_plot_lines(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_lines_float_numbers(plotfunc):
+def test_plot_lines_float_numbers(plotfunc) -> None:
 
     func = getattr(r4, plotfunc)
 
@@ -310,7 +319,7 @@ def test_plot_lines_float_numbers(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_lines_multipoly(plotfunc):
+def test_plot_lines_multipoly(plotfunc) -> None:
     """regression of 47: because multipolygons were concatenated
     they did not look closed"""
 
@@ -330,7 +339,7 @@ def test_plot_lines_multipoly(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_lines_selection(plotfunc):
+def test_plot_lines_selection(plotfunc) -> None:
 
     with figure_context():
         func = getattr(r1[0, 1], plotfunc)
@@ -344,13 +353,13 @@ def test_plot_lines_selection(plotfunc):
 
 @requires_matplotlib
 @requires_cartopy
-def test_error_extra_kwarg():
+def test_error_extra_kwarg() -> None:
     # manual TypeError for extra kwargs
     # remove test after coastlines and proj keywords are removed
 
     with pytest.raises(TypeError, match="got an unexpected keyword argument 'bar'"):
         with figure_context():
-            r1.plot(bar=5)
+            r1.plot(bar=5)  # type:ignore[call-arg]
 
 
 # -----------------------------------------------------------------------------
@@ -358,7 +367,7 @@ def test_error_extra_kwarg():
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_lines_tolerance(plotfunc):
+def test_plot_lines_tolerance(plotfunc) -> None:
 
     func = getattr(r1, plotfunc)
 
@@ -372,7 +381,7 @@ def test_plot_lines_tolerance(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_lines_tolerance_None(plotfunc):
+def test_plot_lines_tolerance_None(plotfunc) -> None:
 
     func = getattr(r_large, plotfunc)
 
@@ -391,7 +400,7 @@ def test_plot_lines_tolerance_None(plotfunc):
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
 @pytest.mark.parametrize("kwargs", ({}, {"tolerance": "auto"}))
-def test_plot_lines_tolerance_auto(plotfunc, kwargs):
+def test_plot_lines_tolerance_auto(plotfunc, kwargs) -> None:
 
     func = getattr(r_large, plotfunc)
 
@@ -406,7 +415,7 @@ def test_plot_lines_tolerance_auto(plotfunc, kwargs):
 
 
 @requires_cartopy
-def test_plot_regions_lines_tolerance_cartopy_axes():
+def test_plot_regions_lines_tolerance_cartopy_axes() -> None:
 
     expected = (41, 2)
 
@@ -415,8 +424,13 @@ def test_plot_regions_lines_tolerance_cartopy_axes():
         ax = r_large.plot_regions(ax=plt.axes(projection=ccrs.PlateCarree()))
 
         lines = ax.collections[0].get_paths()
-        np.testing.assert_allclose(lines[0].vertices.shape, expected)
-        np.testing.assert_allclose(lines[1].vertices.shape, expected)
+
+        # NOTE: Path.vertices is wrongly typed as ArrayLike, must be ndarray
+        vertices = cast(np.ndarray, lines[0].vertices)
+        np.testing.assert_allclose(vertices.shape, expected)
+
+        vertices = cast(np.ndarray, lines[1].vertices)
+        np.testing.assert_allclose(vertices.shape, expected)
 
 
 # -----------------------------------------------------------------------------
@@ -424,7 +438,7 @@ def test_plot_regions_lines_tolerance_cartopy_axes():
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_lines_from_poly(plotfunc):
+def test_plot_lines_from_poly(plotfunc) -> None:
 
     func = getattr(r2, plotfunc)
 
@@ -441,7 +455,7 @@ def test_plot_lines_from_poly(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_line_prop(plotfunc):
+def test_plot_line_prop(plotfunc) -> None:
 
     func = getattr(r1, plotfunc)
 
@@ -463,7 +477,7 @@ def test_plot_line_prop(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_label_defaults(plotfunc):
+def test_plot_label_defaults(plotfunc) -> None:
 
     func = getattr(r1, plotfunc)
 
@@ -475,7 +489,7 @@ def test_plot_label_defaults(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_label(plotfunc):
+def test_plot_label(plotfunc) -> None:
 
     func = getattr(r1, plotfunc)
 
@@ -519,7 +533,7 @@ def test_plot_label(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_label_multipolygon(plotfunc):
+def test_plot_label_multipolygon(plotfunc) -> None:
 
     func = getattr(r3, plotfunc)
 
@@ -546,7 +560,7 @@ def test_plot_label_multipolygon(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_text_prop(plotfunc):
+def test_plot_text_prop(plotfunc) -> None:
 
     func = getattr(r1, plotfunc)
 
@@ -567,7 +581,7 @@ def test_plot_text_prop(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_text_clip(plotfunc):
+def test_plot_text_clip(plotfunc) -> None:
     """test fix for #157"""
 
     func = getattr(r1, plotfunc)
@@ -612,9 +626,9 @@ def get_artist_or_collection(ax):
 
 @requires_matplotlib
 @requires_cartopy
-def test_plot_ocean():
+def test_plot_ocean() -> None:
 
-    kwargs = dict(tolerance=None, add_label=False, add_coastlines=False)
+    kwargs: NO_ADD_ARTISTS = dict(tolerance=None, add_label=False, add_coastlines=False)
 
     # no ocean per default
     with figure_context():
@@ -646,9 +660,9 @@ def test_plot_ocean():
 
 @requires_matplotlib
 @requires_cartopy
-def test_plot_land():
+def test_plot_land() -> None:
 
-    kwargs = dict(tolerance=None, add_label=False, add_coastlines=False)
+    kwargs: NO_ADD_ARTISTS = dict(tolerance=None, add_label=False, add_coastlines=False)
 
     # no land per default
     with figure_context():
@@ -678,9 +692,13 @@ def test_plot_land():
 
 @requires_matplotlib
 @requires_cartopy
-def test_plot_add_coastlines():
+def test_plot_add_coastlines() -> None:
 
-    kwargs = dict(tolerance=None, add_label=False)
+    class NO_TOL_LBL(TypedDict):
+        tolerance: Any
+        add_label: Any
+
+    kwargs: NO_TOL_LBL = dict(tolerance=None, add_label=False)
 
     # coastlines are added per default
     with figure_context():
@@ -705,7 +723,7 @@ def test_plot_add_coastlines():
 
 
 @requires_matplotlib
-def test_plot_3D_mask_wrong_input():
+def test_plot_3D_mask_wrong_input() -> None:
 
     lon = np.arange(-180, 180, 2)
     lat = np.arange(90, -91, -2)
@@ -738,7 +756,7 @@ def test_plot_3D_mask_wrong_input():
 
 
 @requires_matplotlib
-def test_plot_3D_mask_overlap():
+def test_plot_3D_mask_overlap() -> None:
 
     lon = np.arange(-180, 180, 2)
     lat = np.arange(90, -91, -2)
@@ -757,7 +775,7 @@ def test_plot_3D_mask_overlap():
 
 @requires_matplotlib
 @requires_cartopy
-def test_check_unused_kws():
+def test_check_unused_kws() -> None:
 
     # ensure no warning is raised
     with assert_no_warnings():
@@ -777,7 +795,7 @@ def test_check_unused_kws():
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_no_warning_default(plotfunc):
+def test_plot_no_warning_default(plotfunc) -> None:
     # ensure no warning is raised on default
 
     func = getattr(r1, plotfunc)
@@ -789,7 +807,7 @@ def test_plot_no_warning_default(plotfunc):
 
 @requires_matplotlib
 @pytest.mark.parametrize("plotfunc", PLOTFUNCS)
-def test_plot_unused_text_kws(plotfunc):
+def test_plot_unused_text_kws(plotfunc) -> None:
 
     func = getattr(r1, plotfunc)
 
@@ -810,11 +828,11 @@ def test_plot_unused_text_kws(plotfunc):
         ["add_land", "land_kws"],
     ],
 )
-def test_plot_unused_kws(feature_name, kws_name):
+def test_plot_unused_kws(feature_name, kws_name) -> None:
 
     with figure_context():
         with pytest.warns(
             RuntimeWarning,
             match=f"'{kws_name}' are passed but '{feature_name}' is False",
         ):
-            r1.plot(**{feature_name: False, kws_name: {}})
+            r1.plot(**{feature_name: False, kws_name: {}})  # type: ignore[arg-type]
