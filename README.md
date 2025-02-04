@@ -39,7 +39,7 @@ Learn more about regionmask in its official documentation at https://regionmask.
 
 ## Get in touch
 
-Dont hesitate to ask usage questions, report bugs, suggest features or view the source
+Don't hesitate to ask usage questions, report bugs, suggest features or view the source
 code on GitHub under [regionmask/regionmask](https://github.com/regionmask/regionmask).
 
 ## License
