@@ -73,15 +73,10 @@ extend-ignore-identifiers-re = [
 [tool.typos.default.extend-words]
 
 # regions
-
 CNA = "CNA"
 
-# NumPy function names
+# numpy
 arange = "arange"
-
-# Names
-Francisco = "Francisco"
-
 nd = "nd"
 
 [tool.typos.type.jupyter]
