@@ -57,3 +57,35 @@ module = [
   "rasterio.*",
   "shapely.*",
 ]
+
+[tool.typos]
+
+[tool.typos.default]
+extend-ignore-identifiers-re = [
+  # Variable names
+  "nd_.*",
+  ".*_nd",
+  # Function/class names
+  "NDArray.*",
+  ".*NDArray.*",
+]
+
+[tool.typos.default.extend-words]
+
+# regions
+
+CNA = "CNA"
+
+# NumPy function names
+arange = "arange"
+
+# Names
+Francisco = "Francisco"
+
+nd = "nd"
+
+[tool.typos.type.jupyter]
+# avoid fixing the id hashes in jupyter notebooks
+extend-ignore-re = [
+    "\"id\": \".*\"",
+]

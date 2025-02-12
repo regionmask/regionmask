@@ -2,7 +2,7 @@ from functools import cache
 
 from regionmask.core._geopandas import from_geopandas
 from regionmask.core.regions import Regions
-from regionmask.defined_regions._ressources import read_remote_shapefile
+from regionmask.defined_regions._resources import read_remote_shapefile
 
 REPR = """
 AR6 reference regions - Iturbide et al., 2020

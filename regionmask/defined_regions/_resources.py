@@ -18,7 +18,7 @@ def fetch_remote_shapefile(name):
     uses pooch to cache files
     """
 
-    REMOTE_RESSOURCE = pooch.create(
+    REMOTE_RESOURCE = pooch.create(
         # Use the default cache folder for the OS
         path=_get_cache_dir(),
         # The remote data is on Github
@@ -34,7 +34,7 @@ def fetch_remote_shapefile(name):
     downloader = pooch.HTTPDownloader(headers={"User-Agent": "regionmask"})
 
     # the file will be downloaded automatically the first time this is run.
-    return REMOTE_RESSOURCE.fetch(name, downloader=downloader)
+    return REMOTE_RESOURCE.fetch(name, downloader=downloader)
 
 
 def read_remote_shapefile(name):

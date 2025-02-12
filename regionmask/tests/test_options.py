@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 import regionmask
-from regionmask.defined_regions._ressources import _get_cache_dir
+from regionmask.defined_regions._resources import _get_cache_dir
 
 
 @pytest.mark.parametrize("invalid_option", [None, "None", "__foo__"])

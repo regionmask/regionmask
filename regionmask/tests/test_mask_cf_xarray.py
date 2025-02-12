@@ -76,7 +76,7 @@ def test_mask_use_cf_no_coords_found(method, coords) -> None:
 @requires_cf_xarray
 @pytest.mark.parametrize("method", MASK_METHODS)
 @pytest.mark.parametrize("drop", ([], "lon", "longitude", ["lon", "longitude"]))
-def test_mask_use_cf_ambigous_name(method, drop) -> None:
+def test_mask_use_cf_ambiguous_name(method, drop) -> None:
 
     ds = xr.merge([dummy_ds_cf, dummy_ds])
     ds = ds.drop_vars(drop)
@@ -106,7 +106,7 @@ def test_mask_use_cf_two_cf_coords(method, coords, name, use_cf) -> None:
 @requires_cf_xarray
 @pytest.mark.parametrize("method", MASK_METHODS)
 @pytest.mark.parametrize("use_cf", (True, False))
-def test_mask_use_cf_ambigous_name_resolved(method, use_cf) -> None:
+def test_mask_use_cf_ambiguous_name_resolved(method, use_cf) -> None:
 
     ds = xr.merge([dummy_ds_cf, dummy_ds])
 
