@@ -64,13 +64,13 @@ def _get_coords_cf_or_name(obj, lon_name, lat_name):
     x_name = _get_cf_coords(obj, "longitude", required=False) or lon_name
     y_name = _get_cf_coords(obj, "latitude", required=False) or lat_name
 
-    _assert_unambigous_coord_names(obj, x_name, lon_name)
-    _assert_unambigous_coord_names(obj, y_name, lat_name)
+    _assert_unambiguous_coord_names(obj, x_name, lon_name)
+    _assert_unambiguous_coord_names(obj, y_name, lat_name)
 
     return obj[x_name], obj[y_name]
 
 
-def _assert_unambigous_coord_names(obj, cf_name, name):
+def _assert_unambiguous_coord_names(obj, cf_name, name):
 
     if cf_name != name and name in obj.coords:
         raise ValueError(

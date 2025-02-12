@@ -1,4 +1,4 @@
-from regionmask.defined_regions import _natural_earth, _ressources
+from regionmask.defined_regions import _natural_earth, _resources
 from regionmask.defined_regions._ar6 import ar6
 from regionmask.defined_regions._natural_earth import (
     natural_earth_v4_1_0,
@@ -11,7 +11,7 @@ from regionmask.defined_regions.srex import srex
 
 __all__ = [
     "_natural_earth",
-    "_ressources",
+    "_resources",
     "ar6",
     "natural_earth_v4_1_0",
     "natural_earth_v5_0_0",

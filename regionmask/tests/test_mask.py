@@ -667,7 +667,7 @@ r_US_180_cw = Regions([outline_180[::-1]])  # clockwise
 r_US_360_ccw = Regions([outline_360])  # counter clockwise
 r_US_360_cw = Regions([outline_360[::-1]])  # clockwise
 
-# define poylgon with hole
+# define polygon with hole
 poly = Polygon(outline_180, [outline_hole_180])
 r_US_hole_180_cw = Regions([poly])  # clockwise
 poly = Polygon(outline_180, [outline_hole_180[::-1]])

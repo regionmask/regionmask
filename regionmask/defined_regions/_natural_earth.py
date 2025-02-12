@@ -11,7 +11,7 @@ from shapely.geometry import MultiPolygon
 
 from regionmask.core.regions import Regions
 from regionmask.core.utils import _flatten_polygons, _snap_to_90S, _snap_to_180E
-from regionmask.defined_regions._ressources import _get_cache_dir
+from regionmask.defined_regions._resources import _get_cache_dir
 
 try:
     import pyogrio  # noqa: F401
