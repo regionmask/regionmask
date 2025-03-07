@@ -6,6 +6,7 @@ from typing import Literal
 import numpy as np
 import shapely
 import xarray as xr
+from packaging.version import Version
 
 from regionmask.core.coords import _get_coords
 from regionmask.core.utils import (
@@ -162,6 +163,7 @@ def _mask(
     wrap_lon: None | bool | Literal[180, 360] = None,
     as_3D: bool = False,
     use_cf: bool | None = None,
+    all_touched=False,
 ) -> xr.DataArray:
     """
     internal function to create a mask
@@ -232,13 +234,32 @@ def _mask(
             msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
             raise ValueError(msg)
 
+    if all_touched:
+        if "rasterize" not in method:
+            raise ValueError(
+                "regularly-spaced coordinates are required to use ``all_touched``"
+            )
+        import rasterio
+
+        if Version(rasterio.__gdal_version__) < Version("3.8.2"):
+            raise NotImplementedError(
+                "Using ``all_touched`` requires gdal v3.8.2 or higher. (See "
+                "``rasterio.__gdal_version__``)"
+            )
+
+        # the regions most likely will overlap
+        as_3D = True
+
     kwargs = {}
     if method == "rasterize":
         mask_func = _mask_rasterize
+        kwargs = {"all_touched": all_touched}
     elif method == "rasterize_flip":
         mask_func = _mask_rasterize_flip
+        kwargs = {"all_touched": all_touched}
     elif method == "rasterize_split":
         mask_func = _mask_rasterize_split
+        kwargs = {"all_touched": all_touched}
     elif method == "shapely":
         mask_func = _mask_shapely  # type:ignore[assignment]
         kwargs = {"is_unstructured": is_unstructured}
@@ -246,7 +267,7 @@ def _mask(
     mask = mask_func(lon_arr, lat_arr, polygons, numbers=numbers, as_3D=as_3D, **kwargs)
 
     # not False required
-    if wrap_lon is not False:
+    if wrap_lon is not False and not all_touched:
         # treat the points at -180°E/0°E and -90°N
         mask = _mask_edgepoints_shapely(
             mask,
@@ -386,9 +407,10 @@ def _mask_3D(
     wrap_lon: None | bool | Literal[180, 360] = None,
     overlap: bool | None = None,
     use_cf: bool | None = None,
+    all_touched=False,
 ) -> xr.DataArray:
 
-    as_3D = overlap or overlap is None
+    as_3D = overlap or overlap is None or all_touched
 
     mask = _mask(
         polygons=polygons,
@@ -399,6 +421,7 @@ def _mask_3D(
         wrap_lon=wrap_lon,
         as_3D=as_3D,
         use_cf=use_cf,
+        all_touched=all_touched,
     )
 
     if as_3D:

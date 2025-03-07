@@ -3,6 +3,7 @@ import warnings
 from contextlib import contextmanager
 
 import pytest
+import rasterio
 from packaging.version import Version
 
 
@@ -30,3 +31,8 @@ def assert_no_warnings():
 has_cartopy, requires_cartopy = _importorskip("cartopy")
 has_cf_xarray, requires_cf_xarray = _importorskip("cf_xarray")
 has_matplotlib, requires_matplotlib = _importorskip("matplotlib")
+
+has_gdal_3_8_2 = Version(rasterio.__gdal_version__) >= Version("3.8.2")
+requires_gdal_3_8_2 = pytest.mark.skipif(
+    not has_gdal_3_8_2, reason="requires gdal v3.8.2"
+)
