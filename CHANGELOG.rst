@@ -20,6 +20,8 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- More typing (:pull:`602`).
+
 Deprecations
 ~~~~~~~~~~~~
 
