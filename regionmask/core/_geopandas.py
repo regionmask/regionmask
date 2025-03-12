@@ -6,6 +6,7 @@ from typing import Literal
 import geopandas as gp
 import numpy as np
 import pandas as pd
+import shapely
 import xarray as xr
 
 from regionmask.core.mask import _inject_mask_docstring, _mask_2D, _mask_3D
@@ -196,7 +197,9 @@ def _from_geopandas(
     )
 
 
-def _prepare_gdf_for_mask(geodataframe, numbers):
+def _prepare_gdf_for_mask(
+    geodataframe, numbers: str | None
+) -> tuple[list[shapely.Polygon | shapely.MultiPolygon], np.ndarray]:
 
     from geopandas import GeoDataFrame, GeoSeries
 
@@ -206,13 +209,13 @@ def _prepare_gdf_for_mask(geodataframe, numbers):
     polygons = geodataframe.geometry.tolist()
 
     if numbers is not None:
-        numbers = geodataframe[numbers]
-        _check_missing(numbers, "numbers")
-        _check_duplicates(numbers, "numbers")
+        numbers_ = geodataframe[numbers]
+        _check_missing(numbers_, "numbers")
+        _check_duplicates(numbers_, "numbers")
     else:
-        numbers = geodataframe.index.values
-
-    return polygons, numbers
+        numbers_ = geodataframe.index
+    numbers_ = np.array(numbers_)
+    return polygons, numbers_
 
 
 # TODO: switch order of use_cf and overlap once the deprecation is finished
@@ -237,11 +240,11 @@ def mask_geopandas(
             "To create a 2D mask anyway, set ``overlap=False``."
         )
 
-    polygons, numbers = _prepare_gdf_for_mask(geodataframe, numbers=numbers)
+    polygons_, numbers_ = _prepare_gdf_for_mask(geodataframe, numbers=numbers)
 
     return _mask_2D(
-        polygons=polygons,
-        numbers=numbers,
+        polygons=polygons_,
+        numbers=numbers_,
         lon_or_obj=lon_or_obj,
         lat=lat,
         method=method,
@@ -267,11 +270,11 @@ def mask_3D_geopandas(
     overlap: bool | None = None,
 ) -> xr.DataArray:
 
-    polygons, numbers = _prepare_gdf_for_mask(geodataframe, numbers=numbers)
+    polygons_, numbers_ = _prepare_gdf_for_mask(geodataframe, numbers=numbers)
 
     mask_3D = _mask_3D(
-        polygons=polygons,
-        numbers=numbers,
+        polygons=polygons_,
+        numbers=numbers_,
         lon_or_obj=lon_or_obj,
         lat=lat,
         drop=drop,
