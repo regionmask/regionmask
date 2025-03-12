@@ -230,7 +230,7 @@ def _mask(
         selected_method = _determine_method(lon_arr, lat_arr)
     elif method == "rasterize":
         selected_method = _determine_method(lon_arr, lat_arr)
-        if "rasterize" not in method:
+        if "rasterize" not in selected_method:
             msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
             raise ValueError(msg)
     else:
