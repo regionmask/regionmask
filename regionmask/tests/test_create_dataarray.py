@@ -10,10 +10,10 @@ def test_mask_to_dataarray_mixed_types() -> None:
     ds = xr.Dataset(coords={"lon": [0], "lat": [0]})
 
     with pytest.raises(ValueError, match="Cannot handle coordinates with mixed types!"):
-        _mask_to_dataarray(None, ds.lon.values, ds.lon)
+        _mask_to_dataarray(None, ds.lon.values, ds.lon)  # type:ignore[arg-type]
 
     with pytest.raises(ValueError, match="Cannot handle coordinates with mixed types!"):
-        _mask_to_dataarray(None, ds.lon, ds.lon.values)
+        _mask_to_dataarray(None, ds.lon, ds.lon.values)  # type:ignore[arg-type]
 
 
 def create_test_datasets():

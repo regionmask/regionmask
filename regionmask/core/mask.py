@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Sequence
 from typing import Literal
 
 import numpy as np
 import shapely
 import xarray as xr
+from affine import Affine
 
 from regionmask.core.coords import _get_coords
 from regionmask.core.utils import (
@@ -153,12 +155,12 @@ def _inject_mask_docstring(*, which, is_gpd):
 
 
 def _mask(
-    polygons,
-    numbers,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
     lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
     lat: np.typing.ArrayLike | xr.DataArray | None = None,
     *,
-    method=None,
+    method: None | Literal["rasterize", "shapely"] = None,
     wrap_lon: None | bool | Literal[180, 360] = None,
     as_3D: bool = False,
     use_cf: bool | None = None,
@@ -225,21 +227,23 @@ def _mask(
         )
 
     if method is None:
-        method = _determine_method(lon_arr, lat_arr)
+        selected_method = _determine_method(lon_arr, lat_arr)
     elif method == "rasterize":
-        method = _determine_method(lon_arr, lat_arr)
-        if "rasterize" not in method:
+        selected_method = _determine_method(lon_arr, lat_arr)
+        if "rasterize" not in selected_method:
             msg = "`lat` and `lon` must be equally spaced to use `method='rasterize'`"
             raise ValueError(msg)
+    else:
+        selected_method = method
 
     kwargs = {}
-    if method == "rasterize":
+    if selected_method == "rasterize":
         mask_func = _mask_rasterize
-    elif method == "rasterize_flip":
+    elif selected_method == "rasterize_flip":
         mask_func = _mask_rasterize_flip
-    elif method == "rasterize_split":
+    elif selected_method == "rasterize_split":
         mask_func = _mask_rasterize_split
-    elif method == "shapely":
+    elif selected_method == "shapely":
         mask_func = _mask_shapely  # type:ignore[assignment]
         kwargs = {"is_unstructured": is_unstructured}
 
@@ -266,12 +270,12 @@ class InvalidCoordsError(ValueError):
 
 
 def _mask_3D_frac_approx(
-    polygons,
-    numbers,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
     lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
     lat: np.typing.ArrayLike | xr.DataArray | None = None,
     *,
-    drop=True,
+    drop: bool = True,
     wrap_lon: None | bool | Literal[180, 360] = None,
     overlap: bool | None = None,
     use_cf: bool | None = None,
@@ -283,7 +287,9 @@ def _mask_3D_frac_approx(
     n = 10
 
     lon_, lat_ = _get_coords(lon_or_obj, lat, "lon", "lat", use_cf)
-    backend = _determine_method(lon_, lat_)
+    lon_arr, lat_arr = np.asarray(lon_), np.asarray(lat_)
+
+    backend = _determine_method(lon_arr, lat_arr)
 
     if backend not in ("rasterize", "rasterize_flip"):
         raise InvalidCoordsError("'lon' and 'lat' must be 1D and equally spaced.")
@@ -291,21 +297,21 @@ def _mask_3D_frac_approx(
     if np.nanmin(lat_) < -90 or np.nanmax(lat_) > 90:
         raise InvalidCoordsError("lat must be between -90 and +90")
 
-    lon_sampled, lat_sampled = _sample_coords(lon_), _sample_coords(lat_)
+    lon_sampled, lat_sampled = _sample_coords(lon_arr), _sample_coords(lat_arr)
 
-    ds = xr.Dataset(coords={"lon": lon_sampled, "lat": lat_sampled})
+    ds_sampled = xr.Dataset(coords={"lon": lon_sampled, "lat": lat_sampled})
 
     mask_sampled = _mask(
         polygons,
         numbers,
-        ds.lon,
-        ds.lat,
+        ds_sampled.lon,
+        ds_sampled.lat,
         wrap_lon=wrap_lon,
         as_3D=as_3D,
         use_cf=use_cf,
     ).values
 
-    mask_reshaped = mask_sampled.reshape(-1, lat_.size, n, lon_.size, n)
+    mask_reshaped = mask_sampled.reshape(-1, lat_arr.size, n, lon_arr.size, n)
     mask = mask_reshaped.mean(axis=(2, 4))
 
     # maybe fix edges as 90°N/ S
@@ -328,12 +334,12 @@ def _mask_3D_frac_approx(
 
 
 def _mask_2D(
-    polygons,
-    numbers,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
     lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
     lat: np.typing.ArrayLike | xr.DataArray | None = None,
     *,
-    method=None,
+    method: None | Literal["rasterize", "shapely"] = None,
     wrap_lon: None | bool | Literal[180, 360] = None,
     use_cf: bool | None = None,
     overlap: bool | None = None,
@@ -376,13 +382,13 @@ def _mask_2D(
 
 
 def _mask_3D(
-    polygons,
-    numbers,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
     lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
     lat: np.typing.ArrayLike | xr.DataArray | None = None,
     *,
     drop: bool = True,
-    method=None,
+    method: None | Literal["rasterize", "shapely"] = None,
     wrap_lon: None | bool | Literal[180, 360] = None,
     overlap: bool | None = None,
     use_cf: bool | None = None,
@@ -419,19 +425,23 @@ def _mask_3D(
     return mask_3D
 
 
-def _2D_to_3D_mask(mask: xr.DataArray, numbers, *, drop: bool) -> xr.DataArray:
+def _2D_to_3D_mask(
+    mask: xr.DataArray, numbers: Sequence[float] | np.ndarray, *, drop: bool
+) -> xr.DataArray:
     # TODO: unify with _3D_to_3D_mask
 
     isnan = np.isnan(mask.values)
 
+    numbers_ = np.asarray(numbers)
+
     if drop:
-        numbers = np.unique(mask.values[~isnan])
-        numbers = numbers.astype(int)
+        numbers_ = np.unique(mask.values[~isnan])
+        numbers_ = numbers_.astype(int)
 
     # if no regions are found return a `0 x lat x lon` mask
-    if len(numbers) == 0:
+    if len(numbers_) == 0:
         mask_3D = mask.expand_dims("region", axis=0).sel(region=slice(0, 0))
-        mask_3D = mask_3D.assign_coords(region=("region", numbers))
+        mask_3D = mask_3D.assign_coords(region=("region", numbers_))
 
         warnings.warn(
             "No gridpoint belongs to any region. Returning an empty mask"
@@ -442,9 +452,9 @@ def _2D_to_3D_mask(mask: xr.DataArray, numbers, *, drop: bool) -> xr.DataArray:
 
         return mask_3D
 
-    lst_msk = [(mask == num) for num in numbers]
+    lst_msk = [(mask == num) for num in numbers_]
     mask_3D = xr.concat(lst_msk, dim="region", compat="override", coords="minimal")
-    mask_3D = mask_3D.assign_coords(region=("region", numbers))
+    mask_3D = mask_3D.assign_coords(region=("region", numbers_))
 
     if np.all(isnan):
         warnings.warn(
@@ -456,7 +466,9 @@ def _2D_to_3D_mask(mask: xr.DataArray, numbers, *, drop: bool) -> xr.DataArray:
     return mask_3D
 
 
-def _3D_to_3D_mask(mask_3D: xr.DataArray, numbers, *, drop: bool) -> xr.DataArray:
+def _3D_to_3D_mask(
+    mask_3D: xr.DataArray, numbers: Sequence[float] | np.ndarray, *, drop: bool
+) -> xr.DataArray:
     # TODO: unify with _2D_to_3D_mask
 
     any_masked = mask_3D.any(mask_3D.dims[1:])
@@ -520,7 +532,7 @@ def _3D_to_2D_mask(mask_3D: xr.DataArray, numbers) -> xr.DataArray:
 
 
 def _determine_method(
-    lon, lat
+    lon: np.ndarray, lat: np.ndarray
 ) -> Literal["rasterize", "rasterize_flip", "rasterize_split", "shapely"]:
     """find method to be used -> prefers faster methods"""
 
@@ -540,7 +552,11 @@ def _determine_method(
     return "shapely"
 
 
-def _mask_to_dataarray(mask, lon, lat) -> xr.DataArray:
+def _mask_to_dataarray(
+    mask: np.ndarray,
+    lon: np.typing.ArrayLike | xr.DataArray,
+    lat: np.typing.ArrayLike | xr.DataArray,
+) -> xr.DataArray:
 
     if sum(isinstance(c, xr.DataArray) for c in (lon, lat)) == 1:
         raise ValueError("Cannot handle coordinates with mixed types!")
@@ -559,7 +575,9 @@ def _mask_to_dataarray(mask, lon, lat) -> xr.DataArray:
     return ds.assign(mask=(dims, mask)).mask
 
 
-def _numpy_coords_to_dataarray(lon, lat) -> tuple[xr.DataArray, xr.DataArray]:
+def _numpy_coords_to_dataarray(
+    lon: np.typing.ArrayLike, lat: np.typing.ArrayLike
+) -> tuple[xr.DataArray, xr.DataArray]:
 
     lon_name, lat_name = "lon", "lat"
 
@@ -577,14 +595,14 @@ def _numpy_coords_to_dataarray(lon, lat) -> tuple[xr.DataArray, xr.DataArray]:
 
 
 def _mask_edgepoints_shapely(
-    mask,
-    lon,
-    lat,
-    polygons,
-    numbers,
+    mask: np.ndarray,
+    lon: np.ndarray,
+    lat: np.ndarray,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
     *,
-    is_unstructured=False,
-    as_3D=False,
+    is_unstructured: bool = False,
+    as_3D: bool = False,
 ) -> np.ndarray:
 
     LON, LAT, shape = _get_LON_LAT_shape(
@@ -641,7 +659,14 @@ def _mask_edgepoints_shapely(
 
 
 def _mask_shapely(
-    lon, lat, polygons, numbers, *, fill=np.nan, is_unstructured=False, as_3D=False
+    lon: np.ndarray,
+    lat: np.ndarray,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
+    *,
+    fill: float = np.nan,
+    is_unstructured: bool = False,
+    as_3D: bool = False,
 ) -> np.ndarray:
     """create a mask using shapely.STRtree"""
 
@@ -672,12 +697,18 @@ def _mask_shapely(
     return out.reshape(shape)
 
 
-def _parse_input(lon, lat, coords, fill, numbers):
+def _parse_input(
+    lon: np.typing.ArrayLike,
+    lat: np.typing.ArrayLike,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    fill: float,
+    numbers: Sequence[float] | np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
 
     lon = np.asarray(lon)
     lat = np.asarray(lat)
 
-    n_coords = len(coords)
+    n_coords = len(polygons)
 
     if len(numbers) != n_coords:
         raise ValueError("`numbers` and `coords` must have the same length.")
@@ -688,7 +719,14 @@ def _parse_input(lon, lat, coords, fill, numbers):
     return lon, lat
 
 
-def _get_LON_LAT_shape(lon, lat, numbers, *, is_unstructured=False, as_3D=False):
+def _get_LON_LAT_shape(
+    lon: np.ndarray,
+    lat: np.ndarray,
+    numbers: Sequence[float] | np.ndarray,
+    *,
+    is_unstructured: bool = False,
+    as_3D: bool = False,
+) -> tuple[np.ndarray, np.ndarray, tuple[int, ...]]:
 
     if lon.ndim != lat.ndim:
         raise ValueError(
@@ -726,7 +764,7 @@ def _get_LON_LAT_shape(lon, lat, numbers, *, is_unstructured=False, as_3D=False)
     return LON, LAT, shape
 
 
-def _get_out(shape, fill, *, as_3D):
+def _get_out(shape: tuple[int, ...], fill: float, *, as_3D: bool) -> np.ndarray:
     # create flattened output variable
     if as_3D:
         out = np.full(shape[:1] + (np.prod(shape[1:]).item(),), False, bool)
@@ -736,10 +774,10 @@ def _get_out(shape, fill, *, as_3D):
     return out
 
 
-def _transform_from_latlon(lon, lat):
+def _transform_from_latlon(
+    lon: np.typing.ArrayLike, lat: np.typing.ArrayLike
+) -> Affine:
     """perform an affine transformation to the latitude/longitude coordinates"""
-
-    from affine import Affine
 
     lat = np.asarray(lat)
     lon = np.asarray(lon)
@@ -753,8 +791,15 @@ def _transform_from_latlon(lon, lat):
 
 
 def _mask_rasterize_flip(
-    lon, lat, polygons, numbers, *, fill=np.nan, as_3D=False, **kwargs
-):
+    lon: np.ndarray,
+    lat: np.ndarray,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
+    *,
+    fill: float = np.nan,
+    as_3D=False,
+    **kwargs,
+) -> np.ndarray:
 
     split_point = _find_splitpoint(lon)
     flipped_lon = np.hstack((lon[split_point:], lon[:split_point]))
@@ -768,8 +813,15 @@ def _mask_rasterize_flip(
 
 
 def _mask_rasterize_split(
-    lon, lat, polygons, numbers, *, fill=np.nan, as_3D=False, **kwargs
-):
+    lon: np.ndarray,
+    lat: np.ndarray,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
+    *,
+    fill=np.nan,
+    as_3D=False,
+    **kwargs,
+) -> np.ndarray:
 
     split_point = _find_splitpoint(lon)
     lon_l, lon_r = lon[:split_point], lon[split_point:]
@@ -784,7 +836,16 @@ def _mask_rasterize_split(
     return np.concatenate((mask_l, mask_r), axis=-1)
 
 
-def _mask_rasterize(lon, lat, polygons, numbers, *, fill=np.nan, as_3D=False, **kwargs):
+def _mask_rasterize(
+    lon: np.ndarray,
+    lat: np.ndarray,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
+    *,
+    fill=np.nan,
+    as_3D=False,
+    **kwargs,
+):
 
     if as_3D:
         return _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs)
@@ -792,7 +853,12 @@ def _mask_rasterize(lon, lat, polygons, numbers, *, fill=np.nan, as_3D=False, **
     return _mask_rasterize_internal(lon, lat, polygons, numbers, fill=fill, **kwargs)
 
 
-def _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs):
+def _mask_rasterize_3D_internal(
+    lon: np.ndarray,
+    lat: np.ndarray,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    **kwargs,
+) -> np.ndarray:
 
     # rasterize always returns a flat mask, so we use "bits" and MergeAlg.add to
     # determine overlapping regions. For three regions we use numbers 1, 2, 4 and then
@@ -834,7 +900,15 @@ def _mask_rasterize_3D_internal(lon, lat, polygons, **kwargs):
     return np.concatenate(out, axis=0)[:n_polygons, ...]
 
 
-def _mask_rasterize_internal(lon, lat, polygons, numbers, *, fill=np.nan, **kwargs):
+def _mask_rasterize_internal(
+    lon: np.typing.ArrayLike,
+    lat: np.typing.ArrayLike,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
+    *,
+    fill=np.nan,
+    **kwargs,
+) -> np.ndarray:
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 
     This only works for regularly spaced 1D lat and lon arrays.
@@ -850,7 +924,14 @@ def _mask_rasterize_internal(lon, lat, polygons, numbers, *, fill=np.nan, **kwar
 
 
 def _mask_rasterize_no_offset(
-    lon, lat, polygons, numbers, *, fill=np.nan, dtype=float, **kwargs
+    lon: np.ndarray,
+    lat: np.ndarray,
+    polygons: Sequence[shapely.Polygon | shapely.MultiPolygon],
+    numbers: Sequence[float] | np.ndarray,
+    *,
+    fill: float = np.nan,
+    dtype: np.typing.DTypeLike = float,
+    **kwargs,
 ) -> np.ndarray:
     """Rasterize a list of (geometry, fill_value) tuples onto the given coordinates.
 

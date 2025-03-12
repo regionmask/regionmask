@@ -173,7 +173,7 @@ def create_lon_lat_dataarray_from_bounds(
     return ds
 
 
-def _is_numeric(numbers) -> bool:
+def _is_numeric(numbers: ArrayLike) -> bool:
 
     numbers = np.asarray(numbers)
     return np.issubdtype(numbers.dtype, np.number)
@@ -194,7 +194,7 @@ def equally_spaced(*args) -> bool:
     return all(np.allclose(d_arg[0], d_arg) for d_arg in d_args)
 
 
-def _equally_spaced_on_split_lon(lon) -> bool:
+def _equally_spaced_on_split_lon(lon: ArrayLike) -> bool:
 
     lon = np.asarray(lon)
 

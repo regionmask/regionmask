@@ -1,3 +1,4 @@
+import numpy as np
 import xarray as xr
 
 try:
@@ -8,14 +9,25 @@ except ImportError:
     has_cf_xarray = False
 
 
-def _get_coords(lon_or_obj, lat, lon_name, lat_name, use_cf):
+# TODO: use overloads?
+def _get_coords(
+    lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
+    lat: np.typing.ArrayLike | xr.DataArray | None,
+    lon_name: str,
+    lat_name: str,
+    use_cf: bool | None,
+) -> (
+    tuple[xr.DataArray, xr.DataArray] | tuple[np.typing.ArrayLike, np.typing.ArrayLike]
+):
 
     if lat is not None:
         return lon_or_obj, lat
 
-    is_xr_object = isinstance(lon_or_obj, xr.Dataset | xr.DataArray)
-
-    if use_cf is None and has_cf_xarray and is_xr_object:
+    if (
+        use_cf is None
+        and has_cf_xarray
+        and isinstance(lon_or_obj, xr.Dataset | xr.DataArray)
+    ):
         return _get_coords_cf_or_name(lon_or_obj, lon_name, lat_name)
 
     if use_cf:
@@ -40,7 +52,9 @@ def _from_mapping(lon_or_obj, name):
         raise KeyError(msg)
 
 
-def _get_cf_coords(obj, name, required=False):
+def _get_cf_coords(
+    obj: xr.Dataset | xr.DataArray, name: str, required: bool = False
+) -> None | str:
 
     coord_name = obj.cf.coordinates.get(name)
 
@@ -59,7 +73,9 @@ def _get_cf_coords(obj, name, required=False):
     return coord_name[0]
 
 
-def _get_coords_cf_or_name(obj, lon_name, lat_name):
+def _get_coords_cf_or_name(
+    obj: xr.Dataset | xr.DataArray, lon_name: str, lat_name: str
+) -> tuple[xr.DataArray, xr.DataArray]:
 
     x_name = _get_cf_coords(obj, "longitude", required=False) or lon_name
     y_name = _get_cf_coords(obj, "latitude", required=False) or lat_name
@@ -70,7 +86,9 @@ def _get_coords_cf_or_name(obj, lon_name, lat_name):
     return obj[x_name], obj[y_name]
 
 
-def _assert_unambiguous_coord_names(obj, cf_name, name):
+def _assert_unambiguous_coord_names(
+    obj: xr.Dataset | xr.DataArray, cf_name: str, name: str
+) -> None:
 
     if cf_name != name and name in obj.coords:
         raise ValueError(
@@ -80,7 +98,9 @@ def _assert_unambiguous_coord_names(obj, cf_name, name):
         )
 
 
-def _get_coords_cf(obj):
+def _get_coords_cf(
+    obj: np.typing.ArrayLike | xr.Dataset | xr.DataArray,
+) -> tuple[xr.DataArray, xr.DataArray]:
 
     if not has_cf_xarray:
         raise ImportError("cf_xarray required")
