@@ -151,6 +151,7 @@ def _plot(
     land_kws: dict[str, Any] | None = None,
     label_multipolygon: Literal["largest", "all"] = "largest",
     tolerance: Literal["auto"] | float | None = "auto",
+    transform=None,
 ) -> GeoAxes:
     """plot region on cartopy axes
 
@@ -215,6 +216,9 @@ def _plot(
         - float > 0: the maximum (euclidean) length of each line segment.
         - 'auto': The tolerance is automatically determined based on the log10 of the
           largest absolute coordinate. Defaults to 1 for lat/ lon coordinates.
+
+    transform : None | cartopy crs, default: None
+        Coordinate system your data are defined in. If None uses PlateCarree.
 
     Returns
     -------
@@ -283,6 +287,7 @@ def _plot(
         text_kws=text_kws,
         label_multipolygon=label_multipolygon,
         tolerance=tolerance,
+        transform=transform,
     )
 
     return ax
@@ -298,6 +303,7 @@ def _plot_regions(
     text_kws: dict[str, Any] | None = None,
     label_multipolygon: Literal["largest", "all"] = "largest",
     tolerance: Literal["auto"] | float | None = "auto",
+    transform=None,
 ) -> Axes_or_GeoAxes:
     """plot regions on regular axes
 
@@ -335,6 +341,9 @@ def _plot_regions(
           the tolerance is automatically determined based on the log10 of the
           largest absolute coordinate. Defaults to 1 for lat/ lon coordinates.
 
+    transform : None | matplotlib transform | cartopy crs, default: None
+        Coordinate system your data are defined in. If None uses ax.transData.
+
     Returns
     -------
     ax : axes handle
@@ -360,10 +369,14 @@ def _plot_regions(
     if ax is None:
         ax = plt.gca()
 
-    if is_geoaxes:
-        trans = ccrs.PlateCarree()
-    else:
-        trans = ax.transData
+    if tolerance == "auto" and (not is_geoaxes or transform is not None):
+        tolerance = None
+
+    if transform is None:
+        if is_geoaxes:
+            transform = ccrs.PlateCarree()
+        else:
+            transform = ax.transData
 
     if line_kws is None:
         line_kws = dict()
@@ -371,11 +384,8 @@ def _plot_regions(
     if text_kws is None:
         text_kws = dict()
 
-    if tolerance == "auto" and not is_geoaxes:
-        tolerance = None
-
     # draw the outlines
-    _draw_poly(ax, self.polygons, tolerance=tolerance, transform=trans, **line_kws)
+    _draw_poly(ax, self.polygons, tolerance=tolerance, transform=transform, **line_kws)
 
     if add_label:
 
@@ -399,7 +409,7 @@ def _plot_regions(
                     x,
                     y,
                     txt,
-                    transform=trans,
+                    transform=transform,
                     va=va,
                     ha=ha,
                     backgroundcolor=col,
