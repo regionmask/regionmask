@@ -79,7 +79,7 @@ names[21] = "North Asia"
 numbers = range(1, 22)
 
 source = (
-    "Giorgi and Francisco, 2000 (http://link.springer.com/article/10.1007/PL00013733)"
+    "Giorgi and Francisco, 2000 (https://link.springer.com/article/10.1007/PL00013733)"
 )
 
 giorgi = Regions(

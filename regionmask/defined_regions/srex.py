@@ -1,7 +1,7 @@
 from regionmask.core.regions import Regions
 
 # the outlines is given at
-# http://ipcc-wg2.gov/SREX/images/uploads/SREX-Ch3-Supplement_FINAL.pdf
+# https://ipcc-wg2.gov/SREX/images/uploads/SREX-Ch3-Supplement_FINAL.pdf
 
 outlines: dict[int, tuple[tuple[float, float], ...]] = dict()
 outlines[1] = (

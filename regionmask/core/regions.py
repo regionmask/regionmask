@@ -383,7 +383,7 @@ class Regions:
             )
 
         if flag is not None:
-            # see http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#flags
+            # see https://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#flags
 
             # find detected regions (assign ALL regions?)
             isnan = np.isnan(mask_2D.values)

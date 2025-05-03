@@ -269,7 +269,7 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
-- Can now autodetect longitude and latitude coordinates from `cf metadata <http://cfconventions.org/>`__
+- Can now autodetect longitude and latitude coordinates from `cf metadata <https://cfconventions.org/>`__
   if the optional dependency `cf_xarray <https://cf-xarray.readthedocs.io/en/latest/coord_axes.html>`__
   is installed (:pull:`393`, :issue:`364`).
 - 2D masks (e.g. :py:meth:`Regions.mask`) now contain `flag_values` and `flag_meanings` as
@@ -533,7 +533,7 @@ v0.7.0 (28.07.2021)
 -------------------
 
 Version 0.7.0 is mostly a maintenance version. It drops python 2.7 support, accompanies
-the move of the repo to the regionmask organisation (`regionmask/regionmask <http://github.com/regionmask/regionmask>`__),
+the move of the repo to the regionmask organisation (`regionmask/regionmask <https://github.com/regionmask/regionmask>`__),
 finalizes a number of deprecations, and restores compatibility with xarray 0.19.
 
 
@@ -552,7 +552,7 @@ Breaking Changes
   ============ ===== =====
 
 - Moved regionmask to its own organisation on github. It can now be found under
-  `regionmask/regionmask <http://github.com/regionmask/regionmask>`__ (:issue:`204` and
+  `regionmask/regionmask <https://github.com/regionmask/regionmask>`__ (:issue:`204` and
   :pull:`224`).
 
 - matpoltlib and cartopy are now optional dependencies. Note that cartopy is also
@@ -653,7 +653,7 @@ v0.6.0 (30.07.2020)
   will be Python 3 only, but older versions of regionmask will always be available
   for Python 2.7 users. For the more details, see:
 
-  - `Python 3 Statement <http://www.python3statement.org/>`__
+  - `Python 3 Statement <https://python3statement.github.io>`__
 
 Version 0.6.0 offers better support for shapefiles (via `geopandas
 <https://geopandas.readthedocs.io>`__) and can directly create 3D boolean masks
@@ -762,7 +762,7 @@ Breaking Changes
    signature. This allows to make all arguments except :code:`outlines` optional.
  - Renamed :py:class:`Region_cls` to :py:class:`_OneRegion` for clarity.
  - Deprecated the :code:`centroids` keyword for :py:class:`Regions` (:issue:`51`).
- - `xarray <http://xarray.pydata.org>`_ is now a hard dependency (:issue:`64`).
+ - `xarray <https://docs.xarray.dev/en/stable/>`_ is now a hard dependency (:issue:`64`).
  - The function :py:func:`regionmask.create_mask_contains` is deprecated and will be
    removed in a future version. Use ``regionmask.Regions(coords).mask(lon, lat)``
    instead.
@@ -832,7 +832,7 @@ v0.4.0 (02.03.2018)
 Enhancements
 ~~~~~~~~~~~~
 
-- Add landmask/ land 110m from `Natural Earth <http://www.naturalearthdata.com/downloads/110m-physical-vectors/>`_ (:issue:`21`).
+- Add landmask/ land 110m from `Natural Earth <https://www.naturalearthdata.com/downloads/110m-physical-vectors/>`_ (:issue:`21`).
 - Moved some imports to functions, so :code:`import regionmask` is faster.
 - Adapted docs for python 3.6.
 

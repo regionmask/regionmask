@@ -141,6 +141,6 @@ The PRUDENCE regions were defined in the PRUDENCE project as European sub-areas 
 References
 ==========
 * Christensen and Christensen (`2007 <https://link.springer.com/article/10.1007/s10584-006-9210-7>`_)
-* Giorgi and Francisco (`2000 <http://onlinelibrary.wiley.com/doi/10.1029/1999GL011016>`_)
+* Giorgi and Francisco (`2000 <https://agupubs.onlinelibrary.wiley.com/doi/10.1029/1999GL011016>`_)
 * Iturbide et al., (`2020 <https://doi.org/10.5194/essd-12-2959-2020>`_)
-* Seneviratne et al., (`2012 <https://www.ipcc.ch/pdf/special-reports/srex/SREX-Ch3-Supplement_FINAL.pdf>`_)
+* Seneviratne et al., (`2012 <hhttps://www.ipcc.ch/site/assets/uploads/2018/03/SREX-Ch3-Supplement_FINAL-1.pdf>`_)

@@ -2,7 +2,7 @@ Marine Areas/ Ocean Basins (NaturalEarth)
 #########################################
 
 The outline of the marine areas are obtained from
-`Natural Earth <http://www.naturalearthdata.com/>`_.
+`Natural Earth <https://www.naturalearthdata.com/>`_.
 They are automatically downloaded, cached\ [#]_ and opened with geopandas.
 The following marine regions are defined in regionmask:
 

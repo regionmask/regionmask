@@ -76,7 +76,7 @@ nb_execution_timeout = 60
 PROLOG = """\
 :::{note}
 This page was generated from an Jupyter notebook that can be accessed from
-[github](https://github.com/regionmask/regionmask/tree/main/docs/notebooks).
+[github](https://github.com/regionmask/regionmask/tree/main/docs/source/notebooks).
 :::
 """
 
@@ -274,3 +274,5 @@ warnings.filterwarnings("ignore")
 
 # don't check for frozen modules (which cannot be debugged)
 # os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
+
+linkcheck_allowed_redirects = {r"https://doi.org/.*": r".*"}
