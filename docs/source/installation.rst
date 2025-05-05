@@ -5,13 +5,13 @@ Required dependencies
 ---------------------
 
 - Python (3.10 or later)
-- `geopandas <http://geopandas.org/>`__ (0.13 or later)
-- `numpy <http://www.numpy.org/>`__ (1.24 or later)
+- `geopandas <https://geopandas.org/>`__ (0.13 or later)
+- `numpy <https://numpy.org/>`__ (1.24 or later)
 - `packaging <https://packaging.pypa.io/en/latest/>`__ (23.1 or later)
 - `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.7 or later)
 - `rasterio <https://rasterio.readthedocs.io/>`__ (1.3 or later)
 - `shapely <https://shapely.readthedocs.io/en/stable>`__ (2.0 or later)
-- `xarray <http://xarray.pydata.org/>`__ (2023.07 or later)
+- `xarray <https://docs.xarray.dev/en/stable/>`__ (2023.07 or later)
 
 Optional dependencies
 ---------------------
@@ -19,7 +19,7 @@ Optional dependencies
 For plotting
 ~~~~~~~~~~~~
 
-- `matplotlib <http://matplotlib.org>`__ (3.7 or later) is required to create any plots.
+- `matplotlib <https://matplotlib.org>`__ (3.7 or later) is required to create any plots.
 - `cartopy <https://scitools.org.uk/cartopy/docs/latest>`__ (0.22 or later) for plotting on
   maps.
 
@@ -60,7 +60,7 @@ Note, however, that the optional dependency cartopy can be very difficult to ins
 Testing
 -------
 
-To run the test suite after installing regionmask, install `pytest <https://pytest.org>`__
+To run the test suite after installing regionmask, install `pytest <https://docs.pytest.org>`__
 and run ``pytest`` in the root directory of regionmask.
 
 To install the development version (main), do:
@@ -70,4 +70,4 @@ To install the development version (main), do:
    pip install git+https://github.com/regionmask/regionmask
 
 
-.. _conda: http://conda.io/
+.. _conda: https://docs.conda.io/en/latest/

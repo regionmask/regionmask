@@ -2,7 +2,7 @@ Countries/ States (NaturalEarth)
 ################################
 
 The outline of the countries are obtained from
-`Natural Earth <http://www.naturalearthdata.com/>`_.
+`Natural Earth <https://www.naturalearthdata.com/>`_.
 They are automatically downloaded, cached\ [#]_ and opened with geopandas.
 The following countries and regions are defined in regionmask.
 

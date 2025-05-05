@@ -70,11 +70,11 @@ def test_natural_earth_wrong_version() -> None:
 
 def test_natural_earth_repr() -> None:
     actual = repr(defined_regions.natural_earth_v4_1_0)
-    expected = "Region definitions from 'http://www.naturalearthdata.com' - v4.1.0"
+    expected = "Region definitions from 'https://www.naturalearthdata.com' - v4.1.0"
     assert actual == expected
 
     actual = repr(defined_regions.natural_earth_v5_0_0)
-    expected = "Region definitions from 'http://www.naturalearthdata.com' - v5.0.0"
+    expected = "Region definitions from 'https://www.naturalearthdata.com' - v5.0.0"
     assert actual == expected
 
 

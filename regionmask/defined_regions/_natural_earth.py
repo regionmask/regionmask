@@ -54,7 +54,7 @@ def _obtain_ne(
     """
     create Regions object from naturalearth data
 
-    http://www.naturalearthdata.com
+    https://www.naturalearthdata.com
 
     Parameters
     ----------
@@ -107,7 +107,7 @@ def _obtain_ne(
     # make sure numbers is a list
     numbers = np.array(numbers)
 
-    source = "http://www.naturalearthdata.com"
+    source = "https://www.naturalearthdata.com"
 
     return Regions(
         coords,
@@ -311,7 +311,7 @@ class NaturalEarth:
         return self._obtain_ne(_ocean_basins_50, **opt)
 
     def __repr__(self):
-        return f"Region definitions from 'http://www.naturalearthdata.com' - {self.version}"
+        return f"Region definitions from 'https://www.naturalearthdata.com' - {self.version}"
 
 
 def _unify_great_barrier_reef(df, idx1, idx2):
