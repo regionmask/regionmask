@@ -26,6 +26,19 @@ The following imports are necessary for the examples.
 
     import cartopy.crs as ccrs
 
+Define text properties:
+
+.. ipython:: python
+
+    import matplotlib.patheffects as pe
+
+    text_kws = dict(
+        bbox=dict(color="none"),
+        path_effects=[pe.withStroke(linewidth=2, foreground="w")],
+        color="#67000d",
+        fontsize=8,
+    )
+
 Giorgi Regions
 ==============
 
@@ -40,7 +53,7 @@ Intergovernmental Panel on Climate Change (IPCC).
 .. ipython:: python
 
     @savefig plotting_giorgi.png width=100%
-    regionmask.defined_regions.giorgi.plot(label='abbrev');
+    regionmask.defined_regions.giorgi.plot(label='abbrev', text_kws=text_kws);
 
 SREX Regions
 ============
@@ -58,7 +71,7 @@ regions (not included in regionmask) was used for the fifth IPCC assessment repo
 .. ipython:: python
 
     @savefig plotting_srex.png width=100%
-    regionmask.defined_regions.srex.plot();
+    regionmask.defined_regions.srex.plot(text_kws=text_kws);
 
 AR6 Regions
 ===========
@@ -133,7 +146,9 @@ The PRUDENCE regions were defined in the PRUDENCE project as European sub-areas 
     proj = ccrs.LambertConformal(central_longitude=10)
 
     @savefig plotting_prudence.png width=100%
-    regionmask.defined_regions.prudence.plot(projection=proj, resolution="50m");
+    regionmask.defined_regions.prudence.plot(
+        projection=proj, resolution="50m", text_kws=text_kws
+    );
 
 
 References
