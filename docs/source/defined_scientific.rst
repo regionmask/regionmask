@@ -14,10 +14,8 @@ The following regions, used in the scientific literature, are available in regio
 
     import matplotlib as mpl
 
-    # cut border when saving (for maps)
+    mpl.rcParams["figure.dpi"] = 200
     mpl.rcParams["savefig.bbox"] = "tight"
-    # better quality figures (mostly for PRUDENCE)
-    plt.rcParams['savefig.dpi'] = 300
 
 
 The following imports are necessary for the examples.

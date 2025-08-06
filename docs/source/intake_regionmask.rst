@@ -9,12 +9,9 @@ which are passed to ``regionmask.from_geopandas``.
 .. ipython:: python
     :suppress:
 
-    # Use defaults so we don't get gridlines in generated docs
     import matplotlib as mpl
-    mpl.rcdefaults()
-    mpl.use('Agg')
 
-    # cut border when saving (for maps)
+    mpl.rcParams["figure.dpi"] = 200
     mpl.rcParams["savefig.bbox"] = "tight"
 
 You need to install intake_geopandas, which combines geopandas and intake, see

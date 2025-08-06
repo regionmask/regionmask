@@ -18,7 +18,7 @@ The following landmasks are currently available:
 
     import matplotlib as mpl
 
-    # cut border when saving (for maps)
+    mpl.rcParams["figure.dpi"] = 200
     mpl.rcParams["savefig.bbox"] = "tight"
 
 Import regionmask:
