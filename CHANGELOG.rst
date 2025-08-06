@@ -39,6 +39,7 @@ Internal Changes
 
 - Make more arguments keyword-only for internal mask functions  (:pull:`593`).
 - Remove lat_name and lon_name internally (:pull:`592`).
+- Consolidate package metadata and configuration in `pyproject.toml` (:pull:`614`).
 
 
 .. _changelog.0.13.0:
