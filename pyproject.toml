@@ -58,7 +58,7 @@ viz = [
     "nc-time-axis",
 ]
 
-# [dependency-groups]
+[dependency-groups]
 docs = [
     "regionmask[full]",
     # dependencies for the examples

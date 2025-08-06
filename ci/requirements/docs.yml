@@ -7,4 +7,4 @@ channels:
 dependencies:
   - pip
   - pip:
-    - -e ../..[docs]
+    - -e ../.. --group docs
