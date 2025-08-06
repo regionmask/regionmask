@@ -40,6 +40,7 @@ Internal Changes
 - Make more arguments keyword-only for internal mask functions  (:pull:`593`).
 - Remove lat_name and lon_name internally (:pull:`592`).
 - Use ruff instead of isort and flake8 to lint the code base (:pull:`615`).
+- Consolidate package metadata and configuration in `pyproject.toml` (:pull:`614`).
 
 .. _changelog.0.13.0:
 
