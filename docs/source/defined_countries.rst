@@ -21,7 +21,7 @@ The following countries and regions are defined in regionmask.
 
     import matplotlib as mpl
 
-    # cut border when saving (for maps)
+    mpl.rcParams["figure.dpi"] = 200
     mpl.rcParams["savefig.bbox"] = "tight"
 
 Import regionmask:
