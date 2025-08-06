@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 name = "regionmask"
 authors = [{name = "regionmask developers", email = "mathias.hauser@env.ethz.com"}]
 license = "MIT"
-keywords = ['climate atmosphere "Earth System Model Emulator"']
+keywords = ['region mask geospatial']
 description = "create masks of geospatial regions for arbitrary grids"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
