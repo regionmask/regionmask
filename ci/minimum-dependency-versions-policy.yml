@@ -1,0 +1,15 @@
+channels:
+  - conda-forge
+  - nodefaults
+platforms:
+  - noarch
+  - linux-64
+policy:
+  # policy in months - xarray's values
+  packages:
+    python: 30
+    numpy: 18
+  default: 12
+  exclude:
+    - pytest
+    - pytest-cov
