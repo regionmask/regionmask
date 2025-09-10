@@ -10,9 +10,8 @@ policy:
     python: 30
     numpy: 18
   default: 12
+  overrides: {}
   exclude:
     - pytest
     - pytest-cov
-  overrides: []
-  exclude: []
   ignored_violations: []
