@@ -13,3 +13,6 @@ policy:
   exclude:
     - pytest
     - pytest-cov
+  overrides:
+  exclude:
+  ignored_violations:
