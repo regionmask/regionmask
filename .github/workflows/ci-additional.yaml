@@ -18,7 +18,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v5
-      - uses: xarray-contrib/minimum-dependency-versions@0.1.1
+      - uses: xarray-contrib/minimum-dependency-versions@v0.1.1
         with:
           policy: ci/minimum-dependency-versions-policy.yml
           environment-paths: |
