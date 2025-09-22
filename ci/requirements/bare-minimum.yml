@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - python=3.10
+  - python=3.11
   - geopandas<1.0 # avoid installing pyogrio in one of the environments
   - numpy
   - packaging
