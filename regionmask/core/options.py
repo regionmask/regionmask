@@ -1,14 +1,7 @@
 # adapted from xarray under the terms of its license - see licences/XARRAY_LICENSE
 from __future__ import annotations
 
-import sys
-from typing import Any, TypedDict
-
-# TODO: Unpack defined in python 3.11+
-if sys.version_info < (3, 11):
-    Unpack: Any
-else:
-    from typing import Unpack
+from typing import TypedDict, Unpack
 
 
 class _OPTIONS(TypedDict, total=False):

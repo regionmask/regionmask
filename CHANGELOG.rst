@@ -17,6 +17,8 @@ v0.14.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
+- Removed support for Python 3.10 (:pull:`629`).
+
 Enhancements
 ~~~~~~~~~~~~
 
