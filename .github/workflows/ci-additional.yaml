@@ -11,15 +11,26 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_COLOR: 3
+
 jobs:
 
   min-version-policy:
     name: Minimum Version Policy
     runs-on: "ubuntu-latest"
+
+    env:
+      COLUMNS: 120
+
     steps:
       - uses: actions/checkout@v6
-      - uses: xarray-contrib/minimum-dependency-versions@v0.1.1
+      - uses: actions/setup-python@v6
         with:
-          policy: ci/minimum-dependency-versions-policy.yml
-          environment-paths: |
-            ci/requirements/min-all-deps.yml
+          python-version: '3.13'
+          cache: 'pip' # caching pip dependencies
+      - name: install deps
+        run: pip install xarray-minimum-dependency-policy
+      - name: validate minimum versions
+        run: |
+          minimum-versions validate --policy ci/minimum-dependency-versions-policy.yml ci/requirements/min-all-deps.yml
