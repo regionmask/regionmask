@@ -169,7 +169,7 @@ def test_from_geopandas_column_missing(geodataframe_clean, arg) -> None:
 
     kwargs = {arg: "not_a_column"}
     with pytest.raises(KeyError):
-        from_geopandas(geodataframe_clean, **kwargs)  # type:ignore[arg-type]
+        from_geopandas(geodataframe_clean, **kwargs)  # type: ignore[arg-type]
 
 
 series_duplicates = pd.Series([1, 1, 2, 3, 4])

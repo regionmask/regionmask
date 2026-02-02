@@ -83,7 +83,7 @@ class set_options:
             _VALIDATORS[key](key, value)
 
             # mypy does not know that key must be a literal from _OPTIONS TypedDict
-            self.old[key] = OPTIONS[key]  # type:ignore[literal-required]
+            self.old[key] = OPTIONS[key]  # type: ignore[literal-required]
 
         self._apply_update(kwargs)
 
