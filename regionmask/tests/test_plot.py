@@ -359,7 +359,7 @@ def test_error_extra_kwarg() -> None:
 
     with pytest.raises(TypeError, match="got an unexpected keyword argument 'bar'"):
         with figure_context():
-            r1.plot(bar=5)  # type:ignore[call-arg]
+            r1.plot(bar=5)  # type: ignore[call-arg]
 
 
 # -----------------------------------------------------------------------------

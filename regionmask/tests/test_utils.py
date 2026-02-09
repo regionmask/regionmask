@@ -301,7 +301,7 @@ def test_flatten_3D_mask_wrong_input() -> None:
     mask_3D = srex.mask_3D(lon, lat)
 
     with pytest.raises(ValueError, match="expected a xarray.DataArray"):
-        flatten_3D_mask(None)  # type:ignore[arg-type]
+        flatten_3D_mask(None)  # type: ignore[arg-type]
 
     with pytest.raises(ValueError, match="``mask_3D`` must have 3 dimensions"):
         flatten_3D_mask(mask_2D)

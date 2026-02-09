@@ -244,7 +244,7 @@ def _mask(
     elif selected_method == "rasterize_split":
         mask_func = _mask_rasterize_split
     elif selected_method == "shapely":
-        mask_func = _mask_shapely  # type:ignore[assignment]
+        mask_func = _mask_shapely  # type: ignore[assignment]
         kwargs = {"is_unstructured": is_unstructured}
 
     mask = mask_func(lon_arr, lat_arr, polygons, numbers=numbers, as_3D=as_3D, **kwargs)
