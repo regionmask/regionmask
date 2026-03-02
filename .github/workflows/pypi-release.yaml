@@ -41,7 +41,7 @@ jobs:
           else
             echo "✅ Looks good"
           fi
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: releases
           path: dist
