@@ -86,7 +86,7 @@ Enhancements
 - Add python 3.12 to list of supported versions (:pull:`565`).
 - Started typing regionmask (:pull:`569`, :pull:`571`, :pull:`572`, :pull:`573`,
   :pull:`575`, :pull:`576`, :pull:`577`, :pull:`578`).
-- regionmask is now discoverably by mypy, although typing hints coverage is no yet
+- regionmask is now discoverable by mypy, although typing hints coverage is no yet
   complete  (:pull:`574`).
 
 Bug Fixes
@@ -97,7 +97,7 @@ Bug Fixes
 Docs
 ~~~~
 
-- Use [MyST-NB](https://myst-nb.readthedocs.io/en/stable/) to render jupyter notebooks
+- Use `MyST-NB <https://myst-nb.readthedocs.io/en/stable/>`__ to render jupyter notebooks
   for the documentation, instead of nbconvert (:pull:`540`).
 
 Internal Changes
