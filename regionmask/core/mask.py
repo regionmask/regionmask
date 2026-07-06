@@ -172,7 +172,7 @@ def _mask(
     if not _is_numeric(numbers):
         raise ValueError("'numbers' must be numeric")
 
-    lon, lat = _get_coords(lon_or_obj, lat, "lon", "lat", use_cf)
+    lon, lat = _get_coords(lon_or_obj, lat, use_cf)
 
     # determine whether unstructured grid
     # have to do this before np.asarray
@@ -286,7 +286,7 @@ def _mask_3D_frac_approx(
     as_3D = True
     n = 10
 
-    lon_, lat_ = _get_coords(lon_or_obj, lat, "lon", "lat", use_cf)
+    lon_, lat_ = _get_coords(lon_or_obj, lat, use_cf)
     lon_arr, lat_arr = np.asarray(lon_), np.asarray(lat_)
 
     backend = _determine_method(lon_arr, lat_arr)

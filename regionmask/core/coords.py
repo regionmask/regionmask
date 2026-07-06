@@ -1,3 +1,5 @@
+from collections.abc import Mapping
+
 import numpy as np
 import xarray as xr
 
@@ -13,8 +15,6 @@ except ImportError:
 def _get_coords(
     lon_or_obj: np.typing.ArrayLike | xr.DataArray | xr.Dataset,
     lat: np.typing.ArrayLike | xr.DataArray | None,
-    lon_name: str,
-    lat_name: str,
     use_cf: bool | None,
 ) -> (
     tuple[xr.DataArray, xr.DataArray] | tuple[np.typing.ArrayLike, np.typing.ArrayLike]
@@ -22,6 +22,14 @@ def _get_coords(
 
     if lat is not None:
         return lon_or_obj, lat
+
+    if not isinstance(lon_or_obj, xr.DataArray | xr.Dataset | Mapping):
+        raise TypeError(
+            "Expected a ``Dataset``, ``DataArray`` or dict-like when only"
+            f" ``lon_or_obj`` is passed, got {type(lon_or_obj)}"
+        )
+
+    lon_name, lat_name = "lon", "lat"
 
     if (
         use_cf is None

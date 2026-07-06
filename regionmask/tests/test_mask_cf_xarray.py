@@ -56,7 +56,7 @@ def test_mask_use_cf_requires_da_ds(method) -> None:
     mask = getattr(dummy_region, method)
 
     with pytest.raises(TypeError, match="Expected a ``Dataset`` or ``DataArray``"):
-        mask(dummy_ds.lon.values, use_cf=True)
+        mask({}, use_cf=True)
 
 
 @requires_cf_xarray

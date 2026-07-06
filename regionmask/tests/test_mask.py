@@ -75,6 +75,28 @@ def test_mask_wrong_number_fill(func) -> None:
         func(dummy_ds.lon, dummy_ds.lat, dummy_region.polygons, numbers=[5])
 
 
+@pytest.mark.parametrize("method", ["mask", "mask_3D"])
+def test_mask_wrong_lon_or_obj_type(method) -> None:
+
+    mask = getattr(dummy_region, method)
+    msg = "Expected a ``Dataset``, ``DataArray`` or dict-like"
+
+    with pytest.raises(TypeError, match=msg):
+        mask(dummy_ds.lon.values)
+
+    class A:
+        @property
+        def lon(self):
+            return [1, 2, 3]
+
+        @property
+        def lat(self):
+            return [1, 2, 3]
+
+    with pytest.raises(TypeError, match=msg):
+        mask(A())
+
+
 @pytest.mark.parametrize("method", MASK_METHODS)
 def test_mask(method) -> None:
 
