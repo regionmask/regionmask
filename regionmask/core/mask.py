@@ -244,7 +244,7 @@ def _mask(
     elif selected_method == "rasterize_split":
         mask_func = _mask_rasterize_split
     elif selected_method == "shapely":
-        mask_func = _mask_shapely  # type: ignore[assignment]
+        mask_func = _mask_shapely
         kwargs = {"is_unstructured": is_unstructured}
 
     mask = mask_func(lon_arr, lat_arr, polygons, numbers=numbers, as_3D=as_3D, **kwargs)
@@ -294,7 +294,7 @@ def _mask_3D_frac_approx(
     if backend not in ("rasterize", "rasterize_flip"):
         raise InvalidCoordsError("'lon' and 'lat' must be 1D and equally spaced.")
 
-    if np.nanmin(lat_) < -90 or np.nanmax(lat_) > 90:
+    if np.nanmin(lat_arr) < -90 or np.nanmax(lat_arr) > 90:
         raise InvalidCoordsError("lat must be between -90 and +90")
 
     lon_sampled, lat_sampled = _sample_coords(lon_arr), _sample_coords(lat_arr)
