@@ -17,7 +17,7 @@ v0.14.0 (unreleased)
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
-- Removed support for Python 3.10 (:pull:`629`).
+- Removed support for Python 3.10 and 3.11 (:pull:`629`, :pull:`661`).
 - The minimum versions of some dependencies were changed (:pull:`662`):
 
   ============ ===== =====
