@@ -38,6 +38,7 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
+- Passing a wrong type to `mask` functions now raises a more informative error  (:pull:`663`).
 - More typing, including parameters (:pull:`602`, :pull:`664`).
 - Add python 3.14 to list of supported versions (:pull:`660`).
 
