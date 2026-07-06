@@ -69,7 +69,9 @@ def test_name(test_regions) -> None:
     assert test_regions.name == name
 
 
-@pytest.mark.parametrize("test_regions, numbers", list(zip(all_test_regions, all_numbers)))
+@pytest.mark.parametrize(
+    "test_regions, numbers", list(zip(all_test_regions, all_numbers))
+)
 def test_numbers(test_regions, numbers) -> None:
     assert np.allclose(test_regions.numbers, numbers)
 
@@ -183,7 +185,9 @@ def test_map_keys_np_integer() -> None:
     assert test_regions3.map_keys(key) == 2
 
 
-@pytest.mark.parametrize("test_regions, numbers", list(zip(all_test_regions, all_numbers)))
+@pytest.mark.parametrize(
+    "test_regions, numbers", list(zip(all_test_regions, all_numbers))
+)
 def test_map_keys_several(test_regions, numbers) -> None:
 
     assert test_regions.map_keys(numbers) == numbers
