@@ -22,15 +22,15 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.11", "3.14"]
+        python-version: ["3.12", "3.14"]
         env: [""]
         include:
           - env: "bare-minimum"
             os: "ubuntu-latest"
-            python-version: "3.11"
+            python-version: "3.12"
           - env: "min-all-deps"
             os: "ubuntu-latest"
-            python-version: "3.11"
+            python-version: "3.12"
     steps:
       - uses: actions/checkout@v7
         with:

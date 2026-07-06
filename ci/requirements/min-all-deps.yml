@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - python=3.11
+  - python=3.12
   - cartopy=0.22
   - cf_xarray=0.8
   - geopandas=0.13

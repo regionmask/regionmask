@@ -288,7 +288,7 @@ def _plot(
     return ax
 
 
-def _plot_regions(
+def _plot_regions[Axes_or_GeoAxes: (Axes, GeoAxes)](
     self,
     *,
     ax: Axes_or_GeoAxes | None = None,
