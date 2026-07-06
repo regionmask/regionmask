@@ -134,6 +134,7 @@ exclude = [
 ]
 files = "regionmask"
 
+allow_redefinition = true
 show_error_context = true
 warn_redundant_casts = true
 warn_unused_configs = true
@@ -147,7 +148,6 @@ module = [
   "cartopy.*",
   "geopandas.*",
   "pooch.*",
-  "pyogrio.*",
   "rasterio.*",
   "shapely.*",
 ]
