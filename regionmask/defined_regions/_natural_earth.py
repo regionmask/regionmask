@@ -13,13 +13,6 @@ from regionmask.core.regions import Regions
 from regionmask.core.utils import _flatten_polygons, _snap_to_90S, _snap_to_180E
 from regionmask.defined_regions._resources import _get_cache_dir
 
-try:
-    import pyogrio  # noqa: F401
-
-    ENGINE = "pyogrio"
-except ImportError:
-    ENGINE = "fiona"
-
 
 def _maybe_get_column(df: pd.DataFrame, colname: str | list[str | int]) -> pd.Series:
     """return column of the df or not"""
@@ -153,7 +146,7 @@ class _NaturalEarthFeature:
     def read(self, version, bbox=None):
         shpfilename = self.shapefilename(version=version)
 
-        df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox, engine=ENGINE)
+        df = geopandas.read_file(shpfilename, encoding="utf8", bbox=bbox)
 
         return df
 
