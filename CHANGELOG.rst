@@ -38,7 +38,7 @@ Breaking Changes
 Enhancements
 ~~~~~~~~~~~~
 
-- More typing (:pull:`602`).
+- More typing, including parameters (:pull:`602`, :pull:`664`).
 - Add python 3.14 to list of supported versions (:pull:`660`).
 
 Deprecations
