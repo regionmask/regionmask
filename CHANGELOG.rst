@@ -18,6 +18,22 @@ Breaking Changes
 ~~~~~~~~~~~~~~~~
 
 - Removed support for Python 3.10 (:pull:`629`).
+- The minimum versions of some dependencies were changed (:pull:`662`):
+
+  ============ ===== =====
+  Package      Old   New
+  ============ ===== =====
+  cartopy*     0.20  0.24
+  cf_xarray*   0.7   0.10
+  geopandas    0.10  1.1
+  matplotlib*  3.5   3.10
+  numpy        1.21  2.2
+  pandas       1.3   2.3
+  pooch        1.4   1.8
+  rasterio     1.2   1.4
+  shapely      1.8   2.1
+  xarray       0.20  2025.7
+  ============ ===== =====
 
 Enhancements
 ~~~~~~~~~~~~

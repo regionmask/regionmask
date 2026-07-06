@@ -5,13 +5,13 @@ Required dependencies
 ---------------------
 
 - Python (3.11 or later)
-- `geopandas <https://geopandas.org/>`__ (0.13 or later)
-- `numpy <https://numpy.org/>`__ (1.24 or later)
-- `packaging <https://packaging.pypa.io/en/latest/>`__ (23.1 or later)
-- `pooch <https://www.fatiando.org/pooch/latest/>`__ (1.7 or later)
-- `rasterio <https://rasterio.readthedocs.io/>`__ (1.3 or later)
-- `shapely <https://shapely.readthedocs.io/en/stable>`__ (2.0 or later)
-- `xarray <https://docs.xarray.dev/en/stable/>`__ (2023.07 or later)
+- `geopandas <https://geopandas.org/>`
+- `numpy <https://numpy.org/>`
+- `packaging <https://packaging.pypa.io/en/latest/>`
+- `pooch <https://www.fatiando.org/pooch/latest/>`
+- `rasterio <https://rasterio.readthedocs.io/>`
+- `shapely <https://shapely.readthedocs.io/en/stable>`
+- `xarray <https://docs.xarray.dev/en/stable/>`
 
 Optional dependencies
 ---------------------
