@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+set -e
+set -u
+set -o pipefail
+
 # forcibly remove packages to avoid artifacts
 conda uninstall -y --force \
   cartopy \
@@ -15,6 +19,7 @@ conda uninstall -y --force \
   rasterio \
   shapely \
   xarray
+
 # to limit the runtime of Upstream CI
 python -m pip install \
     -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple \
@@ -26,6 +31,7 @@ python -m pip install \
     pandas \
     shapely \
     xarray
+
 python -m pip install \
     --no-deps \
     --upgrade \
@@ -34,8 +40,11 @@ python -m pip install \
     git+https://github.com/geopandas/geopandas \
     git+https://github.com/pypa/packaging \
     git+https://github.com/fatiando/pooch
+
 python -m pip install cython # to build rasterio & pyogrio
+
 python -m pip install versioneer # to build pyogrio
+
 python -m pip install \
     --no-deps \
     --no-build-isolation \
