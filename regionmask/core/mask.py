@@ -4,10 +4,11 @@ import warnings
 from collections.abc import Sequence
 from typing import Literal
 
+import affine
 import numpy as np
 import shapely
 import xarray as xr
-from affine import Affine
+from packaging.version import Version
 
 from regionmask.core.coords import _get_coords
 from regionmask.core.utils import (
@@ -776,7 +777,7 @@ def _get_out(shape: tuple[int, ...], fill: float, *, as_3D: bool) -> np.ndarray:
 
 def _transform_from_latlon(
     lon: np.typing.ArrayLike, lat: np.typing.ArrayLike
-) -> Affine:
+) -> affine.Affine:
     """perform an affine transformation to the latitude/longitude coordinates"""
 
     lat = np.asarray(lat)
@@ -785,8 +786,12 @@ def _transform_from_latlon(
     d_lon = lon[1] - lon[0]
     d_lat = lat[1] - lat[0]
 
-    trans = Affine.translation(lon[0] - d_lon / 2, lat[0] - d_lat / 2)
-    scale = Affine.scale(d_lon, d_lat)
+    trans = affine.Affine.translation(lon[0] - d_lon / 2, lat[0] - d_lat / 2)
+    scale = affine.Affine.scale(d_lon, d_lat)
+
+    if Version(affine.__version__) >= Version("3.0.0"):
+        return trans @ scale
+
     return trans * scale
 
 
