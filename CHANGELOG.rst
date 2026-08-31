@@ -23,6 +23,7 @@ Breaking Changes
   ============ ===== =====
   Package      Old   New
   ============ ===== =====
+  affine          -  2.4
   cartopy*     0.20  0.24
   cf_xarray*   0.7   0.10
   geopandas    0.10  1.1
@@ -61,6 +62,7 @@ Internal Changes
 - Remove lat_name and lon_name internally (:pull:`592`).
 - Use ruff instead of isort and flake8 to lint the code base (:pull:`615`).
 - Consolidate package metadata and configuration in `pyproject.toml` (:pull:`614`).
+- Use matmul (@) for affine v3.0.0 and later (:pull:`672`)
 
 .. _changelog.0.13.0:
 
