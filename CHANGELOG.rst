@@ -23,7 +23,6 @@ Breaking Changes
   ============ ===== =====
   Package      Old   New
   ============ ===== =====
-  affine          -  2.4
   cartopy*     0.20  0.24
   cf_xarray*   0.7   0.10
   geopandas    0.10  1.1
