@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
+  - affine
   - cartopy
   - cf_xarray
   - geopandas

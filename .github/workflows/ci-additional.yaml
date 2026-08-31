@@ -30,7 +30,7 @@ jobs:
           python-version: '3.14'
           cache: 'pip' # caching pip dependencies
       - name: install deps
-        run: pip install xarray-minimum-dependency-policy
+        run: python -m pip install xarray-minimum-dependency-policy
       - name: validate minimum versions
         run: |
           minimum-versions validate --policy ci/minimum-dependency-versions-policy.yml ci/requirements/min-all-deps.yml
