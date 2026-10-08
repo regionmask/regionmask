@@ -41,7 +41,7 @@ python -m pip install \
     git+https://github.com/pypa/packaging \
     git+https://github.com/fatiando/pooch
 
-python -m pip install cython # to build rasterio & pyogrio
+python -m pip install cython setuptools # to build rasterio & pyogrio
 
 python -m pip install versioneer # to build pyogrio
 
