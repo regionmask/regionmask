@@ -5,7 +5,7 @@ set -u
 set -o pipefail
 
 # forcibly remove packages to avoid artifacts
-conda uninstall -y --force \
+micromamba uninstall -y --force \
   cartopy \
   cf_xarray \
   geopandas \
