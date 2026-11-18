@@ -29,6 +29,7 @@ dummy_ds_cf.longitude.attrs["standard_name"] = "longitude"
 
 
 def expected_mask_1D():
+    """expected 2D mask stacked along a "cells" dimension"""
     expected = expected_mask_2D()
 
     return expected.stack(cells=("lat", "lon")).reset_index("cells")
@@ -37,6 +38,19 @@ def expected_mask_1D():
 def expected_mask_2D(
     a=0, b=1, fill=np.nan, coords=None, lon_name="lon", lat_name="lat"
 ) -> xr.DataArray:
+    """expected 2D mask for the dummy regions on the dummy grid
+
+    Parameters
+    ----------
+    a, b : number, default: 0, 1
+        Region numbers in the first and second row of the first column.
+    fill : number, default: np.nan
+        Value of the second column.
+    coords : dict, optional
+        Coordinates of the mask. Default: the dummy lon and lat.
+    lon_name, lat_name : str, default: "lon", "lat"
+        Names of the spatial dimensions.
+    """
 
     mask = np.array([[a, fill], [b, fill]])
 
@@ -57,6 +71,19 @@ def expected_mask_2D(
 
 
 def expected_mask_3D(drop, coords=None, overlap=False, lon_name="lon", lat_name="lat"):
+    """expected 3D (boolean) mask for the dummy regions on the dummy grid
+
+    Parameters
+    ----------
+    drop : bool
+        If True, drop the last region, which contains no grid points.
+    coords : dict, optional
+        Coordinates of the mask; updated in place with the region coordinates.
+    overlap : bool, default: False
+        If True, repeat the first region (overlapping regions).
+    lon_name, lat_name : str, default: "lon", "lat"
+        Names of the spatial dimensions.
+    """
 
     a = [[True, False], [False, False]]
     b = [[False, False], [True, False]]

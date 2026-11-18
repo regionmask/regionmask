@@ -64,6 +64,7 @@ Internal Changes
 - Consolidate package metadata and configuration in `pyproject.toml` (:pull:`614`).
 - List affine as dependency (:pull:`673`).
 - Use matmul (``@``) for affine v3.0.0 and later (:pull:`672`).
+- Add docstrings to helper functions (:issue:`604`, :pull:`681`).
 
 .. _changelog.0.13.0:
 

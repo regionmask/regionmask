@@ -21,6 +21,7 @@ def _importorskip(modname, minversion=None):
 
 @contextmanager
 def assert_no_warnings():
+    """context manager that fails if a warning is recorded"""
 
     with warnings.catch_warnings(record=True) as record:
         yield

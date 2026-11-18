@@ -11,6 +11,19 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def maybe_truncate(obj, maxlen: int = 500) -> str:
+    """convert obj to str and shorten it with "..." if it is too long
+
+    Parameters
+    ----------
+    obj : object
+        Object to convert.
+    maxlen : int, default: 500
+        Maximum length; longer strings are truncated (including the "...").
+
+    Returns
+    -------
+    s : str
+    """
 
     # copied from xarray
 

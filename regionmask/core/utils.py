@@ -180,6 +180,17 @@ def _is_numeric(numbers: ArrayLike) -> bool:
 
 
 def equally_spaced(*args) -> bool:
+    """check if all inputs are 1D, have two or more elements and are equally spaced
+
+    Parameters
+    ----------
+    *args : array-like
+        Arrays to check.
+
+    Returns
+    -------
+    equally_spaced : bool
+    """
 
     args_ = [np.asarray(arg) for arg in args]
 

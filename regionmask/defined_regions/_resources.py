@@ -38,6 +38,17 @@ def fetch_remote_shapefile(name):
 
 
 def read_remote_shapefile(name):
+    """read a zipped shapefile from the registry, downloading it if necessary
+
+    Parameters
+    ----------
+    name : str
+        Name of the file in the registry.
+
+    Returns
+    -------
+    df : geopandas.GeoDataFrame
+    """
 
     fname = fetch_remote_shapefile(name)
 

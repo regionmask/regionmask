@@ -446,6 +446,7 @@ natural_earth_v5_1_2 = NaturalEarth(
 
 @contextmanager
 def set_pooch_log_level():
+    """context manager to temporarily set the log level of pooch to WARNING"""
 
     logger = pooch.get_logger()
     level = logger.level
