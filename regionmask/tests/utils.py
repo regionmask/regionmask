@@ -29,7 +29,7 @@ dummy_ds_cf.longitude.attrs["standard_name"] = "longitude"
 
 
 def expected_mask_1D():
-    """Return the default 2D test mask stacked along a ``cells`` dimension."""
+    """expected 2D mask stacked along a "cells" dimension"""
     expected = expected_mask_2D()
 
     return expected.stack(cells=("lat", "lon")).reset_index("cells")
@@ -38,11 +38,18 @@ def expected_mask_1D():
 def expected_mask_2D(
     a=0, b=1, fill=np.nan, coords=None, lon_name="lon", lat_name="lat"
 ) -> xr.DataArray:
-    """Return the 2-by-2 test mask with region values in its first column.
+    """expected 2D mask for the dummy regions on the dummy grid
 
-    ``a`` and ``b`` are the region numbers in the first and second rows;
-    ``fill`` is used in the second column. Coordinates and dimension names
-    can be overridden to match the grid under test.
+    Parameters
+    ----------
+    a, b : number, default: 0, 1
+        Region numbers in the first and second row of the first column.
+    fill : number, default: np.nan
+        Value of the second column.
+    coords : dict, optional
+        Coordinates of the mask. Default: the dummy lon and lat.
+    lon_name, lat_name : str, default: "lon", "lat"
+        Names of the spatial dimensions.
     """
 
     mask = np.array([[a, fill], [b, fill]])
@@ -64,11 +71,18 @@ def expected_mask_2D(
 
 
 def expected_mask_3D(drop, coords=None, overlap=False, lon_name="lon", lat_name="lat"):
-    """Return the boolean test mask, including region coordinates and metadata.
+    """expected 3D (boolean) mask for the dummy regions on the dummy grid
 
-    With ``overlap=True``, duplicate the first region to represent overlapping
-    polygons. With ``drop=True``, omit the final region, which contains no grid
-    points. If supplied, ``coords`` is updated in place with region coordinates.
+    Parameters
+    ----------
+    drop : bool
+        If True, drop the last region, which contains no grid points.
+    coords : dict, optional
+        Coordinates of the mask; updated in place with the region coordinates.
+    overlap : bool, default: False
+        If True, repeat the first region (overlapping regions).
+    lon_name, lat_name : str, default: "lon", "lat"
+        Names of the spatial dimensions.
     """
 
     a = [[True, False], [False, False]]
