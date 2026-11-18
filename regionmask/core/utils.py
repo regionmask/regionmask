@@ -180,6 +180,12 @@ def _is_numeric(numbers: ArrayLike) -> bool:
 
 
 def equally_spaced(*args) -> bool:
+    """Return whether each input is one-dimensional and equally spaced.
+
+    Each array-like input must contain at least two elements. Differences
+    are compared using the default tolerances of ``numpy.allclose``; the
+    spacing may differ between inputs. With no inputs, return True.
+    """
 
     args_ = [np.asarray(arg) for arg in args]
 

@@ -21,6 +21,10 @@ def _importorskip(modname, minversion=None):
 
 @contextmanager
 def assert_no_warnings():
+    """Assert that no warnings are recorded while executing the context.
+
+    Existing warning filters still apply.
+    """
 
     with warnings.catch_warnings(record=True) as record:
         yield

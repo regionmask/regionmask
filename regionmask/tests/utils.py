@@ -29,6 +29,7 @@ dummy_ds_cf.longitude.attrs["standard_name"] = "longitude"
 
 
 def expected_mask_1D():
+    """Return the default 2D test mask stacked along a ``cells`` dimension."""
     expected = expected_mask_2D()
 
     return expected.stack(cells=("lat", "lon")).reset_index("cells")
@@ -37,6 +38,12 @@ def expected_mask_1D():
 def expected_mask_2D(
     a=0, b=1, fill=np.nan, coords=None, lon_name="lon", lat_name="lat"
 ) -> xr.DataArray:
+    """Return the 2-by-2 test mask with region values in its first column.
+
+    ``a`` and ``b`` are the region numbers in the first and second rows;
+    ``fill`` is used in the second column. Coordinates and dimension names
+    can be overridden to match the grid under test.
+    """
 
     mask = np.array([[a, fill], [b, fill]])
 
@@ -57,6 +64,12 @@ def expected_mask_2D(
 
 
 def expected_mask_3D(drop, coords=None, overlap=False, lon_name="lon", lat_name="lat"):
+    """Return the boolean test mask, including region coordinates and metadata.
+
+    With ``overlap=True``, duplicate the first region to represent overlapping
+    polygons. With ``drop=True``, omit the final region, which contains no grid
+    points. If supplied, ``coords`` is updated in place with region coordinates.
+    """
 
     a = [[True, False], [False, False]]
     b = [[False, False], [True, False]]

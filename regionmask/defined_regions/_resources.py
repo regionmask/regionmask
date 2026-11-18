@@ -38,6 +38,12 @@ def fetch_remote_shapefile(name):
 
 
 def read_remote_shapefile(name):
+    """Fetch a registered zipped shapefile and read it as a GeoDataFrame.
+
+    ``name`` is a filename in the registry of ``fetch_remote_shapefile``.
+    The archive is downloaded only when absent from the cache or when its
+    checksum does not match the registered hash.
+    """
 
     fname = fetch_remote_shapefile(name)
 

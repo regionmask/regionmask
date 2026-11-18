@@ -11,6 +11,11 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def maybe_truncate(obj, maxlen: int = 500) -> str:
+    """Convert an object to a string, shortening it with ``...`` if needed.
+
+    The ellipsis counts towards ``maxlen``. If truncation is needed and
+    ``maxlen`` is less than three, return ``"..."``.
+    """
 
     # copied from xarray
 
